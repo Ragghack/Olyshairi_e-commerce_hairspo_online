@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLYS HAIR - Customer Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --cream: #392625;
+            --white: #ffffff;
+            --dark-gray: #1e1e1e;
+            --light-bg: #f8f5f2;
+            --text-dark: #1e1e1e;
+            --text-light: #ffffff;
+            --card-bg: #ffffff;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark-mode {
+            --cream: #c8b4a8;
+            --white: #1e1e1e;
+            --dark-gray: #f8f5f2;
+            --light-bg: #2d2d2d;
+            --text-dark: #f8f5f2;
+            --text-light: #1e1e1e;
+            --card-bg: #181212;
+            --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            color: var(--cream);
+        }
+        
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: var(--white);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 180px;
+            height: 80px;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .logo-img-light {
+            max-width: 120px;
+            max-height: 50px;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+        .logo-img-dark {
+            max-width: 120px;
+            max-height: 50px;
+            display: none;
+            margin: 0 auto;
+            object-fit: contain;
+            background: transparent;
+        }
+        .dark-mode .logo-img-light {
+            display: none;
+        }
+        .dark-mode .logo-img-dark {
+            display: block;
+        }
+             .logo-placeholder {
+  max-width: 31mm;
+  height: auto;
+}
+
+body.dark-mode .logo-container {
+  content: url("images/Artboard 1 copy.png");
+   max-width: 31mm;
+  max-height: 100mm;
+              display: flex;
+            justify-content: center;
+        }
+
+        .logo {
+            max-width: 100%;
+            height: auto;
+            max-height: 60px;
+        }      
+        
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .header-icons i {
+            font-size: 20px;
+            color: var(--cream);
+            cursor: pointer;
+        }
+        
+        /* User Profile Dropdown */
+        .user-profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            width: 200px;
+            padding: 15px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: background-color 0.3s;
+        }
+        
+        .dropdown-menu a:hover {
+            background-color: var(--light-bg);
+            border-radius: 4px;
+        }
+        
+        /* Dark/Light Mode Toggle */
+        .mode-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background-color: var(--light-bg);
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .toggle-circle {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background-color: var(--cream);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            left: 4px;
+        }
+        
+        .dark-mode .toggle-circle {
+            left: 34px;
+        }
+        
+        .mode-toggle i {
+            font-size: 14px;
+            z-index: 2;
+        }
+        
+        .fa-sun {
+            color: var(--cream);
+            margin-right: auto;
+        }
+        
+        .fa-moon {
+            color: var(--cream);
+            margin-left: auto;
+        }
+        
+        /* Dashboard Layout */
+        .dashboard-container {
+            display: flex;
+            margin-top: 120px;
+            min-height: calc(100vh - 180px);
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background-color: var(--light-bg);
+            padding: 30px 20px;
+            position: fixed;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-bubble {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-bubble:hover, .sidebar-bubble.active {
+            background-color: var(--cream);
+            color: var(--white);
+        }
+        
+        .sidebar-bubble i {
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        
+        /* Main Content Area */
+        .dashboard-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(rgba(167, 156, 156, 0.85), rgba(57, 38, 37, 0.85));
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+        
+        .welcome-banner h1 {
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+        
+        .points-display {
+            display: inline-block;
+            background-color: var(--white);
+            color: var(--cream);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 15px 0;
+        }
+        
+        .quick-shortcuts {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .shortcut-btn {
+            padding: 10px 20px;
+            background-color: var(--white);
+            color: var(--cream);
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .shortcut-btn:hover {
+            background-color: var(--dark-gray);
+            color: var(--white);
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .view-all {
+            color: var(--cream);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .dashboard-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        /* Order History Table */
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .order-table th, .order-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-bg);
+        }
+        
+        .order-table th {
+            font-weight: 600;
+            color: var(--cream);
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-delivered {
+            background-color: #e6f7ee;
+            color: #0c9770;
+        }
+        
+        .status-processing {
+            background-color: #fef5e7;
+            color: #e58e02;
+        }
+        
+        .status-shipped {
+            background-color: #e6f0ff;
+            color: #2d6bdb;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            background-color: var(--cream);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--dark-gray);
+        }
+        
+        /* Wishlist and Cart Items */
+        .wishlist-item, .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-bg);
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+        
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-price {
+            color: var(--cream);
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Booking Cards */
+        .booking-card {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-left: 4px solid var(--cream);
+        }
+        
+        .booking-date {
+            font-weight: 600;
+            color: var(--cream);
+        }
+        
+        .booking-service {
+            margin: 5px 0;
+        }
+        
+        /* Notifications */
+        .notification-item {
+            padding: 15px;
+            border-left: 4px solid var(--cream);
+            margin-bottom: 15px;
+            background-color: var(--light-bg);
+        }
+        
+        .notification-unread {
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: var(--cream);
+            margin-top: 5px;
+        }
+        
+        /* Profile Section */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-bg);
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 40px;
+            margin-right: 20px;
+        }
+        
+        .profile-info h2 {
+            margin-bottom: 5px;
+        }
+        
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--cream);
+            margin-bottom: 5px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--cream);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-bg);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cream);
+        }
+        
+        /* Floating Bubbles */
+        .floating-bubbles {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1200;
+        }
+        
+        .bubble-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--cream);
+            color: var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .bubble-btn span {
+            display: none;
+            position: absolute;
+            right: 70px;
+            background: var(--dark-gray);
+            color: var(--white);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .bubble-btn:hover {
+            background-color: var(--dark-gray);
+            transform: scale(1.1);
+        }
+        
+        .bubble-btn:hover span {
+            display: block;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 220px;
+            }
+            
+            .dashboard-content {
+                margin-left: 220px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+            
+            .dashboard-container {
+                flex-direction: column;
+                margin-top: 100px;
+            }
+            
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 15px;
+                justify-content: center;
+            }
+            
+            .sidebar-bubble {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                padding: 0;
+                justify-content: center;
+                margin-bottom: 0;
+            }
+            
+            .sidebar-bubble span {
+                display: none;
+            }
+            
+            .sidebar-bubble i {
+                margin-right: 0;
+                font-size: 20px;
+            }
+            
+            .dashboard-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .floating-bubbles {
+                bottom: 80px;
+                right: 15px;
+            }
+            
+            .bubble-btn span {
+                right: 65px;
+                bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <span>
+                <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" />
+                <img src="images/logo-bright.png" alt="OLYS HAIR Logo Bright" class="logo-img-dark" />
+            </span>
+        </div>
+        <div class="header-icons">
+            <i class="fas fa-search"></i>
+            <i class="fas fa-shopping-bag"></i>
+            <div class="user-profile">
+                <div class="user-avatar">R</div>
+                <span>Roseu</span>
+                <div class="dropdown-menu">
+                    <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+            <div class="mode-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+                <div class="toggle-circle"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Floating Bubbles -->
+    <div class="floating-bubbles">
+        <div class="bubble-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="bubble-btn" onclick="window.location.href='shop.html'">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Shop</span>
+        </div>
+    </div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-bubble active" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="sidebar-bubble" data-section="cart">
+                <i class="fas fa-shopping-cart"></i>
+                <span>My Cart</span>
+            </div>
+            <div class="sidebar-bubble" data-section="wishlist">
+                <i class="fas fa-heart"></i>
+                <span>Wishlist</span>
+            </div>
+            <div class="sidebar-bubble" data-section="orders">
+                <i class="fas fa-box"></i>
+                <span>My Orders</span>
+            </div>
+            <div class="sidebar-bubble" data-section="bookings">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Bookings</span>
+            </div>
+            <div class="sidebar-bubble" data-section="notifications">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+            </div>
+            <div class="sidebar-bubble" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="dashboard-content">
+            <!-- Dashboard Section -->
+            <div class="content-section active" id="dashboard">
+                <!-- ...existing code... -->
+
+                <!-- Recent Orders Section -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Recent Orders</h2>
+                        <a href="#" class="view-all" data-section="orders">View All</a>
+                    </div>
+                    <div class="dashboard-card">
+                        <table class="order-table">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#OL-2874</td>
+                                    <td>Oct 12, 2023</td>
+                                    <td><span class="status-badge status-delivered">Delivered</span></td>
+                                    <td>$199.99</td>
+                                    <td>
+                                        <button class="action-btn">View</button>
+                                        <button class="action-btn">Invoice</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#OL-2861</td>
+                                    <td>Oct 5, 2023</td>
+                                    <td><span class="status-badge status-processing">Processing</span></td>
+                                    <td>$259.99</td>
+                                    <td>
+                                        <button class="action-btn">Track</button>
+                                        <button class="action-btn">Invoice</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#OL-2843</td>
+                                    <td>Sep 28, 2023</td>
+                                    <td><span class="status-badge status-shipped">Shipped</span></td>
+                                    <td>$179.99</td>
+                                    <td>
+                                        <button class="action-btn">Track</button>
+                                        <button class="action-btn">Invoice</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Wishlist and Cart Section -->
+                <div class="card-grid">
+                    <!-- Wishlist -->
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Wishlist</h2>
+                            <a href="#" class="view-all" data-section="wishlist">View All</a>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="wishlist-item">
+                                <div class="item-image">
+                                    <img src="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Brazilian Body Wave">
+                                </div>
+                                <div class="item-details">
+                                    <h4>Brazilian Body Wave</h4>
+                                    <div class="item-price">$189.99</div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="wishlist-item">
+                                <div class="item-image">
+                                    <img src="https://images.unsplash.com/photo-1558769136-3c6c18ec5b04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Kinky Curly">
+                                </div>
+                                <div class="item-details">
+                                    <h4>Kinky Curly</h4>
+                                    <div class="item-price">$209.99</div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart -->
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Cart</h2>
+                            <a href="#" class="view-all" data-section="cart">View Cart</a>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="cart-item">
+                                <div class="item-image">
+                                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Peruvian Straight">
+                                </div>
+                                <div class="item-details">
+                                    <h4>Peruvian Straight</h4>
+                                    <div class="item-price">$199.99</div>
+                                    <div>Qty: 1</div>
+                                </div>
+                            </div>
+                            <div class="cart-item">
+                                <div class="item-image">
+                                    <img src="https://images.unsplash.com/photo-1597212610042-6e2ad31e6b71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Loose Wave">
+                                </div>
+                                <div class="item-details">
+                                    <h4>Loose Wave</h4>
+                                    <div class="item-price">$199.99</div>
+                                    <div>Qty: 2</div>
+                                </div>
+                            </div>
+                            <button class="action-btn" style="width: 100%; margin-top: 10px;">Checkout</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Bookings -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Upcoming Bookings</h2>
+                        <a href="#" class="view-all" data-section="bookings">View All</a>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="booking-card">
+                            <div class="booking-date">Oct 20, 2023 at 2:00 PM</div>
+                            <div class="booking-service">Hair Installation & Styling</div>
+                            <div>With: Stylist Jessica</div>
+                            <div class="item-actions" style="margin-top: 10px;">
+                                <button class="action-btn">Reschedule</button>
+                                <button class="action-btn">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Notifications</h2>
+                        <a href="#" class="view-all" data-section="notifications">View All</a>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="notification-item notification-unread">
+                            <h4>Your order #OL-2861 has shipped!</h4>
+                            <p>Your order is on the way. Track your shipment to see the delivery status.</p>
+                            <div class="notification-time">2 hours ago</div>
+                        </div>
+                        <div class="notification-item">
+                            <h4>New hair care collection launched</h4>
+                            <p>Check out our new premium hair care products designed for extensions.</p>
+                            <div class="notification-time">1 day ago</div>
+                        </div>
+                        <div class="notification-item">
+                            <h4>Appointment reminder</h4>
+                            <p>Your hair appointment is in 3 days. Please arrive 10 minutes early.</p>
+                            <div class="notification-time">2 days ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Section -->
+            <div class="content-section" id="cart">
+                <div class="section-header">
+                    <h2>My Cart</h2>
+                </div>
+                <div class="dashboard-card">
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Peruvian Straight">
+                        </div>
+                        <div class="item-details">
+                            <h4>Peruvian Straight</h4>
+                            <div class="item-price">$199.99</div>
+                            <div>Qty: 1</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <img src="https://images.unsplash.com/photo-1597212610042-6e2ad31e6b71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Loose Wave">
+                        </div>
+                        <div class="item-details">
+                            <h4>Loose Wave</h4>
+                            <div class="item-price">$199.99</div>
+                            <div>Qty: 2</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <img src="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Brazilian Body Wave">
+                        </div>
+                        <div class="item-details">
+                            <h4>Brazilian Body Wave</h4>
+                            <div class="item-price">$189.99</div>
+                            <div>Qty: 1</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--light-bg);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                            <h4>Subtotal</h4>
+                            <h4>$589.97</h4>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                            <h4>Shipping</h4>
+                            <h4>$9.99</h4>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.2rem;">
+                            <h3>Total</h3>
+                            <h3>$599.96</h3>
+                        </div>
+                        <button class="action-btn" style="width: 100%; padding: 15px; font-size: 1.1rem;">Proceed to Checkout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wishlist Section -->
+            <div class="content-section" id="wishlist">
+                <div class="section-header">
+                    <h2>My Wishlist</h2>
+                </div>
+                <div class="card-grid">
+                    <div class="dashboard-card">
+                        <div class="wishlist-item">
+                            <div class="item-image">
+                                <img src="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Brazilian Body Wave">
+                            </div>
+                            <div class="item-details">
+                                <h4>Brazilian Body Wave</h4>
+                                <div class="item-price">$189.99</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
+                                <button class="action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="wishlist-item">
+                            <div class="item-image">
+                                <img src="https://images.unsplash.com/photo-1558769136-3c6c18ec5b04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Kinky Curly">
+                            </div>
+                            <div class="item-details">
+                                <h4>Kinky Curly</h4>
+                                <div class="item-price">$209.99</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
+                                <button class="action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="wishlist-item">
+                            <div class="item-image">
+                                <img src="https://images.unsplash.com/photo-1588244271197-8cf4fb4c9f6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Silky Straight">
+                            </div>
+                            <div class="item-details">
+                                <h4>Silky Straight</h4>
+                                <div class="item-price">$179.99</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
+                                <button class="action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="wishlist-item">
+                            <div class="item-image">
+                                <img src="https://images.unsplash.com/photo-1570481662006-a3a137469f4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Body Wave Bundle">
+                            </div>
+                            <div class="item-details">
+                                <h4>Body Wave Bundle</h4>
+                                <div class="item-price">$259.99</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
+                                <button class="action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="content-section" id="settings">
+                <div class="section-header">
+                    <h2>Account Settings</h2>
+                </div>
+                <div class="dashboard-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">R</div>
+                        <div class="profile-info">
+                            <h2>Roseu</h2>
+                            <p>Premium Member since June 2022</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" class="form-control" value="Roseu">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" value="roseu@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" class="form-control" value="(555) 123-4567">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" class="form-control" rows="3">123 Beauty Street, Hairville, HV 12345</textarea>
+                    </div>
+                    
+                    <button class="action-btn" style="padding: 12px 25px;">Save Changes</button>
+                </div>
+                
+                <div class="dashboard-card" style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 20px;">Security Settings</h3>
+                    
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" class="form-control">
+                    </div>
+                    
+                    <button class="action-btn" style="padding: 12px 25px;">Update Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark/Light Mode Toggle
+        const modeToggle = document.querySelector('.mode-toggle');
+        const body = document.body;
+        
+        modeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            // Save user preference in localStorage
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // Check for saved user preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+        }
+        
+        // User profile dropdown
+        const userProfile = document.querySelector('.user-profile');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        
+        userProfile.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userProfile.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+        
+        // Section navigation
+        const sidebarBubbles = document.querySelectorAll('.sidebar-bubble');
+        const contentSections = document.querySelectorAll('.content-section');
+        const quickShortcuts = document.querySelectorAll('.shortcut-btn');
+        const viewAllLinks = document.querySelectorAll('.view-all');
+        
+        // Function to switch sections
+        function switchSection(sectionId) {
+            // Hide all sections
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update sidebar active state
+            sidebarBubbles.forEach(bubble => {
+                bubble.classList.remove('active');
+                if (bubble.getAttribute('data-section') === sectionId) {
+                    bubble.classList.add('active');
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Add event listeners to sidebar bubbles
+        sidebarBubbles.forEach(bubble => {
+            bubble.addEventListener('click', () => {
+                const sectionId = bubble.getAttribute('data-section');
+                switchSection(sectionId);
+            });
+        });
+        
+        // Add event listeners to quick shortcuts
+        quickShortcuts.forEach(shortcut => {
+            shortcut.addEventListener('click', () => {
+                const sectionId = shortcut.getAttribute('data-section');
+                switchSection(sectionId);
+            });
+        });
+        
+        // Add event listeners to view all links
+        viewAllLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+                switchSection(sectionId);
+            });
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                header.style.padding = '15px 40px';
+            } else {
+                header.style.boxShadow = '';
+                header.style.padding = '20px 40px';
+            }
+        });
+    </script>
+</body>
+</html>
