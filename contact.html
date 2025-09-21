@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLYS HAIR - Contact Us</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --cream: #392625;
+            --white: #ffffff;
+            --dark-gray: #000000;
+            --light-bg: #f8f5f2;
+            --text-dark: #1e1e1e;
+            --text-light: #423c3c;
+            --card-bg: #ffffff;
+            --shadow: 0 5px 15px rgba(235, 177, 177, 0.05);
+        }
+        
+        .dark-mode {
+            --cream: #c8b4a8;
+            --white: #1e1e1e;
+            --dark-gray: #f8f5f2;
+            --light-bg: #4e4646;
+            --text-dark: #f8f5f2;
+            --text-light: #1e1e1e;
+            --card-bg: #201f1f;
+            --shadow: 0 5px 15px rgba(119, 78, 78, 0.2);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            color: var(--cream);
+        }
+        
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: var(--white);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+                .logo-placeholder {
+  max-width: 31mm;
+  height: auto;
+}
+
+body.dark-mode .logo-container {
+  content: url("images/Artboard 1 copy.png");
+   max-width: 31mm;
+  max-height: 100mm;
+              display: flex;
+            justify-content: center
+}
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 180px;
+            height: 80px;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo-img-light {
+            max-width: 120px;
+            max-height: 50px;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+        
+        .logo-img-dark {
+            max-width: 120px;
+            max-height: 50px;
+            width: auto;
+            height: auto;
+            display: none;
+            margin: 0 auto;
+            object-fit: contain;
+            background: transparent;
+        }
+        
+        .dark-mode .logo-img-light {
+            display: none;
+        }
+        
+        .dark-mode .logo-img-dark {
+            display: block;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--cream);
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .header-icons i {
+            font-size: 20px;
+            color: var(--cream);
+            cursor: pointer;
+        }
+        
+        /* Dark/Light Mode Toggle */
+        .mode-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background-color: var(--light-bg);
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .toggle-circle {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background-color: var(--cream);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            left: 4px;
+        }
+        
+        .dark-mode .toggle-circle {
+            left: 34px;
+        }
+        
+        .mode-toggle i {
+            font-size: 14px;
+            z-index: 2;
+        }
+        
+        .fa-sun {
+            color: var(--cream);
+            margin-right: auto;
+        }
+        
+        .fa-moon {
+            color: var(--cream);
+            margin-left: auto;
+        }
+        
+        /* Page Content */
+        .page-content {
+            margin-top: 120px;
+            padding: 40px;
+        }
+        
+        .page-hero {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .page-hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+        }
+        
+        .page-hero p {
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+        
+        /* Collections Grid */
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .collection-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .collection-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .collection-media {
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .collection-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .collection-card:hover .collection-media img {
+            transform: scale(1.1);
+        }
+        
+        .collection-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .collection-info {
+            padding: 20px;
+        }
+        
+        .collection-info h3 {
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .collection-info p {
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        
+        .collection-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .collection-type {
+            padding: 5px 12px;
+            background-color: var(--light-bg);
+            border-radius: 15px;
+            font-size: 12px;
+            color: var(--cream);
+        }
+        
+        .view-collection {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--cream);
+            color: var(--white);
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .view-collection:hover {
+            background-color: var(--dark-gray);
+        }
+        
+        /* Video Showcase Section */
+        .video-showcase {
+            margin-bottom: 60px;
+        }
+        
+        .video-showcase h2 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .video-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 30px;
+        }
+        
+        .video-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .video-player {
+            width: 100%;
+            height: 300px;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .play-btn {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .play-btn i {
+            color: var(--cream);
+            font-size: 20px;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.1);
+            background-color: var(--white);
+        }
+        
+        .video-info {
+            padding: 20px;
+        }
+        
+        .video-info h3 {
+            margin-bottom: 10px;
+        }
+        
+        /* About Page Styles */
+        .about-section {
+            margin-bottom: 60px;
+        }
+        
+        .about-content {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+        
+        .about-image {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .value-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .value-card i {
+            font-size: 40px;
+            color: var(--cream);
+            margin-bottom: 20px;
+        }
+        
+        .value-card h3 {
+            margin-bottom: 15px;
+        }
+        
+        /* Contact Page Styles */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 40px;
+        }
+        
+        .contact-info {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .contact-info h2 {
+            margin-bottom: 20px;
+        }
+        
+        .contact-details {
+            margin-bottom: 30px;
+        }
+        
+        .contact-item {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .contact-item i {
+            color: var(--cream);
+            font-size: 20px;
+            margin-right: 15px;
+            width: 24px;
+        }
+        
+        .contact-form {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--cream);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-bg);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cream);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            padding: 12px 25px;
+            background-color: var(--cream);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--dark-gray);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--cream);
+            color: var(--text-light);
+            padding: 80px 40px 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+        
+        .footer-column p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-column ul li a:hover {
+            color: var(--white);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: var(--white);
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background-color: var(--white);
+            color: var(--cream);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .video-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: true;
+            }
+            
+            .page-content {
+                margin-top: 100px;
+                padding: 20px;
+            }
+            
+            .page-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .collections-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (same as collections page) -->
+    <header>
+        <div class="logo-container">
+            <span>
+                <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" />
+                <img src="images/logo-bright.png" alt="OLYS HAIR Logo Bright" class="logo-img-dark" />
+            </span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+         <a href="collection.html">Collections</a
+            <a href="about.html">About</a>
+             <!---  <a href="contact.html" class="active">Contact</a>>-->
+        </div>
+        <div class="header-icons">
+            <i class="fas fa-search"></i>
+            <i class="fas fa-shopping-bag"></i>
+            <i class="fas fa-user"></i>
+            <div class="mode-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+                <div class="toggle-circle"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <div class="page-hero">
+            <h1>Contact Us</h1>
+            <p>We're here to help you with any questions about our products, services, or your order.</p>
+        </div>
+
+        <!-- Contact Grid -->
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h2>Get In Touch</h2>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Address</h4>
+                            <p>321 route bellr, Hair District<br>Paris, France</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>info@olyshair.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Business Hours</h4>
+                            <p>Monday-Friday: 9am-6pm EST<br>Saturday: 10am-4pm EST<br>Sunday: Closed</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+            
+            <div class="contact-form">
+                <h2>Send Us a Message</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" class="form-control" placeholder="Subject" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" class="form-control" placeholder="Your Message" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Our Services Section -->
+        <div class="services-section">
+            <h2 style="text-align: center; margin-bottom: 40px;">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Online Orders</h3>
+                    <p>Place orders through our secure online store with worldwide shipping available.</p>
+                </div>
+                
+                <div class="service-card">
+                    <i class="fas fa-headset"></i>
+                    <h3>Customer Support</h3>
+                    <p>Our dedicated team is available to assist you with product selection and order inquiries.</p>
+                </div>
+                
+                <div class="service-card">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Returns & Exchanges</h3>
+                    <p>We offer a hassle-free return policy within 30 days of purchase.</p>
+                </div>
+                
+                <div class="service-card">
+                    <i class="fas fa-truck"></i>
+                    <h3>Fast Shipping</h3>
+                    <p>We process orders within 24 hours and offer expedited shipping options.</p>
+                </div>
+                
+                <div class="service-card">
+                    <i class="fas fa-gem"></i>
+                    <h3>Quality Guarantee</h3>
+                    <p>All our products come with a quality guarantee and authenticity certification.</p>
+                </div>
+                
+                <div class="service-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Consultation Services</h3>
+                    <p>Schedule a virtual consultation for personalized product recommendations.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/place/Paris,+France/@48.8583851,2.0174081,10z/data=!3m1!4b1!4m6!3m5!1s0x47e66e1f06e2b70f:0x40b82c3688c9460!8m2!3d48.8575475!4d2.3513765!16zL20vMDVxdGo!5m1!1e1?hl=en&entry=ttu&g_ep=EgoyMDI1MDkxNy4wIKXMDSoASAFQAw%3D%3D" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+
+    <!-- Footer (same as collections page) -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>OLYS HAIR</h3>
+                <p>Premium quality hair products for the modern woman who values luxury and style.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Shop</h3>
+                <ul>
+                    <li><a href="#">Hair Extensions</a></li>
+                    <li><a href="#">Wigs</a></li>
+                    <li><a href="#">Closures</a></li>
+                    <li><a href="#">Frontals</a></li>
+                    <li><a href="#">Hair Care</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Shipping & Returns</a></li>
+                    <li><a href="#">Track Order</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Newsletter</h3>
+                <p>Subscribe to get special offers, free giveaways, and new product alerts.</p>
+                <form>
+                    <input type="email" placeholder="Your email address" style="padding: 10px; width: 100%; margin-bottom: 10px; border-radius: 5px; border: none;">
+                    <button type="submit" style="padding: 10px; width: 100%; background-color: var(--white); color: var(--cream); border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">SUBSCRIBE</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>© 2023 OLYS HAIR. All rights reserved. | www.olyshair.com</p>
+        </div>
+    </footer>
+
+    <script>
+       // Same JavaScript as collections page
+         // Dark/Light Mode Toggle
+        const modeToggle = document.querySelector('.mode-toggle');
+        const body = document.body;
+        
+        modeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            // Save user preference in localStorage
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // Check for saved user preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+        }
+        
+        // Video Play Functionality
+        const playButtons = document.querySelectorAll('.play-btn');
+        
+        playButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const video = this.parentElement.querySelector('video');
+                if (video.paused) {
+                    video.play();
+                    this.style.display = 'none';
+                } else {
+                    video.pause();
+                    this.style.display = 'flex';
+                }
+            });
+        });
+        
+        // Show play button when video is paused
+        const videos = document.querySelectorAll('video');
+        
+        videos.forEach(video => {
+            video.addEventListener('pause', function() {
+                this.parentElement.querySelector('.play-btn').style.display = 'flex';
+            });
+            
+            video.addEventListener('click', function() {
+                if (this.paused) {
+                    this.play();
+                    this.parentElement.querySelector('.play-btn').style.display = 'none';
+                } else {
+                    this.pause();
+                    this.parentElement.querySelector('.play-btn').style.display = 'flex';
+                }
+            });
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                header.style.padding = '15px 40px';
+            } else {
+                header.style.boxShadow = '';
+                header.style.padding = '20px 40px';
+            }
+        });
+    </script>
+</body>
+</html>
