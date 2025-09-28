@@ -819,9 +819,10 @@
                         <i class="fab fa-paypal"></i>
                         <div>PayPal</div>
                     </div>
-                    <div class="payment-method">
+                    <div class="payment-method" id="apple-pay-method">
                         <i class="fab fa-apple-pay"></i>
                         <div>Apple Pay</div>
+                        <div id="payment-request-button"></div>
                     </div>
                     <div class="payment-method">
                         <i class="fas fa-credit-card"></i>
@@ -1171,5 +1172,66 @@
             });
         });
     </script>
+        <!-- Stripe.js -->
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            const stripe = Stripe('sk_test_51SAVVd3tLr6waZvCjCEh3lMA053fGUmZNWzkzQGmJwGAONUAacAJSMeD5B5xdev7q3aGuj2FrtfJkhmKGd1Jk27F00AkO50Oo3'); // Demo Stripe public key
+            const paymentRequest = stripe.paymentRequest({
+                country: 'US',
+                currency: 'usd',
+                total: {
+                    label: 'Total',
+                    amount: 1999, // Example amount in cents
+                },
+                requestPayerName: true,
+                requestPayerEmail: true,
+            });
+
+            const elements = stripe.elements();
+            const prButton = elements.create('paymentRequestButton', {
+                paymentRequest: paymentRequest,
+                style: {
+                    paymentRequestButton: {
+                        type: 'applePay',
+                        theme: 'dark',
+                        height: '44px',
+                    },
+                },
+            });
+
+            paymentRequest.canMakePayment().then(function(result) {
+                if (result && result.applePay) {
+                    prButton.mount('#payment-request-button');
+                } else {
+                    document.getElementById('payment-request-button').style.display = 'none';
+                }
+            });
+
+            paymentRequest.on('paymentmethod', async (ev) => {
+                // Send payment info to your backend to create a PaymentIntent
+                const response = await fetch('/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        payment_method: ev.paymentMethod.id,
+                        amount: 1999 // Example amount
+                    })
+                });
+                const paymentIntent = await response.json();
+
+                const confirmResult = await stripe.confirmCardPayment(paymentIntent.client_secret, {
+                    payment_method: ev.paymentMethod.id
+                }, { handleActions: false });
+
+                if (confirmResult.error) {
+                    ev.complete('fail');
+                } else {
+                    ev.complete('success');
+                    // Optionally show a success message
+                }
+            });
+        });
+        </script>
 </body>
 </html>
