@@ -14,7 +14,7 @@ const upload = multer();
 const router = express.Router();
 
 // middleware to verify JWT (simple)
-const auth = require('../middleware/auth');
+const auth = require('./auth');
 
 router.post('/avatar', auth, upload.single('file'), async (req, res) => {
   try {
