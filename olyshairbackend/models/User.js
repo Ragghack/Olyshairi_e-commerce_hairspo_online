@@ -30,7 +30,7 @@ class User {
     }
 
     // --- Static method to create a new user ---
-    static async create({ firstName, lastName, email, passwordHash, phoneNumber }) {
+    static async create({ firstName, lastName, email, passwordHash, phoneNumber = null }) {
         // NOTE: Your SQL script uses 'first_name' and 'last_name', but the auth.js sends 'name'.
         // For simplicity, we'll store the entire 'name' in 'first_name' and leave 'last_name' blank.
         const queryText = `
