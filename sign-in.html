@@ -712,9 +712,10 @@
             <p class="form-subtitle">Sign in to access your account</p>
 
             <div class="social-auth">
-              <button type="button" class="social-btn">
-                <i class="fab fa-google"></i>
-              </button>
+              <div id="g_id_onload"
+               data-callback="handleGoogleLogin">
+              </div>
+              <div class="g_id_signin" data-type="standard"></div>
               <button type="button" class="social-btn">
                 <i class="fab fa-facebook-f"></i>
               </button>
@@ -774,9 +775,7 @@
             <p class="form-subtitle">Join OLYS HAIR for exclusive benefits</p>
 
             <div class="social-auth">
-              <button type="button" class="social-btn">
-                <i class="fab fa-google"></i>
-              </button>
+              <div class="g_id_signin" data-type="standard"></div>
               <button type="button" class="social-btn">
                 <i class="fab fa-facebook-f"></i>
               </button>
@@ -877,8 +876,65 @@
         </div>
       </div>
     </footer>
+    
+    <!--Google Identity Service SDK-->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+    <!-- JavaScript -->
     <script>
+
+      async function loadGoogleClientId(){
+        try{
+          const res = await fetch ("http://localhost:5000/api/config/google-client-id");
+          const data = await res.json();
+
+          // Dynamically set client_id attribute
+          document.getElementById("g_id_onload")
+                  .setAttribute("data-client_id", data.clientId);
+          
+          // Now re-rendering Google button after clientId is injected
+          google.accounts.id.initialize({
+            client_id: data.clientId,
+            callback: handleGoogleLogin
+          });
+          google.accounts.id.renderButton(
+            document.querySelector(".g_id_signin"),
+            { theme: "outline", size: "large" }
+          );
+
+        }catch(err){
+          console.error("Failed to load Google Client ID:", err);
+        }
+      }
+
+      // Load the clientId dynamically
+      loadGoogleClientId();
+
+     // Handles Google Login
+      async function handleGoogleLogin(response){
+        try{
+          const res = await fetch("http://localhost:5000/api/auth/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: response.credential }),
+          });
+          const data = await res.json();
+
+          if (res.ok){
+            // Save JWT token
+            localStorage.setItem("token", data.token);
+            alert("Welcome " + (data.user?.firstName || "User"));
+
+            // Redirect to dashboard
+            window.location.href = "customerdashboard.html";
+          } else {
+            alert(data.error || "Google login failed");
+          }
+        }catch(err){
+          console.error("Google OAuth error:", err);
+          alert("Google login error.");
+        }
+      }
       // Dark/Light Mode Toggle
       const modeToggle = document.querySelector(".mode-toggle");
       const body = document.body;

@@ -1,12 +1,86 @@
 // routes/auth.js (Corrected for PostgreSQL Abstraction)
-
 const express = require("express");
+require("dotenv").config({ path: "./olyshair.env" });
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/User"); // PostgreSQL User Abstraction
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+
+// Prevent startup if GOOGLE_CLIENT_ID is missing
+if (!GOOGLE_CLIENT_ID) {
+  console.error(
+    "Missing GOOGLE_CLIENT_ID in environment file. Google OAuth will not work"
+  );
+}
+
+// Initialize Google Client only if ID exists
+const googleClient = GOOGLE_CLIENT_ID
+  ? new OAuth2Client(GOOGLE_CLIENT_ID)
+  : null;
+
+//Google Signin Route
+router.post("/google", async (req, res) => {
+  if (!GOOGLE_CLIENT_ID || !googleClient) {
+    return res
+      .status(500)
+      .json({ error: "Google OAuth is not configured on this server" });
+  }
+
+  try {
+    const { token } = req.body; // Google ID Token from frontend
+    if (!token) {
+      return res.status(400).json({ error: "Missing Google ID token" });
+    }
+
+    // Verify token with Gogle
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    // Extract Google's unique ID (sub), email and names
+    const {
+      email,
+      given_name: firstName,
+      family_name: lastName,
+      sub: googleId,
+    } = payload;
+
+    // Check if user exists
+    let user = await User.findOne(email);
+    if (!user) {
+      // Create new user without password (OAuth uses an external auth)
+      user = await User.create({
+        firstName,
+        lastName,
+        email,
+        googleId, // Pass the unique Google ID
+        // passwordHash: null is removed and handled by the model now
+      });
+    }
+    // 3. Update the existing user;s google_id if it's missing (e.g., they registered via passowrd first)
+    // It's good practice for linking accounts.
+
+    if (!user && !user.google_id) {
+      // Assume there is an update method in the User Model
+      await User.updateGoogleId(user._id, googleId);
+    }
+
+    // Generate app's own JWT
+    const appToken = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.json({ token: appToken, user });
+  } catch (err) {
+    console.error("Google OAuth Error:", err.message);
+    res.status(401).json({ error: "Invalid Google login or token expired" });
+  }
+});
 
 // --- Register ---
 router.post("/register", async (req, res) => {

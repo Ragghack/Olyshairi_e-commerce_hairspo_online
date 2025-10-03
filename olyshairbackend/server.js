@@ -1,4 +1,3 @@
-require("dotenv").config({ path: "./olyshair.env" });
 const express = require("express");
 const cors = require("cors");
 
@@ -9,6 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "8mb" })); // for multipart, multer used on route
 
+app.use('/api/config', require('./routes/config'));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/upload", require("./routes/uploads"));
 app.use("/api/payments/stripe", require("./routes/payments/stripe"));
