@@ -4,6 +4,7 @@ const cors = require("cors");
 //Import the postgreSQL connection module (this will log connection status)
 const db = require("./db");
 
+// creating express app.
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "8mb" })); // for multipart, multer used on route
