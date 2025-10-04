@@ -1,5 +1,5 @@
 const { Pool } = require("pg");
-require("dotenv").config();
+require("dotenv").config({path: "./olyshair.env"});
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

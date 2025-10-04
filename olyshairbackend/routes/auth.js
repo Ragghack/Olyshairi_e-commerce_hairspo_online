@@ -1,40 +1,128 @@
 // routes/auth.js (Corrected for PostgreSQL Abstraction)
-
 const express = require("express");
+require("dotenv").config({ path: "./olyshair.env" });
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User"); // Load the PostgreSQL User Abstraction
+const { OAuth2Client } = require("google-auth-library");
+const User = require("../models/User"); // PostgreSQL User Abstraction
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
-// register
+// Prevent startup if GOOGLE_CLIENT_ID is missing
+if (!GOOGLE_CLIENT_ID) {
+  console.error(
+    "Missing GOOGLE_CLIENT_ID in environment file. Google OAuth will not work"
+  );
+}
+
+// Initialize Google Client only if ID exists
+const googleClient = GOOGLE_CLIENT_ID
+  ? new OAuth2Client(GOOGLE_CLIENT_ID)
+  : null;
+
+//Google Signin Route
+router.post("/google", async (req, res) => {
+  if (!GOOGLE_CLIENT_ID || !googleClient) {
+    return res
+      .status(500)
+      .json({ error: "Google OAuth is not configured on this server" });
+  }
+
+  try {
+    const { token } = req.body; // Google ID Token from frontend
+    if (!token) {
+      return res.status(400).json({ error: "Missing Google ID token" });
+    }
+
+    // Verify token with Gogle
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    // Extract Google's unique ID (sub), email and names
+    const {
+      email,
+      given_name: firstName,
+      family_name: lastName,
+      sub: googleId,
+    } = payload;
+
+    // Check if user exists
+    let user = await User.findOne(email);
+    if (!user) {
+      // Create new user without password (OAuth uses an external auth)
+      user = await User.create({
+        firstName,
+        lastName,
+        email,
+        googleId, // Pass the unique Google ID
+        // passwordHash: null is removed and handled by the model now
+      });
+    }
+    // 3. Update the existing user;s google_id if it's missing (e.g., they registered via passowrd first)
+    // It's good practice for linking accounts.
+
+    if (!user && !user.google_id) {
+      // Assume there is an update method in the User Model
+      await User.updateGoogleId(user._id, googleId);
+    }
+
+    // Generate app's own JWT
+    const appToken = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.json({ token: appToken, user });
+  } catch (err) {
+    console.error("Google OAuth Error:", err.message);
+    res.status(401).json({ error: "Invalid Google login or token expired" });
+  }
+});
+
+// --- Register ---
 router.post("/register", async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phoneNumber } = req.body;
+    const { firstName, lastName, email, password, confirmPassword } = req.body;
 
-    if (!email || !password || !firstName || !lastName || !phoneNumber)
+    // Basic validation
+    if (!email || !password || !confirmPassword || !firstName || !lastName) {
       return res.status(400).send({ error: "Missing required fields" });
+    }
 
-    // Find existing user by email
-    if (await User.findOne(email))
+    // ✅ Ensure password and confirmPassword match
+    if (password !== confirmPassword) {
+      return res.status(400).send({ error: "Passwords do not match" });
+    }
+
+    // Check if user already exists
+    if (await User.findOne(email)) {
       return res.status(409).send({ error: "Email already exists" });
+    }
 
+    // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user using the User abstraction layer
-    const user = await User.create({ firstName, lastName, email, passwordHash, phoneNumber });
+    // Create user in DB (no phoneNumber for now)
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      passwordHash,
+    });
 
+    // Generate JWT
     const token = jwt.sign(
-      { 
-        id: user._id, 
-        email: user.email, 
-        firstName:user.firstName, 
-        lastName:user.lastName,
-        phoneNumber:user.phoneNumber,
-      }, 
-      JWT_SECRET, 
-      { expiresIn: "30d" }
+      {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+      JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
     res.json({
@@ -44,45 +132,41 @@ router.post("/register", async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        lastLogin: user.lastLogin,
+        lastLogin: user.lastLogin || null,
       },
     });
   } catch (err) {
-    // Log the error for debugging
     console.error("Registration Error:", err.message);
     res.status(500).send({ error: "Server error during registration." });
   }
 });
 
-// login
+// --- Login ---
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
+    // Find user
     const user = await User.findOne(email);
+    if (!user) return res.status(401).send({ error: "Invalid email " });
 
-    if (!user) return res.status(401).send({ error: "Invalid email" });
-
-    // Compare password hash (using the passwordHash property mapped in the model)
+    // Compare password
     const ok = await bcrypt.compare(password, user.passwordHash);
-
     if (!ok) return res.status(401).send({ error: "Invalid password" });
 
     // ✅ Update lastLogin in DB
     await User.updateLastLogin(user._id);
 
+    // Generate JWT
     const token = jwt.sign(
-      { 
+      {
         id: user._id,
-        email:user.email, 
-        firstName:user.firstName, 
-        lastName:user.lastName, 
-        phoneNumber:user.phoneNumber,
-      }, 
-      JWT_SECRET, 
-      { expiresIn: "30d" }
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+      JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
     res.json({
@@ -92,8 +176,7 @@ router.post("/login", async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        lastLogin: new Date().toISOString(), // Return current time as lastLogin
+        lastLogin: new Date().toISOString(),
       },
     });
   } catch (err) {

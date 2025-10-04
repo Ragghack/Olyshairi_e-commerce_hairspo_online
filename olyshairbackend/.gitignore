@@ -1,0 +1,2 @@
+##ignore any file containing secrets or environment variables
+*.env
