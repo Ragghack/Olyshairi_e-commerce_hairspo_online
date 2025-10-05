@@ -102,25 +102,6 @@
             display: block;
         }
         
-        .logo-placeholder {
-            max-width: 31mm;
-            height: auto;
-        }
-        
-        body.dark-mode .logo-container {
-            content: url("images/Artboard 1 copy.png");
-            max-width: 31mm;
-            max-height: 100mm;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .logo {
-            max-width: 100%;
-            height: auto;
-            max-height: 60px;
-        }
-        
         .nav-links {
             display: flex;
             gap: 30px;
@@ -708,6 +689,36 @@
             z-index: 1200;
         }
         
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--cream);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dark);
+        }
+        
+        .empty-state i {
+            font-size: 60px;
+            color: var(--cream);
+            margin-bottom: 20px;
+        }
+        
         /* Responsive Design */
         @media (max-width: 1024px) {
             .product-modal {
@@ -777,37 +788,9 @@
             100% { background-position: 200% center; }
         }
         
-        .profile-section {
-  background: rgba(120, 60, 60, 0.8); /* Example color blend */
-  color: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  margin: 30px auto;
-  max-width: 400px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.profile-img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 15px;
-}
-.profile-card h2 {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 2em;
-  margin-bottom: 10px;
-}
-.favorites ul {
-  list-style: none;
-  padding: 0;
-}
-.favorites li {
-  background: #fff2;
-  margin: 5px 0;
-  padding: 5px 10px;
-  border-radius: 8px;
-}
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -820,17 +803,14 @@
             </span>
         </div>
         <div class="nav-links">
-            <!--<a href="index.html">Home</a>-->
             <a href="shop.html" class="active">Shop</a>
-            <!--<a href="#">Collections</a>-->
-            <!--<a href="#">About</a>-->
             <a href="contact.html">Contact</a>
         </div>
         <div class="header-icons">
             <i class="fas fa-search"></i>
             <div class="cart-bubble">
                 <i class="fas fa-shopping-bag"></i>
-                <span class="cart-count">3</span>
+                <span class="cart-count">0</span>
             </div>
             <i class="fas fa-user"></i>
             <div class="mode-toggle">
@@ -863,31 +843,36 @@
     <!-- Filter Section -->
     <section class="shop-filters">
         <div class="filter-group">
-            <div class="filter-btn active">All Products</div>
-            <div class="filter-btn">Extensions</div>
-            <div class="filter-btn">Wigs</div>
-            <div class="filter-btn">Closures</div>
-            <div class="filter-btn">Accessories</div>
+            <div class="filter-btn active" data-category="all">All Products</div>
+            <div class="filter-btn" data-category="extensions">Extensions</div>
+            <div class="filter-btn" data-category="wigs">Wigs</div>
+            <div class="filter-btn" data-category="closures">Closures</div>
+            <div class="filter-btn" data-category="accessories">Accessories</div>
         </div>
         <div class="filter-group">
-            <select class="filter-select">
-                <option>Sort by: Popularity</option>
-                <option>Sort by: Price Low to High</option>
-                <option>Sort by: Price High to Low</option>
-                <option>Sort by: Newest</option>
+            <select class="filter-select" id="sortSelect">
+                <option value="popularity">Sort by: Popularity</option>
+                <option value="price-low">Sort by: Price Low to High</option>
+                <option value="price-high">Sort by: Price High to Low</option>
+                <option value="newest">Sort by: Newest</option>
             </select>
-            <select class="filter-select">
-                <option>Filter by: Length</option>
-                <option>14-16 inches</option>
-                <option>18-20 inches</option>
-                <option>22-24 inches</option>
-                <option>26+ inches</option>
+            <select class="filter-select" id="lengthFilter">
+                <option value="all">Filter by: Length</option>
+                <option value="14-16">14-16 inches</option>
+                <option value="18-20">18-20 inches</option>
+                <option value="22-24">22-24 inches</option>
+                <option value="26+">26+ inches</option>
             </select>
         </div>
     </section>
 
     <!-- Products Grid -->
-    <section class="products-grid">
+    <section class="products-grid" id="productsGrid">
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <p>Loading products...</p>
+        </div>
+        <!-- Products will be dynamically loaded here -->
     </section>
 
     <!-- Quick View Modal -->
@@ -927,12 +912,16 @@
                         <span class="detail-label">Quality:</span>
                         <span id="modalQuality"></span>
                     </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Stock:</span>
+                        <span id="modalStock"></span>
+                    </div>
                 </div>
                 
                 <p id="modalDescription"></p>
                 
                 <div class="modal-actions">
-                    <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                    <button class="add-to-cart" id="modalAddToCart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                     <button class="add-to-cart" style="background-color: var(--dark-gray);"><i class="fas fa-heart"></i> Wishlist</button>
                 </div>
             </div>
@@ -948,25 +937,25 @@
             </div>
         </div>
         
-        <div class="cart-items">
+        <div class="cart-items" id="cartItems">
             <!-- Cart items will be dynamically added here -->
         </div>
         
         <div class="cart-summary">
             <div class="summary-row">
                 <span>Subtotal</span>
-
+                <span id="cartSubtotal">$0.00</span>
             </div>
             <div class="summary-row">
                 <span>Shipping</span>
-                <span></span>
+                <span id="cartShipping">$0.00</span>
             </div>
             <div class="summary-row cart-total">
                 <span>Total</span>
-                <span></span>
+                <span id="cartTotal">$0.00</span>
             </div>
             
-            <button class="checkout-btn" onclick="window.location.href='checkout.html'">Proceed to Checkout</button>
+            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
         </div>
     </div>
 
@@ -986,186 +975,471 @@
         </div>
     </div>
 
-    <!-- Transaction Bubbles -->
-    <div class="transaction-bubbles">
-        <div class="bubble-btn">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Book Appointment</span>
-        </div>
-        <div class="bubble-btn">
-            <i class="fas fa-receipt"></i>
-            <span>View Receipts</span>
-        </div>
-    </div>
-
-    <!-- Customer Profile Section -->
-    <div id="customer-model" class="profile-section"></div>
-
     <script>
-        // Dark/Light Mode Toggle
-        const modeToggle = document.querySelector('.mode-toggle');
-        const body = document.body;
-        
-        modeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            // Save preference to localStorage
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
-        
-        // Check for saved theme preference
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-        }
-        
-        // Cart Panel Toggle
-        const cartBubble = document.getElementById('cartBubble');
-        const cartPanel = document.querySelector('.cart-panel');
-        const closeCart = document.querySelector('.close-cart');
-        
-        cartBubble.addEventListener('click', () => {
-            cartPanel.classList.add('active');
-        });
-        
-        closeCart.addEventListener('click', () => {
-            cartPanel.classList.remove('active');
-        });
-        
-        // Quick View Modal
-        const quickViewBtns = document.querySelectorAll('.quick-view-btn');
-        const productModal = document.getElementById('productModal');
-        const modalClose = document.querySelector('.modal-close');
-        
-        // Sample product data
-        const products = {
-            1: {
-                title: "Brazilian Body Wave",
-                price: "$189.99",
-                oldPrice: "$229.99",
-                type: "Hair Extensions",
-                length: "20 inches",
-                texture: "Body Wave",
-                color: "Natural Black",
-                quality: "100% Virgin Remy Hair",
-                description: "Our premium Brazilian Body Wave hair is 100% virgin remy hair, double drawn, and can be styled, colored, and treated just like your own hair. It's soft, luxurious, and tangle-free.",
-                image: "https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-            },
-            2: {
-                title: "Peruvian Straight",
-                price: "$199.99",
-                oldPrice: "$249.99",
-                type: "Hair Extensions",
-                length: "22 inches",
-                texture: "Silky Straight",
-                color: "Off Black",
-                quality: "Premium Virgin Hair",
-                description: "Our Peruvian Straight hair is known for its thickness and luster. It blends seamlessly with most hair types and can be styled in various ways.",
-                image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-            },
-            3: {
-                title: "Malaysian Curly",
-                price: "$219.99",
-                oldPrice: "",
-                type: "Hair Extensions",
-                length: "18 inches",
-                texture: "Curly",
-                color: "Natural Brown",
-                quality: "100% Virgin Remy Hair",
-                description: "Malaysian Curly hair is soft, shiny, and has a natural curl pattern that holds well. It's perfect for those who want voluminous curls without heat styling.",
-                image: "https://images.unsplash.com/photo-1559629819-638d9a3c5b90?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-            }
+        // API Configuration
+        const API_BASE_URL = 'https://your-backend-domain.com/api';
+        const ENDPOINTS = {
+            PRODUCTS: `${API_BASE_URL}/products`,
+            CATEGORIES: `${API_BASE_URL}/categories`,
+            CART: `${API_BASE_URL}/cart`,
+            ORDERS: `${API_BASE_URL}/orders`
         };
-        
-        quickViewBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const productId = btn.getAttribute('data-product');
-                const product = products[productId];
-                
-                if (product) {
-                    document.getElementById('modalImg').src = product.image;
-                    document.getElementById('modalTitle').textContent = product.title;
-                    document.getElementById('modalPrice').textContent = product.price;
-                    document.getElementById('modalOldPrice').textContent = product.oldPrice;
-                    document.getElementById('modalType').textContent = product.type;
-                    document.getElementById('modalLength').textContent = product.length;
-                    document.getElementById('modalTexture').textContent = product.texture;
-                    document.getElementById('modalColor').textContent = product.color;
-                    document.getElementById('modalQuality').textContent = product.quality;
-                    document.getElementById('modalDescription').textContent = product.description;
-                    
-                    productModal.classList.add('active');
+
+        // Global State
+        let products = [];
+        let cart = JSON.parse(localStorage.getItem('olysHairCart')) || [];
+        let currentProductId = null;
+
+        // DOM Elements
+        const productsGrid = document.getElementById('productsGrid');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const cartCount = document.querySelector('.cart-count');
+        const cartItems = document.getElementById('cartItems');
+        const cartSubtotal = document.getElementById('cartSubtotal');
+        const cartShipping = document.getElementById('cartShipping');
+        const cartTotal = document.getElementById('cartTotal');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+
+        // Initialize the shop
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeShop();
+            updateCartUI();
+        });
+
+        // Initialize Shop Functionality
+        function initializeShop() {
+            // Dark/Light Mode Toggle
+            const modeToggle = document.querySelector('.mode-toggle');
+            const body = document.body;
+            
+            modeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
                 }
             });
-        });
-        
-        modalClose.addEventListener('click', () => {
-            productModal.classList.remove('active');
-        });
-        
-        // Add to Cart functionality
-        const addToCartBtns = document.querySelectorAll('.add-to-cart');
-        
-        addToCartBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Update cart count
-                const cartCount = document.querySelector('.cart-count');
-                cartCount.textContent = parseInt(cartCount.textContent) + 1;
-                
-                // Show notification
-                const notification = document.createElement('div');
-                notification.style.position = 'fixed';
-                notification.style.bottom = '20px';
-                notification.style.left = '50%';
-                notification.style.transform = 'translateX(-50%)';
-                notification.style.backgroundColor = 'var(--cream)';
-                notification.style.color = 'var(--white)';
-                notification.style.padding = '10px 20px';
-                notification.style.borderRadius = '5px';
-                notification.style.zIndex = '2000';
-                notification.style.boxShadow = 'var(--shadow)';
-                notification.textContent = 'Item added to cart!';
-                
-                document.body.appendChild(notification);
-                
-                // Remove notification after 3 seconds
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
+            
+            // Check for saved theme preference
+            if (localStorage.getItem('theme') === 'dark') {
+                body.classList.add('dark-mode');
+            }
+            
+            // Cart Panel Toggle
+            const cartBubble = document.getElementById('cartBubble');
+            const cartPanel = document.querySelector('.cart-panel');
+            const closeCart = document.querySelector('.close-cart');
+            
+            cartBubble.addEventListener('click', () => {
+                cartPanel.classList.add('active');
             });
-        });
-        
-        // Save Profile function
-        function saveProfile() {
-          const profile = {
-            name: document.getElementById('customerName').value,
-            email: document.getElementById('customerEmail').value,
-            image: document.getElementById('profileImage').src,
-            favorites: ['Product1', 'Product2'] // Example
-          };
-          localStorage.setItem('customerProfile', JSON.stringify(profile));
+            
+            closeCart.addEventListener('click', () => {
+                cartPanel.classList.remove('active');
+            });
+            
+            // Modal Close
+            const productModal = document.getElementById('productModal');
+            const modalClose = document.querySelector('.modal-close');
+            
+            modalClose.addEventListener('click', () => {
+                productModal.classList.remove('active');
+            });
+            
+            // Close modal when clicking outside
+            productModal.addEventListener('click', (e) => {
+                if (e.target === productModal) {
+                    productModal.classList.remove('active');
+                }
+            });
+            
+            // Filter functionality
+            setupFilters();
+            
+            // Checkout button
+            checkoutBtn.addEventListener('click', proceedToCheckout);
+            
+            // Load products
+            loadProducts();
         }
-        
-        // Display Customer Profile
-        function displayCustomerProfile() {
-          const profile = JSON.parse(localStorage.getItem('customerProfile'));
-          if (profile) {
-            document.getElementById('customer-model').innerHTML = `
-              <div class="profile-card">
-                <img src="${profile.image}" alt="Profile Image" class="profile-img"/>
-                <h2>Welcome, ${profile.name}!</h2>
-                <p>Email: ${profile.email}</p>
-                <div class="favorites">
-                  <h3>Your Favorites:</h3>
-                  <ul>${profile.favorites.map(item => `<li>${item}</li>`).join('')}</ul>
+
+        // Setup filter functionality
+        function setupFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const sortSelect = document.getElementById('sortSelect');
+            const lengthFilter = document.getElementById('lengthFilter');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    filterProducts();
+                });
+            });
+            
+            sortSelect.addEventListener('change', filterProducts);
+            lengthFilter.addEventListener('change', filterProducts);
+        }
+
+        // Load products from backend
+        async function loadProducts() {
+            showLoading();
+            
+            try {
+                const response = await fetch(ENDPOINTS.PRODUCTS, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                
+                const data = await response.json();
+                products = data.products || [];
+                
+                if (products.length === 0) {
+                    showEmptyState();
+                } else {
+                    renderProducts(products);
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showErrorState();
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Render products to the grid
+        function renderProducts(productsToRender) {
+            productsGrid.innerHTML = '';
+            
+            if (productsToRender.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            productsToRender.forEach(product => {
+                const productCard = createProductCard(product);
+                productsGrid.appendChild(productCard);
+            });
+        }
+
+        // Create product card HTML
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="${product.image || 'images/placeholder-product.jpg'}" alt="${product.name}">
+                    <div class="quality-badge">${product.quality || 'Premium'}</div>
+                    <div class="quick-view-btn" data-product="${product.id}">
+                        <i class="fas fa-eye"></i>
+                    </div>
                 </div>
-              </div>
+                <div class="product-info">
+                    <h3>${product.name}</h3>
+                    <div class="product-detail">${product.type} • ${product.length}</div>
+                    <div class="price-container">
+                        <div class="price">$${product.price}</div>
+                        ${product.oldPrice ? `<div class="old-price">$${product.oldPrice}</div>` : ''}
+                    </div>
+                    <button class="add-to-cart" data-product="${product.id}">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
             `;
-          }
+            
+            // Add event listeners
+            const quickViewBtn = card.querySelector('.quick-view-btn');
+            const addToCartBtn = card.querySelector('.add-to-cart');
+            
+            quickViewBtn.addEventListener('click', () => openQuickView(product.id));
+            addToCartBtn.addEventListener('click', () => addToCart(product.id));
+            
+            return card;
         }
-        displayCustomerProfile();
+
+        // Open quick view modal
+        function openQuickView(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            currentProductId = productId;
+            
+            // Populate modal with product data
+            document.getElementById('modalImg').src = product.image || 'images/placeholder-product.jpg';
+            document.getElementById('modalTitle').textContent = product.name;
+            document.getElementById('modalPrice').textContent = `$${product.price}`;
+            document.getElementById('modalOldPrice').textContent = product.oldPrice ? `$${product.oldPrice}` : '';
+            document.getElementById('modalType').textContent = product.type || 'N/A';
+            document.getElementById('modalLength').textContent = product.length || 'N/A';
+            document.getElementById('modalTexture').textContent = product.texture || 'N/A';
+            document.getElementById('modalColor').textContent = product.color || 'N/A';
+            document.getElementById('modalQuality').textContent = product.quality || 'N/A';
+            document.getElementById('modalStock').textContent = product.stock || 'N/A';
+            document.getElementById('modalDescription').textContent = product.description || 'No description available.';
+            
+            // Update add to cart button in modal
+            const modalAddToCart = document.getElementById('modalAddToCart');
+            modalAddToCart.onclick = () => addToCart(productId);
+            
+            // Show modal
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        // Add product to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                });
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('olysHairCart', JSON.stringify(cart));
+            
+            // Update UI
+            updateCartUI();
+            
+            // Show notification
+            showNotification('Item added to cart!');
+        }
+
+        // Update cart UI
+        function updateCartUI() {
+            // Update cart count
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            // Update cart items
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p>Your cart is empty</p>';
+                cartSubtotal.textContent = '$0.00';
+                cartShipping.textContent = '$0.00';
+                cartTotal.textContent = '$0.00';
+                return;
+            }
+            
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="cart-item-image">
+                        <img src="${item.image || 'images/placeholder-product.jpg'}" alt="${item.name}">
+                    </div>
+                    <div class="cart-item-details">
+                        <h4>${item.name}</h4>
+                        <div class="cart-item-price">$${item.price}</div>
+                        <div class="cart-item-actions">
+                            <div class="quantity-control">
+                                <div class="quantity-btn minus" data-product="${item.id}">-</div>
+                                <span>${item.quantity}</span>
+                                <div class="quantity-btn plus" data-product="${item.id}">+</div>
+                            </div>
+                            <div class="remove-item" data-product="${item.id}">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                cartItems.appendChild(cartItem);
+            });
+            
+            // Add event listeners to cart items
+            document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    updateCartQuantity(e.target.dataset.product, -1);
+                });
+            });
+            
+            document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    updateCartQuantity(e.target.dataset.product, 1);
+                });
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    removeFromCart(e.target.closest('.remove-item').dataset.product);
+                });
+            });
+            
+            // Calculate totals
+            const shipping = subtotal > 0 ? 10.00 : 0; // $10 flat rate shipping
+            const total = subtotal + shipping;
+            
+            cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+            cartShipping.textContent = `$${shipping.toFixed(2)}`;
+            cartTotal.textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Update cart quantity
+        function updateCartQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (!item) return;
+            
+            item.quantity += change;
+            
+            if (item.quantity <= 0) {
+                removeFromCart(productId);
+            } else {
+                localStorage.setItem('olysHairCart', JSON.stringify(cart));
+                updateCartUI();
+            }
+        }
+
+        // Remove item from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            localStorage.setItem('olysHairCart', JSON.stringify(cart));
+            updateCartUI();
+            showNotification('Item removed from cart');
+        }
+
+        // Filter products based on selected filters
+        function filterProducts() {
+            const activeCategory = document.querySelector('.filter-btn.active').dataset.category;
+            const sortValue = document.getElementById('sortSelect').value;
+            const lengthValue = document.getElementById('lengthFilter').value;
+            
+            let filteredProducts = [...products];
+            
+            // Filter by category
+            if (activeCategory !== 'all') {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.category === activeCategory
+                );
+            }
+            
+            // Filter by length
+            if (lengthValue !== 'all') {
+                filteredProducts = filteredProducts.filter(product => {
+                    if (!product.length) return false;
+                    
+                    const productLength = parseInt(product.length);
+                    switch(lengthValue) {
+                        case '14-16': return productLength >= 14 && productLength <= 16;
+                        case '18-20': return productLength >= 18 && productLength <= 20;
+                        case '22-24': return productLength >= 22 && productLength <= 24;
+                        case '26+': return productLength >= 26;
+                        default: return true;
+                    }
+                });
+            }
+            
+            // Sort products
+            switch(sortValue) {
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'newest':
+                    filteredProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    break;
+                default: // popularity
+                    // This would typically use a popularity score from the backend
+                    break;
+            }
+            
+            renderProducts(filteredProducts);
+        }
+
+        // Proceed to checkout
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                showNotification('Your cart is empty');
+                return;
+            }
+            
+            // Save cart to localStorage for checkout page
+            localStorage.setItem('olysHairCart', JSON.stringify(cart));
+            
+            // Redirect to checkout page
+            window.location.href = 'checkout.html';
+        }
+
+        // Show loading spinner
+        function showLoading() {
+            loadingSpinner.style.display = 'block';
+        }
+
+        // Hide loading spinner
+        function hideLoading() {
+            loadingSpinner.style.display = 'none';
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            productsGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h3>No Products Found</h3>
+                    <p>Check back later for new arrivals!</p>
+                </div>
+            `;
+        }
+
+        // Show error state
+        function showErrorState() {
+            productsGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Unable to Load Products</h3>
+                    <p>Please try refreshing the page or check your connection.</p>
+                    <button class="add-to-cart" onclick="loadProducts()" style="margin-top: 20px;">
+                        <i class="fas fa-redo"></i> Try Again
+                    </button>
+                </div>
+            `;
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.backgroundColor = 'var(--cream)';
+            notification.style.color = 'var(--white)';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '5px';
+            notification.style.zIndex = '2000';
+            notification.style.boxShadow = 'var(--shadow)';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
     </script>
 </body>
 </html>
