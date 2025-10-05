@@ -1,4 +1,4 @@
-..<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,6 +22,10 @@
             --text-light: #ffffff;
             --card-bg: #ffffff;
             --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            --accent: #c8a97e;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --info: #2196f3;
         }
         
         .dark-mode {
@@ -33,6 +37,7 @@
             --text-light: #1e1e1e;
             --card-bg: #181212;
             --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
+            --accent: #d4b896;
         }
         
         body {
@@ -76,45 +81,18 @@
             box-shadow: var(--shadow);
             overflow: hidden;
         }
-        .logo-img-light {
-            max-width: 120px;
-            max-height: 50px;
-            display: block;
-            margin: 0 auto;
-            object-fit: contain;
-        }
-        .logo-img-dark {
-            max-width: 120px;
-            max-height: 50px;
-            display: none;
-            margin: 0 auto;
-            object-fit: contain;
-            background: transparent;
-        }
-        .dark-mode .logo-img-light {
-            display: none;
-        }
-        .dark-mode .logo-img-dark {
-            display: block;
-        }
-             .logo-placeholder {
-  max-width: 31mm;
-  height: auto;
-}
-
-body.dark-mode .logo-container {
-  content: url("images/Artboard 1 copy.png");
-   max-width: 31mm;
-  max-height: 100mm;
-              display: flex;
-            justify-content: center;
-        }
-
+        
         .logo {
-            max-width: 100%;
-            height: auto;
-            max-height: 60px;
-        }      
+            max-width: 120px;
+            max-height: 50px;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+        
+        .dark-mode .logo-container {
+            background-color: var(--white);
+        }
         
         .header-icons {
             display: flex;
@@ -126,6 +104,11 @@ body.dark-mode .logo-container {
             font-size: 20px;
             color: var(--cream);
             cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .header-icons i:hover {
+            color: var(--accent);
         }
         
         /* User Profile Dropdown */
@@ -147,6 +130,11 @@ body.dark-mode .logo-container {
             justify-content: center;
             color: var(--white);
             font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        
+        .user-profile:hover .user-avatar {
+            background-color: var(--accent);
         }
         
         .dropdown-menu {
@@ -164,19 +152,22 @@ body.dark-mode .logo-container {
         
         .dropdown-menu.show {
             display: block;
+            animation: fadeIn 0.3s ease;
         }
         
         .dropdown-menu a {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             padding: 10px;
             text-decoration: none;
             color: var(--text-dark);
             transition: background-color 0.3s;
+            border-radius: 4px;
         }
         
         .dropdown-menu a:hover {
             background-color: var(--light-bg);
-            border-radius: 4px;
         }
         
         /* Dark/Light Mode Toggle */
@@ -237,6 +228,7 @@ body.dark-mode .logo-container {
             position: fixed;
             height: calc(100vh - 120px);
             overflow-y: auto;
+            transition: all 0.3s ease;
         }
         
         .sidebar-bubble {
@@ -254,6 +246,7 @@ body.dark-mode .logo-container {
         .sidebar-bubble:hover, .sidebar-bubble.active {
             background-color: var(--cream);
             color: var(--white);
+            transform: translateX(5px);
         }
         
         .sidebar-bubble i {
@@ -268,6 +261,7 @@ body.dark-mode .logo-container {
             padding: 30px 40px;
             position: relative;
             overflow: hidden;
+            transition: margin-left 0.3s ease;
         }
         
         /* Content Sections */
@@ -286,12 +280,16 @@ body.dark-mode .logo-container {
         
         /* Welcome Banner */
         .welcome-banner {
-            background: linear-gradient(rgba(167, 156, 156, 0.85), rgba(57, 38, 37, 0.85));
+            background: linear-gradient(135deg, rgba(57, 38, 37, 0.85), rgba(200, 169, 126, 0.85));
+            background-size: cover;
+            background-position: center;
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
             color: var(--white);
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
         
         .welcome-banner h1 {
@@ -313,6 +311,7 @@ body.dark-mode .logo-container {
             display: flex;
             gap: 15px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         
         .shortcut-btn {
@@ -331,6 +330,7 @@ body.dark-mode .logo-container {
         .shortcut-btn:hover {
             background-color: var(--dark-gray);
             color: var(--white);
+            transform: translateY(-3px);
         }
         
         /* Dashboard Cards */
@@ -349,6 +349,11 @@ body.dark-mode .logo-container {
             color: var(--cream);
             text-decoration: none;
             font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .view-all:hover {
+            color: var(--accent);
         }
         
         .card-grid {
@@ -362,6 +367,12 @@ body.dark-mode .logo-container {
             border-radius: 10px;
             padding: 20px;
             box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         
         /* Order History Table */
@@ -403,6 +414,11 @@ body.dark-mode .logo-container {
             color: #2d6bdb;
         }
         
+        .status-pending {
+            background-color: #f5f5f5;
+            color: #6c757d;
+        }
+        
         .action-btn {
             padding: 6px 12px;
             background-color: var(--cream);
@@ -413,10 +429,13 @@ body.dark-mode .logo-container {
             font-size: 12px;
             margin-right: 5px;
             transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .action-btn:hover {
-            background-color: var(--dark-gray);
+            background-color: var(--accent);
         }
         
         /* Wishlist and Cart Items */
@@ -434,12 +453,15 @@ body.dark-mode .logo-container {
             border-radius: 8px;
             overflow: hidden;
             margin-right: 15px;
+            background-color: var(--light-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .item-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .item-image i {
+            font-size: 24px;
+            color: var(--cream);
         }
         
         .item-details {
@@ -462,6 +484,9 @@ body.dark-mode .logo-container {
             margin-bottom: 15px;
             padding: 15px;
             border-left: 4px solid var(--cream);
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
         }
         
         .booking-date {
@@ -479,10 +504,11 @@ body.dark-mode .logo-container {
             border-left: 4px solid var(--cream);
             margin-bottom: 15px;
             background-color: var(--light-bg);
+            border-radius: 8px;
         }
         
         .notification-unread {
-            border-left: 4px solid #ff6b6b;
+            border-left: 4px solid var(--accent);
         }
         
         .notification-time {
@@ -559,6 +585,7 @@ body.dark-mode .logo-container {
         .form-control:focus {
             outline: none;
             border-color: var(--cream);
+            box-shadow: 0 0 0 2px rgba(57, 38, 37, 0.2);
         }
         
         /* Floating Bubbles */
@@ -601,12 +628,125 @@ body.dark-mode .logo-container {
         }
         
         .bubble-btn:hover {
-            background-color: var(--dark-gray);
+            background-color: var(--accent);
             transform: scale(1.1);
         }
         
         .bubble-btn:hover span {
             display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--light-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: var(--cream);
+            font-size: 20px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: var(--light-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--cream);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Loading States */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--cream);
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--light-bg);
+            border-top: 2px solid var(--cream);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--cream);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.7;
         }
         
         /* Responsive Design */
@@ -686,6 +826,25 @@ body.dark-mode .logo-container {
                 right: 65px;
                 bottom: 0;
             }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-shortcuts {
+                flex-direction: column;
+            }
+            
+            .shortcut-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -694,20 +853,19 @@ body.dark-mode .logo-container {
     <header>
         <div class="logo-container">
             <span>
-                <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" />
-                <img src="images/logo-bright.png" alt="OLYS HAIR Logo Bright" class="logo-img-dark" />
+                <img src="https://via.placeholder.com/120x50/392625/ffffff?text=OLYS+HAIR" alt="OLYS HAIR Logo" class="logo" />
             </span>
         </div>
         <div class="header-icons">
             <i class="fas fa-search"></i>
             <i class="fas fa-shopping-bag"></i>
             <div class="user-profile">
-                <div class="user-avatar">R</div>
-                <span>Roseu</span>
+                <div class="user-avatar" id="user-avatar">U</div>
+                <span id="username">User</span>
                 <div class="dropdown-menu">
-                    <a href="#"><i class="fas fa-user"></i> My Profile</a>
-                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
-                    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    <a href="#" data-section="profile"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="#" data-section="settings"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
             </div>
             <div class="mode-toggle">
@@ -768,7 +926,36 @@ body.dark-mode .logo-container {
         <div class="dashboard-content">
             <!-- Dashboard Section -->
             <div class="content-section active" id="dashboard">
-                <!-- ...existing code... -->
+                <!-- Welcome Banner -->
+                <div class="welcome-banner">
+                    <h1 id="welcome-message">Welcome back!</h1>
+                    <p id="welcome-subtitle">Ready to discover your next favorite hair product?</p>
+                    <div class="points-display">
+                        <i class="fas fa-gem"></i> <span id="loyalty-points">0</span> Loyalty Points
+                    </div>
+                    <div class="quick-shortcuts">
+                        <div class="shortcut-btn" data-section="shop">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Shop New Arrivals</span>
+                        </div>
+                        <div class="shortcut-btn" data-section="bookings">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>Book Appointment</span>
+                        </div>
+                        <div class="shortcut-btn" data-section="orders">
+                            <i class="fas fa-box-open"></i>
+                            <span>Track Orders</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="stats-container" id="stats-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading statistics...</span>
+                    </div>
+                </div>
 
                 <!-- Recent Orders Section -->
                 <div class="dashboard-section">
@@ -777,49 +964,12 @@ body.dark-mode .logo-container {
                         <a href="#" class="view-all" data-section="orders">View All</a>
                     </div>
                     <div class="dashboard-card">
-                        <table class="order-table">
-                            <thead>
-                                <tr>
-                                    <th>Order #</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Total</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>#OL-2874</td>
-                                    <td>Oct 12, 2023</td>
-                                    <td><span class="status-badge status-delivered">Delivered</span></td>
-                                    <td>$199.99</td>
-                                    <td>
-                                        <button class="action-btn">View</button>
-                                        <button class="action-btn">Invoice</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#OL-2861</td>
-                                    <td>Oct 5, 2023</td>
-                                    <td><span class="status-badge status-processing">Processing</span></td>
-                                    <td>$259.99</td>
-                                    <td>
-                                        <button class="action-btn">Track</button>
-                                        <button class="action-btn">Invoice</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#OL-2843</td>
-                                    <td>Sep 28, 2023</td>
-                                    <td><span class="status-badge status-shipped">Shipped</span></td>
-                                    <td>$179.99</td>
-                                    <td>
-                                        <button class="action-btn">Track</button>
-                                        <button class="action-btn">Invoice</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div id="recent-orders-container">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <span>Loading recent orders...</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -832,30 +982,10 @@ body.dark-mode .logo-container {
                             <a href="#" class="view-all" data-section="wishlist">View All</a>
                         </div>
                         <div class="dashboard-card">
-                            <div class="wishlist-item">
-                                <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Brazilian Body Wave">
-                                </div>
-                                <div class="item-details">
-                                    <h4>Brazilian Body Wave</h4>
-                                    <div class="item-price">$189.99</div>
-                                </div>
-                                <div class="item-actions">
-                                    <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
-                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <div class="wishlist-item">
-                                <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1558769136-3c6c18ec5b04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Kinky Curly">
-                                </div>
-                                <div class="item-details">
-                                    <h4>Kinky Curly</h4>
-                                    <div class="item-price">$209.99</div>
-                                </div>
-                                <div class="item-actions">
-                                    <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
-                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                            <div id="wishlist-preview-container">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading wishlist...</span>
                                 </div>
                             </div>
                         </div>
@@ -868,27 +998,12 @@ body.dark-mode .logo-container {
                             <a href="#" class="view-all" data-section="cart">View Cart</a>
                         </div>
                         <div class="dashboard-card">
-                            <div class="cart-item">
-                                <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Peruvian Straight">
-                                </div>
-                                <div class="item-details">
-                                    <h4>Peruvian Straight</h4>
-                                    <div class="item-price">$199.99</div>
-                                    <div>Qty: 1</div>
+                            <div id="cart-preview-container">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading cart...</span>
                                 </div>
                             </div>
-                            <div class="cart-item">
-                                <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1597212610042-6e2ad31e6b71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Loose Wave">
-                                </div>
-                                <div class="item-details">
-                                    <h4>Loose Wave</h4>
-                                    <div class="item-price">$199.99</div>
-                                    <div>Qty: 2</div>
-                                </div>
-                            </div>
-                            <button class="action-btn" style="width: 100%; margin-top: 10px;">Checkout</button>
                         </div>
                     </div>
                 </div>
@@ -900,13 +1015,10 @@ body.dark-mode .logo-container {
                         <a href="#" class="view-all" data-section="bookings">View All</a>
                     </div>
                     <div class="dashboard-card">
-                        <div class="booking-card">
-                            <div class="booking-date">Oct 20, 2023 at 2:00 PM</div>
-                            <div class="booking-service">Hair Installation & Styling</div>
-                            <div>With: Stylist Jessica</div>
-                            <div class="item-actions" style="margin-top: 10px;">
-                                <button class="action-btn">Reschedule</button>
-                                <button class="action-btn">Cancel</button>
+                        <div id="upcoming-bookings-container">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <span>Loading upcoming bookings...</span>
                             </div>
                         </div>
                     </div>
@@ -919,20 +1031,11 @@ body.dark-mode .logo-container {
                         <a href="#" class="view-all" data-section="notifications">View All</a>
                     </div>
                     <div class="dashboard-card">
-                        <div class="notification-item notification-unread">
-                            <h4>Your order #OL-2861 has shipped!</h4>
-                            <p>Your order is on the way. Track your shipment to see the delivery status.</p>
-                            <div class="notification-time">2 hours ago</div>
-                        </div>
-                        <div class="notification-item">
-                            <h4>New hair care collection launched</h4>
-                            <p>Check out our new premium hair care products designed for extensions.</p>
-                            <div class="notification-time">1 day ago</div>
-                        </div>
-                        <div class="notification-item">
-                            <h4>Appointment reminder</h4>
-                            <p>Your hair appointment is in 3 days. Please arrive 10 minutes early.</p>
-                            <div class="notification-time">2 days ago</div>
+                        <div id="notifications-preview-container">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <span>Loading notifications...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -944,59 +1047,11 @@ body.dark-mode .logo-container {
                     <h2>My Cart</h2>
                 </div>
                 <div class="dashboard-card">
-                    <div class="cart-item">
-                        <div class="item-image">
-                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Peruvian Straight">
+                    <div id="cart-full-container">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <span>Loading cart...</span>
                         </div>
-                        <div class="item-details">
-                            <h4>Peruvian Straight</h4>
-                            <div class="item-price">$199.99</div>
-                            <div>Qty: 1</div>
-                        </div>
-                        <div class="item-actions">
-                            <button class="action-btn"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <div class="cart-item">
-                        <div class="item-image">
-                            <img src="https://images.unsplash.com/photo-1597212610042-6e2ad31e6b71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Loose Wave">
-                        </div>
-                        <div class="item-details">
-                            <h4>Loose Wave</h4>
-                            <div class="item-price">$199.99</div>
-                            <div>Qty: 2</div>
-                        </div>
-                        <div class="item-actions">
-                            <button class="action-btn"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <div class="cart-item">
-                        <div class="item-image">
-                            <img src="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Brazilian Body Wave">
-                        </div>
-                        <div class="item-details">
-                            <h4>Brazilian Body Wave</h4>
-                            <div class="item-price">$189.99</div>
-                            <div>Qty: 1</div>
-                        </div>
-                        <div class="item-actions">
-                            <button class="action-btn"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--light-bg);">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                            <h4>Subtotal</h4>
-                            <h4>$589.97</h4>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                            <h4>Shipping</h4>
-                            <h4>$9.99</h4>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.2rem;">
-                            <h3>Total</h3>
-                            <h3>$599.96</h3>
-                        </div>
-                        <button class="action-btn" style="width: 100%; padding: 15px; font-size: 1.1rem;">Proceed to Checkout</button>
                     </div>
                 </div>
             </div>
@@ -1006,65 +1061,55 @@ body.dark-mode .logo-container {
                 <div class="section-header">
                     <h2>My Wishlist</h2>
                 </div>
-                <div class="card-grid">
-                    <div class="dashboard-card">
-                        <div class="wishlist-item">
-                            <div class="item-image">
-                                <img src="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Brazilian Body Wave">
-                            </div>
-                            <div class="item-details">
-                                <h4>Brazilian Body Wave</h4>
-                                <div class="item-price">$189.99</div>
-                            </div>
-                            <div class="item-actions">
-                                <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
-                                <button class="action-btn"><i class="fas fa-trash"></i></button>
-                            </div>
+                <div class="card-grid" id="wishlist-full-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading wishlist...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Section -->
+            <div class="content-section" id="orders">
+                <div class="section-header">
+                    <h2>Order History</h2>
+                </div>
+                <div class="dashboard-card">
+                    <div id="orders-full-container">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <span>Loading order history...</span>
                         </div>
                     </div>
-                    <div class="dashboard-card">
-                        <div class="wishlist-item">
-                            <div class="item-image">
-                                <img src="https://images.unsplash.com/photo-1558769136-3c6c18ec5b04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Kinky Curly">
-                            </div>
-                            <div class="item-details">
-                                <h4>Kinky Curly</h4>
-                                <div class="item-price">$209.99</div>
-                            </div>
-                            <div class="item-actions">
-                                <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
-                                <button class="action-btn"><i class="fas fa-trash"></i></button>
-                            </div>
+                </div>
+            </div>
+
+            <!-- Bookings Section -->
+            <div class="content-section" id="bookings">
+                <div class="section-header">
+                    <h2>My Appointments</h2>
+                </div>
+                <div class="dashboard-card">
+                    <div id="bookings-full-container">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <span>Loading appointments...</span>
                         </div>
                     </div>
-                    <div class="dashboard-card">
-                        <div class="wishlist-item">
-                            <div class="item-image">
-                                <img src="https://images.unsplash.com/photo-1588244271197-8cf4fb4c9f6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Silky Straight">
-                            </div>
-                            <div class="item-details">
-                                <h4>Silky Straight</h4>
-                                <div class="item-price">$179.99</div>
-                            </div>
-                            <div class="item-actions">
-                                <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
-                                <button class="action-btn"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="wishlist-item">
-                            <div class="item-image">
-                                <img src="https://images.unsplash.com/photo-1570481662006-a3a137469f4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Body Wave Bundle">
-                            </div>
-                            <div class="item-details">
-                                <h4>Body Wave Bundle</h4>
-                                <div class="item-price">$259.99</div>
-                            </div>
-                            <div class="item-actions">
-                                <button class="action-btn"><i class="fas fa-shopping-cart"></i></button>
-                                <button class="action-btn"><i class="fas fa-trash"></i></button>
-                            </div>
+                </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div class="content-section" id="notifications">
+                <div class="section-header">
+                    <h2>Notifications</h2>
+                    <button class="action-btn" id="mark-all-read">Mark All as Read</button>
+                </div>
+                <div class="dashboard-card">
+                    <div id="notifications-full-container">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <span>Loading notifications...</span>
                         </div>
                     </div>
                 </div>
@@ -1077,34 +1122,34 @@ body.dark-mode .logo-container {
                 </div>
                 <div class="dashboard-card">
                     <div class="profile-header">
-                        <div class="profile-avatar">R</div>
+                        <div class="profile-avatar" id="settings-avatar">U</div>
                         <div class="profile-info">
-                            <h2>Roseu</h2>
-                            <p>Premium Member since June 2022</p>
+                            <h2 id="settings-name">User</h2>
+                            <p id="settings-membership">Member since ...</p>
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" class="form-control" value="Roseu">
+                        <input type="text" id="name" class="form-control">
                     </div>
                     
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" class="form-control" value="roseu@example.com">
+                        <input type="email" id="email" class="form-control">
                     </div>
                     
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" class="form-control" value="(555) 123-4567">
+                        <input type="tel" id="phone" class="form-control">
                     </div>
                     
                     <div class="form-group">
                         <label for="address">Address</label>
-                        <textarea id="address" class="form-control" rows="3">123 Beauty Street, Hairville, HV 12345</textarea>
+                        <textarea id="address" class="form-control" rows="3"></textarea>
                     </div>
                     
-                    <button class="action-btn" style="padding: 12px 25px;">Save Changes</button>
+                    <button class="action-btn" id="save-profile" style="padding: 12px 25px;">Save Changes</button>
                 </div>
                 
                 <div class="dashboard-card" style="margin-top: 30px;">
@@ -1125,17 +1170,835 @@ body.dark-mode .logo-container {
                         <input type="password" id="confirm-password" class="form-control">
                     </div>
                     
-                    <button class="action-btn" style="padding: 12px 25px;">Update Password</button>
+                    <button class="action-btn" id="update-password" style="padding: 12px 25px;">Update Password</button>
+                </div>
+                
+                <div class="dashboard-card" style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 20px;">Notification Preferences</h3>
+                    
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                        <label for="email-notifications" style="margin-bottom: 0;">Email Notifications</label>
+                        <input type="checkbox" id="email-notifications">
+                    </div>
+                    
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                        <label for="sms-notifications" style="margin-bottom: 0;">SMS Notifications</label>
+                        <input type="checkbox" id="sms-notifications">
+                    </div>
+                    
+                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                        <label for="promotional-emails" style="margin-bottom: 0;">Promotional Emails</label>
+                        <input type="checkbox" id="promotional-emails">
+                    </div>
+                    
+                    <button class="action-btn" id="save-preferences" style="padding: 12px 25px;">Save Preferences</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Dark/Light Mode Toggle
+        // API Configuration
+        const API_BASE_URL = 'https://your-api-domain.com/api'; // Replace with your actual API base URL
+        const API_ENDPOINTS = {
+            user: '/user',
+            orders: '/orders',
+            cart: '/cart',
+            wishlist: '/wishlist',
+            bookings: '/bookings',
+            notifications: '/notifications',
+            loyalty: '/loyalty'
+        };
+
+        // Global state
+        let userData = null;
+        let authToken = localStorage.getItem('authToken') || '';
+
+        // DOM Elements
         const modeToggle = document.querySelector('.mode-toggle');
         const body = document.body;
-        
+        const userProfile = document.querySelector('.user-profile');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        const sidebarBubbles = document.querySelectorAll('.sidebar-bubble');
+        const contentSections = document.querySelectorAll('.content-section');
+        const quickShortcuts = document.querySelectorAll('.shortcut-btn');
+        const viewAllLinks = document.querySelectorAll('.view-all');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+        });
+
+        // Initialize dashboard
+        async function initializeDashboard() {
+            // Check authentication
+            if (!authToken) {
+                redirectToLogin();
+                return;
+            }
+
+            // Load user data
+            try {
+                userData = await fetchUserData();
+                updateUserInterface();
+                loadDashboardData();
+            } catch (error) {
+                console.error('Failed to initialize dashboard:', error);
+                showError('Failed to load dashboard data');
+            }
+        }
+
+        // API Functions
+        async function apiCall(endpoint, options = {}) {
+            const url = `${API_BASE_URL}${endpoint}`;
+            const defaultOptions = {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            };
+
+            try {
+                const response = await fetch(url, { ...defaultOptions, ...options });
+                
+                if (response.status === 401) {
+                    // Token expired or invalid
+                    redirectToLogin();
+                    return null;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API call failed:', error);
+                throw error;
+            }
+        }
+
+        async function fetchUserData() {
+            return await apiCall(API_ENDPOINTS.user);
+        }
+
+        async function fetchOrders(limit = null) {
+            const endpoint = limit ? `${API_ENDPOINTS.orders}?limit=${limit}` : API_ENDPOINTS.orders;
+            return await apiCall(endpoint);
+        }
+
+        async function fetchCart() {
+            return await apiCall(API_ENDPOINTS.cart);
+        }
+
+        async function fetchWishlist(limit = null) {
+            const endpoint = limit ? `${API_ENDPOINTS.wishlist}?limit=${limit}` : API_ENDPOINTS.wishlist;
+            return await apiCall(endpoint);
+        }
+
+        async function fetchBookings(limit = null) {
+            const endpoint = limit ? `${API_ENDPOINTS.bookings}?limit=${limit}` : API_ENDPOINTS.bookings;
+            return await apiCall(endpoint);
+        }
+
+        async function fetchNotifications(limit = null) {
+            const endpoint = limit ? `${API_ENDPOINTS.notifications}?limit=${limit}` : API_ENDPOINTS.notifications;
+            return await apiCall(endpoint);
+        }
+
+        async function fetchLoyaltyPoints() {
+            return await apiCall(API_ENDPOINTS.loyalty);
+        }
+
+        // UI Update Functions
+        function updateUserInterface() {
+            if (!userData) return;
+
+            // Update user info
+            document.getElementById('user-avatar').textContent = userData.initials || 'U';
+            document.getElementById('username').textContent = userData.firstName || 'User';
+            document.getElementById('welcome-message').textContent = `Welcome back, ${userData.firstName || 'User'}!`;
+            document.getElementById('settings-avatar').textContent = userData.initials || 'U';
+            document.getElementById('settings-name').textContent = `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
+            
+            // Format membership date
+            if (userData.memberSince) {
+                const memberSince = new Date(userData.memberSince).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long' 
+                });
+                document.getElementById('settings-membership').textContent = `Member since ${memberSince}`;
+            }
+
+            // Update form fields
+            document.getElementById('name').value = `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
+            document.getElementById('email').value = userData.email || '';
+            document.getElementById('phone').value = userData.phone || '';
+            document.getElementById('address').value = userData.address || '';
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Load all dashboard data in parallel
+                const [loyaltyData, orders, wishlist, cart, bookings, notifications] = await Promise.all([
+                    fetchLoyaltyPoints(),
+                    fetchOrders(3),
+                    fetchWishlist(2),
+                    fetchCart(),
+                    fetchBookings(1),
+                    fetchNotifications(3)
+                ]);
+
+                // Update loyalty points
+                if (loyaltyData && loyaltyData.points !== undefined) {
+                    document.getElementById('loyalty-points').textContent = loyaltyData.points;
+                }
+
+                // Update stats
+                updateStats(orders, wishlist, cart, bookings);
+
+                // Update recent orders
+                renderRecentOrders(orders);
+
+                // Update wishlist preview
+                renderWishlistPreview(wishlist);
+
+                // Update cart preview
+                renderCartPreview(cart);
+
+                // Update upcoming bookings
+                renderUpcomingBookings(bookings);
+
+                // Update notifications preview
+                renderNotificationsPreview(notifications);
+
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                showError('Failed to load dashboard data');
+            }
+        }
+
+        function updateStats(orders, wishlist, cart, bookings) {
+            const statsContainer = document.getElementById('stats-container');
+            
+            const stats = {
+                orders: orders?.length || 0,
+                wishlist: wishlist?.length || 0,
+                cart: cart?.items?.length || 0,
+                bookings: bookings?.length || 0
+            };
+
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="stat-value">${stats.orders}</div>
+                    <div class="stat-label">Active Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="stat-value">${stats.wishlist}</div>
+                    <div class="stat-label">Wishlist Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">${stats.bookings}</div>
+                    <div class="stat-label">Upcoming Appointments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <div class="stat-value" id="loyalty-stat">0</div>
+                    <div class="stat-label">Loyalty Points</div>
+                </div>
+            `;
+
+            // Update loyalty points in stats if available
+            const loyaltyPoints = document.getElementById('loyalty-points').textContent;
+            document.getElementById('loyalty-stat').textContent = loyaltyPoints;
+        }
+
+        function renderRecentOrders(orders) {
+            const container = document.getElementById('recent-orders-container');
+            
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <p>No recent orders</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let ordersHtml = `
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            orders.forEach(order => {
+                const statusClass = `status-${order.status.toLowerCase()}`;
+                const formattedDate = new Date(order.date).toLocaleDateString();
+                const formattedTotal = `$${order.total.toFixed(2)}`;
+
+                ordersHtml += `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${formattedDate}</td>
+                        <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+                        <td>${formattedTotal}</td>
+                        <td>
+                            <button class="action-btn" onclick="viewOrder('${order.id}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            ordersHtml += '</tbody></table>';
+            container.innerHTML = ordersHtml;
+        }
+
+        function renderWishlistPreview(wishlist) {
+            const container = document.getElementById('wishlist-preview-container');
+            
+            if (!wishlist || wishlist.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <p>Your wishlist is empty</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let wishlistHtml = '';
+            wishlist.slice(0, 2).forEach(item => {
+                wishlistHtml += `
+                    <div class="wishlist-item">
+                        <div class="item-image">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <div class="item-details">
+                            <h4>${item.name}</h4>
+                            <div class="item-price">$${item.price.toFixed(2)}</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn" onclick="addToCart('${item.id}')">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                            <button class="action-btn" onclick="removeFromWishlist('${item.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = wishlistHtml;
+        }
+
+        function renderCartPreview(cart) {
+            const container = document.getElementById('cart-preview-container');
+            
+            if (!cart || !cart.items || cart.items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let cartHtml = '';
+            let subtotal = 0;
+
+            cart.items.slice(0, 2).forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                cartHtml += `
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <div class="item-details">
+                            <h4>${item.name}</h4>
+                            <div class="item-price">$${item.price.toFixed(2)}</div>
+                            <div>Qty: ${item.quantity}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Add checkout button
+            cartHtml += `
+                <button class="action-btn" onclick="switchSection('cart')" style="width: 100%; margin-top: 10px; padding: 12px;">
+                    Checkout ($${subtotal.toFixed(2)})
+                </button>
+            `;
+
+            container.innerHTML = cartHtml;
+        }
+
+        function renderUpcomingBookings(bookings) {
+            const container = document.getElementById('upcoming-bookings-container');
+            
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>No upcoming appointments</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let bookingsHtml = '';
+            bookings.forEach(booking => {
+                const formattedDate = new Date(booking.date).toLocaleString();
+                
+                bookingsHtml += `
+                    <div class="booking-card">
+                        <div class="booking-date">${formattedDate}</div>
+                        <div class="booking-service">${booking.service}</div>
+                        <div>With Stylist: ${booking.stylist}</div>
+                        <div class="item-actions" style="margin-top: 10px;">
+                            <button class="action-btn" onclick="rescheduleBooking('${booking.id}')">Reschedule</button>
+                            <button class="action-btn" onclick="cancelBooking('${booking.id}')">Cancel</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = bookingsHtml;
+        }
+
+        function renderNotificationsPreview(notifications) {
+            const container = document.getElementById('notifications-preview-container');
+            
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No notifications</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let notificationsHtml = '';
+            notifications.slice(0, 3).forEach(notification => {
+                const unreadClass = notification.unread ? 'notification-unread' : '';
+                
+                notificationsHtml += `
+                    <div class="notification-item ${unreadClass}">
+                        <h4>${notification.title}</h4>
+                        <p>${notification.message}</p>
+                        <div class="notification-time">${notification.time}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = notificationsHtml;
+        }
+
+        // Section switching with data loading
+        function switchSection(sectionId) {
+            // Hide all sections
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the selected section
+            const activeSection = document.getElementById(sectionId);
+            activeSection.classList.add('active');
+            
+            // Update sidebar active state
+            sidebarBubbles.forEach(bubble => {
+                bubble.classList.remove('active');
+                if (bubble.getAttribute('data-section') === sectionId) {
+                    bubble.classList.add('active');
+                }
+            });
+            
+            // Load section-specific data
+            loadSectionData(sectionId);
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        async function loadSectionData(sectionId) {
+            try {
+                switch(sectionId) {
+                    case 'cart':
+                        await loadFullCart();
+                        break;
+                    case 'wishlist':
+                        await loadFullWishlist();
+                        break;
+                    case 'orders':
+                        await loadFullOrders();
+                        break;
+                    case 'bookings':
+                        await loadFullBookings();
+                        break;
+                    case 'notifications':
+                        await loadFullNotifications();
+                        break;
+                    case 'settings':
+                        // Settings data is already loaded with user data
+                        break;
+                }
+            } catch (error) {
+                console.error(`Failed to load ${sectionId} data:`, error);
+                showError(`Failed to load ${sectionId} data`);
+            }
+        }
+
+        async function loadFullCart() {
+            const container = document.getElementById('cart-full-container');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading cart...</span></div>';
+            
+            const cart = await fetchCart();
+            
+            if (!cart || !cart.items || cart.items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Your cart is empty</p>
+                        <button class="action-btn" onclick="window.location.href='shop.html'" style="margin-top: 15px;">
+                            Start Shopping
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let cartHtml = '';
+            let subtotal = 0;
+
+            cart.items.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                cartHtml += `
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <div class="item-details">
+                            <h4>${item.name}</h4>
+                            <div class="item-price">$${item.price.toFixed(2)}</div>
+                            <div>Qty: ${item.quantity}</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn" onclick="updateCartItem('${item.id}', ${item.quantity - 1})">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button class="action-btn" onclick="updateCartItem('${item.id}', ${item.quantity + 1})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="action-btn" onclick="removeFromCart('${item.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const shipping = 5.00; // This should come from API
+            const total = subtotal + shipping;
+
+            cartHtml += `
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--light-bg);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <h4>Subtotal</h4>
+                        <h4>$${subtotal.toFixed(2)}</h4>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <h4>Shipping</h4>
+                        <h4>$${shipping.toFixed(2)}</h4>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.2rem;">
+                        <h3>Total</h3>
+                        <h3>$${total.toFixed(2)}</h3>
+                    </div>
+                    <button class="action-btn" style="width: 100%; padding: 15px; font-size: 1.1rem;" onclick="checkout()">
+                        Proceed to Checkout
+                    </button>
+                </div>
+            `;
+
+            container.innerHTML = cartHtml;
+        }
+
+        async function loadFullWishlist() {
+            const container = document.getElementById('wishlist-full-container');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading wishlist...</span></div>';
+            
+            const wishlist = await fetchWishlist();
+            
+            if (!wishlist || wishlist.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <p>Your wishlist is empty</p>
+                        <button class="action-btn" onclick="window.location.href='shop.html'" style="margin-top: 15px;">
+                            Browse Products
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let wishlistHtml = '';
+            wishlist.forEach(item => {
+                wishlistHtml += `
+                    <div class="dashboard-card">
+                        <div class="wishlist-item">
+                            <div class="item-image">
+                                <i class="fas fa-spa"></i>
+                            </div>
+                            <div class="item-details">
+                                <h4>${item.name}</h4>
+                                <div class="item-price">$${item.price.toFixed(2)}</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn" onclick="addToCart('${item.id}')">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                                <button class="action-btn" onclick="removeFromWishlist('${item.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = wishlistHtml;
+        }
+
+        async function loadFullOrders() {
+            const container = document.getElementById('orders-full-container');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading order history...</span></div>';
+            
+            const orders = await fetchOrders();
+            
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <p>No order history</p>
+                        <button class="action-btn" onclick="window.location.href='shop.html'" style="margin-top: 15px;">
+                            Start Shopping
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let ordersHtml = `
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            orders.forEach(order => {
+                const statusClass = `status-${order.status.toLowerCase()}`;
+                const formattedDate = new Date(order.date).toLocaleDateString();
+                const formattedTotal = `$${order.total.toFixed(2)}`;
+
+                ordersHtml += `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${formattedDate}</td>
+                        <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+                        <td>${formattedTotal}</td>
+                        <td>
+                            <button class="action-btn" onclick="viewOrder('${order.id}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="action-btn" onclick="reorder('${order.id}')">
+                                <i class="fas fa-redo"></i> Reorder
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            ordersHtml += '</tbody></table>';
+            container.innerHTML = ordersHtml;
+        }
+
+        async function loadFullBookings() {
+            const container = document.getElementById('bookings-full-container');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading appointments...</span></div>';
+            
+            const bookings = await fetchBookings();
+            
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>No appointments scheduled</p>
+                        <button class="action-btn" onclick="window.location.href='bookings.html'" style="margin-top: 15px;">
+                            Book Appointment
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let bookingsHtml = '';
+            bookings.forEach(booking => {
+                const formattedDate = new Date(booking.date).toLocaleString();
+                const isUpcoming = new Date(booking.date) > new Date();
+                
+                bookingsHtml += `
+                    <div class="booking-card">
+                        <div class="booking-date">${formattedDate}</div>
+                        <div class="booking-service">${booking.service}</div>
+                        <div>With Stylist: ${booking.stylist}</div>
+                        ${isUpcoming ? `
+                            <div class="item-actions" style="margin-top: 10px;">
+                                <button class="action-btn" onclick="rescheduleBooking('${booking.id}')">Reschedule</button>
+                                <button class="action-btn" onclick="cancelBooking('${booking.id}')">Cancel</button>
+                            </div>
+                        ` : `<div><span class="status-badge status-delivered">Completed</span></div>`}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = bookingsHtml;
+        }
+
+        async function loadFullNotifications() {
+            const container = document.getElementById('notifications-full-container');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading notifications...</span></div>';
+            
+            const notifications = await fetchNotifications();
+            
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No notifications</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let notificationsHtml = '';
+            notifications.forEach(notification => {
+                const unreadClass = notification.unread ? 'notification-unread' : '';
+                
+                notificationsHtml += `
+                    <div class="notification-item ${unreadClass}">
+                        <h4>${notification.title}</h4>
+                        <p>${notification.message}</p>
+                        <div class="notification-time">${notification.time}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = notificationsHtml;
+        }
+
+        // Action Functions (to be implemented with backend)
+        function viewOrder(orderId) {
+            // Redirect to order details page or show modal
+            console.log('View order:', orderId);
+            // Implement order details view
+        }
+
+        function reorder(orderId) {
+            // Implement reorder functionality
+            console.log('Reorder:', orderId);
+            // Add all items from order to cart
+        }
+
+        function addToCart(productId) {
+            // Implement add to cart
+            console.log('Add to cart:', productId);
+            // API call to add product to cart
+        }
+
+        function removeFromCart(productId) {
+            // Implement remove from cart
+            console.log('Remove from cart:', productId);
+            // API call to remove product from cart
+        }
+
+        function updateCartItem(productId, quantity) {
+            // Implement update cart item quantity
+            console.log('Update cart item:', productId, quantity);
+            // API call to update cart item
+        }
+
+        function removeFromWishlist(productId) {
+            // Implement remove from wishlist
+            console.log('Remove from wishlist:', productId);
+            // API call to remove product from wishlist
+        }
+
+        function rescheduleBooking(bookingId) {
+            // Implement booking rescheduling
+            console.log('Reschedule booking:', bookingId);
+            // Redirect to booking page or show modal
+        }
+
+        function cancelBooking(bookingId) {
+            // Implement booking cancellation
+            console.log('Cancel booking:', bookingId);
+            // API call to cancel booking
+        }
+
+        function checkout() {
+            // Redirect to checkout page
+            window.location.href = 'checkout.html';
+        }
+
+        function redirectToLogin() {
+            // Redirect to login page
+            window.location.href = 'login.html';
+        }
+
+        function showError(message) {
+            // Simple error notification
+            alert(`Error: ${message}`);
+        }
+
+        // Event Listeners
         modeToggle.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             
@@ -1153,10 +2016,6 @@ body.dark-mode .logo-container {
             body.classList.add('dark-mode');
         }
         
-        // User profile dropdown
-        const userProfile = document.querySelector('.user-profile');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        
         userProfile.addEventListener('click', (e) => {
             e.stopPropagation();
             dropdownMenu.classList.toggle('show');
@@ -1168,34 +2027,6 @@ body.dark-mode .logo-container {
                 dropdownMenu.classList.remove('show');
             }
         });
-        
-        // Section navigation
-        const sidebarBubbles = document.querySelectorAll('.sidebar-bubble');
-        const contentSections = document.querySelectorAll('.content-section');
-        const quickShortcuts = document.querySelectorAll('.shortcut-btn');
-        const viewAllLinks = document.querySelectorAll('.view-all');
-        
-        // Function to switch sections
-        function switchSection(sectionId) {
-            // Hide all sections
-            contentSections.forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show the selected section
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Update sidebar active state
-            sidebarBubbles.forEach(bubble => {
-                bubble.classList.remove('active');
-                if (bubble.getAttribute('data-section') === sectionId) {
-                    bubble.classList.add('active');
-                }
-            });
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-        }
         
         // Add event listeners to sidebar bubbles
         sidebarBubbles.forEach(bubble => {
@@ -1221,6 +2052,26 @@ body.dark-mode .logo-container {
                 switchSection(sectionId);
             });
         });
+
+        // Add event listeners to dropdown menu items
+        document.querySelectorAll('.dropdown-menu a').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = item.getAttribute('data-section');
+                if (sectionId) {
+                    switchSection(sectionId);
+                }
+                dropdownMenu.classList.remove('show');
+            });
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Clear auth token and redirect to login
+            localStorage.removeItem('authToken');
+            redirectToLogin();
+        });
         
         // Header scroll effect
         window.addEventListener('scroll', function() {
@@ -1232,6 +2083,44 @@ body.dark-mode .logo-container {
                 header.style.boxShadow = '';
                 header.style.padding = '20px 40px';
             }
+        });
+
+        // Settings form handlers
+        document.getElementById('save-profile').addEventListener('click', async function() {
+            // Implement profile update
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            
+            // API call to update profile
+            console.log('Update profile:', { name, email, phone, address });
+        });
+
+        document.getElementById('update-password').addEventListener('click', async function() {
+            // Implement password update
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // API call to update password
+            console.log('Update password');
+        });
+
+        document.getElementById('save-preferences').addEventListener('click', async function() {
+            // Implement notification preferences update
+            const emailNotifications = document.getElementById('email-notifications').checked;
+            const smsNotifications = document.getElementById('sms-notifications').checked;
+            const promotionalEmails = document.getElementById('promotional-emails').checked;
+            
+            // API call to update preferences
+            console.log('Update preferences:', { emailNotifications, smsNotifications, promotionalEmails });
+        });
+
+        document.getElementById('mark-all-read').addEventListener('click', async function() {
+            // Implement mark all as read
+            console.log('Mark all notifications as read');
+            // API call to mark all notifications as read
         });
     </script>
 </body>
