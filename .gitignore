@@ -1,3 +1,2 @@
 ##ignore any file containing secrets or environment variables
 
-olyshairbackend/*.env
