@@ -329,6 +329,30 @@
             color: var(--cream);
         }
         
+        /* Stripe Card Element */
+        #card-element {
+            padding: 12px 15px;
+            border: 1px solid var(--light-bg);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+        }
+        
+        #card-errors {
+            color: #fa755a;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        /* Payment Method Specific Containers */
+        .payment-form-container {
+            margin-top: 20px;
+        }
+        
+        #paypal-button-container, #apple-pay-button {
+            margin-top: 15px;
+            min-height: 50px;
+        }
+        
         /* Order Summary */
         .order-summary {
             background-color: var(--card-bg);
@@ -444,6 +468,11 @@
         
         .checkout-btn:hover {
             background-color: var(--dark-gray);
+        }
+        
+        .checkout-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
         
         /* Security Badges */
@@ -724,40 +753,40 @@
                 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" class="form-control" placeholder="your@email.com">
+                    <input type="email" id="email" class="form-control" placeholder="your@email.com" required>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" class="form-control" placeholder="First Name">
+                        <input type="text" id="firstName" class="form-control" placeholder="First Name" required>
                     </div>
                     <div class="form-group">
                         <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" class="form-control" placeholder="Last Name">
+                        <input type="text" id="lastName" class="form-control" placeholder="Last Name" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="address">Address</label>
-                    <input type="text" id="address" class="form-control" placeholder="Street Address">
+                    <input type="text" id="address" class="form-control" placeholder="Street Address" required>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="city">City</label>
-                        <input type="text" id="city" class="form-control" placeholder="City">
+                        <input type="text" id="city" class="form-control" placeholder="City" required>
                     </div>
                     <div class="form-group">
                         <label for="zipCode">ZIP/Postal Code</label>
-                        <input type="text" id="zipCode" class="form-control" placeholder="ZIP Code">
+                        <input type="text" id="zipCode" class="form-control" placeholder="ZIP Code" required>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="country">Country</label>
-                        <select id="country" class="form-control">
+                        <select id="country" class="form-control" required>
                             <option value="">Select Country</option>
                             <option value="us">United States</option>
                             <option value="uk">United Kingdom</option>
@@ -768,7 +797,7 @@
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" class="form-control" placeholder="Phone Number">
+                        <input type="tel" id="phone" class="form-control" placeholder="Phone Number" required>
                     </div>
                 </div>
                 
@@ -811,51 +840,49 @@
                 <h2 class="section-title">Payment Method</h2>
                 
                 <div class="payment-methods">
-                    <div class="payment-method active">
+                    <div class="payment-method active" data-method="credit-card">
                         <i class="fab fa-cc-visa"></i>
                         <div>Credit Card</div>
                     </div>
-                    <div class="payment-method">
+                    <div class="payment-method" data-method="paypal">
                         <i class="fab fa-paypal"></i>
                         <div>PayPal</div>
                     </div>
-                    <div class="payment-method" id="apple-pay-method">
+                    <div class="payment-method" data-method="apple-pay">
                         <i class="fab fa-apple-pay"></i>
                         <div>Apple Pay</div>
-                        <div id="payment-request-button"></div>
                     </div>
-                    <div class="payment-method">
+                    <div class="payment-method" data-method="klarna">
                         <i class="fas fa-credit-card"></i>
                         <div>Klarna</div>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="cardNumber">Card Number</label>
-                    <input type="text" id="cardNumber" class="form-control" placeholder="1234 5678 9012 3456">
-                </div>
-                
-                <div class="form-row">
+                <!-- Credit Card Form (Stripe) -->
+                <div class="payment-form-container" id="credit-card-form">
                     <div class="form-group">
-                        <label for="expiryDate">Expiry Date</label>
-                        <input type="text" id="expiryDate" class="form-control" placeholder="MM/YY">
+                        <label for="cardName">Name on Card</label>
+                        <input type="text" id="cardName" class="form-control" placeholder="Full Name" required>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="cvv">CVV</label>
-                        <input type="text" id="cvv" class="form-control" placeholder="123">
+                        <label for="card-element">Card Details</label>
+                        <div id="card-element" class="form-control">
+                            <!-- Stripe Elements will be inserted here -->
+                        </div>
+                        <div id="card-errors" role="alert"></div>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="cardName">Name on Card</label>
-                    <input type="text" id="cardName" class="form-control" placeholder="Full Name">
-                </div>
+                <!-- PayPal Button Container -->
+                <div class="payment-form-container" id="paypal-button-container" style="display: none;"></div>
                 
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="saveCard">
-                        Save card for future purchases
-                    </label>
+                <!-- Apple Pay Button Container -->
+                <div class="payment-form-container" id="apple-pay-button" style="display: none;"></div>
+                
+                <!-- Klarna Payment Container -->
+                <div class="payment-form-container" id="klarna-payment-form" style="display: none;">
+                    <p>You will be redirected to Klarna to complete your payment.</p>
                 </div>
             </div>
 
@@ -1027,129 +1054,386 @@
         </div>
     </div>
 
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+    
     <script>
-        // Dark/Light Mode Toggle
-        const modeToggle = document.querySelector('.mode-toggle');
-        const body = document.body;
-        
-        modeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            // Save preference to localStorage
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
+        // ==================== CONFIGURATION ====================
+        let STRIPE_PUBLISHABLE_KEY = 'pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0';
+        let PAYPAL_CLIENT_ID = 'YOUR_PAYPAL_CLIENT_ID'; // Replace with your PayPal client ID
+        let stripe = null;
+        let elements = null;
+        let cardElement = null;
+        let selectedPaymentMethod = 'credit-card';
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize UI components
+            initializeUI();
+            
+            // Load payment configuration and initialize payment methods
+            await loadPaymentConfig();
+            
+            // Setup payment method selection
+            setupPaymentMethodSelection();
+            
+            console.log('Payment systems initialized');
         });
-        
-        // Check for saved theme preference
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
+
+        // ==================== UI INITIALIZATION ====================
+        function initializeUI() {
+            // Dark/Light Mode Toggle
+            const modeToggle = document.querySelector('.mode-toggle');
+            const body = document.body;
+            
+            modeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                // Save preference to localStorage
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // Check for saved theme preference
+            if (localStorage.getItem('theme') === 'dark') {
+                body.classList.add('dark-mode');
+            }
+            
+            // Billing Address Toggle
+            const sameAsShipping = document.getElementById('sameAsShipping');
+            const billingAddress = document.getElementById('billingAddress');
+            
+            sameAsShipping.addEventListener('change', () => {
+                if (sameAsShipping.checked) {
+                    billingAddress.style.display = 'none';
+                } else {
+                    billingAddress.style.display = 'block';
+                }
+            });
+            
+            // Place Order Button
+            const placeOrderBtn = document.getElementById('placeOrder');
+            const receiptModal = document.getElementById('receiptModal');
+            const receiptClose = document.querySelector('.receipt-close');
+            const receiptCloseBtn = document.querySelector('.receipt-close-btn');
+            
+            placeOrderBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                // Validate form
+                if (!validateCheckoutForm()) {
+                    return;
+                }
+                
+                // Process based on selected method
+                switch(selectedPaymentMethod) {
+                    case 'credit-card':
+                        await processStripePayment();
+                        break;
+                    case 'paypal':
+                        // PayPal handles this via its own button
+                        showError('Please use the PayPal button below');
+                        break;
+                    case 'klarna':
+                        await processKlarnaPayment();
+                        break;
+                    case 'apple-pay':
+                        // Apple Pay handles this via its own button
+                        showError('Please use the Apple Pay button');
+                        break;
+                    default:
+                        showError('Please select a payment method');
+                }
+            });
+            
+            receiptClose.addEventListener('click', () => {
+                receiptModal.classList.remove('active');
+            });
+            
+            receiptCloseBtn.addEventListener('click', () => {
+                receiptModal.classList.remove('active');
+                // Redirect to customer dashboard
+                window.location.href = 'customerdashboard.html';
+            });
+            
+            // Print Receipt
+            const printBtn = document.querySelector('.receipt-print');
+            
+            printBtn.addEventListener('click', () => {
+                window.print();
+            });
+            
+            // Currency Conversion (Example)
+            const countrySelect = document.getElementById('country');
+            const totalElement = document.querySelector('.total-final span:last-child');
+            
+            countrySelect.addEventListener('change', () => {
+                const country = countrySelect.value;
+                let currencySymbol = '$';
+                let conversionRate = 1;
+                
+                switch(country) {
+                    case 'uk':
+                        currencySymbol = '£';
+                        conversionRate = 0.82;
+                        break;
+                    case 'fr':
+                    case 'de':
+                        currencySymbol = '€';
+                        conversionRate = 0.95;
+                        break;
+                    case 'ch':
+                        currencySymbol = 'CHF';
+                        conversionRate = 0.92;
+                        break;
+                }
+                
+                // Update all prices with new currency
+                const originalTotal = 657.96;
+                const convertedTotal = (originalTotal * conversionRate).toFixed(2);
+                totalElement.textContent = `${currencySymbol}${convertedTotal}`;
+                
+                // Update shipping costs based on country
+                const shippingOptions = document.querySelectorAll('input[name="shipping"]');
+                const shippingLabels = document.querySelectorAll('input[name="shipping"] + label');
+                
+                const shippingCosts = [9.99, 19.99, 29.99];
+                const convertedShippingCosts = shippingCosts.map(cost => (cost * conversionRate).toFixed(2));
+                
+                shippingLabels.forEach((label, index) => {
+                    const text = label.textContent.split('-')[0];
+                    label.textContent = `${text} - ${currencySymbol}${convertedShippingCosts[index]}`;
+                });
+            });
         }
-        
-        // Payment Method Selection
-        const paymentMethods = document.querySelectorAll('.payment-method');
-        
-        paymentMethods.forEach(method => {
-            method.addEventListener('click', () => {
-                paymentMethods.forEach(m => m.classList.remove('active'));
-                method.classList.add('active');
-            });
-        });
-        
-        // Billing Address Toggle
-        const sameAsShipping = document.getElementById('sameAsShipping');
-        const billingAddress = document.getElementById('billingAddress');
-        
-        sameAsShipping.addEventListener('change', () => {
-            if (sameAsShipping.checked) {
-                billingAddress.style.display = 'none';
-            } else {
-                billingAddress.style.display = 'block';
+
+        // ==================== PAYMENT CONFIGURATION ====================
+        async function loadPaymentConfig() {
+            try {
+                // In a real implementation, you would fetch this from your server
+                // const response = await fetch('/api/payments/config');
+                // const config = await response.json();
+                
+                // For demo purposes, we'll use hardcoded values
+                STRIPE_PUBLISHABLE_KEY = 'pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0';
+                PAYPAL_CLIENT_ID = 'YOUR_PAYPAL_CLIENT_ID'; // Replace with your PayPal client ID
+                
+                // Initialize Stripe
+                if (STRIPE_PUBLISHABLE_KEY) {
+                    stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+                    elements = stripe.elements();
+                    initializeStripeElements();
+                }
+                
+                // Initialize PayPal
+                if (PAYPAL_CLIENT_ID) {
+                    loadPayPalButton();
+                }
+                
+                // Initialize Apple Pay
+                initializeApplePay();
+                
+            } catch (error) {
+                console.error('Failed to load payment config:', error);
+                showError('Failed to initialize payment methods. Please refresh the page.');
             }
-        });
-        
-        // Place Order Button
-        const placeOrderBtn = document.getElementById('placeOrder');
-        const receiptModal = document.getElementById('receiptModal');
-        const receiptClose = document.querySelector('.receipt-close');
-        const receiptCloseBtn = document.querySelector('.receipt-close-btn');
-        
-        placeOrderBtn.addEventListener('click', () => {
-            receiptModal.classList.add('active');
-        });
-        
-        receiptClose.addEventListener('click', () => {
-            receiptModal.classList.remove('active');
-        });
-        
-        receiptCloseBtn.addEventListener('click', () => {
-            receiptModal.classList.remove('active');
-            // Redirect to customer dashboard
-            window.location.href = 'customerdashboard.html';
-        });
-        
-        // Print Receipt
-        const printBtn = document.querySelector('.receipt-print');
-        
-        printBtn.addEventListener('click', () => {
-            window.print();
-        });
-        
-        // Currency Conversion (Example)
-        const countrySelect = document.getElementById('country');
-        const totalElement = document.querySelector('.total-final span:last-child');
-        
-        countrySelect.addEventListener('change', () => {
-            const country = countrySelect.value;
-            let currencySymbol = '$';
-            let conversionRate = 1;
+        }
+
+        // ==================== STRIPE CREDIT CARD ====================
+        function initializeStripeElements() {
+            // Create card element
+            const cardElementContainer = document.getElementById('card-element');
+            if (!cardElementContainer) return;
             
-            switch(country) {
-                case 'uk':
-                    currencySymbol = '£';
-                    conversionRate = 0.82;
-                    break;
-                case 'fr':
-                case 'de':
-                    currencySymbol = '€';
-                    conversionRate = 0.95;
-                    break;
-                case 'ch':
-                    currencySymbol = 'CHF';
-                    conversionRate = 0.92;
-                    break;
-            }
-            
-            // Update all prices with new currency
-            const originalTotal = 657.96;
-            const convertedTotal = (originalTotal * conversionRate).toFixed(2);
-            totalElement.textContent = `${currencySymbol}${convertedTotal}`;
-            
-            // Update shipping costs based on country
-            const shippingOptions = document.querySelectorAll('input[name="shipping"]');
-            const shippingLabels = document.querySelectorAll('input[name="shipping"] + label');
-            
-            const shippingCosts = [9.99, 19.99, 29.99];
-            const convertedShippingCosts = shippingCosts.map(cost => (cost * conversionRate).toFixed(2));
-            
-            shippingLabels.forEach((label, index) => {
-                const text = label.textContent.split('-')[0];
-                label.textContent = `${text} - ${currencySymbol}${convertedShippingCosts[index]}`;
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-dark'),
+                        fontFamily: '"Montserrat", sans-serif',
+                        '::placeholder': {
+                            color: '#aab7c4'
+                        }
+                    },
+                    invalid: {
+                        color: '#fa755a',
+                        iconColor: '#fa755a'
+                    }
+                }
             });
-        });
-    </script>
-        <!-- Stripe.js -->
-        <script src="https://js.stripe.com/v3/"></script>
-        <script>
-        document.addEventListener("DOMContentLoaded", async function() {
-            const stripe = Stripe('sk_test_51SAVVd3tLr6waZvCjCEh3lMA053fGUmZNWzkzQGmJwGAONUAacAJSMeD5B5xdev7q3aGuj2FrtfJkhmKGd1Jk27F00AkO50Oo3'); // Demo Stripe public key
+
+            cardElement.mount('#card-element');
+            
+            // Handle real-time validation errors
+            cardElement.on('change', (event) => {
+                const displayError = document.getElementById('card-errors');
+                if (displayError) {
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                }
+            });
+        }
+
+        async function processStripePayment() {
+            if (!stripe || !cardElement) {
+                showError('Stripe is not initialized');
+                return;
+            }
+
+            const submitButton = document.getElementById('placeOrder');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                // Get form data
+                const email = document.getElementById('email').value;
+                const cardName = document.getElementById('cardName').value;
+                const amount = calculateTotalAmount(); // In cents
+
+                if (!email || !cardName) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                // Step 1: Create payment intent on server
+                const intentResponse = await fetch('/api/payments/stripe/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amount,
+                        currency: 'usd',
+                        metadata: {
+                            customer_email: email,
+                            customer_name: cardName,
+                            order_id: generateOrderId()
+                        }
+                    })
+                });
+
+                const intentData = await intentResponse.json();
+
+                if (!intentData.success) {
+                    throw new Error(intentData.error || 'Failed to create payment intent');
+                }
+
+                // Step 2: Confirm payment with card details
+                const { error, paymentIntent } = await stripe.confirmCardPayment(
+                    intentData.clientSecret,
+                    {
+                        payment_method: {
+                            card: cardElement,
+                            billing_details: {
+                                name: cardName,
+                                email: email
+                            }
+                        }
+                    }
+                );
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                if (paymentIntent.status === 'succeeded') {
+                    // Payment successful
+                    handlePaymentSuccess({
+                        transactionId: paymentIntent.id,
+                        method: 'stripe',
+                        amount: paymentIntent.amount / 100
+                    });
+                }
+
+            } catch (error) {
+                console.error('Stripe payment error:', error);
+                showError(error.message || 'Payment failed. Please try again.');
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-lock"></i> Place Order';
+            }
+        }
+
+        // ==================== PAYPAL ====================
+        function loadPayPalButton() {
+            // Check if PayPal SDK is loaded
+            if (typeof paypal === 'undefined') {
+                console.error('PayPal SDK not loaded');
+                return;
+            }
+
+            const paypalContainer = document.getElementById('paypal-button-container');
+            if (!paypalContainer) return;
+
+            paypal.Buttons({
+                style: {
+                    layout: 'vertical',
+                    color: 'gold',
+                    shape: 'rect',
+                    label: 'paypal'
+                },
+                
+                createOrder: async function(data, actions) {
+                    try {
+                        const amount = calculateTotalAmount() / 100; // Convert cents to dollars
+
+                        const response = await fetch('/api/payments/paypal/create-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                amount: amount,
+                                currency: 'USD',
+                                description: 'OLYS HAIR Order',
+                                items: getCartItems() // Optional: send cart items
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (!data.success) {
+                            throw new Error(data.error || 'Failed to create PayPal payment');
+                        }
+
+                        // Extract payment ID from approval URL or response
+                        return data.paymentId;
+
+                    } catch (error) {
+                        console.error('PayPal create order error:', error);
+                        showError('Failed to initialize PayPal payment');
+                    }
+                },
+
+                onApprove: async function(data, actions) {
+                    // PayPal will redirect to your execute endpoint
+                    // which handles the completion and redirects to order confirmation
+                    window.location.href = `/api/payments/paypal/execute?paymentId=${data.orderID}&PayerID=${data.payerID}`;
+                },
+
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+                    showError('PayPal payment failed. Please try another payment method.');
+                },
+
+                onCancel: function(data) {
+                    showError('PayPal payment was cancelled.');
+                }
+
+            }).render('#paypal-button-container');
+        }
+
+        // ==================== APPLE PAY ====================
+        async function initializeApplePay() {
+            if (!stripe) return;
+
             const paymentRequest = stripe.paymentRequest({
                 country: 'US',
                 currency: 'usd',
                 total: {
-                    label: 'Total',
-                    amount: 1999, // Example amount in cents
+                    label: 'OLYS HAIR Total',
+                    amount: calculateTotalAmount(),
                 },
                 requestPayerName: true,
                 requestPayerEmail: true,
@@ -1158,47 +1442,224 @@
             const elements = stripe.elements();
             const prButton = elements.create('paymentRequestButton', {
                 paymentRequest: paymentRequest,
-                style: {
-                    paymentRequestButton: {
-                        type: 'applePay',
-                        theme: 'dark',
-                        height: '44px',
-                    },
-                },
             });
 
-            paymentRequest.canMakePayment().then(function(result) {
-                if (result && result.applePay) {
-                    prButton.mount('#payment-request-button');
-                } else {
-                    document.getElementById('payment-request-button').style.display = 'none';
+            // Check if Apple Pay is available
+            const result = await paymentRequest.canMakePayment();
+            
+            if (result && result.applePay) {
+                const applePayContainer = document.getElementById('apple-pay-button');
+                if (applePayContainer) {
+                    prButton.mount('#apple-pay-button');
                 }
-            });
+            } else {
+                // Hide Apple Pay option if not available
+                const applePayMethod = document.querySelector('[data-method="apple-pay"]');
+                if (applePayMethod) {
+                    applePayMethod.style.display = 'none';
+                }
+            }
 
             paymentRequest.on('paymentmethod', async (ev) => {
-                // Send payment info to your backend to create a PaymentIntent
-                const response = await fetch('/create-payment-intent', {
+                try {
+                    const response = await fetch('/api/payments/apple-pay/create-intent', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            amount: calculateTotalAmount(),
+                            currency: 'usd'
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        ev.complete('fail');
+                        throw new Error(data.error);
+                    }
+
+                    const {error: confirmError} = await stripe.confirmCardPayment(
+                        data.clientSecret,
+                        {payment_method: ev.paymentMethod.id},
+                        {handleActions: false}
+                    );
+
+                    if (confirmError) {
+                        ev.complete('fail');
+                        throw new Error(confirmError.message);
+                    }
+
+                    ev.complete('success');
+                    handlePaymentSuccess({
+                        transactionId: data.clientSecret,
+                        method: 'apple-pay',
+                        amount: calculateTotalAmount() / 100
+                    });
+
+                } catch (error) {
+                    console.error('Apple Pay error:', error);
+                    showError(error.message);
+                }
+            });
+        }
+
+        // ==================== KLARNA ====================
+        async function processKlarnaPayment() {
+            const submitButton = document.getElementById('placeOrder');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                const amount = calculateTotalAmount();
+                
+                const response = await fetch('/api/payments/klarna/create-session', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        payment_method: ev.paymentMethod.id,
-                        amount: 1999 // Example amount
+                        amount: amount,
+                        currency: 'usd',
+                        orderData: {
+                            order_id: generateOrderId(),
+                            customer_email: document.getElementById('email').value
+                        }
                     })
                 });
-                const paymentIntent = await response.json();
 
-                const confirmResult = await stripe.confirmCardPayment(paymentIntent.client_secret, {
-                    payment_method: ev.paymentMethod.id
-                }, { handleActions: false });
+                const data = await response.json();
 
-                if (confirmResult.error) {
-                    ev.complete('fail');
-                } else {
-                    ev.complete('success');
-                    // Optionally show a success message
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to create Klarna session');
                 }
+
+                // Redirect to Klarna or handle in-place
+                // Klarna integration varies by region
+                alert('Klarna payment initiated. Client secret: ' + data.clientSecret);
+                
+            } catch (error) {
+                console.error('Klarna error:', error);
+                showError(error.message);
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-lock"></i> Place Order';
+            }
+        }
+
+        // ==================== PAYMENT METHOD SELECTION ====================
+        function setupPaymentMethodSelection() {
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    paymentMethods.forEach(m => m.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    selectedPaymentMethod = this.dataset.method || 'credit-card';
+                    
+                    // Show/hide relevant payment forms
+                    togglePaymentForms(selectedPaymentMethod);
+                });
             });
-        });
-        </script>
+        }
+
+        function togglePaymentForms(method) {
+            const creditCardForm = document.getElementById('credit-card-form');
+            const paypalContainer = document.getElementById('paypal-button-container');
+            const applePayButton = document.getElementById('apple-pay-button');
+            const klarnaForm = document.getElementById('klarna-payment-form');
+
+            // Hide all
+            if (creditCardForm) creditCardForm.style.display = 'none';
+            if (paypalContainer) paypalContainer.style.display = 'none';
+            if (applePayButton) applePayButton.style.display = 'none';
+            if (klarnaForm) klarnaForm.style.display = 'none';
+
+            // Show selected
+            switch(method) {
+                case 'credit-card':
+                    if (creditCardForm) creditCardForm.style.display = 'block';
+                    break;
+                case 'paypal':
+                    if (paypalContainer) paypalContainer.style.display = 'block';
+                    break;
+                case 'apple-pay':
+                    if (applePayButton) applePayButton.style.display = 'block';
+                    break;
+                case 'klarna':
+                    if (klarnaForm) klarnaForm.style.display = 'block';
+                    break;
+            }
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function calculateTotalAmount() {
+            // Get total from your page (in cents)
+            const totalElement = document.querySelector('.total-final span:last-child');
+            if (totalElement) {
+                const totalText = totalElement.textContent.replace(/[^0-9.]/g, '');
+                return Math.round(parseFloat(totalText) * 100);
+            }
+            return 65796; // Default $657.96
+        }
+
+        function generateOrderId() {
+            return 'OL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function getCartItems() {
+            // Extract cart items from your order summary
+            const items = [];
+            document.querySelectorAll('.order-item').forEach(item => {
+                const name = item.querySelector('h4')?.textContent || 'Item';
+                const priceText = item.querySelector('.order-item-price')?.textContent || '$0';
+                const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+                
+                items.push({
+                    name: name,
+                    price: price.toFixed(2),
+                    quantity: 1
+                });
+            });
+            return items;
+        }
+
+        function validateCheckoutForm() {
+            const email = document.getElementById('email')?.value;
+            const firstName = document.getElementById('firstName')?.value;
+            const lastName = document.getElementById('lastName')?.value;
+            const address = document.getElementById('address')?.value;
+
+            if (!email || !firstName || !lastName || !address) {
+                showError('Please fill in all required shipping information');
+                return false;
+            }
+
+            if (!isValidEmail(email)) {
+                showError('Please enter a valid email address');
+                return false;
+            }
+
+            return true;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function handlePaymentSuccess(paymentData) {
+            // Store payment info
+            sessionStorage.setItem('paymentSuccess', JSON.stringify(paymentData));
+            
+            // Show receipt modal
+            const receiptModal = document.getElementById('receiptModal');
+            receiptModal.classList.add('active');
+            
+            // In a real implementation, you might redirect to a confirmation page
+            // window.location.href = `/order-confirmation?transaction=${paymentData.transactionId}&method=${paymentData.method}`;
+        }
+
+        function showError(message) {
+            alert(message); // Replace with your custom error display
+            // Or use your existing receipt modal with error styling
+        }
+    </script>
 </body>
 </html>
