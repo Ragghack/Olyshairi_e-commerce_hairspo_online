@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 
+// Load environment variable first 
+require("dotenv").config({ path: "./olyshair.env" });
+
 //Import the postgreSQL connection module (this will log connection status)
 const db = require("./db");
 

@@ -1,6 +1,5 @@
 // routes/config.js
 const express = require("express");
-require("dotenv").config({ path: "./olyshair.env" });
 const router = express.Router();
 
 router.get("/google-client-id", (req, res) => {
