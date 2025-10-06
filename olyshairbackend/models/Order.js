@@ -1,57 +1,240 @@
-// models/Order.js
-const db = require("../db");
+const express = require('express');
+const router = express.Router();
+const Order = require('../models/Order');
+const auth = require('../middleware/adminAuth');
 
-// Create a new order
-async function createOrder({ user_id, total_amount, status, shipping_address_id, tracking_number }) {
-  const result = await db.query(
-    `INSERT INTO orders (user_id, total_amount, status, shipping_address_id, tracking_number)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING *`,
-    [user_id, total_amount, status, shipping_address_id, tracking_number]
-  );
-  return result.rows[0];
-}
+// Get all orders with filtering and pagination
+router.get('/', auth, async (req, res) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 10, 
+      status, 
+      sortBy = 'createdAt', 
+      sortOrder = 'desc' 
+    } = req.query;
 
-// Get all orders
-async function getOrders() {
-  const result = await db.query(`SELECT * FROM orders WHERE is_deleted = FALSE ORDER BY order_date DESC`);
-  return result.rows;
-}
+    const filter = { isDeleted: false };
+    
+    if (status && status !== 'all') {
+      filter.status = status;
+    }
 
-// Get an order by ID
-async function getOrderById(order_id) {
-  const result = await db.query(`SELECT * FROM orders WHERE order_id = $1 AND is_deleted = FALSE`, [order_id]);
-  return result.rows[0];
-}
+    const sort = {};
+    sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
-// Update an order (e.g., status or tracking number)
-async function updateOrder(order_id, fields) {
-  const setQuery = Object.keys(fields)
-    .map((key, i) => `${key} = $${i + 2}`)
-    .join(", ");
+    const orders = await Order.find(filter)
+      .populate('user', 'firstName lastName email')
+      .sort(sort)
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
 
-  const values = [order_id, ...Object.values(fields)];
+    const total = await Order.countDocuments(filter);
 
-  const result = await db.query(
-    `UPDATE orders SET ${setQuery} WHERE order_id = $1 RETURNING *`,
-    values
-  );
-  return result.rows[0];
-}
+    res.json({
+      orders,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      total
+    });
+  } catch (error) {
+    console.error('Get orders error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-// Soft delete an order
-async function deleteOrder(order_id) {
-  const result = await db.query(
-    `UPDATE orders SET is_deleted = TRUE WHERE order_id = $1 RETURNING *`,
-    [order_id]
-  );
-  return result.rows[0];
-}
+// Get single order
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate('user', 'firstName lastName email phoneNumber')
+      .populate('items.product');
+    
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    res.json({ order });
+  } catch (error) {
+    console.error('Get order error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-module.exports = {
-  createOrder,
-  getOrders,
-  getOrderById,
-  updateOrder,
-  deleteOrder,
-};
+// Update order status
+router.put('/:id/status', auth, async (req, res) => {
+  try {
+    const { status, trackingNumber } = req.body;
+    
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { 
+        status,
+        ...(trackingNumber && { trackingNumber })
+      },
+      { new: true }
+    ).populate('user', 'firstName lastName email');
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    res.json({
+      message: 'Order status updated successfully',
+      order
+    });
+  } catch (error) {
+    console.error('Update order status error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete order (soft delete)
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    res.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    console.error('Delete order error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get order statistics
+router.get('/stats/overview', auth, async (req, res) => {
+  try {
+    const totalOrders = await Order.countDocuments({ isDeleted: false });
+    const pendingOrders = await Order.countDocuments({ 
+      status: 'pending', 
+      isDeleted: false 
+    });
+    const completedOrders = await Order.countDocuments({ 
+      status: 'delivered', 
+      isDeleted: false 
+    });
+    
+    const totalRevenueResult = await Order.aggregate([
+      { 
+        $match: { 
+          status: 'delivered', 
+          isDeleted: false 
+        } 
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$totalAmount' }
+        }
+      }
+    ]);
+
+    res.json({
+      totalOrders,
+      pendingOrders,
+      completedOrders,
+      totalRevenue: totalRevenueResult.length > 0 ? totalRevenueResult[0].total : 0
+    });
+  } catch (error) {
+    console.error('Order stats error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Mock data for development
+router.get('/mock/orders', auth, async (req, res) => {
+  try {
+    const mockOrders = [
+      {
+        _id: '1',
+        orderNumber: 'OL-2874',
+        user: {
+          firstName: 'Roseu',
+          lastName: 'User',
+          email: 'roseu@example.com'
+        },
+        status: 'delivered',
+        totalAmount: 199.99,
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        items: [
+          {
+            product: {
+              name: 'Brazilian Body Wave'
+            },
+            quantity: 1,
+            price: 199.99
+          }
+        ]
+      },
+      {
+        _id: '2',
+        orderNumber: 'OL-2861',
+        user: {
+          firstName: 'Sarah',
+          lastName: 'User',
+          email: 'sarah@example.com'
+        },
+        status: 'processing',
+        totalAmount: 259.99,
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        items: [
+          {
+            product: {
+              name: 'Peruvian Straight'
+            },
+            quantity: 1,
+            price: 199.99
+          },
+          {
+            product: {
+              name: 'Hair Care Kit'
+            },
+            quantity: 1,
+            price: 60.00
+          }
+        ]
+      },
+      {
+        _id: '3',
+        orderNumber: 'OL-2843',
+        user: {
+          firstName: 'Michael',
+          lastName: 'User',
+          email: 'michael@example.com'
+        },
+        status: 'shipped',
+        totalAmount: 179.99,
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        items: [
+          {
+            product: {
+              name: 'Malaysian Curly'
+            },
+            quantity: 1,
+            price: 179.99
+          }
+        ]
+      }
+    ];
+
+    res.json({
+      orders: mockOrders,
+      totalPages: 1,
+      currentPage: 1,
+      total: mockOrders.length
+    });
+  } catch (error) {
+    console.error('Mock orders error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+module.exports = router;

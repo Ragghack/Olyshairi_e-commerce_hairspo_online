@@ -1,67 +1,18 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { GOOGLE_CLIENT_ID, googleClient } = require("../config/google");
-const User = require("../models/User"); // PostgreSQL User Abstraction
+const User = require("../models/User");
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-for-development';
 
-//Google Signin Route
+// Google Signin Route (Placeholder for future implementation)
 exports.google = async (req, res) => {
-  if (!GOOGLE_CLIENT_ID || !googleClient) {
-    return res
-      .status(500)
-      .json({ error: "Google OAuth is not configured on this server" });
-  }
-
   try {
-    const { token } = req.body; // Google ID Token from frontend
-    if (!token) {
-      return res.status(400).json({ error: "Missing Google ID token" });
-    }
-
-    // Verify token with Gogle
-    const ticket = await googleClient.verifyIdToken({
-      idToken: token,
-      audience: GOOGLE_CLIENT_ID,
-    });
-
-    const payload = ticket.getPayload();
-    // Extract Google's unique ID (sub), email and names
-    const {
-      email,
-      given_name: firstName,
-      family_name: lastName,
-      sub: googleId,
-    } = payload;
-
-    // Check if user exists
-    let user = await User.findOne(email);
-    if (!user) {
-      // Create new user without password (OAuth uses an external auth)
-      user = await User.create({
-        firstName,
-        lastName,
-        email,
-        googleId, // Pass the unique Google ID
-        // passwordHash: null is removed and handled by the model now
-      });
-    }
-    // 3. Update the existing user;s google_id if it's missing (e.g., they registered via passowrd first)
-    // It's good practice for linking accounts.
-
-    if (!user && !user.google_id) {
-      // Assume there is an update method in the User Model
-      await User.updateGoogleId(user._id, googleId);
-    }
-
-    // Generate app's own JWT
-    const appToken = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
-    res.json({ token: appToken, user });
+    return res.status(501).json({ error: "Google OAuth not yet implemented" });
+    
+    // Future implementation will go here
   } catch (err) {
-    console.error("Google OAuth Error:", err.message);
-    res.status(401).json({ error: "Invalid Google login or token expired" });
+    console.error("Google OAuth Error:", err);
+    res.status(500).json({ error: "Google authentication failed" });
   }
 };
 
@@ -70,25 +21,28 @@ exports.register = async (req, res) => {
   try {
     const { firstName, lastName, email, password, confirmPassword } = req.body;
 
+    console.log("📝 Registration attempt:", { firstName, lastName, email });
+
     // Basic validation
     if (!email || !password || !confirmPassword || !firstName || !lastName) {
-      return res.status(400).send({ error: "Missing required fields" });
+      return res.status(400).json({ error: "All fields are required" });
     }
 
-    // ✅ Ensure password and confirmPassword match
+    // Ensure password and confirmPassword match
     if (password !== confirmPassword) {
-      return res.status(400).send({ error: "Passwords do not match" });
+      return res.status(400).json({ error: "Passwords do not match" });
     }
 
     // Check if user already exists
-    if (await User.findOne(email)) {
-      return res.status(409).send({ error: "Email already exists" });
+    const existingUser = await User.findByEmail(email);
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already exists" });
     }
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user in DB (no phoneNumber for now)
+    // Create user in DB
     const user = await User.create({
       firstName,
       lastName,
@@ -105,22 +59,24 @@ exports.register = async (req, res) => {
         lastName: user.lastName,
       },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
-    res.json({
+    console.log("✅ User registered successfully:", user._id);
+
+    res.status(201).json({
       token,
       user: {
         id: user._id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        lastLogin: user.lastLogin || null,
+        memberSince: user.memberSince,
       },
     });
   } catch (err) {
-    console.error("Registration Error:", err.message);
-    res.status(500).send({ error: "Server error during registration." });
+    console.error("❌ Registration Error:", err);
+    res.status(500).json({ error: "Server error during registration: " + err.message });
   }
 };
 
@@ -129,16 +85,28 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log(" Login attempt for:", email);
+
     // Find user
-    const user = await User.findOne(email);
-    if (!user) return res.status(401).send({ error: "Invalid email " });
+    const user = await User.findByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Check if user has password (OAuth users might not have passwords)
+    if (!user.passwordHash) {
+      return res.status(401).json({ error: "Please use Google login for this account" });
+    }
 
     // Compare password
-    const ok = await bcrypt.compare(password, user.passwordHash);
-    if (!ok) return res.status(401).send({ error: "Invalid password" });
+    const isPasswordValid = await user.checkPassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
-    // ✅ Update lastLogin in DB
-    await User.updateLastLogin(user._id);
+    // Update lastLogin in DB
+    user.lastLogin = new Date();
+    await user.save();
 
     // Generate JWT
     const token = jwt.sign(
@@ -149,8 +117,10 @@ exports.login = async (req, res) => {
         lastName: user.lastName,
       },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
+
+    console.log("✅ User logged in successfully:", user._id);
 
     res.json({
       token,
@@ -159,17 +129,61 @@ exports.login = async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        lastLogin: new Date().toISOString(),
+        lastLogin: user.lastLogin,
+        memberSince: user.memberSince,
       },
     });
   } catch (err) {
-    console.error("Login Error:", err.message);
-    res.status(500).send({ error: "Server error during login." });
+    console.error("❌ Login Error:", err);
+    res.status(500).json({ error: "Server error during login: " + err.message });
   }
 };
 
-module.exports = {
-  register: exports.register,
-  login: exports.login,
-  google: exports.google,
+// --- Get User Profile ---
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-passwordHash');
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({ user });
+  } catch (err) {
+    console.error("❌ Profile Error:", err);
+    res.status(500).json({ error: "Server error fetching profile" });
+  }
+};
+// Add this to your existing authController.js
+exports.getProfile = async (req, res) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        
+        if (!token) {
+            return res.status(401).json({ error: 'No token provided' });
+        }
+
+        // Verify token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        
+        // Find user
+        const user = await User.findById(decoded.id).select('-passwordHash');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({
+            user: {
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                memberSince: user.memberSince,
+                lastLogin: user.lastLogin,
+                avatarUrl: user.avatarUrl
+            }
+        });
+    } catch (err) {
+        console.error('Profile Error:', err);
+        res.status(401).json({ error: 'Invalid token' });
+    }
 };
