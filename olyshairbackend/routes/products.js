@@ -3,6 +3,7 @@ const router = express.Router();
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 const multer = require('multer');
+const adminAuth = require('../middleware/adminAuth');
 const cloudinary = require('cloudinary').v2;
 
 // Configure multer for file uploads
@@ -14,7 +15,7 @@ const upload = multer({
 });
 
 // Get all products with filtering and pagination
-router.get('/', auth, async (req, res) => {
+router.get('/', adminAuth, async (req, res) => {
   try {
     const { 
       page = 1, 
@@ -76,7 +77,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // Create new product
-router.post('/', auth, upload.array('images', 5), async (req, res) => {
+router.post('/', adminAuth, upload.array('images', 5), async (req, res) => {
   try {
     const productData = req.body;
     

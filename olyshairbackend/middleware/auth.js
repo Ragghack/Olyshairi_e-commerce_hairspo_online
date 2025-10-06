@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+const { secret } = require('../config/jwt'); // Import from central config
 
 const auth = async (req, res, next) => {
     try {
@@ -11,10 +10,9 @@ const auth = async (req, res, next) => {
             return res.status(401).json({ error: 'No token provided' });
         }
 
-        // Verify token
-        const decoded = jwt.verify(token, JWT_SECRET);
+        // Use the centralized secret
+        const decoded = jwt.verify(token, secret);
         
-        // Find user and attach to request
         const user = await User.findById(decoded.id).select('-passwordHash');
         if (!user) {
             return res.status(401).json({ error: 'User not found' });
@@ -27,4 +25,5 @@ const auth = async (req, res, next) => {
         res.status(401).json({ error: 'Invalid token' });
     }
 };
+
 module.exports = auth;

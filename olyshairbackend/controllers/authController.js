@@ -1,8 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-for-development';
+const { secret, expiresIn } = require("../config/jwt");
 
 // Google Signin Route (Placeholder for future implementation)
 exports.google = async (req, res) => {
@@ -58,8 +57,8 @@ exports.register = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
       },
-      JWT_SECRET,
-      { expiresIn: "24h" }
+      secret, // Use centralized secret
+      { expiresIn } // Use centralized expiresIn
     );
 
     console.log("✅ User registered successfully:", user._id);
@@ -85,7 +84,7 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log(" Login attempt for:", email);
+    console.log("🔐 Login attempt for:", email);
 
     // Find user
     const user = await User.findByEmail(email);
@@ -108,7 +107,7 @@ exports.login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    // Generate JWT
+    // Generate JWT with centralized config
     const token = jwt.sign(
       {
         id: user._id,
@@ -116,8 +115,8 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
       },
-      JWT_SECRET,
-      { expiresIn: "24h" }
+      secret, // Use centralized secret
+      { expiresIn } // Use centralized expiresIn
     );
 
     console.log("✅ User logged in successfully:", user._id);
@@ -142,16 +141,26 @@ exports.login = async (req, res) => {
 // --- Get User Profile ---
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-passwordHash');
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    res.json({ user });
+    // The auth middleware already attached the user
+    const user = req.user;
+    res.json({
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        memberSince: user.memberSince,
+        lastLogin: user.lastLogin,
+        avatarUrl: user.avatarUrl
+      }
+    });
   } catch (err) {
     console.error("❌ Profile Error:", err);
     res.status(500).json({ error: "Server error fetching profile" });
   }
 };
+
 // Add this to your existing authController.js
 exports.getProfile = async (req, res) => {
     try {
@@ -161,8 +170,8 @@ exports.getProfile = async (req, res) => {
             return res.status(401).json({ error: 'No token provided' });
         }
 
-        // Verify token
-        const decoded = jwt.verify(token, JWT_SECRET);
+        // Verify token with centralized secret
+        const decoded = jwt.verify(token, secret);
         
         // Find user
         const user = await User.findById(decoded.id).select('-passwordHash');

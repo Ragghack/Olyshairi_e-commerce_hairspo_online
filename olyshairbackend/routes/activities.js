@@ -1,13 +1,23 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose'); // Add this
 const Activity = require('../models/Activity');
 const User = require('../models/User');
 const Order = require('../models/Order');
-const auth = require('../middleware/auth');
+const Product = require('../models/Product');
+const adminAuth = require('../middleware/adminAuth');
+
+// Add debug logging
+// Use mongoose.model() directl
+// Debug logging
+console.log('🔍 Order model in activities:', typeof Order, Order?.modelName);
+console.log('🔍 Order.find in activities:', typeof Order?.find);
 
 // Get dashboard statistics
-router.get('/dashboard-stats', auth, async (req, res) => {
+router.get('/dashboard-stats', adminAuth, async (req, res) => {
   try {
+    console.log('📊 Fetching dashboard stats...');
+    
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -38,6 +48,13 @@ router.get('/dashboard-stats', auth, async (req, res) => {
       createdAt: { $gte: today, $lt: tomorrow }
     });
 
+    console.log('📊 Dashboard stats calculated:', {
+      totalSalesToday,
+      newOrdersCount,
+      lowStockProducts,
+      newCustomersCount
+    });
+
     res.json({
       totalSalesToday,
       newOrdersCount,
@@ -45,7 +62,7 @@ router.get('/dashboard-stats', auth, async (req, res) => {
       newCustomersCount
     });
   } catch (error) {
-    console.error('Dashboard stats error:', error);
+    console.error('❌ Dashboard stats error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
