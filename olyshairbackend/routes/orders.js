@@ -1,105 +1,141 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose'); // Add mongoose import
+const mongoose = require('mongoose');
 const Order = require('../models/Order');
-const adminAuth = require('../middleware/adminAuth'); // Changed from auth to adminAuth
+const adminAuth = require('../middleware/adminAuth');
 
-// Add debug logging to verify Order model
-console.log('🔍 Order model type in orders:', typeof Order);
-console.log('🔍 Order model name in orders:', Order?.modelName);
-console.log('🔍 Order.find function:', typeof Order.find);
+// ===== Debug Info on Load =====
+console.log('🔍 [OrderRoute] Model type:', typeof Order);
+console.log('🔍 [OrderRoute] Model name:', Order?.modelName);
+console.log('🔍 [OrderRoute] Has .find():', typeof Order.find === 'function');
 
-// Get all orders with filtering and pagination
+// ===============================
+// 📊 GET ORDER STATISTICS (must come before /:id)
+// ===============================
+router.get('/stats/overview', adminAuth, async (req, res) => {
+  try {
+    console.log('📊 Calculating order statistics...');
+    
+    const [totalOrders, pendingOrders, completedOrders] = await Promise.all([
+      Order.countDocuments({ isDeleted: false }),
+      Order.countDocuments({ status: 'pending', isDeleted: false }),
+      Order.countDocuments({ status: 'delivered', isDeleted: false })
+    ]);
+
+    const revenue = await Order.aggregate([
+      { $match: { status: 'delivered', isDeleted: false } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+    ]);
+
+    const totalRevenue = revenue.length ? revenue[0].total : 0;
+
+    return res.json({
+      totalOrders,
+      pendingOrders,
+      completedOrders,
+      totalRevenue
+    });
+  } catch (error) {
+    console.error('❌ Order stats error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ===============================
+// 📦 GET ALL ORDERS (Paginated)
+// ===============================
 router.get('/', adminAuth, async (req, res) => {
   try {
     console.log('📦 Fetching orders...');
     
-    const { 
-      page = 1, 
-      limit = 10, 
-      status, 
-      sortBy = 'createdAt', 
-      sortOrder = 'desc' 
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
     } = req.query;
 
     const filter = { isDeleted: false };
-    
-    if (status && status !== 'all') {
-      filter.status = status;
-    }
+    if (status && status !== 'all') filter.status = status;
 
-    const sort = {};
-    sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+    const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
 
-    const orders = await Order.find(filter)
-      .populate('user', 'firstName lastName email')
-      .sort(sort)
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+    const [orders, total] = await Promise.all([
+      Order.find(filter)
+        .populate('user', 'firstName lastName email')
+        .sort(sort)
+        .limit(parseInt(limit))
+        .skip((page - 1) * limit)
+        .lean(),
+      Order.countDocuments(filter)
+    ]);
 
-    const total = await Order.countDocuments(filter);
+    console.log(`✅ Found ${orders.length} orders.`);
 
-    console.log(`📦 Found ${orders.length} orders`);
-
-    res.json({
+    return res.json({
       orders,
       totalPages: Math.ceil(total / limit),
-      currentPage: page,
+      currentPage: parseInt(page),
       total
     });
   } catch (error) {
     console.error('❌ Get orders error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Get single order
+// ===============================
+// 🔍 GET SINGLE ORDER
+// ===============================
 router.get('/:id', adminAuth, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate('user', 'firstName lastName email phoneNumber')
       .populate('items.product');
-    
-    if (!order) {
+
+    if (!order)
       return res.status(404).json({ error: 'Order not found' });
-    }
-    
-    res.json({ order });
+
+    return res.json({ order });
   } catch (error) {
     console.error('❌ Get order error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Update order status
+// ===============================
+// 🚚 UPDATE ORDER STATUS
+// ===============================
 router.put('/:id/status', adminAuth, async (req, res) => {
   try {
     const { status, trackingNumber } = req.body;
-    
+
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         status,
         ...(trackingNumber && { trackingNumber })
       },
       { new: true }
     ).populate('user', 'firstName lastName email');
 
-    if (!order) {
+    if (!order)
       return res.status(404).json({ error: 'Order not found' });
-    }
 
-    res.json({
+    return res.json({
       message: 'Order status updated successfully',
       order
     });
   } catch (error) {
     console.error('❌ Update order status error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Delete order (soft delete)
+// ===============================
+// 🗑️ SOFT DELETE ORDER
+// ===============================
 router.delete('/:id', adminAuth, async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(
@@ -108,200 +144,92 @@ router.delete('/:id', adminAuth, async (req, res) => {
       { new: true }
     );
 
-    if (!order) {
+    if (!order)
       return res.status(404).json({ error: 'Order not found' });
-    }
 
-    res.json({ message: 'Order deleted successfully' });
+    return res.json({ message: 'Order deleted successfully' });
   } catch (error) {
     console.error('❌ Delete order error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Get order statistics
-router.get('/stats/overview', adminAuth, async (req, res) => {
-  try {
-    console.log('📊 Fetching order statistics...');
-    
-    const totalOrders = await Order.countDocuments({ isDeleted: false });
-    const pendingOrders = await Order.countDocuments({ 
-      status: 'pending', 
-      isDeleted: false 
-    });
-    const completedOrders = await Order.countDocuments({ 
-      status: 'delivered', 
-      isDeleted: false 
-    });
-    
-    const totalRevenueResult = await Order.aggregate([
-      { 
-        $match: { 
-          status: 'delivered', 
-          isDeleted: false 
-        } 
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$totalAmount' }
-        }
-      }
-    ]);
+// ===============================
+// 🎭 MOCK ORDERS (development)
+// ===============================
+router.get('/mock/orders', adminAuth, (req, res) => {
+  console.log('🎭 Serving mock orders data...');
+  
+  const mockOrders = [
+    {
+      _id: '1',
+      orderNumber: 'OL-2874',
+      user: { firstName: 'Roseu', lastName: 'User', email: 'roseu@example.com' },
+      status: 'delivered',
+      totalAmount: 199.99,
+      createdAt: new Date(),
+      items: [{ product: { name: 'Brazilian Body Wave' }, quantity: 1, price: 199.99 }]
+    },
+    {
+      _id: '2',
+      orderNumber: 'OL-2861',
+      user: { firstName: 'Sarah', lastName: 'User', email: 'sarah@example.com' },
+      status: 'processing',
+      totalAmount: 259.99,
+      createdAt: new Date(),
+      items: [
+        { product: { name: 'Peruvian Straight' }, quantity: 1, price: 199.99 },
+        { product: { name: 'Hair Care Kit' }, quantity: 1, price: 60.00 }
+      ]
+    }
+  ];
 
-    console.log('📊 Order stats calculated:', {
-      totalOrders,
-      pendingOrders,
-      completedOrders,
-      totalRevenue: totalRevenueResult.length > 0 ? totalRevenueResult[0].total : 0
-    });
-
-    res.json({
-      totalOrders,
-      pendingOrders,
-      completedOrders,
-      totalRevenue: totalRevenueResult.length > 0 ? totalRevenueResult[0].total : 0
-    });
-  } catch (error) {
-    console.error('❌ Order stats error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+  return res.json({
+    orders: mockOrders,
+    totalPages: 1,
+    currentPage: 1,
+    total: mockOrders.length
+  });
 });
 
-// Mock data for development (fallback if Order model fails)
-router.get('/mock/orders', adminAuth, async (req, res) => {
-  try {
-    console.log('🎭 Using mock orders data...');
-    
-    const mockOrders = [
-      {
-        _id: '1',
-        orderNumber: 'OL-2874',
-        user: {
-          firstName: 'Roseu',
-          lastName: 'User',
-          email: 'roseu@example.com'
-        },
-        status: 'delivered',
-        totalAmount: 199.99,
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-        items: [
-          {
-            product: {
-              name: 'Brazilian Body Wave'
-            },
-            quantity: 1,
-            price: 199.99
-          }
-        ]
-      },
-      {
-        _id: '2',
-        orderNumber: 'OL-2861',
-        user: {
-          firstName: 'Sarah',
-          lastName: 'User',
-          email: 'sarah@example.com'
-        },
-        status: 'processing',
-        totalAmount: 259.99,
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-        items: [
-          {
-            product: {
-              name: 'Peruvian Straight'
-            },
-            quantity: 1,
-            price: 199.99
-          },
-          {
-            product: {
-              name: 'Hair Care Kit'
-            },
-            quantity: 1,
-            price: 60.00
-          }
-        ]
-      },
-      {
-        _id: '3',
-        orderNumber: 'OL-2843',
-        user: {
-          firstName: 'Michael',
-          lastName: 'User',
-          email: 'michael@example.com'
-        },
-        status: 'shipped',
-        totalAmount: 179.99,
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-        items: [
-          {
-            product: {
-              name: 'Malaysian Curly'
-            },
-            quantity: 1,
-            price: 179.99
-          }
-        ]
-      }
-    ];
-
-    res.json({
-      orders: mockOrders,
-      totalPages: 1,
-      currentPage: 1,
-      total: mockOrders.length
-    });
-  } catch (error) {
-    console.error('❌ Mock orders error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Test route to verify Order model
+// ===============================
+// 🧪 TEST MODEL INTEGRITY
+// ===============================
 router.get('/test/model', adminAuth, async (req, res) => {
   try {
-    console.log('🧪 Testing Order model...');
+    console.log('🧪 Testing Order model integrity...');
     
-    // Test if Order model is working
     const testOrder = new Order({
       orderNumber: 'TEST-001',
-      user: req.user._id, // Use current admin user
+      user: new mongoose.Types.ObjectId(),
       items: [{
-        product: '507f1f77bcf86cd799439011', // Mock product ID
+        product: new mongoose.Types.ObjectId(),
         quantity: 1,
         price: 99.99
       }],
       totalAmount: 99.99,
-      status: 'pending',
       paymentMethod: 'credit_card'
     });
 
-    // Just test creation without saving
-    const isValid = testOrder.validateSync();
-    
-    if (isValid) {
+    const validationError = testOrder.validateSync();
+    if (validationError) {
       return res.json({
         success: false,
-        error: 'Order validation failed',
-        details: isValid.errors
+        error: 'Validation failed',
+        details: validationError.errors
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
-      message: 'Order model is working correctly',
-      modelType: typeof Order,
-      modelName: Order.modelName,
-      hasFind: typeof Order.find === 'function',
-      hasCreate: typeof Order.create === 'function'
+      message: 'Order model works correctly',
+      modelName: Order.modelName
     });
   } catch (error) {
     console.error('❌ Order model test error:', error);
-    res.json({
+    return res.json({
       success: false,
-      error: error.message,
-      modelType: typeof Order
+      error: error.message
     });
   }
 });
