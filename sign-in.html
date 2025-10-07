@@ -888,7 +888,7 @@
     <script>
       async function loadGoogleClientId(){
         try{
-          const res = await fetch("http://localhost:5000/api/config/google-client-id");
+          const res = await fetch("http://localhost:5001/api/config/google-client-id");
           const data = await res.json();
 
           // Dynamically set client_id attribute
@@ -916,7 +916,7 @@
       // Handles Google Login
       async function handleGoogleLogin(response){
         try{
-          const res = await fetch("http://localhost:5000/api/auth/google", {
+          const res = await fetch("http://localhost:5001/api/auth/google", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token: response.credential }),
@@ -1046,53 +1046,63 @@
             : '<i class="fas fa-eye-slash"></i>';
       });
 
-      // Form submission - Login
-      document.getElementById("signin-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
+      // Form submission - Login (Enhanced version)
+document.getElementById("signin-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-        console.log("🔐 Login attempt for:", email);
+  console.log("🔐 Login attempt for:", email);
 
-        // Basic validation
-        if (!email || !password) {
-          alert("Please enter both email and password");
-          return;
-        }
+  // Basic validation
+  if (!email || !password) {
+    alert("Please enter both email and password");
+    return;
+  }
 
-        try {
-          const res = await fetch("http://localhost:5000/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-          });
-          
-          const data = await res.json();
+  try {
+    console.log("📡 Sending request to: http://localhost:5001/api/auth/login");
+    
+    const res = await fetch("http://localhost:5001/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    
+    console.log("📨 Response status:", res.status);
+    console.log("📨 Response ok:", res.ok);
+    
+    const data = await res.json();
+    console.log("📨 Response data:", data);
 
-          if (!res.ok) {
-            alert(data.error || "Login failed");
-            return;
-          }
+    if (!res.ok) {
+      alert(data.error || `Login failed with status: ${res.status}`);
+      return;
+    }
 
-          // Save JWT token
-          localStorage.setItem("token", data.token);
-          console.log("✅ Login successful, token saved:", data.token ? "Yes" : "No");
+    // Save JWT token
+    localStorage.setItem("token", data.token);
+    console.log("✅ Login successful, token saved:", data.token ? "Yes" : "No");
 
-          // Show success message
-          alert("Login successful! Welcome back!");
+    // Show success message
+    alert("Login successful! Welcome back!");
 
-          // Redirect to dashboard with slight delay
-          setTimeout(() => {
-            window.location.href = "customerdashboard.html";
-          }, 100);
+    // Redirect to dashboard with slight delay
+    setTimeout(() => {
+      window.location.href = "customerdashboard.html";
+    }, 100);
 
-        } catch (err) {
-          console.error("Login error:", err);
-          alert("Server error during login. Please try again.");
-        }
-      });
-
+  } catch (err) {
+    console.error("❌ Login error:", err);
+    console.error("❌ Error details:", {
+      name: err.name,
+      message: err.message,
+      stack: err.stack
+    });
+    alert("Server error during login. Please check console for details.");
+  }
+});
       // Form submission - Registration
       document.getElementById("signup-form").addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -1132,7 +1142,7 @@
         const lastName = nameParts.slice(1).join(" ");
 
         try {
-          const res = await fetch("http://localhost:5000/api/auth/register", {
+          const res = await fetch("http://localhost:5001/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 

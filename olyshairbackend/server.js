@@ -5,7 +5,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({ path: './olyshair.env' });
 
 const app = express();
 
@@ -30,7 +30,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ================================
 // 💾 MongoDB Connection - FIXED
 // ================================
+<<<<<<< HEAD
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://josymambo858_db_user:v3VSBGbeumlMZO9m@daviddbprogress.lgcze5s.mongodb.net/olyshair';
+=======
+const MONGODB_URI = process.env.MONGODB_URI;
+>>>>>>> 33ffe641501170a45923eaa55007e2543866d8ae
 
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected successfully'))
