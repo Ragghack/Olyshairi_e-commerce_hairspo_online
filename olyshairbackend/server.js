@@ -60,6 +60,11 @@ mongoose.connection.on('error', (err) => console.error('❌ Mongoose connection 
 mongoose.connection.on('disconnected', () => console.warn('⚠️ Mongoose disconnected from database'));
 
 // ================================
+// 📦 Import Models
+// ================================
+const Product = require('./models/Product');
+
+// ================================
 // 🚦 API Routes
 // ================================
 
@@ -81,7 +86,26 @@ app.get('/api/test', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-//--- Cloudinary Test Route ---
+
+// --- Public Products Endpoint ---
+app.get('/api/products', async (req, res) => {
+  try {
+    console.log('📦 Fetching public products...');
+    
+    const products = await Product.find({ isActive: true }).sort({ createdAt: -1 });
+    
+    console.log(`✅ Found ${products.length} active products`);
+    
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('❌ Public products fetch error:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch products',
+      details: error.message 
+    });
+  }
+});
+
 // --- Cloudinary Test Route ---
 app.get('/api/test-cloudinary', async (req, res) => {
   try {
@@ -100,6 +124,20 @@ app.get('/api/test-cloudinary', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: 'Cloudinary test failed',
+      details: error.message 
+    });
+  }
+});
+
+// --- Public Categories Endpoint ---
+app.get('/api/categories', async (req, res) => {
+  try {
+    const categories = await Product.distinct('category', { isActive: true });
+    res.status(200).json(categories);
+  } catch (error) {
+    console.error('❌ Categories fetch error:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch categories',
       details: error.message 
     });
   }
@@ -162,6 +200,8 @@ app.use('*', (req, res) => {
     availableEndpoints: [
       'GET /api/health',
       'GET /api/test',
+      'GET /api/products',
+      'GET /api/categories',
       'POST /api/auth/login',
       'GET /api/customer',
       'GET /api/admin/products',
@@ -200,6 +240,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`📱 API Base: http://localhost:${PORT}/api`);
   console.log(`🏥 Health Check: http://localhost:${PORT}/api/health`);
   console.log(`🧪 Test Route: http://localhost:${PORT}/api/test`);
+  console.log(`🛍️ Public Products: http://localhost:${PORT}/api/products`);
+  console.log(`📊 Categories: http://localhost:${PORT}/api/categories`);
   console.log(`🖼️ Uploads: http://localhost:${PORT}/uploads`);
   console.log(`💾 Database: ${mongoose.connection.readyState === 1 ? 'Connected ✅' : 'Disconnected ❌'}`);
   console.log(`=========================================\n`);
