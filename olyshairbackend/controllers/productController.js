@@ -1,20 +1,45 @@
 const Product = require("../models/Product");
 const cloudinary = require("cloudinary").v2;
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Configure with validation
+const configureCloudinary = () => {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  console.log('🔧 Cloudinary Config Check:');
+  console.log('Cloud Name:', cloudName);
+  console.log('API Key:', apiKey ? '***' + apiKey.slice(-4) : 'Missing');
+  console.log('API Secret:', apiSecret ? '***' + apiSecret.slice(-4) : 'Missing');
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    console.error('❌ Cloudinary configuration incomplete!');
+    return false;
+  }
+
+  try {
+    cloudinary.config({
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+      secure: true
+    });
+    console.log('✅ Cloudinary configured successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Cloudinary configuration failed:', error);
+    return false;
+  }
+};
+
+// Call this when your server starts
+configureCloudinary();
 
 // =========================
 // CREATE PRODUCT
 // =========================
 exports.createProduct = async (req, res) => {
   try {
-    console.log("JWT Token present, length:", req.headers.authorization?.length);
-
     const { name, category, price, stock, color, texture, length, quality } = req.body;
 
     if (!name || !category || !price) {
@@ -23,21 +48,34 @@ exports.createProduct = async (req, res) => {
 
     let imageUrl = null;
 
-    // Check if a file is uploaded (via Multer middleware)
-    if (req.file) {
-      console.log("Uploading image to Cloudinary...");
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "products",
-      });
-      imageUrl = result.secure_url;
-      console.log("Image uploaded successfully:", imageUrl);
+    // Check if Cloudinary is configured
+    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      console.warn('⚠️ Cloudinary not configured - skipping image upload');
+    }
+    // Handle image upload if file exists AND Cloudinary is configured
+    else if (req.file) {
+      try {
+        console.log("📤 Uploading image to Cloudinary...");
+        
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: "olyshair/products",
+          resource_type: "image"
+        });
+        
+        imageUrl = result.secure_url;
+        console.log("✅ Image uploaded successfully:", imageUrl);
+      } catch (uploadError) {
+        console.error("❌ Cloudinary upload failed:", uploadError);
+        // Continue without image rather than failing the entire product creation
+        console.log("🔄 Continuing product creation without image");
+      }
     }
 
     const newProduct = new Product({
       name,
       category,
       price,
-      stock,
+      stock: stock || 0,
       color,
       texture,
       length,
@@ -46,10 +84,16 @@ exports.createProduct = async (req, res) => {
     });
 
     await newProduct.save();
-    res.status(201).json({ message: "Product created successfully", product: newProduct });
+    
+    res.status(201).json({ 
+      message: "Product created successfully", 
+      product: newProduct 
+    });
   } catch (error) {
-    console.error("Create product error:", error.message);
-    res.status(500).json({ error: error.message || "Internal server error" });
+    console.error("❌ Create product error:", error);
+    res.status(500).json({ 
+      error: error.message || "Internal server error" 
+    });
   }
 };
 

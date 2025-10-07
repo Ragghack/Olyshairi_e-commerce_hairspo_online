@@ -1,11 +1,12 @@
 // ================================
-// 🌟 OLYSHAIR Backend Server (Clean Version)
+// 🌟 OLYSHAIR Backend Server (Fixed Version)
 // ================================
 
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config({ path: './olyshair.env' });
 
 const app = express();
@@ -28,6 +29,13 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('✅ Created uploads directory');
+}
+
 // Serve static uploads (images/files)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -38,15 +46,13 @@ const MONGODB_URI =
   process.env.MONGODB_URI ||
   'mongodb+srv://josymambo858_db_user:v3VSBGbeumlMZO9m@daviddbprogress.lgcze5s.mongodb.net/olyshair';
 
-(async () => {
-  try {
-    await mongoose.connect(MONGODB_URI);
-    console.log('✅ MongoDB connected successfully');
-  } catch (err) {
+// Connect to MongoDB
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ MongoDB connected successfully'))
+  .catch((err) => {
     console.error('❌ MongoDB connection error:', err.message);
     process.exit(1);
-  }
-})();
+  });
 
 // Connection events
 mongoose.connection.on('connected', () => console.log('📡 Mongoose connected to database'));
@@ -75,19 +81,63 @@ app.get('/api/test', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+//--- Cloudinary Test Route ---
+// --- Cloudinary Test Route ---
+app.get('/api/test-cloudinary', async (req, res) => {
+  try {
+    // Test upload of a small image
+    const result = await cloudinary.uploader.upload(
+      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2RkZCIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5Ij5UZXN0PC90ZXh0Pjwvc3ZnPg==',
+      { folder: 'olyshair/test' }
+    );
+    
+    res.json({ 
+      success: true, 
+      message: 'Cloudinary test successful!',
+      imageUrl: result.secure_url 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: 'Cloudinary test failed',
+      details: error.message 
+    });
+  }
+});
+
+// Safe route loader function
+const loadRoute = (routePath, routeName) => {
+  try {
+    console.log(`🔄 Loading route: ${routeName}`);
+    return require(routePath);
+  } catch (error) {
+    console.error(`❌ Failed to load route ${routeName}:`, error.message);
+    
+    // Return a basic router that shows the route is not implemented
+    const router = express.Router();
+    router.all('*', (req, res) => {
+      res.status(501).json({
+        error: 'Route not implemented',
+        message: `${routeName} routes are not yet available`,
+        path: req.originalUrl
+      });
+    });
+    return router;
+  }
+};
 
 // --- Public & Customer Routes ---
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/customer', require('./routes/customer'));
-app.use('/api/config', require('./routes/config'));
-app.use('/api/upload', require('./routes/uploads'));
+app.use('/api/auth', loadRoute('./routes/auth', 'Auth'));
+app.use('/api/customer', loadRoute('./routes/customer', 'Customer'));
+app.use('/api/config', loadRoute('./routes/config', 'Config'));
+app.use('/api/upload', loadRoute('./routes/uploads', 'Uploads'));
 
 // --- Admin Routes ---
-app.use('/api/admin/auth', require('./routes/adminAuth'));
-app.use('/api/admin/products', require('./routes/products'));
-app.use('/api/admin/orders', require('./routes/orders'));
-app.use('/api/admin/users', require('./routes/users'));
-app.use('/api/admin/activities', require('./routes/activities'));
+app.use('/api/admin/auth', loadRoute('./routes/adminAuth', 'Admin Auth'));
+app.use('/api/admin/products', loadRoute('./routes/products', 'Products'));
+app.use('/api/admin/orders', loadRoute('./routes/orders', 'Orders'));
+app.use('/api/admin/users', loadRoute('./routes/users', 'Users'));
+app.use('/api/admin/activities', loadRoute('./routes/activities', 'Activities'));
 
 // ================================
 // ⚠️ Error Handling Middleware
@@ -150,6 +200,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`📱 API Base: http://localhost:${PORT}/api`);
   console.log(`🏥 Health Check: http://localhost:${PORT}/api/health`);
   console.log(`🧪 Test Route: http://localhost:${PORT}/api/test`);
+  console.log(`🖼️ Uploads: http://localhost:${PORT}/uploads`);
   console.log(`💾 Database: ${mongoose.connection.readyState === 1 ? 'Connected ✅' : 'Disconnected ❌'}`);
   console.log(`=========================================\n`);
 });

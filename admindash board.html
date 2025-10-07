@@ -1504,30 +1504,78 @@
         async function handleAddProduct(e) {
             e.preventDefault();
             
-            const formData = new FormData();
+           // In your admin dashboard JavaScript
+async function handleProductSubmit(event) {
+    event.preventDefault(); // Prevent form default submission
+    
+    try {
+        // Show loading state
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Adding Product...';
+
+        const formData = new FormData();
+        
+        // Add text fields
+        formData.append('name', document.getElementById('productName').value);
+        formData.append('description', document.getElementById('productDescription').value);
+        formData.append('price', document.getElementById('productPrice').value);
+        formData.append('stock', document.getElementById('productStock').value);
+        formData.append('category', document.getElementById('productCategory').value);
+        formData.append('type', document.getElementById('productType').value);
+        formData.append('length', document.getElementById('productLength').value);
+        formData.append('texture', document.getElementById('productTexture').value);
+        formData.append('color', document.getElementById('productColor').value);
+        formData.append('quality', document.getElementById('productQuality').value);
+        
+        const oldPrice = document.getElementById('productOldPrice').value;
+        if (oldPrice) {
+            formData.append('oldPrice', oldPrice);
+        }
+        
+        // Add image files
+        const imageFiles = document.getElementById('productImages').files;
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append('images', imageFiles[i]);
+        }
+
+        // ✅ SEND TO BACKEND - Add this part!
+        const response = await fetch('/api/admin/products', {
+            method: 'POST',
+            body: formData,
+            // Don't set Content-Type header - FormData sets it automatically with boundary
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // Success!
+            alert('Product added successfully!');
+            console.log('Product created:', result);
             
-            // Add text fields
-            formData.append('name', document.getElementById('productName').value);
-            formData.append('description', document.getElementById('productDescription').value);
-            formData.append('price', document.getElementById('productPrice').value);
-            formData.append('stock', document.getElementById('productStock').value);
-            formData.append('category', document.getElementById('productCategory').value);
-            formData.append('type', document.getElementById('productType').value);
-            formData.append('length', document.getElementById('productLength').value);
-            formData.append('texture', document.getElementById('productTexture').value);
-            formData.append('color', document.getElementById('productColor').value);
-            formData.append('quality', document.getElementById('productQuality').value);
+            // Reset form
+            document.getElementById('productForm').reset();
             
-            const oldPrice = document.getElementById('productOldPrice').value;
-            if (oldPrice) {
-                formData.append('oldPrice', oldPrice);
-            }
-            
-            // Add image files
-            const imageFiles = document.getElementById('productImages').files;
-            for (let i = 0; i < imageFiles.length; i++) {
-                formData.append('images', imageFiles[i]);
-            }
+            // Redirect or update UI
+            window.location.href = '/admin/products'; // or update product list
+        } else {
+            // Error from server
+            throw new Error(result.error || 'Failed to add product');
+        }
+
+    } catch (error) {
+        console.error('Error adding product:', error);
+        alert('Error: ' + error.message);
+    } finally {
+        // Reset button state
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Add Product';
+    }
+}
+
+// Attach to your form
+document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
             
             const saveProductBtn = document.getElementById('saveProductBtn');
             const originalText = saveProductBtn.textContent;

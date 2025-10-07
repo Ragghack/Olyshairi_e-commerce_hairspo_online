@@ -977,13 +977,13 @@
 
     <script>
         // API Configuration
-        const API_BASE_URL = 'https://your-backend-domain.com/api';
+        const API_BASE_URL = 'http://localhost:5001/api';
         const ENDPOINTS = {
-            PRODUCTS: `${API_BASE_URL}/products`,
-            CATEGORIES: `${API_BASE_URL}/categories`,
-            CART: `${API_BASE_URL}/cart`,
-            ORDERS: `${API_BASE_URL}/orders`
-        };
+    PRODUCTS: `${API_BASE_URL}/admin/products`, // Changed to admin/products
+    CATEGORIES: `${API_BASE_URL}/categories`,
+    CART: `${API_BASE_URL}/cart`,
+    ORDERS: `${API_BASE_URL}/orders`
+};
 
         // Global State
         let products = [];
@@ -1083,36 +1083,50 @@
         }
 
         // Load products from backend
-        async function loadProducts() {
-            showLoading();
-            
-            try {
-                const response = await fetch(ENDPOINTS.PRODUCTS, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to fetch products');
-                }
-                
-                const data = await response.json();
-                products = data.products || [];
-                
-                if (products.length === 0) {
-                    showEmptyState();
-                } else {
-                    renderProducts(products);
-                }
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showErrorState();
-            } finally {
-                hideLoading();
+       // Load products from backend
+async function loadProducts() {
+    showLoading();
+    
+    try {
+        const response = await fetch(ENDPOINTS.PRODUCTS, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
             }
+        });
+        
+        console.log('API Response Status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch products: ${response.status}`);
         }
+        
+        const data = await response.json();
+        console.log('Products Data:', data);
+        
+        // Handle both array and object response formats
+        if (Array.isArray(data)) {
+            products = data;
+        } else if (data.products && Array.isArray(data.products)) {
+            products = data.products;
+        } else {
+            products = [];
+        }
+        
+        console.log('Processed Products:', products);
+        
+        if (products.length === 0) {
+            showEmptyState();
+        } else {
+            renderProducts(products);
+        }
+    } catch (error) {
+        console.error('Error loading products:', error);
+        showErrorState(error.message);
+    } finally {
+        hideLoading();
+    }
+}
 
         // Render products to the grid
         function renderProducts(productsToRender) {
@@ -1130,67 +1144,80 @@
         }
 
         // Create product card HTML
-        function createProductCard(product) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <div class="product-image">
-                    <img src="${product.image || 'images/placeholder-product.jpg'}" alt="${product.name}">
-                    <div class="quality-badge">${product.quality || 'Premium'}</div>
-                    <div class="quick-view-btn" data-product="${product.id}">
-                        <i class="fas fa-eye"></i>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <h3>${product.name}</h3>
-                    <div class="product-detail">${product.type} • ${product.length}</div>
-                    <div class="price-container">
-                        <div class="price">$${product.price}</div>
-                        ${product.oldPrice ? `<div class="old-price">$${product.oldPrice}</div>` : ''}
-                    </div>
-                    <button class="add-to-cart" data-product="${product.id}">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
-                </div>
-            `;
-            
-            // Add event listeners
-            const quickViewBtn = card.querySelector('.quick-view-btn');
-            const addToCartBtn = card.querySelector('.add-to-cart');
-            
-            quickViewBtn.addEventListener('click', () => openQuickView(product.id));
-            addToCartBtn.addEventListener('click', () => addToCart(product.id));
-            
-            return card;
-        }
+function createProductCard(product) {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    
+    // Use the correct property names from your backend
+    const productId = product._id || product.id;
+    const productName = product.name || 'Unnamed Product';
+    const productPrice = product.price || 0;
+    const productImage = product.image || product.images?.[0]?.url || 'images/placeholder-product.jpg';
+    const productType = product.type || product.category || 'Hair Extension';
+    const productLength = product.length || 'N/A';
+    const productQuality = product.quality || 'Premium';
+    
+    card.innerHTML = `
+        <div class="product-image">
+            <img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">
+            <div class="quality-badge">${productQuality}</div>
+            <div class="quick-view-btn" data-product="${productId}">
+                <i class="fas fa-eye"></i>
+            </div>
+        </div>
+        <div class="product-info">
+            <h3>${productName}</h3>
+            <div class="product-detail">${productType} • ${productLength}</div>
+            <div class="price-container">
+                <div class="price">$${productPrice}</div>
+                ${product.oldPrice ? `<div class="old-price">$${product.oldPrice}</div>` : ''}
+            </div>
+            <button class="add-to-cart" data-product="${productId}">
+                <i class="fas fa-cart-plus"></i> Add to Cart
+            </button>
+        </div>
+    `;
+    
+    // Add event listeners
+    const quickViewBtn = card.querySelector('.quick-view-btn');
+    const addToCartBtn = card.querySelector('.add-to-cart');
+    
+    quickViewBtn.addEventListener('click', () => openQuickView(productId));
+    addToCartBtn.addEventListener('click', () => addToCart(productId));
+    
+    return card;
+}
 
         // Open quick view modal
-        function openQuickView(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            currentProductId = productId;
-            
-            // Populate modal with product data
-            document.getElementById('modalImg').src = product.image || 'images/placeholder-product.jpg';
-            document.getElementById('modalTitle').textContent = product.name;
-            document.getElementById('modalPrice').textContent = `$${product.price}`;
-            document.getElementById('modalOldPrice').textContent = product.oldPrice ? `$${product.oldPrice}` : '';
-            document.getElementById('modalType').textContent = product.type || 'N/A';
-            document.getElementById('modalLength').textContent = product.length || 'N/A';
-            document.getElementById('modalTexture').textContent = product.texture || 'N/A';
-            document.getElementById('modalColor').textContent = product.color || 'N/A';
-            document.getElementById('modalQuality').textContent = product.quality || 'N/A';
-            document.getElementById('modalStock').textContent = product.stock || 'N/A';
-            document.getElementById('modalDescription').textContent = product.description || 'No description available.';
-            
-            // Update add to cart button in modal
-            const modalAddToCart = document.getElementById('modalAddToCart');
-            modalAddToCart.onclick = () => addToCart(productId);
-            
-            // Show modal
-            document.getElementById('productModal').classList.add('active');
-        }
+function openQuickView(productId) {
+    const product = products.find(p => p._id === productId || p.id === productId);
+    if (!product) {
+        console.error('Product not found:', productId);
+        return;
+    }
+    
+    currentProductId = productId;
+    
+    // Populate modal with product data
+    document.getElementById('modalImg').src = product.image || product.images?.[0]?.url || 'images/placeholder-product.jpg';
+    document.getElementById('modalTitle').textContent = product.name || 'Unnamed Product';
+    document.getElementById('modalPrice').textContent = `$${product.price || 0}`;
+    document.getElementById('modalOldPrice').textContent = product.oldPrice ? `$${product.oldPrice}` : '';
+    document.getElementById('modalType').textContent = product.type || product.category || 'N/A';
+    document.getElementById('modalLength').textContent = product.length || 'N/A';
+    document.getElementById('modalTexture').textContent = product.texture || 'N/A';
+    document.getElementById('modalColor').textContent = product.color || 'N/A';
+    document.getElementById('modalQuality').textContent = product.quality || 'N/A';
+    document.getElementById('modalStock').textContent = product.stock || 'N/A';
+    document.getElementById('modalDescription').textContent = product.description || 'No description available.';
+    
+    // Update add to cart button in modal
+    const modalAddToCart = document.getElementById('modalAddToCart');
+    modalAddToCart.onclick = () => addToCart(productId);
+    
+    // Show modal
+    document.getElementById('productModal').classList.add('active');
+}
 
         // Add product to cart
         function addToCart(productId) {
@@ -1406,18 +1433,24 @@
         }
 
         // Show error state
-        function showErrorState() {
-            productsGrid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Unable to Load Products</h3>
-                    <p>Please try refreshing the page or check your connection.</p>
-                    <button class="add-to-cart" onclick="loadProducts()" style="margin-top: 20px;">
-                        <i class="fas fa-redo"></i> Try Again
-                    </button>
-                </div>
-            `;
-        }
+function showErrorState(errorMessage = '') {
+    productsGrid.innerHTML = `
+        <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Unable to Load Products</h3>
+            <p>${errorMessage || 'Please try refreshing the page or check your connection.'}</p>
+            <div style="margin-top: 15px; font-size: 14px; color: #666;">
+                <p>Make sure your backend server is running on localhost:5001</p>
+            </div>
+            <button class="add-to-cart" onclick="loadProducts()" style="margin-top: 20px;">
+                <i class="fas fa-redo"></i> Try Again
+            </button>
+            <button class="add-to-cart" onclick="testAPI()" style="margin-top: 10px; background-color: var(--dark-gray);">
+                <i class="fas fa-plug"></i> Test API Connection
+            </button>
+        </div>
+    `;
+}
 
         // Show notification
         function showNotification(message) {
