@@ -5,7 +5,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({ path: './olyshair.env' });
 
 const app = express();
 
@@ -29,8 +29,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ================================
 // 💾 MongoDB Connection
 // ================================
-const MONGODB_URI =
-  process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/5500/olyshair';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose
   .connect(MONGODB_URI, {
