@@ -22,6 +22,8 @@
             --text-light: #ffffff;
             --card-bg: #ffffff;
             --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            --success: #4caf50;
+            --error: #f44336;
         }
         
         .dark-mode {
@@ -128,6 +130,49 @@
             font-size: 20px;
             color: var(--cream);
             cursor: pointer;
+        }
+        
+        /* Order Tracking Bubble */
+        .order-tracking-bubble {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .order-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--cream);
+            color: var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Cart Bubble */
+        .cart-bubble {
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ff6b6b;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
         }
         
         /* Dark/Light Mode Toggle */
@@ -357,8 +402,15 @@
             font-size: 14px;
         }
         
+        /* Product Actions */
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
         .add-to-cart {
-            width: 100%;
+            flex: 1;
             padding: 12px;
             background-color: var(--cream);
             color: var(--white);
@@ -375,6 +427,35 @@
         
         .add-to-cart:hover {
             background-color: var(--dark-gray);
+        }
+        
+        .add-to-cart:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .wishlist-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light-bg);
+            color: var(--cream);
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .wishlist-btn:hover {
+            background-color: var(--cream);
+            color: var(--white);
+        }
+        
+        .wishlist-btn.active {
+            background-color: #ff6b6b;
+            color: var(--white);
         }
         
         /* Quick View Modal */
@@ -519,27 +600,6 @@
         
         .bubble-btn:hover span {
             display: block;
-        }
-        
-        /* Cart Bubble */
-        .cart-bubble {
-            position: relative;
-        }
-        
-        .cart-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #ff6b6b;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 600;
         }
         
         /* Cart Panel */
@@ -708,6 +768,22 @@
             margin-bottom: 20px;
         }
         
+        /* Notification */
+        .shop-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--cream);
+            color: var(--white);
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 2000;
+            box-shadow: var(--shadow);
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+        
         /* Responsive Design */
         @media (max-width: 1024px) {
             .product-modal {
@@ -800,6 +876,11 @@
             <div class="cart-bubble">
                 <i class="fas fa-shopping-bag"></i>
                 <span class="cart-count">0</span>
+            </div>
+            <!-- Order Tracking Button -->
+            <div class="order-tracking-bubble" onclick="viewOrders()">
+                <i class="fas fa-box"></i>
+                <span class="order-count">0</span>
             </div>
             <i class="fas fa-user"></i>
             <div class="mode-toggle">
@@ -898,7 +979,7 @@
                 
                 <div class="modal-actions">
                     <button class="add-to-cart" id="modalAddToCart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-                    <button class="add-to-cart" style="background-color: var(--dark-gray);"><i class="fas fa-heart"></i> Wishlist</button>
+                    <button class="wishlist-btn" id="modalWishlistBtn"><i class="fas fa-heart"></i> Wishlist</button>
                 </div>
             </div>
         </div>
@@ -952,25 +1033,29 @@
     </div>
 
     <script>
-        // API Configuration - CORRECTED ENDPOINTS
+        // API Configuration
         const API_BASE_URL = 'http://localhost:5001/api';
         const ENDPOINTS = {
-            PRODUCTS: `${API_BASE_URL}/products`, // CORRECTED: Using public endpoint
+            PRODUCTS: `${API_BASE_URL}/products`,
             CATEGORIES: `${API_BASE_URL}/categories`,
             CART: `${API_BASE_URL}/cart`,
             ORDERS: `${API_BASE_URL}/orders`,
+            WISHLIST: `${API_BASE_URL}/wishlist`,
             HEALTH: `${API_BASE_URL}/health`
         };
 
         // Global State
         let products = [];
         let cart = JSON.parse(localStorage.getItem('olysHairCart')) || [];
+        let wishlist = JSON.parse(localStorage.getItem('olysHairWishlist')) || [];
         let currentProductId = null;
+        let orderCount = 0;
 
         // DOM Elements
         const productsGrid = document.getElementById('productsGrid');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const cartCount = document.querySelector('.cart-count');
+        const orderCountElement = document.querySelector('.order-count');
         const cartItems = document.getElementById('cartItems');
         const cartSubtotal = document.getElementById('cartSubtotal');
         const cartShipping = document.getElementById('cartShipping');
@@ -979,9 +1064,11 @@
 
         // Initialize the shop
         document.addEventListener('DOMContentLoaded', function() {
-            testConnection(); // Test backend connection first
+            testConnection();
             initializeShop();
             updateCartUI();
+            updateOrderCount();
+            loadWishlist();
         });
 
         // Test backend connection
@@ -989,11 +1076,9 @@
             try {
                 console.log('🧪 Testing connection to backend...');
                 
-                // Test 1: Health check
                 const healthResponse = await fetch(ENDPOINTS.HEALTH);
                 console.log('Health check:', healthResponse.ok);
                 
-                // Test 2: Public products endpoint
                 const productsResponse = await fetch(ENDPOINTS.PRODUCTS);
                 console.log('Public products endpoint:', productsResponse.ok);
                 
@@ -1084,7 +1169,7 @@
             lengthFilter.addEventListener('change', filterProducts);
         }
 
-        // Load products from backend - CORRECTED VERSION
+        // Load products from backend
         async function loadProducts() {
             showLoading();
             
@@ -1165,6 +1250,9 @@
             const productStock = product.stock || 0;
             const productDescription = product.description || '';
             
+            // Check if product is in wishlist
+            const isInWishlist = wishlist.some(item => item.productId === productId);
+            
             card.innerHTML = `
                 <div class="product-image">
                     <img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">
@@ -1180,9 +1268,14 @@
                         <div class="price">$${productPrice.toFixed(2)}</div>
                         ${product.oldPrice ? `<div class="old-price">$${product.oldPrice.toFixed(2)}</div>` : ''}
                     </div>
-                    <button class="add-to-cart" data-product="${productId}" ${productStock === 0 ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
-                        <i class="fas fa-cart-plus"></i> ${productStock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                    </button>
+                    <div class="product-actions">
+                        <button class="add-to-cart" data-product="${productId}" ${productStock === 0 ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
+                            <i class="fas fa-cart-plus"></i> ${productStock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                        </button>
+                        <button class="wishlist-btn ${isInWishlist ? 'active' : ''}" data-product="${productId}">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
                     ${productStock === 0 ? '<div style="color: #ff6b6b; font-size: 12px; margin-top: 5px;">Out of Stock</div>' : ''}
                 </div>
             `;
@@ -1191,9 +1284,11 @@
             if (productStock > 0) {
                 const quickViewBtn = card.querySelector('.quick-view-btn');
                 const addToCartBtn = card.querySelector('.add-to-cart');
+                const wishlistBtn = card.querySelector('.wishlist-btn');
                 
                 quickViewBtn.addEventListener('click', () => openQuickView(productId));
                 addToCartBtn.addEventListener('click', () => addToCart(productId));
+                wishlistBtn.addEventListener('click', () => toggleWishlist(productId, wishlistBtn));
             }
             
             return card;
@@ -1222,6 +1317,9 @@
             const productStock = product.stock || 0;
             const productDescription = product.description || 'No description available.';
             
+            // Check if product is in wishlist
+            const isInWishlist = wishlist.some(item => item.productId === productId);
+            
             document.getElementById('modalImg').src = productImage;
             document.getElementById('modalTitle').textContent = productName;
             document.getElementById('modalPrice').textContent = `$${productPrice.toFixed(2)}`;
@@ -1241,6 +1339,11 @@
             modalAddToCart.innerHTML = productStock === 0 ? 
                 '<i class="fas fa-cart-plus"></i> Out of Stock' : 
                 '<i class="fas fa-cart-plus"></i> Add to Cart';
+            
+            // Update wishlist button in modal
+            const modalWishlistBtn = document.getElementById('modalWishlistBtn');
+            modalWishlistBtn.className = `wishlist-btn ${isInWishlist ? 'active' : ''}`;
+            modalWishlistBtn.onclick = () => toggleWishlist(productId, modalWishlistBtn);
             
             // Show modal
             document.getElementById('productModal').classList.add('active');
@@ -1290,6 +1393,98 @@
             
             // Open cart panel
             document.querySelector('.cart-panel').classList.add('active');
+        }
+
+        // Toggle wishlist
+        async function toggleWishlist(productId, buttonElement) {
+            const product = products.find(p => (p._id === productId) || (p.id === productId));
+            if (!product) {
+                showNotification('Product not found');
+                return;
+            }
+
+            const isInWishlist = wishlist.some(item => item.productId === productId);
+            
+            if (isInWishlist) {
+                // Remove from wishlist
+                wishlist = wishlist.filter(item => item.productId !== productId);
+                showNotification('Removed from wishlist');
+            } else {
+                // Add to wishlist
+                wishlist.push({
+                    productId: productId,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image || product.images?.[0]?.url,
+                    addedAt: new Date().toISOString()
+                });
+                showNotification('Added to wishlist!');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('olysHairWishlist', JSON.stringify(wishlist));
+            
+            // Update button appearance
+            if (buttonElement) {
+                buttonElement.classList.toggle('active', !isInWishlist);
+            }
+            
+            // Sync with backend if user is logged in
+            await syncWishlistWithBackend(productId, !isInWishlist);
+        }
+
+        // Sync wishlist with backend
+        async function syncWishlistWithBackend(productId, addToWishlist) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const url = `${ENDPOINTS.WISHLIST}`;
+                const method = addToWishlist ? 'POST' : 'DELETE';
+                const body = addToWishlist ? JSON.stringify({
+                    productId: productId,
+                    name: products.find(p => (p._id === productId) || (p.id === productId))?.name,
+                    price: products.find(p => (p._id === productId) || (p.id === productId))?.price,
+                    image: products.find(p => (p._id === productId) || (p.id === productId))?.image
+                }) : JSON.stringify({ productId });
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: addToWishlist ? body : undefined
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to sync wishlist with backend');
+                }
+            } catch (error) {
+                console.error('Error syncing wishlist:', error);
+            }
+        }
+
+        // Load wishlist from backend
+        async function loadWishlist() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(ENDPOINTS.WISHLIST, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const backendWishlist = await response.json();
+                    wishlist = backendWishlist || [];
+                    localStorage.setItem('olysHairWishlist', JSON.stringify(wishlist));
+                }
+            } catch (error) {
+                console.error('Error loading wishlist from backend:', error);
+            }
         }
 
         // Update cart UI
@@ -1401,6 +1596,33 @@
             localStorage.setItem('olysHairCart', JSON.stringify(cart));
             updateCartUI();
             showNotification('Item removed from cart');
+        }
+
+        // Update order count
+        async function updateOrderCount() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${ENDPOINTS.ORDERS}/count`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    orderCount = data.count || 0;
+                    orderCountElement.textContent = orderCount;
+                }
+            } catch (error) {
+                console.error('Error fetching order count:', error);
+            }
+        }
+
+        // View orders
+        function viewOrders() {
+            window.location.href = 'customerdashboard.html?section=orders';
         }
 
         // Filter products based on selected filters
@@ -1516,7 +1738,7 @@
         }
 
         // Show notification
-        function showNotification(message) {
+        function showNotification(message, type = 'success') {
             // Remove existing notifications
             document.querySelectorAll('.shop-notification').forEach(notification => {
                 notification.remove();
@@ -1524,17 +1746,7 @@
             
             const notification = document.createElement('div');
             notification.className = 'shop-notification';
-            notification.style.position = 'fixed';
-            notification.style.bottom = '20px';
-            notification.style.left = '50%';
-            notification.style.transform = 'translateX(-50%)';
-            notification.style.backgroundColor = 'var(--cream)';
-            notification.style.color = 'var(--white)';
-            notification.style.padding = '12px 24px';
-            notification.style.borderRadius = '8px';
-            notification.style.zIndex = '2000';
-            notification.style.boxShadow = 'var(--shadow)';
-            notification.style.fontWeight = '500';
+            notification.style.backgroundColor = type === 'success' ? 'var(--success)' : 'var(--error)';
             notification.textContent = message;
             
             document.body.appendChild(notification);

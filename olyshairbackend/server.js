@@ -42,17 +42,69 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ================================
 // 💾 MongoDB Connection
 // ================================
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  'mongodb+srv://josymambo858_db_user:v3VSBGbeumlMZO9m@daviddbprogress.lgcze5s.mongodb.net/olyshair';
+// ================================
+// 💾 MongoDB Connection with Better Error Handling
+// ================================
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://josymambo858_db_user:v3VSBGbeumlMZO9m@daviddbprogress.lgcze5s.mongodb.net/olyshair';
+
+// Enhanced MongoDB connection with retry logic
+const connectWithRetry = async (retries = 5, delay = 5000) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            await mongoose.connect(MONGODB_URI, {
+                serverSelectionTimeoutMS: 10000,
+                socketTimeoutMS: 45000,
+                maxPoolSize: 10,
+                retryWrites: true,
+                w: 'majority'
+            });
+            console.log('✅ MongoDB connected successfully');
+            return;
+        } catch (error) {
+            console.error(`❌ MongoDB connection attempt ${i + 1} failed:`, error.message);
+            
+            if (i < retries - 1) {
+                console.log(`🔄 Retrying connection in ${delay / 1000} seconds...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 1.5; // Exponential backoff
+            } else {
+                console.error('💥 All MongoDB connection attempts failed');
+                throw error;
+            }
+        }
+    }
+};
 
 // Connect to MongoDB
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✅ MongoDB connected successfully'))
-  .catch((err) => {
-    console.error('❌ MongoDB connection error:', err.message);
+connectWithRetry().catch(err => {
+    console.error('💥 Failed to connect to MongoDB after all retries:', err);
     process.exit(1);
-  });
+});
+
+// Connection events
+mongoose.connection.on('connected', () => {
+    console.log('📡 Mongoose connected to database');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error('❌ Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.warn('⚠️ Mongoose disconnected from database');
+    // Attempt to reconnect
+    setTimeout(() => {
+        connectWithRetry(3, 3000);
+    }, 3000);
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+    console.log('\n🛑 Shutting down server gracefully...');
+    await mongoose.connection.close();
+    console.log('✅ MongoDB connection closed.');
+    process.exit(0);
+});
 
 // Connection events
 mongoose.connection.on('connected', () => console.log('📡 Mongoose connected to database'));
@@ -169,6 +221,10 @@ app.use('/api/auth', loadRoute('./routes/auth', 'Auth'));
 app.use('/api/customer', loadRoute('./routes/customer', 'Customer'));
 app.use('/api/config', loadRoute('./routes/config', 'Config'));
 app.use('/api/upload', loadRoute('./routes/uploads', 'Uploads'));
+app.use('/api/wishlist', loadRoute('./routes/wishlist', 'wishlist'));
+app.use('/api/payments/paypal', loadRoute('./routes/payments/paypal', 'PayPal'));
+app.use('/api/payments/stripe', loadRoute('./routes/payments/stripe', 'Stripe'));
+app.use('/api/payments/apple-pay', loadRoute('./routes/payments/apple-pay', 'Apple Pay'));
 
 // --- Admin Routes ---
 app.use('/api/admin/auth', loadRoute('./routes/adminAuth', 'Admin Auth'));
@@ -180,6 +236,13 @@ app.use('/api/admin/activities', loadRoute('./routes/activities', 'Activities'))
 // ================================
 // ⚠️ Error Handling Middleware
 // ================================
+// Fallback payment route
+app.use('/api/payments', (req, res) => {
+  res.status(501).json({
+    error: 'Payment method not specified',
+    availableMethods: ['/stripe', '/paypal', '/apple-pay']
+  });
+});
 app.use((err, req, res, next) => {
   console.error('🚨 Server Error:', err.stack);
   res.status(500).json({
