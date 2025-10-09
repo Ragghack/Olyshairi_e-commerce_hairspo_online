@@ -53,6 +53,14 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  loyaltyPoints: {
+    type: Number,
+    default: 0
+  },
+  memberSince: {
+    type: Date,
+    default: Date.now
   }
 }, {
   timestamps: true

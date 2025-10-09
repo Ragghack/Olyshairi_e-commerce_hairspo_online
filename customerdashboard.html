@@ -1161,33 +1161,36 @@
             }
         }
 
-        async function fetchOrders(limit = null) {
-            const endpoint = limit ? `/orders?limit=${limit}` : '/orders';
-            return await apiCall(endpoint);
-        }
+        // Update all API response handlers to use the new format
+async function fetchOrders(limit = null) {
+  const data = await apiCall(limit ? `/orders?limit=${limit}` : '/orders');
+  return data.orders || [];
+}
 
-        async function fetchCart() {
-            return await apiCall('/cart');
-        }
+async function fetchWishlist(limit = null) {
+  const data = await apiCall(limit ? `/wishlist?limit=${limit}` : '/wishlist');
+  return data || []; // Wishlist returns array directly
+}
 
-        async function fetchWishlist(limit = null) {
-            const endpoint = limit ? `/wishlist?limit=${limit}` : '/wishlist';
-            return await apiCall(endpoint);
-        }
+async function fetchCart() {
+  const data = await apiCall('/cart');
+  return data.cart || { items: [] };
+}
 
-        async function fetchBookings(limit = null) {
-            const endpoint = limit ? `/bookings?limit=${limit}` : '/bookings';
-            return await apiCall(endpoint);
-        }
+async function fetchBookings(limit = null) {
+  const data = await apiCall(limit ? `/bookings?limit=${limit}` : '/bookings');
+  return data.bookings || [];
+}
 
-        async function fetchNotifications(limit = null) {
-            const endpoint = limit ? `/notifications?limit=${limit}` : '/notifications';
-            return await apiCall(endpoint);
-        }
+async function fetchNotifications(limit = null) {
+  const data = await apiCall(limit ? `/notifications?limit=${limit}` : '/notifications');
+  return data.notifications || [];
+}
 
-        async function fetchLoyaltyPoints() {
-            return await apiCall('/loyalty');
-        }
+async function fetchLoyaltyPoints() {
+  const data = await apiCall('/loyalty');
+  return data || { points: 0 };
+}
 
         // UI Update Functions
         function updateUserInterface() {
