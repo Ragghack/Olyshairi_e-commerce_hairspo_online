@@ -5,6 +5,12 @@ const auth = require('../middleware/auth');
 // Get user loyalty points
 router.get('/', auth, async (req, res) => {
   try {
+    // Return placeholder loyalty data structure
+    const loyaltyData = {
+      points: 0,
+      tier: 'Bronze',
+      history: []
+    };
     
     res.json(loyaltyData);
   } catch (error) {

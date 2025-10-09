@@ -2,18 +2,11 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 
-// Mock data for development
-
-
 // Get user notifications
 router.get('/', auth, async (req, res) => {
   try {
-    const { limit } = req.query;
-    let notifications = mockNotifications;
-    
-    if (limit) {
-      notifications = mockNotifications.slice(0, parseInt(limit));
-    }
+    // For now, return empty array until database integration
+    const notifications = [];
     
     res.json(notifications);
   } catch (error) {
@@ -26,10 +19,7 @@ router.get('/', auth, async (req, res) => {
 router.post('/mark-all-read', auth, async (req, res) => {
   try {
     // In a real app, you would update the database
-    mockNotifications.forEach(notification => {
-      notification.unread = false;
-    });
-    
+    // For now, just return success message
     res.json({ message: 'All notifications marked as read' });
   } catch (error) {
     console.error('Mark notifications read error:', error);

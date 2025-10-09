@@ -1831,10 +1831,43 @@
         });
     }
 
-    function loadPayPalButton() {
-        // PayPal button implementation would go here
-        console.log('PayPal button loaded');
-    }
+   function loadPayPalButton() {
+    paypal.Buttons({
+        createOrder: async () => {
+            const res = await fetch(`http://localhost:5001/paypal/create-order`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: currentOrderData.total,
+                    items: currentOrderData.items
+                })
+            });
+            const data = await res.json();
+            return data.orderId;
+        },
+        onApprove: async (data) => {
+            const res = await fetch(`http://localhost:5001/paypal/capture/${data.orderID}`, {
+                method: 'POST'
+            });
+            const capture = await res.json();
+            if (capture.success) {
+                handlePaymentSuccess({
+                    transactionId: capture.transactionId,
+                    method: 'paypal',
+                    amount: currentOrderData.total,
+                    orderId: data.orderID
+                }, getFormData(), data.orderID);
+            } else {
+                showNotification('Payment capture failed.', 'error');
+            }
+        },
+        onError: (err) => {
+            console.error('PayPal error:', err);
+            showNotification('PayPal payment failed.', 'error');
+        }
+    }).render('#paypal-button-container');
+}
+
 
     async function initializeApplePay() {
         // Apple Pay implementation would go here

@@ -10,6 +10,12 @@ const fs = require('fs');
 require('dotenv').config({ path: './olyshair.env' });
 
 const app = express();
+const paypalRouter = require('./routes/payments/paypal');
+app.use('/api/payments/paypal', paypalRouter);
+const applePayRouter = require('./routes/payments/apple-pay');
+app.use('/api/payments/apple-pay', applePayRouter);
+const stripeRouter = require('./routes/payments/stripe');
+app.use('/api/payments/stripe', stripeRouter);
 
 // ================================
 // 🧩 Middleware
