@@ -1,833 +1,728 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Order = require('../models/Order');
 const Product = require('../models/Product');
-const User = require('../models/User');
-const adminAuth = require('../middleware/adminAuth');
 const auth = require('../middleware/auth');
+const multer = require('multer');
+const adminAuth = require('../middleware/adminAuth');
+const cloudinary = require('cloudinary').v2;
 
 // ===== Debug Info on Load =====
-console.log('🔍 [OrderRoute] Model type:', typeof Order);
-console.log('🔍 [OrderRoute] Model name:', Order?.modelName);
-console.log('🔍 [OrderRoute] Has .find():', typeof Order.find === 'function');
+console.log('🔍 [ProductsRoute] Route loaded successfully');
 
-// ===============================
-// 📊 GET ORDER STATISTICS (must come before /:id)
-// ===============================
-router.get('/stats/overview', adminAuth, async (req, res) => {
-  try {
-    console.log('📊 Calculating order statistics...');
-    
-    const [totalOrders, pendingOrders, completedOrders, cancelledOrders] = await Promise.all([
-      Order.countDocuments({ isDeleted: false }),
-      Order.countDocuments({ status: 'pending', isDeleted: false }),
-      Order.countDocuments({ status: 'delivered', isDeleted: false }),
-      Order.countDocuments({ status: 'cancelled', isDeleted: false })
-    ]);
-
-    // Revenue by status
-    const revenueStats = await Order.aggregate([
-      { $match: { isDeleted: false } },
-      { 
-        $group: { 
-          _id: '$status',
-          total: { $sum: '$totalAmount' },
-          count: { $sum: 1 }
-        }
-      }
-    ]);
-
-    // Monthly revenue for charts
-    const monthlyRevenue = await Order.aggregate([
-      { 
-        $match: { 
-          status: 'delivered', 
-          isDeleted: false,
-          createdAt: { $gte: new Date(new Date().getFullYear(), 0, 1) }
-        } 
-      },
-      {
-        $group: {
-          _id: { $month: '$createdAt' },
-          revenue: { $sum: '$totalAmount' },
-          orders: { $sum: 1 }
-        }
-      },
-      { $sort: { '_id': 1 } }
-    ]);
-
-    // Popular products
-    const popularProducts = await Order.aggregate([
-      { $match: { isDeleted: false } },
-      { $unwind: '$items' },
-      {
-        $group: {
-          _id: '$items.product',
-          totalSold: { $sum: '$items.quantity' },
-          totalRevenue: { $sum: { $multiply: ['$items.quantity', '$items.price'] } }
-        }
-      },
-      { $sort: { totalSold: -1 } },
-      { $limit: 10 },
-      {
-        $lookup: {
-          from: 'products',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'product'
-        }
-      },
-      { $unwind: '$product' }
-    ]);
-
-    const totalRevenue = revenueStats.find(stat => stat._id === 'delivered')?.total || 0;
-
-    return res.json({
-      totalOrders,
-      pendingOrders,
-      completedOrders,
-      cancelledOrders,
-      totalRevenue,
-      revenueStats,
-      monthlyRevenue,
-      popularProducts
-    });
-  } catch (error) {
-    console.error('❌ Order stats error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+// Configure multer for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPEG, PNG, WebP, and GIF images are allowed.'), false);
+    }
   }
 });
 
 // ===============================
-// 📦 GET ALL ORDERS (Paginated with Advanced Filtering)
+// 📦 GET ALL PRODUCTS (Public & Admin)
 // ===============================
-router.get('/', adminAuth, async (req, res) => {
-  try {
-    console.log('📦 Fetching orders with filters...');
-    
-    const {
-      page = 1,
-      limit = 10,
-      status,
-      paymentMethod,
-      dateFrom,
-      dateTo,
-      search,
-      sortBy = 'createdAt',
-      sortOrder = 'desc'
-    } = req.query;
-
-    const filter = { isDeleted: false };
-    
-    // Status filter
-    if (status && status !== 'all') filter.status = status;
-    
-    // Payment method filter
-    if (paymentMethod && paymentMethod !== 'all') filter.paymentMethod = paymentMethod;
-    
-    // Date range filter
-    if (dateFrom || dateTo) {
-      filter.createdAt = {};
-      if (dateFrom) filter.createdAt.$gte = new Date(dateFrom);
-      if (dateTo) filter.createdAt.$lte = new Date(dateTo + 'T23:59:59.999Z');
-    }
-    
-    // Search filter (order number, customer name, email)
-    if (search) {
-      filter.$or = [
-        { orderNumber: { $regex: search, $options: 'i' } },
-        { 'user.firstName': { $regex: search, $options: 'i' } },
-        { 'user.lastName': { $regex: search, $options: 'i' } },
-        { 'user.email': { $regex: search, $options: 'i' } }
-      ];
-    }
-
-    const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
-
-    const [orders, total] = await Promise.all([
-      Order.find(filter)
-        .populate('user', 'firstName lastName email phoneNumber avatar')
-        .populate('items.product', 'name images category')
-        .sort(sort)
-        .limit(parseInt(limit))
-        .skip((page - 1) * limit)
-        .lean(),
-      Order.countDocuments(filter)
-    ]);
-
-    console.log(`✅ Found ${orders.length} orders.`);
-
-    return res.json({
-      orders,
-      totalPages: Math.ceil(total / limit),
-      currentPage: parseInt(page),
-      total
-    });
-  } catch (error) {
-    console.error('❌ Get orders error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// ===============================
-// 🔍 GET SINGLE ORDER WITH ENHANCED DETAILS
-// ===============================
-router.get('/:id', auth, async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id)
-      .populate('user', 'firstName lastName email phoneNumber address')
-      .populate('items.product', 'name images category description');
-
-    if (!order)
-      return res.status(404).json({ error: 'Order not found' });
-
-    // Check if user is authorized to view this order
-    const isAdmin = req.user.role === 'admin';
-    const isOwner = order.user._id.toString() === req.user.id;
-    
-    if (!isAdmin && !isOwner) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    return res.json({ order });
-  } catch (error) {
-    console.error('❌ Get order error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// ===============================
-// 👤 GET USER ORDERS (Customer Dashboard)
-// ===============================
-router.get('/user/my-orders', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { 
       page = 1, 
-      limit = 10, 
-      status,
-      sortBy = 'createdAt',
-      sortOrder = 'desc' 
+      limit = 12, 
+      category, 
+      search, 
+      sortBy = 'createdAt', 
+      sortOrder = 'desc',
+      minPrice,
+      maxPrice,
+      inStock,
+      featured,
+      isActive = true
     } = req.query;
 
-    const filter = { 
-      user: req.user.id, 
-      isDeleted: false 
-    };
+    console.log('📦 Fetching products with filters:', {
+      page, limit, category, search, sortBy, sortOrder, minPrice, maxPrice, inStock, featured
+    });
+
+    const filter = { isActive: isActive !== 'false' };
     
-    if (status && status !== 'all') filter.status = status;
+    // Category filter
+    if (category && category !== 'all' && category !== 'undefined') {
+      filter.category = category;
+    }
+    
+    // Search filter
+    if (search && search !== 'undefined') {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { sku: { $regex: search, $options: 'i' } },
+        { tags: { $in: [new RegExp(search, 'i')] } }
+      ];
+    }
 
-    const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
+    // Price range filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
 
-    const [orders, total] = await Promise.all([
-      Order.find(filter)
-        .populate('items.product', 'name images category')
-        .sort(sort)
-        .limit(parseInt(limit))
-        .skip((page - 1) * limit)
+    // Stock filter
+    if (inStock === 'true') {
+      filter.stock = { $gt: 0 };
+    } else if (inStock === 'false') {
+      filter.stock = { $lte: 0 };
+    }
+
+    // Featured filter
+    if (featured === 'true') {
+      filter.isFeatured = true;
+    }
+
+    const sort = {};
+    const validSortFields = ['name', 'price', 'createdAt', 'updatedAt', 'stock', 'salesCount'];
+    if (validSortFields.includes(sortBy)) {
+      sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+    } else {
+      sort.createdAt = -1; // Default sort
+    }
+
+    const options = {
+      sort,
+      limit: parseInt(limit) > 50 ? 50 : parseInt(limit), // Cap at 50 for performance
+      skip: (parseInt(page) - 1) * parseInt(limit)
+    };
+
+    const [products, total] = await Promise.all([
+      Product.find(filter)
+        .sort(options.sort)
+        .limit(options.limit)
+        .skip(options.skip)
+        .select('-__v')
         .lean(),
-      Order.countDocuments(filter)
+      Product.countDocuments(filter)
     ]);
 
+    console.log(`✅ Found ${products.length} products out of ${total} total`);
+
     return res.json({
-      orders,
-      totalPages: Math.ceil(total / limit),
-      currentPage: parseInt(page),
-      total
+      success: true,
+      products,
+      pagination: {
+        totalPages: Math.ceil(total / options.limit),
+        currentPage: parseInt(page),
+        total,
+        hasNext: parseInt(page) < Math.ceil(total / options.limit),
+        hasPrev: parseInt(page) > 1
+      },
+      filters: {
+        category,
+        search,
+        minPrice,
+        maxPrice,
+        inStock,
+        featured
+      }
     });
   } catch (error) {
-    console.error('❌ Get user orders error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('❌ Get products error:', error);
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch products',
+      details: error.message 
+    });
   }
 });
 
 // ===============================
-// 👤 GET USER ORDER COUNT (For Shop Page)
+// 🔍 GET SINGLE PRODUCT
 // ===============================
-router.get('/user/count', auth, async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const count = await Order.countDocuments({ 
-      user: req.user.id, 
-      isDeleted: false 
-    });
+    const { id } = req.params;
+    
+    console.log('🔍 Fetching product:', id);
 
-    return res.json({ count });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invalid product ID format' 
+      });
+    }
+
+    const product = await Product.findById(id)
+      .select('-__v')
+      .lean();
+
+    if (!product) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Product not found' 
+      });
+    }
+
+    if (!product.isActive && req.user?.role !== 'admin') {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Product not found' 
+      });
+    }
+
+    console.log('✅ Product found:', product.name);
+    return res.json({
+      success: true,
+      product
+    });
   } catch (error) {
-    console.error('❌ Get user order count error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('❌ Get product error:', error);
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch product',
+      details: error.message 
+    });
   }
 });
 
 // ===============================
-// 🛒 CREATE NEW ORDER (Checkout Process)
+// ➕ CREATE NEW PRODUCT (Admin Only)
 // ===============================
-router.post('/', auth, async (req, res) => {
+router.post('/', adminAuth, upload.array('images', 8), async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const {
-      items,
-      shippingAddress,
-      billingAddress,
-      paymentMethod,
-      paymentStatus = 'pending',
-      shippingMethod,
-      notes
-    } = req.body;
+    const productData = req.body;
+    
+    console.log('➕ Creating new product:', productData.name);
 
-    console.log('🛒 Creating new order for user:', req.user.id);
-
-    // Validate items and calculate total
-    let totalAmount = 0;
-    const orderItems = [];
-
-    for (const item of items) {
-      const product = await Product.findById(item.productId).session(session);
-      if (!product) {
-        await session.abortTransaction();
-        return res.status(400).json({ error: `Product not found: ${item.productId}` });
-      }
-
-      if (product.stock < item.quantity) {
-        await session.abortTransaction();
-        return res.status(400).json({ 
-          error: `Insufficient stock for ${product.name}. Available: ${product.stock}` 
-        });
-      }
-
-      // Update product stock
-      product.stock -= item.quantity;
-      await product.save({ session });
-
-      const itemTotal = product.price * item.quantity;
-      totalAmount += itemTotal;
-
-      orderItems.push({
-        product: product._id,
-        name: product.name,
-        price: product.price,
-        quantity: item.quantity,
-        image: product.images?.[0]?.url || product.image
+    // Validate required fields
+    const requiredFields = ['name', 'price', 'category', 'stock'];
+    const missingFields = requiredFields.filter(field => !productData[field]);
+    
+    if (missingFields.length > 0) {
+      await session.abortTransaction();
+      return res.status(400).json({ 
+        success: false,
+        error: `Missing required fields: ${missingFields.join(', ')}` 
       });
     }
 
-    // Add shipping cost
-    const shippingCost = calculateShippingCost(shippingMethod, totalAmount);
-    totalAmount += shippingCost;
+    // Handle image uploads to Cloudinary
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      console.log(`📸 Uploading ${req.files.length} images to Cloudinary...`);
+      
+      for (const [index, file] of req.files.entries()) {
+        try {
+          const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { 
+                folder: 'olyshair/products',
+                transformation: [
+                  { width: 1200, height: 1200, crop: 'limit', quality: 'auto' },
+                  { format: 'webp' }
+                ]
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            stream.end(file.buffer);
+          });
+          
+          images.push({
+            url: result.secure_url,
+            publicId: result.public_id,
+            altText: productData.altText || `${productData.name} - Image ${index + 1}`,
+            width: result.width,
+            height: result.height,
+            format: result.format
+          });
+          
+          console.log(`✅ Image ${index + 1} uploaded: ${result.secure_url}`);
+        } catch (uploadError) {
+          console.error(`❌ Failed to upload image ${index + 1}:`, uploadError);
+          // Continue with other images if one fails
+        }
+      }
+    }
 
-    // Generate order number
-    const orderNumber = await generateOrderNumber();
+    // Generate SKU if not provided
+    if (!productData.sku) {
+      const categoryPrefix = productData.category.substring(0, 3).toUpperCase();
+      const timestamp = Date.now().toString().slice(-6);
+      productData.sku = `${categoryPrefix}-${timestamp}`;
+    }
 
-    // Create order
-    const order = new Order({
-      orderNumber,
-      user: req.user.id,
-      items: orderItems,
-      totalAmount,
-      shippingAddress,
-      billingAddress: billingAddress || shippingAddress,
-      paymentMethod,
-      paymentStatus,
-      shippingMethod,
-      shippingCost,
-      notes,
-      status: 'pending'
-    });
+    // Parse numeric fields
+    const parsedData = {
+      ...productData,
+      price: parseFloat(productData.price),
+      oldPrice: productData.oldPrice ? parseFloat(productData.oldPrice) : null,
+      stock: parseInt(productData.stock),
+      weight: productData.weight ? parseFloat(productData.weight) : null,
+      salesCount: parseInt(productData.salesCount) || 0,
+      rating: productData.rating ? parseFloat(productData.rating) : 0,
+      reviewCount: parseInt(productData.reviewCount) || 0,
+      isActive: productData.isActive !== 'false',
+      isFeatured: productData.isFeatured === 'true',
+      isNew: productData.isNew === 'true',
+      images
+    };
 
-    await order.save({ session });
+    // Create product
+    const product = new Product(parsedData);
+    await product.save({ session });
     await session.commitTransaction();
 
-    console.log(`✅ Order created successfully: ${order.orderNumber}`);
-
-    // Populate order for response
-    const populatedOrder = await Order.findById(order._id)
-      .populate('user', 'firstName lastName email')
-      .populate('items.product', 'name images');
-
+    console.log(`✅ Product created successfully: ${product.name} (${product._id})`);
+    
     return res.status(201).json({
-      message: 'Order created successfully',
-      order: populatedOrder
+      success: true,
+      message: 'Product created successfully',
+      product: await Product.findById(product._id).select('-__v').lean()
     });
 
   } catch (error) {
     await session.abortTransaction();
-    console.error('❌ Create order error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('❌ Create product error:', error);
+    
+    // Handle duplicate SKU
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'SKU already exists. Please use a unique SKU.' 
+      });
+    }
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        success: false,
+        error: 'Validation failed',
+        details: errors 
+      });
+    }
+    
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to create product',
+      details: error.message 
+    });
   } finally {
     session.endSession();
   }
 });
 
 // ===============================
-// 🚚 UPDATE ORDER STATUS WITH NOTIFICATIONS
+// ✏️ UPDATE PRODUCT (Admin Only)
 // ===============================
-router.put('/:id/status', adminAuth, async (req, res) => {
+router.put('/:id', adminAuth, upload.array('images', 8), async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const { status, trackingNumber, adminNotes } = req.body;
-
-    const order = await Order.findById(req.params.id)
-      .populate('user', 'firstName lastName email phoneNumber');
-
-    if (!order)
-      return res.status(404).json({ error: 'Order not found' });
-
-    // Update order status
-    order.status = status;
-    if (trackingNumber) order.trackingNumber = trackingNumber;
-    if (adminNotes) order.adminNotes = adminNotes;
+    const { id } = req.params;
+    const updateData = req.body;
     
-    // Set delivered date if status is delivered
-    if (status === 'delivered') {
-      order.deliveredAt = new Date();
-    }
+    console.log('✏️ Updating product:', id);
 
-    await order.save();
-
-    // TODO: Send notification to user (email, push, etc.)
-    console.log(`📧 Order status updated: ${order.orderNumber} -> ${status}`);
-
-    return res.json({
-      message: 'Order status updated successfully',
-      order
-    });
-  } catch (error) {
-    console.error('❌ Update order status error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// ===============================
-// 💰 UPDATE PAYMENT STATUS
-// ===============================
-router.put('/:id/payment-status', adminAuth, async (req, res) => {
-  try {
-    const { paymentStatus, transactionId } = req.body;
-
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      {
-        paymentStatus,
-        ...(transactionId && { transactionId })
-      },
-      { new: true }
-    ).populate('user', 'firstName lastName email');
-
-    if (!order)
-      return res.status(404).json({ error: 'Order not found' });
-
-    return res.json({
-      message: 'Payment status updated successfully',
-      order
-    });
-  } catch (error) {
-    console.error('❌ Update payment status error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// ===============================
-// 📦 BULK ORDER STATUS UPDATE
-// ===============================
-router.put('/bulk/status', adminAuth, async (req, res) => {
-  try {
-    const { orderIds, status, trackingNumber } = req.body;
-
-    if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
-      return res.status(400).json({ error: 'Order IDs are required' });
-    }
-
-    const updateData = { status };
-    if (trackingNumber) updateData.trackingNumber = trackingNumber;
-
-    const result = await Order.updateMany(
-      { _id: { $in: orderIds }, isDeleted: false },
-      updateData
-    );
-
-    return res.json({
-      message: `Updated ${result.modifiedCount} orders successfully`,
-      modifiedCount: result.modifiedCount
-    });
-  } catch (error) {
-    console.error('❌ Bulk update order status error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// ===============================
-// 🗑️ SOFT DELETE ORDER
-// ===============================
-router.delete('/:id', adminAuth, async (req, res) => {
-  try {
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { 
-        isDeleted: true,
-        deletedAt: new Date(),
-        deletedBy: req.user.id
-      },
-      { new: true }
-    );
-
-    if (!order)
-      return res.status(404).json({ error: 'Order not found' });
-
-    return res.json({ message: 'Order deleted successfully' });
-  } catch (error) {
-    console.error('❌ Delete order error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// ===============================
-// 🔄 CANCEL ORDER (User & Admin)
-// ===============================
-router.put('/:id/cancel', auth, async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id);
-    
-    if (!order)
-      return res.status(404).json({ error: 'Order not found' });
-
-    // Check authorization
-    const isAdmin = req.user.role === 'admin';
-    const isOwner = order.user.toString() === req.user.id;
-    
-    if (!isAdmin && !isOwner) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    // Check if order can be cancelled
-    if (!['pending', 'confirmed'].includes(order.status)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      await session.abortTransaction();
       return res.status(400).json({ 
-        error: `Order cannot be cancelled in ${order.status} status` 
+        success: false,
+        error: 'Invalid product ID format' 
       });
     }
 
-    order.status = 'cancelled';
-    order.cancelledAt = new Date();
-    if (isAdmin) order.cancelledBy = req.user.id;
+    const existingProduct = await Product.findById(id).session(session);
+    if (!existingProduct) {
+      await session.abortTransaction();
+      return res.status(404).json({ 
+        success: false,
+        error: 'Product not found' 
+      });
+    }
 
-    await order.save();
-
-    // Restore product stock
-    await restoreProductStock(order.items);
-
-    return res.json({
-      message: 'Order cancelled successfully',
-      order
-    });
-  } catch (error) {
-    console.error('❌ Cancel order error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// ===============================
-// 📈 ORDER ANALYTICS
-// ===============================
-router.get('/analytics/dashboard', adminAuth, async (req, res) => {
-  try {
-    const { period = 'month' } = req.query; // day, week, month, year
-    
-    const dateRange = getDateRange(period);
-    
-    const analytics = await Order.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: dateRange.start, $lte: dateRange.end },
-          isDeleted: false
+    // Handle new image uploads
+    let newImages = [];
+    if (req.files && req.files.length > 0) {
+      console.log(`📸 Uploading ${req.files.length} new images...`);
+      
+      for (const [index, file] of req.files.entries()) {
+        try {
+          const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { 
+                folder: 'olyshair/products',
+                transformation: [
+                  { width: 1200, height: 1200, crop: 'limit', quality: 'auto' },
+                  { format: 'webp' }
+                ]
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            stream.end(file.buffer);
+          });
+          
+          newImages.push({
+            url: result.secure_url,
+            publicId: result.public_id,
+            altText: updateData.altText || `${existingProduct.name} - Image ${index + 1}`,
+            width: result.width,
+            height: result.height,
+            format: result.format
+          });
+        } catch (uploadError) {
+          console.error(`❌ Failed to upload new image ${index + 1}:`, uploadError);
         }
-      },
-      {
-        $facet: {
-          // Revenue trends
-          revenueTrend: [
-            {
-              $group: {
-                _id: {
-                  $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
-                },
-                revenue: { $sum: "$totalAmount" },
-                orders: { $sum: 1 }
-              }
-            },
-            { $sort: { _id: 1 } }
-          ],
-          // Status distribution
-          statusDistribution: [
-            {
-              $group: {
-                _id: "$status",
-                count: { $sum: 1 },
-                revenue: { $sum: "$totalAmount" }
-              }
-            }
-          ],
-          // Payment method distribution
-          paymentMethods: [
-            {
-              $group: {
-                _id: "$paymentMethod",
-                count: { $sum: 1 },
-                revenue: { $sum: "$totalAmount" }
-              }
-            }
-          ],
-          // Top customers
-          topCustomers: [
-            {
-              $group: {
-                _id: "$user",
-                orderCount: { $sum: 1 },
-                totalSpent: { $sum: "$totalAmount" }
-              }
-            },
-            { $sort: { totalSpent: -1 } },
-            { $limit: 10 },
-            {
-              $lookup: {
-                from: "users",
-                localField: "_id",
-                foreignField: "_id",
-                as: "user"
-              }
-            }
-          ]
-        }
-      }
-    ]);
-
-    return res.json(analytics[0]);
-  } catch (error) {
-    console.error('❌ Order analytics error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// ===============================
-// 🎭 MOCK ORDERS (development)
-// ===============================
-router.get('/mock/orders', adminAuth, (req, res) => {
-  console.log('🎭 Serving mock orders data...');
-  
-  const mockOrders = [
-    {
-      _id: '1',
-      orderNumber: 'OL-2874',
-      user: { 
-        firstName: 'Rose', 
-        lastName: 'Wilson', 
-        email: 'rose@example.com',
-        avatar: '/images/avatars/1.jpg'
-      },
-      status: 'delivered',
-      paymentMethod: 'credit_card',
-      paymentStatus: 'paid',
-      totalAmount: 199.99,
-      shippingCost: 9.99,
-      createdAt: new Date('2024-01-15'),
-      deliveredAt: new Date('2024-01-20'),
-      items: [
-        { 
-          product: { 
-            name: 'Brazilian Body Wave',
-            images: ['/images/products/brazilian-wave.jpg'],
-            category: 'extensions'
-          }, 
-          quantity: 1, 
-          price: 199.99 
-        }
-      ],
-      shippingAddress: {
-        firstName: 'Rose',
-        lastName: 'Wilson',
-        address: '123 Main St',
-        city: 'New York',
-        zipCode: '10001',
-        country: 'USA'
-      }
-    },
-    {
-      _id: '2',
-      orderNumber: 'OL-2861',
-      user: { 
-        firstName: 'Sarah', 
-        lastName: 'Johnson', 
-        email: 'sarah@example.com',
-        avatar: '/images/avatars/2.jpg'
-      },
-      status: 'processing',
-      paymentMethod: 'paypal',
-      paymentStatus: 'paid',
-      totalAmount: 259.99,
-      shippingCost: 9.99,
-      createdAt: new Date('2024-01-14'),
-      items: [
-        { 
-          product: { 
-            name: 'Peruvian Straight',
-            images: ['/images/products/peruvian-straight.jpg'],
-            category: 'extensions'
-          }, 
-          quantity: 1, 
-          price: 199.99 
-        },
-        { 
-          product: { 
-            name: 'Hair Care Kit',
-            images: ['/images/products/hair-care-kit.jpg'],
-            category: 'accessories'
-          }, 
-          quantity: 1, 
-          price: 60.00 
-        }
-      ],
-      shippingAddress: {
-        firstName: 'Sarah',
-        lastName: 'Johnson',
-        address: '456 Oak Ave',
-        city: 'Los Angeles',
-        zipCode: '90210',
-        country: 'USA'
       }
     }
-  ];
 
-  return res.json({
-    orders: mockOrders,
-    totalPages: 1,
-    currentPage: 1,
-    total: mockOrders.length
-  });
+    // Parse numeric fields
+    const parsedData = { ...updateData };
+    if (parsedData.price) parsedData.price = parseFloat(parsedData.price);
+    if (parsedData.oldPrice) parsedData.oldPrice = parseFloat(parsedData.oldPrice);
+    if (parsedData.stock) parsedData.stock = parseInt(parsedData.stock);
+    if (parsedData.weight) parsedData.weight = parseFloat(parsedData.weight);
+    if (parsedData.salesCount) parsedData.salesCount = parseInt(parsedData.salesCount);
+    if (parsedData.rating) parsedData.rating = parseFloat(parsedData.rating);
+    if (parsedData.reviewCount) parsedData.reviewCount = parseInt(parsedData.reviewCount);
+
+    // Handle boolean fields
+    if (parsedData.isActive !== undefined) parsedData.isActive = parsedData.isActive === 'true';
+    if (parsedData.isFeatured !== undefined) parsedData.isFeatured = parsedData.isFeatured === 'true';
+    if (parsedData.isNew !== undefined) parsedData.isNew = parsedData.isNew === 'true';
+
+    // Combine existing images with new ones if not replacing all
+    if (newImages.length > 0) {
+      if (updateData.replaceImages === 'true') {
+        // Delete old images from Cloudinary
+        for (const image of existingProduct.images) {
+          try {
+            await cloudinary.uploader.destroy(image.publicId);
+          } catch (deleteError) {
+            console.error('❌ Failed to delete old image:', deleteError);
+          }
+        }
+        parsedData.images = newImages;
+      } else {
+        parsedData.images = [...existingProduct.images, ...newImages];
+      }
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { ...parsedData, updatedAt: new Date() },
+      { 
+        new: true, 
+        runValidators: true,
+        session 
+      }
+    ).select('-__v');
+
+    await session.commitTransaction();
+
+    console.log(`✅ Product updated successfully: ${updatedProduct.name}`);
+    
+    return res.json({
+      success: true,
+      message: 'Product updated successfully',
+      product: updatedProduct
+    });
+
+  } catch (error) {
+    await session.abortTransaction();
+    console.error('❌ Update product error:', error);
+    
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        success: false,
+        error: 'Validation failed',
+        details: errors 
+      });
+    }
+    
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to update product',
+      details: error.message 
+    });
+  } finally {
+    session.endSession();
+  }
 });
 
 // ===============================
-// 🧪 TEST MODEL INTEGRITY
+// 🗑️ DELETE PRODUCT (Soft Delete - Admin Only)
 // ===============================
-router.get('/test/model', adminAuth, async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    console.log('🧪 Testing Order model integrity...');
+    const { id } = req.params;
     
-    const testOrder = new Order({
-      orderNumber: 'TEST-001',
-      user: new mongoose.Types.ObjectId(),
-      items: [{
-        product: new mongoose.Types.ObjectId(),
-        quantity: 1,
-        price: 99.99
-      }],
-      totalAmount: 99.99,
-      paymentMethod: 'credit_card',
-      shippingAddress: {
-        firstName: 'Test',
-        lastName: 'User',
-        address: '123 Test St',
-        city: 'Test City',
-        zipCode: '12345',
-        country: 'Test Country'
+    console.log('🗑️ Soft deleting product:', id);
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      await session.abortTransaction();
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invalid product ID format' 
+      });
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { 
+        isActive: false,
+        deletedAt: new Date(),
+        deletedBy: req.user.id
+      },
+      { 
+        new: true,
+        session 
       }
+    ).select('-__v');
+
+    if (!product) {
+      await session.abortTransaction();
+      return res.status(404).json({ 
+        success: false,
+        error: 'Product not found' 
+      });
+    }
+
+    await session.commitTransaction();
+
+    console.log(`✅ Product soft deleted: ${product.name}`);
+    
+    return res.json({
+      success: true,
+      message: 'Product deleted successfully',
+      product
     });
 
-    const validationError = testOrder.validateSync();
-    if (validationError) {
-      return res.json({
+  } catch (error) {
+    await session.abortTransaction();
+    console.error('❌ Delete product error:', error);
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to delete product',
+      details: error.message 
+    });
+  } finally {
+    session.endSession();
+  }
+});
+
+// ===============================
+// 🗑️ PERMANENT DELETE PRODUCT (Admin Only)
+// ===============================
+router.delete('/:id/permanent', adminAuth, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { id } = req.params;
+    
+    console.log('💀 Permanent deleting product:', id);
+
+    const product = await Product.findById(id).session(session);
+    if (!product) {
+      await session.abortTransaction();
+      return res.status(404).json({ 
         success: false,
-        error: 'Validation failed',
-        details: validationError.errors
+        error: 'Product not found' 
+      });
+    }
+
+    // Delete images from Cloudinary
+    for (const image of product.images) {
+      try {
+        await cloudinary.uploader.destroy(image.publicId);
+        console.log(`✅ Deleted image from Cloudinary: ${image.publicId}`);
+      } catch (deleteError) {
+        console.error('❌ Failed to delete image from Cloudinary:', deleteError);
+      }
+    }
+
+    // Delete product from database
+    await Product.findByIdAndDelete(id).session(session);
+    await session.commitTransaction();
+
+    console.log(`✅ Product permanently deleted: ${product.name}`);
+    
+    return res.json({
+      success: true,
+      message: 'Product permanently deleted'
+    });
+
+  } catch (error) {
+    await session.abortTransaction();
+    console.error('❌ Permanent delete product error:', error);
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to permanently delete product',
+      details: error.message 
+    });
+  } finally {
+    session.endSession();
+  }
+});
+
+// ===============================
+// 📊 GET PRODUCT STATISTICS (Admin Only)
+// ===============================
+router.get('/admin/statistics', adminAuth, async (req, res) => {
+  try {
+    console.log('📊 Fetching product statistics...');
+
+    const [
+      totalProducts,
+      activeProducts,
+      outOfStockProducts,
+      lowStockProducts,
+      totalCategories
+    ] = await Promise.all([
+      Product.countDocuments(),
+      Product.countDocuments({ isActive: true }),
+      Product.countDocuments({ stock: 0, isActive: true }),
+      Product.countDocuments({ stock: { $lte: 10, $gt: 0 }, isActive: true }),
+      Product.distinct('category', { isActive: true })
+    ]);
+
+    const categoryStats = await Product.aggregate([
+      { $match: { isActive: true } },
+      {
+        $group: {
+          _id: '$category',
+          count: { $sum: 1 },
+          totalStock: { $sum: '$stock' },
+          avgPrice: { $avg: '$price' }
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+
+    const statistics = {
+      totalProducts,
+      activeProducts,
+      outOfStockProducts,
+      lowStockProducts,
+      totalCategories: totalCategories.length,
+      categoryStats,
+      inventoryValue: await Product.aggregate([
+        { $match: { isActive: true } },
+        {
+          $group: {
+            _id: null,
+            totalValue: { $sum: { $multiply: ['$price', '$stock'] } }
+          }
+        }
+      ]).then(result => result[0]?.totalValue || 0)
+    };
+
+    return res.json({
+      success: true,
+      statistics
+    });
+  } catch (error) {
+    console.error('❌ Get product statistics error:', error);
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch product statistics',
+      details: error.message 
+    });
+  }
+});
+
+// ===============================
+// 🧪 PRODUCT VALIDATION ENDPOINT
+// ===============================
+router.get('/validate/stock', async (req, res) => {
+  try {
+    const { productId, quantity = 1 } = req.query;
+    
+    if (!productId) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Product ID is required' 
+      });
+    }
+
+    const product = await Product.findById(productId)
+      .select('name price stock isActive images');
+    
+    if (!product) {
+      return res.json({
+        success: true,
+        valid: false,
+        error: 'Product not found'
+      });
+    }
+
+    if (!product.isActive) {
+      return res.json({
+        success: true,
+        valid: false,
+        error: 'Product is not available'
+      });
+    }
+
+    if (product.stock < quantity) {
+      return res.json({
+        success: true,
+        valid: false,
+        error: `Insufficient stock. Only ${product.stock} available`,
+        availableStock: product.stock
       });
     }
 
     return res.json({
       success: true,
-      message: 'Order model works correctly',
-      modelName: Order.modelName
+      valid: true,
+      product: {
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+        image: product.images[0]?.url
+      }
     });
+
   } catch (error) {
-    console.error('❌ Order model test error:', error);
-    return res.json({
+    console.error('❌ Product validation error:', error);
+    return res.status(500).json({ 
       success: false,
-      error: error.message
+      error: 'Product validation failed',
+      details: error.message 
     });
   }
 });
 
 // ===============================
-// 🔧 UTILITY FUNCTIONS
+// 🧪 TEST PRODUCTS ENDPOINT
 // ===============================
-
-// Generate unique order number
-async function generateOrderNumber() {
-  const today = new Date();
-  const dateString = today.getFullYear() + 
-                    String(today.getMonth() + 1).padStart(2, '0') + 
-                    String(today.getDate()).padStart(2, '0');
-  
-  const lastOrder = await Order.findOne(
-    { orderNumber: new RegExp(`^OL-${dateString}`) },
-    {},
-    { sort: { createdAt: -1 } }
-  );
-
-  let sequence = 1;
-  if (lastOrder) {
-    const lastSequence = parseInt(lastOrder.orderNumber.split('-')[2]) || 0;
-    sequence = lastSequence + 1;
-  }
-
-  return `OL-${dateString}-${String(sequence).padStart(3, '0')}`;
-}
-
-// Calculate shipping cost
-function calculateShippingCost(method, orderAmount) {
-  const shippingRates = {
-    standard: 9.99,
-    express: 19.99,
-    overnight: 29.99
-  };
-
-  // Free shipping for orders over $200
-  if (orderAmount > 200) {
-    return 0;
-  }
-
-  return shippingRates[method] || 9.99;
-}
-
-// Restore product stock when order is cancelled
-async function restoreProductStock(items) {
-  for (const item of items) {
-    await Product.findByIdAndUpdate(
-      item.product,
-      { $inc: { stock: item.quantity } }
-    );
-  }
-}
-
-// Get date range for analytics
-function getDateRange(period) {
-  const now = new Date();
-  let start = new Date();
-
-  switch (period) {
-    case 'day':
-      start.setHours(0, 0, 0, 0);
-      break;
-    case 'week':
-      start.setDate(now.getDate() - 7);
-      break;
-    case 'month':
-      start.setMonth(now.getMonth() - 1);
-      break;
-    case 'year':
-      start.setFullYear(now.getFullYear() - 1);
-      break;
-    default:
-      start.setMonth(now.getMonth() - 1);
-  }
-
-  return { start, end: now };
-}
+router.get('/test/endpoint', (req, res) => {
+  return res.json({
+    success: true,
+    message: 'Products endpoint is working!',
+    timestamp: new Date().toISOString()
+  });
+});
 
 module.exports = router;

@@ -9,6 +9,15 @@ const auth = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({ error: 'No token provided' });
         }
+          // For development, we'll use a simple mock user
+    // In production, you would verify the JWT token
+    const mockUser = {
+      id: 'user123',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      role: 'customer'
+    };
 
         // Use the centralized secret
         const decoded = jwt.verify(token, secret);
