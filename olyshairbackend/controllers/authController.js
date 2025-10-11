@@ -2,13 +2,46 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { secret, expiresIn } = require("../config/jwt");
+const {googleClient} = require("../config/google");
 
 // Google Signin Route (Placeholder for future implementation)
+const client = googleClient;
+
 exports.google = async (req, res) => {
   try {
-    return res.status(501).json({ error: "Google OAuth not yet implemented" });
-    
-    // Future implementation will go here
+    const { token } = req.body; // received from frontend
+
+    // 1️⃣ Verify Google token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub, email, name, picture } = payload;
+
+    // 2️⃣ Find or create user in your DB
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({
+        googleId: sub,
+        email,
+        firstName: name.split(" ")[0],
+        lastName: name.split(" ")[1] || "",
+        profilePic: picture,
+      });
+    }
+
+    // 3️⃣ Create JWT for your app
+    const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    // 4️⃣ Send token and user info to frontend
+    res.json({
+      token: jwtToken,
+      user,
+    });
   } catch (err) {
     console.error("Google OAuth Error:", err);
     res.status(500).json({ error: "Google authentication failed" });
@@ -75,7 +108,9 @@ exports.register = async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Registration Error:", err);
-    res.status(500).json({ error: "Server error during registration: " + err.message });
+    res
+      .status(500)
+      .json({ error: "Server error during registration: " + err.message });
   }
 };
 
@@ -94,7 +129,9 @@ exports.login = async (req, res) => {
 
     // Check if user has password (OAuth users might not have passwords)
     if (!user.passwordHash) {
-      return res.status(401).json({ error: "Please use Google login for this account" });
+      return res
+        .status(401)
+        .json({ error: "Please use Google login for this account" });
     }
 
     // Compare password
@@ -134,7 +171,9 @@ exports.login = async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Login Error:", err);
-    res.status(500).json({ error: "Server error during login: " + err.message });
+    res
+      .status(500)
+      .json({ error: "Server error during login: " + err.message });
   }
 };
 
@@ -152,8 +191,8 @@ exports.getProfile = async (req, res) => {
         phoneNumber: user.phoneNumber,
         memberSince: user.memberSince,
         lastLogin: user.lastLogin,
-        avatarUrl: user.avatarUrl
-      }
+        avatarUrl: user.avatarUrl,
+      },
     });
   } catch (err) {
     console.error("❌ Profile Error:", err);
@@ -163,36 +202,36 @@ exports.getProfile = async (req, res) => {
 
 // Add this to your existing authController.js
 exports.getProfile = async (req, res) => {
-    try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
-        
-        if (!token) {
-            return res.status(401).json({ error: 'No token provided' });
-        }
+  try {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
 
-        // Verify token with centralized secret
-        const decoded = jwt.verify(token, secret);
-        
-        // Find user
-        const user = await User.findById(decoded.id).select('-passwordHash');
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.json({
-            user: {
-                id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                phoneNumber: user.phoneNumber,
-                memberSince: user.memberSince,
-                lastLogin: user.lastLogin,
-                avatarUrl: user.avatarUrl
-            }
-        });
-    } catch (err) {
-        console.error('Profile Error:', err);
-        res.status(401).json({ error: 'Invalid token' });
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
     }
+
+    // Verify token with centralized secret
+    const decoded = jwt.verify(token, secret);
+
+    // Find user
+    const user = await User.findById(decoded.id).select("-passwordHash");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        memberSince: user.memberSince,
+        lastLogin: user.lastLogin,
+        avatarUrl: user.avatarUrl,
+      },
+    });
+  } catch (err) {
+    console.error("Profile Error:", err);
+    res.status(401).json({ error: "Invalid token" });
+  }
 };

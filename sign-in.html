@@ -625,6 +625,15 @@
     </style>
   </head>
   <body>
+
+    <!-- Google Sign-In with global initialization -->
+    <div
+      id="g_id_onload"
+      data-client_id="375191702359-lkoehegsjeqf44rev9b4b95fdlrsv7oa.apps.googleusercontent.com"
+      data-callback="handleGoogleLogin"
+      data-auto_prompt="false"
+    ></div>
+
     <!-- Header -->
     <header>
       <div class="logo-container">
@@ -712,9 +721,6 @@
             <p class="form-subtitle">Sign in to access your account</p>
 
             <div class="social-auth">
-              <div id="g_id_onload"
-               data-callback="handleGoogleLogin">
-              </div>
               <div class="g_id_signin" data-type="standard"></div>
               <button type="button" class="social-btn">
                 <i class="fab fa-facebook-f"></i>
@@ -879,33 +885,35 @@
         </div>
       </div>
     </footer>
-    
+
     <!--Google Identity Service SDK-->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <!-- JavaScript -->
-       <!-- JavaScript -->
+    <!-- JavaScript -->
     <script>
-      async function loadGoogleClientId(){
-        try{
-          const res = await fetch("http://localhost:5001/api/config/google-client-id");
+      async function loadGoogleClientId() {
+        try {
+          const res = await fetch(
+            "http://localhost:5001/api/config/google-client-id"
+          );
           const data = await res.json();
 
           // Dynamically set client_id attribute
-          document.getElementById("g_id_onload")
-                  .setAttribute("data-client_id", data.clientId);
-          
+          document
+            .getElementById("g_id_onload")
+            .setAttribute("data-client_id", data.clientId);
+
           // Now re-rendering Google button after clientId is injected
           google.accounts.id.initialize({
             client_id: data.clientId,
-            callback: handleGoogleLogin
+            callback: handleGoogleLogin,
           });
           google.accounts.id.renderButton(
             document.querySelector(".g_id_signin"),
             { theme: "outline", size: "large" }
           );
-
-        }catch(err){
+        } catch (err) {
           console.error("Failed to load Google Client ID:", err);
         }
       }
@@ -914,8 +922,8 @@
       loadGoogleClientId();
 
       // Handles Google Login
-      async function handleGoogleLogin(response){
-        try{
+      async function handleGoogleLogin(response) {
+        try {
           const res = await fetch("http://localhost:5001/api/auth/google", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -923,7 +931,7 @@
           });
           const data = await res.json();
 
-          if (res.ok){
+          if (res.ok) {
             // Save JWT token
             localStorage.setItem("token", data.token);
             console.log("✅ Google login successful, token saved");
@@ -938,7 +946,7 @@
           } else {
             alert(data.error || "Google login failed");
           }
-        }catch(err){
+        } catch (err) {
           console.error("Google OAuth error:", err);
           alert("Google login error.");
         }
@@ -1015,7 +1023,9 @@
       });
 
       // Sign up form password toggle
-      const toggleSignupPassword = document.getElementById("toggleSignupPassword");
+      const toggleSignupPassword = document.getElementById(
+        "toggleSignupPassword"
+      );
       const signupPasswordInput = document.getElementById("signup-password");
 
       toggleSignupPassword.addEventListener("click", () => {
@@ -1031,7 +1041,9 @@
       });
 
       // Confirm password toggle
-      const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+      const toggleConfirmPassword = document.getElementById(
+        "toggleConfirmPassword"
+      );
       const confirmPasswordInput = document.getElementById("confirm-password");
 
       toggleConfirmPassword.addEventListener("click", () => {
@@ -1047,151 +1059,169 @@
       });
 
       // Form submission - Login (Enhanced version)
-document.getElementById("signin-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+      document
+        .getElementById("signin-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value.trim();
 
-  console.log("🔐 Login attempt for:", email);
+          console.log("🔐 Login attempt for:", email);
 
-  // Basic validation
-  if (!email || !password) {
-    alert("Please enter both email and password");
-    return;
-  }
-
-  try {
-    console.log("📡 Sending request to: http://localhost:5001/api/auth/login");
-    
-    const res = await fetch("http://localhost:5001/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    
-    console.log("📨 Response status:", res.status);
-    console.log("📨 Response ok:", res.ok);
-    
-    const data = await res.json();
-    console.log("📨 Response data:", data);
-
-    if (!res.ok) {
-      alert(data.error || `Login failed with status: ${res.status}`);
-      return;
-    }
-
-    // Save JWT token
-    localStorage.setItem("token", data.token);
-    console.log("✅ Login successful, token saved:", data.token ? "Yes" : "No");
-
-    // Show success message
-    alert("Login successful! Welcome back!");
-
-    // Redirect to dashboard with slight delay
-    setTimeout(() => {
-      window.location.href = "customerdashboard.html";
-    }, 100);
-
-  } catch (err) {
-    console.error("❌ Login error:", err);
-    console.error("❌ Error details:", {
-      name: err.name,
-      message: err.message,
-      stack: err.stack
-    });
-    alert("Server error during login. Please check console for details.");
-  }
-});
-      // Form submission - Registration
-      document.getElementById("signup-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const fullName = document.getElementById("signup-name").value.trim();
-        const email = document.getElementById("signup-email").value.trim();
-        const password = document.getElementById("signup-password").value.trim();
-        const confirmPassword = document.getElementById("confirm-password").value.trim();
-        const termsAccepted = document.getElementById("terms").checked;
-
-        console.log("📝 Registration attempt:", { fullName, email });
-
-        // Validation
-        if (!fullName || !email || !password || !confirmPassword) {
-          alert("Please fill in all fields");
-          return;
-        }
-
-        if (password !== confirmPassword) {
-          alert("Passwords do not match");
-          return;
-        }
-
-        if (!termsAccepted) {
-          alert("Please accept the Terms & Conditions");
-          return;
-        }
-
-        // Split full name into first + last
-        const nameParts = fullName.split(" ");
-        if (nameParts.length < 2) {
-          alert("Please enter both first and last name");
-          return;
-        }
-
-        const firstName = nameParts[0];
-        const lastName = nameParts.slice(1).join(" ");
-
-        try {
-          const res = await fetch("http://localhost:5001/api/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              firstName, 
-              lastName, 
-              email, 
-              password, 
-              confirmPassword 
-            }),
-          });
-          
-          const data = await res.json();
-
-          if (!res.ok) {
-            alert(data.error || "Registration failed");
+          // Basic validation
+          if (!email || !password) {
+            alert("Please enter both email and password");
             return;
           }
 
-          // Save JWT token
-          localStorage.setItem("token", data.token);
-          console.log("✅ Registration successful, token saved");
+          try {
+            console.log(
+              "📡 Sending request to: http://localhost:5001/api/auth/login"
+            );
 
-          // Show success message
-          alert("Registration successful! Welcome to OLYS HAIR!");
+            const res = await fetch("http://localhost:5001/api/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
 
-          // Redirect to dashboard with slight delay
-          setTimeout(() => {
-            window.location.href = "customerdashboard.html";
-          }, 100);
+            console.log("📨 Response status:", res.status);
+            console.log("📨 Response ok:", res.ok);
 
-        } catch (err) {
-          console.error("Registration error:", err);
-          alert("Server error during registration. Please try again.");
-        }
-      });
+            const data = await res.json();
+            console.log("📨 Response data:", data);
+
+            if (!res.ok) {
+              alert(data.error || `Login failed with status: ${res.status}`);
+              return;
+            }
+
+            // Save JWT token
+            localStorage.setItem("token", data.token);
+            console.log(
+              "✅ Login successful, token saved:",
+              data.token ? "Yes" : "No"
+            );
+
+            // Show success message
+            alert("Login successful! Welcome back!");
+
+            // Redirect to dashboard with slight delay
+            setTimeout(() => {
+              window.location.href = "customerdashboard.html";
+            }, 100);
+          } catch (err) {
+            console.error("❌ Login error:", err);
+            console.error("❌ Error details:", {
+              name: err.name,
+              message: err.message,
+              stack: err.stack,
+            });
+            alert(
+              "Server error during login. Please check console for details."
+            );
+          }
+        });
+      // Form submission - Registration
+      document
+        .getElementById("signup-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const fullName = document.getElementById("signup-name").value.trim();
+          const email = document.getElementById("signup-email").value.trim();
+          const password = document
+            .getElementById("signup-password")
+            .value.trim();
+          const confirmPassword = document
+            .getElementById("confirm-password")
+            .value.trim();
+          const termsAccepted = document.getElementById("terms").checked;
+
+          console.log("📝 Registration attempt:", { fullName, email });
+
+          // Validation
+          if (!fullName || !email || !password || !confirmPassword) {
+            alert("Please fill in all fields");
+            return;
+          }
+
+          if (password !== confirmPassword) {
+            alert("Passwords do not match");
+            return;
+          }
+
+          if (!termsAccepted) {
+            alert("Please accept the Terms & Conditions");
+            return;
+          }
+
+          // Split full name into first + last
+          const nameParts = fullName.split(" ");
+          if (nameParts.length < 2) {
+            alert("Please enter both first and last name");
+            return;
+          }
+
+          const firstName = nameParts[0];
+          const lastName = nameParts.slice(1).join(" ");
+
+          try {
+            const res = await fetch("http://localhost:5001/api/auth/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                firstName,
+                lastName,
+                email,
+                password,
+                confirmPassword,
+              }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              alert(data.error || "Registration failed");
+              return;
+            }
+
+            // Save JWT token
+            localStorage.setItem("token", data.token);
+            console.log("✅ Registration successful, token saved");
+
+            // Show success message
+            alert("Registration successful! Welcome to OLYS HAIR!");
+
+            // Redirect to dashboard with slight delay
+            setTimeout(() => {
+              window.location.href = "customerdashboard.html";
+            }, 100);
+          } catch (err) {
+            console.error("Registration error:", err);
+            alert("Server error during registration. Please try again.");
+          }
+        });
 
       // Add loading states to buttons
-      document.addEventListener('DOMContentLoaded', function() {
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-          form.addEventListener('submit', function() {
-            const submitBtn = this.querySelector('.submit-btn');
+      document.addEventListener("DOMContentLoaded", function () {
+        const forms = document.querySelectorAll("form");
+        forms.forEach((form) => {
+          form.addEventListener("submit", function () {
+            const submitBtn = this.querySelector(".submit-btn");
             if (submitBtn) {
-              submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+              submitBtn.innerHTML =
+                '<i class="fas fa-spinner fa-spin"></i> Processing...';
               submitBtn.disabled = true;
-              
+
               // Re-enable button after 5 seconds in case of error
               setTimeout(() => {
-                submitBtn.innerHTML = submitBtn === document.querySelector('#signin-form .submit-btn') ? 'Sign In' : 'Create Account';
+                submitBtn.innerHTML =
+                  submitBtn ===
+                  document.querySelector("#signin-form .submit-btn")
+                    ? "Sign In"
+                    : "Create Account";
                 submitBtn.disabled = false;
               }, 5000);
             }
@@ -1201,7 +1231,10 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
 
       // Debug: Check if page loads properly
       console.log("🔧 Sign-in page loaded successfully");
-      console.log("🔍 Token in localStorage:", localStorage.getItem('token') ? 'Present' : 'None');
+      console.log(
+        "🔍 Token in localStorage:",
+        localStorage.getItem("token") ? "Present" : "None"
+      );
     </script>
   </body>
 </html>
