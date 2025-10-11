@@ -963,7 +963,35 @@
                 <div class="content-section" id="orders">
                     <div class="section-header">
                         <h2>Order Management</h2>
+                        <div>
+                            <input type="text" id="orderSearch" class="form-control" placeholder="Search orders..." style="width: 250px; display: inline-block;">
+                            <button class="action-btn" onclick="refreshOrders()" style="margin-left: 10px;">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
                     </div>
+                    
+                    <!-- Orders Stats -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <h3>Total Orders</h3>
+                            <div class="value" id="totalOrders">0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <h3>Pending</h3>
+                            <div class="value" id="pendingOrders">0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <h3>Processing</h3>
+                            <div class="value" id="processingOrders">0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <h3>Completed</h3>
+                            <div class="value" id="completedOrders">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Table -->
                     <div class="dashboard-card">
                         <table class="data-table">
                             <thead>
@@ -973,6 +1001,7 @@
                                     <th>Status</th>
                                     <th>Total</th>
                                     <th>Date</th>
+                                    <th>Items</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -980,6 +1009,7 @@
                                 <!-- Orders will be loaded here -->
                             </tbody>
                         </table>
+                        <div id="ordersPagination" style="margin-top: 20px; text-align: center;"></div>
                     </div>
                 </div>
 
@@ -1070,28 +1100,34 @@
     <div id="notificationContainer"></div>
 
     <script>
-        // API Configuration - CORRECTED ENDPOINTS
+        // ==================== ENHANCED ADMIN DASHBOARD ====================
+        
+        // API Configuration
         const API_BASE_URL = 'http://localhost:5001/api';
         const ENDPOINTS = {
             ADMIN_LOGIN: `${API_BASE_URL}/admin/auth/login`,
             ADMIN_REGISTER: `${API_BASE_URL}/admin/auth/register`,
             ADMIN_PROFILE: `${API_BASE_URL}/admin/auth/profile`,
-            PRODUCTS: `${API_BASE_URL}/admin/products`, // Admin products endpoint
-            PUBLIC_PRODUCTS: `${API_BASE_URL}/products`, // Public products endpoint for diagnostics
-            ORDERS: `${API_BASE_URL}/admin/orders`, 
+            PRODUCTS: `${API_BASE_URL}/admin/products`,
+            PUBLIC_PRODUCTS: `${API_BASE_URL}/products`,
+            ORDERS: `${API_BASE_URL}/admin/orders`,
             USERS: `${API_BASE_URL}/admin/users`,
             ACTIVITIES: `${API_BASE_URL}/admin/activities/dashboard-stats`,
             RECENT_ACTIVITIES: `${API_BASE_URL}/admin/activities/recent-activities`,
             SALES_ANALYTICS: `${API_BASE_URL}/admin/activities/sales-analytics`,
-            HEALTH: `${API_BASE_URL}/health`
+            HEALTH: `${API_BASE_URL}/health`,
+            ADMIN_HEALTH: `${API_BASE_URL}/admin/health`
         };
 
         // Global State
         let currentUser = null;
         let authToken = localStorage.getItem('adminToken');
+        let isTokenVerified = false;
         let products = [];
+        let orders = [];
         let currentPage = 1;
         let productsPerPage = 10;
+        let ordersPerPage = 10;
 
         // DOM Elements
         const loginContainer = document.getElementById('loginContainer');
@@ -1108,11 +1144,22 @@
             initializeApp();
         });
 
+        // ==================== ENHANCED AUTHENTICATION ====================
+
         // Initialize Application
-        function initializeApp() {
+        async function initializeApp() {
+            console.log('🚀 Initializing Enhanced Admin Dashboard...');
+            
+            // Test API connectivity first
+            const isApiReachable = await testApiConnectivity();
+            
+            if (!isApiReachable) {
+                showNotification('Cannot connect to server. Please ensure the backend is running.', 'error');
+            }
+            
             // Check if user is already logged in
             if (authToken) {
-                verifyTokenAndLoadDashboard();
+                await verifyTokenAndLoadDashboard();
             } else {
                 showLogin();
             }
@@ -1120,6 +1167,127 @@
             // Setup event listeners
             setupEventListeners();
         }
+
+        // Test API connectivity
+        async function testApiConnectivity() {
+            try {
+                console.log('🧪 Testing API connectivity...');
+                const response = await fetch(ENDPOINTS.HEALTH);
+                if (response.ok) {
+                    console.log('✅ API server is reachable');
+                    return true;
+                } else {
+                    console.log('❌ API server returned error:', response.status);
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ API server is not reachable:', error);
+                return false;
+            }
+        }
+
+        // Enhanced token verification
+        async function verifyTokenAndLoadDashboard() {
+            if (!authToken) {
+                console.log('❌ No token found in localStorage');
+                showLogin();
+                return;
+            }
+
+            try {
+                console.log('🔐 Verifying admin token...');
+                
+                const response = await fetch(ENDPOINTS.ADMIN_PROFILE, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    isTokenVerified = true;
+                    console.log('✅ Token verified successfully');
+                    showDashboard();
+                } else {
+                    console.log('❌ Token verification failed:', response.status);
+                    localStorage.removeItem('adminToken');
+                    authToken = null;
+                    showNotification('Session expired. Please login again.', 'error');
+                    showLogin();
+                }
+            } catch (error) {
+                console.error('❌ Token verification error:', error);
+                localStorage.removeItem('adminToken');
+                authToken = null;
+                showNotification('Network error during authentication.', 'error');
+                showLogin();
+            }
+        }
+
+        // Enhanced API request function with automatic token handling
+        async function makeAuthenticatedRequest(url, options = {}) {
+            if (!authToken) {
+                throw new Error('No authentication token available');
+            }
+
+            const defaultOptions = {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            };
+
+            const mergedOptions = { ...defaultOptions, ...options };
+            
+            console.log(`🌐 Making authenticated request to: ${url}`);
+            console.log(`🔐 Token present: ${!!authToken}`);
+
+            try {
+                const response = await fetch(url, mergedOptions);
+                
+                // Handle token expiration
+                if (response.status === 401) {
+                    console.log('🔄 Token expired, clearing and redirecting to login');
+                    localStorage.removeItem('adminToken');
+                    authToken = null;
+                    showNotification('Session expired. Please login again.', 'error');
+                    showLogin();
+                    throw new Error('Authentication failed');
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('❌ API request failed:', error);
+                throw error;
+            }
+        }
+
+        // Enhanced error handling
+        function handleApiError(status, resource) {
+            switch (status) {
+                case 401:
+                    showNotification('Authentication failed. Please login again.', 'error');
+                    handleLogout();
+                    break;
+                case 403:
+                    showNotification('Access denied. Insufficient permissions.', 'error');
+                    break;
+                case 404:
+                    showNotification(`${resource} endpoint not found.`, 'error');
+                    break;
+                case 500:
+                    showNotification('Server error. Please try again later.', 'error');
+                    break;
+                default:
+                    showNotification(`Error loading ${resource}.`, 'warning');
+            }
+        }
+
+        // ==================== EVENT LISTENERS ====================
 
         // Setup event listeners
         function setupEventListeners() {
@@ -1158,6 +1326,11 @@
                 productSearch.addEventListener('input', debounce(filterProducts, 300));
             }
 
+            const orderSearch = document.getElementById('orderSearch');
+            if (orderSearch) {
+                orderSearch.addEventListener('input', debounce(filterOrders, 300));
+            }
+
             // Report range change
             const reportRange = document.getElementById('reportRange');
             if (reportRange) {
@@ -1181,46 +1354,20 @@
             });
         }
 
-        // Switch sections
-        function switchSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show the selected section
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Update sidebar active state
-            document.querySelectorAll('.sidebar-bubble').forEach(bubble => {
-                bubble.classList.remove('active');
-                if (bubble.getAttribute('data-section') === sectionId) {
-                    bubble.classList.add('active');
-                }
-            });
-            
-            // Load section-specific data
-            if (sectionId === 'reports') {
-                loadReports();
-            } else if (sectionId === 'products') {
-                loadProducts();
-            } else if (sectionId === 'orders') {
-                loadOrders();
-            } else if (sectionId === 'users') {
-                loadUsers();
-            }
-        }
+        // ==================== AUTHENTICATION HANDLERS ====================
 
         // Show login form
         function showLogin() {
             loginContainer.style.display = 'flex';
             registerContainer.style.display = 'none';
+            dashboard.style.display = 'none';
         }
 
         // Show register form
         function showRegister() {
             loginContainer.style.display = 'none';
             registerContainer.style.display = 'flex';
+            dashboard.style.display = 'none';
         }
 
         // Show dashboard
@@ -1229,11 +1376,15 @@
             registerContainer.style.display = 'none';
             dashboard.style.display = 'block';
             
+            // Update admin info
+            if (currentUser) {
+                document.getElementById('adminName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                document.getElementById('adminGreeting').textContent = currentUser.firstName;
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${currentUser.firstName}`;
+            }
+            
             // Load dashboard data
             loadDashboardData();
-            loadProducts();
-            loadOrders();
-            loadUsers();
             initializeCharts();
         }
 
@@ -1254,30 +1405,34 @@
             loginBtn.disabled = true;
             
             try {
-                console.log('🔐 Attempting login...');
+                console.log('🔐 Attempting admin login...');
                 const response = await fetch(ENDPOINTS.ADMIN_LOGIN, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                     },
                     body: JSON.stringify({ email, password })
                 });
                 
                 const data = await response.json();
                 
-                if (response.ok) {
+                if (response.ok && data.token) {
                     // Save token and user info
                     authToken = data.token;
                     localStorage.setItem('adminToken', authToken);
                     currentUser = data.user;
+                    isTokenVerified = true;
                     
+                    console.log('✅ Login successful, token saved');
                     showNotification('Login successful!', 'success');
                     showDashboard();
                 } else {
-                    showNotification(data.error || 'Login failed', 'error');
+                    console.error('❌ Login failed:', data.error);
+                    showNotification(data.error || 'Login failed. Please check your credentials.', 'error');
                 }
             } catch (error) {
-                console.error('Login error:', error);
+                console.error('❌ Login network error:', error);
                 showNotification('Network error. Please check if the server is running.', 'error');
             } finally {
                 // Reset button state
@@ -1311,6 +1466,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                     },
                     body: JSON.stringify({ 
                         firstName, 
@@ -1343,57 +1499,52 @@
 
         // Handle logout
         function handleLogout() {
+            console.log('🚪 Logging out admin...');
             localStorage.removeItem('adminToken');
             authToken = null;
             currentUser = null;
+            isTokenVerified = false;
             showNotification('Logged out successfully', 'success');
             showLogin();
         }
 
-        // Verify token and load dashboard
-        async function verifyTokenAndLoadDashboard() {
-            try {
-                const response = await fetch(ENDPOINTS.ADMIN_PROFILE, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    currentUser = data.user;
-                    showDashboard();
-                } else {
-                    // Token is invalid
-                    localStorage.removeItem('adminToken');
-                    authToken = null;
-                    showLogin();
+        // ==================== DASHBOARD FUNCTIONALITY ====================
+
+        // Switch sections
+        function switchSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-bubble').forEach(bubble => {
+                bubble.classList.remove('active');
+                if (bubble.getAttribute('data-section') === sectionId) {
+                    bubble.classList.add('active');
                 }
-            } catch (error) {
-                console.error('Token verification error:', error);
-                localStorage.removeItem('adminToken');
-                authToken = null;
-                showLogin();
+            });
+            
+            // Load section-specific data
+            if (sectionId === 'reports') {
+                loadReports();
+            } else if (sectionId === 'products') {
+                loadProducts();
+            } else if (sectionId === 'orders') {
+                loadOrders();
+            } else if (sectionId === 'users') {
+                loadUsers();
             }
         }
 
         // Load dashboard data
         async function loadDashboardData() {
             try {
-                // Update admin info
-                if (currentUser) {
-                    document.getElementById('adminName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-                    document.getElementById('adminGreeting').textContent = currentUser.firstName;
-                    document.getElementById('welcomeMessage').textContent = `Welcome, ${currentUser.firstName}`;
-                }
-                
                 // Load dashboard stats
-                const statsResponse = await fetch(ENDPOINTS.ACTIVITIES, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const statsResponse = await makeAuthenticatedRequest(ENDPOINTS.ACTIVITIES);
                 
                 if (statsResponse.ok) {
                     const statsData = await statsResponse.json();
@@ -1409,11 +1560,7 @@
                 }
                 
                 // Load recent activities
-                const activitiesResponse = await fetch(ENDPOINTS.RECENT_ACTIVITIES, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const activitiesResponse = await makeAuthenticatedRequest(ENDPOINTS.RECENT_ACTIVITIES);
                 
                 if (activitiesResponse.ok) {
                     const activitiesData = await activitiesResponse.json();
@@ -1473,22 +1620,179 @@
             });
         }
 
+        // ==================== ORDERS MANAGEMENT ====================
+
+        // Enhanced loadOrders function
+        async function loadOrders() {
+            try {
+                console.log('🔄 Loading orders with token verification...');
+                
+                const response = await makeAuthenticatedRequest(ENDPOINTS.ORDERS, {
+                    method: 'GET'
+                });
+                
+                console.log('📊 Orders API Response Status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Orders loaded successfully:', data.orders?.length || 0);
+                    orders = data.orders || [];
+                    renderOrders(orders);
+                    updateOrderStats(orders);
+                } else {
+                    const errorText = await response.text();
+                    console.error('❌ Orders API Error:', response.status, errorText);
+                    showNotification('Error loading orders. Using demo data.', 'warning');
+                    renderOrders(getMockOrders());
+                }
+            } catch (error) {
+                console.error('❌ Network error loading orders:', error);
+                showNotification('Network error loading orders. Using demo data.', 'warning');
+                renderOrders(getMockOrders());
+            }
+        }
+
+        // Refresh orders
+        async function refreshOrders() {
+            showNotification('Refreshing orders...', 'info');
+            await loadOrders();
+        }
+
+        // Mock data fallback
+        function getMockOrders() {
+            return [
+                {
+                    orderNumber: 'OL-' + Date.now(),
+                    customerName: 'Demo Customer',
+                    status: 'processing',
+                    totalAmount: 89.99,
+                    orderDate: new Date(),
+                    itemCount: 2,
+                    paymentStatus: 'paid'
+                },
+                {
+                    orderNumber: 'OL-' + (Date.now() - 1000000),
+                    customerName: 'Test User',
+                    status: 'delivered',
+                    totalAmount: 149.99,
+                    orderDate: new Date(Date.now() - 86400000),
+                    itemCount: 3,
+                    paymentStatus: 'paid'
+                },
+                {
+                    orderNumber: 'OL-' + (Date.now() - 2000000),
+                    customerName: 'Another Customer',
+                    status: 'pending',
+                    totalAmount: 199.99,
+                    orderDate: new Date(Date.now() - 172800000),
+                    itemCount: 1,
+                    paymentStatus: 'pending'
+                }
+            ];
+        }
+
+        // Render orders table
+        function renderOrders(ordersToRender) {
+            const tableBody = document.getElementById('ordersTableBody');
+            tableBody.innerHTML = '';
+            
+            if (!ordersToRender || ordersToRender.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No orders found</td></tr>';
+                return;
+            }
+            
+            ordersToRender.forEach(order => {
+                const row = document.createElement('tr');
+                const statusClass = `status-${order.status.toLowerCase()}`;
+                const orderDate = new Date(order.orderDate).toLocaleDateString();
+                
+                row.innerHTML = `
+                    <td>#${order.orderNumber}</td>
+                    <td>${order.customerName}</td>
+                    <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+                    <td>$${order.totalAmount?.toFixed(2) || '0.00'}</td>
+                    <td>${orderDate}</td>
+                    <td>${order.itemCount || 0}</td>
+                    <td>
+                        <button class="action-btn view-order" data-id="${order._id || order.id}">View</button>
+                        <button class="action-btn btn-warning update-status" data-id="${order._id || order.id}">Update</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.view-order').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const orderId = e.target.dataset.id;
+                    viewOrder(orderId);
+                });
+            });
+            
+            document.querySelectorAll('.update-status').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const orderId = e.target.dataset.id;
+                    updateOrderStatus(orderId);
+                });
+            });
+        }
+
+        // Update order statistics
+        function updateOrderStats(orders) {
+            const totalOrders = orders.length;
+            const pendingOrders = orders.filter(order => order.status === 'pending').length;
+            const processingOrders = orders.filter(order => order.status === 'processing').length;
+            const completedOrders = orders.filter(order => order.status === 'delivered').length;
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('pendingOrders').textContent = pendingOrders;
+            document.getElementById('processingOrders').textContent = processingOrders;
+            document.getElementById('completedOrders').textContent = completedOrders;
+        }
+
+        // Filter orders
+        function filterOrders() {
+            const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+            
+            if (!searchTerm) {
+                renderOrders(orders);
+                return;
+            }
+            
+            const filteredOrders = orders.filter(order => 
+                order.orderNumber.toLowerCase().includes(searchTerm) ||
+                order.customerName.toLowerCase().includes(searchTerm) ||
+                order.status.toLowerCase().includes(searchTerm)
+            );
+            
+            renderOrders(filteredOrders);
+        }
+
+        // View order details
+        function viewOrder(orderId) {
+            showNotification('View order functionality coming soon', 'info');
+        }
+
+        // Update order status
+        function updateOrderStatus(orderId) {
+            showNotification('Update order status functionality coming soon', 'info');
+        }
+
+        // ==================== PRODUCTS MANAGEMENT ====================
+
         // Load products
         async function loadProducts(page = 1) {
             try {
                 console.log('🔄 Loading products from admin endpoint...');
-                const response = await fetch(`${ENDPOINTS.PRODUCTS}?page=${page}&limit=${productsPerPage}`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const response = await makeAuthenticatedRequest(`${ENDPOINTS.PRODUCTS}?page=${page}&limit=${productsPerPage}`);
                 
                 if (response.ok) {
                     const data = await response.json();
                     products = data.products || data;
                     currentPage = page;
                     renderProducts(products);
-                    renderPagination(data.totalPages, data.currentPage);
+                    renderPagination(data.totalPages, data.currentPage, 'products');
                 } else {
                     console.warn('Admin products endpoint failed, trying public endpoint...');
                     // Fallback to public endpoint
@@ -1554,43 +1858,7 @@
             });
         }
 
-        // Render pagination
-        function renderPagination(totalPages, currentPage) {
-            const paginationContainer = document.getElementById('productsPagination');
-            paginationContainer.innerHTML = '';
-            
-            if (!totalPages || totalPages <= 1) return;
-            
-            // Previous button
-            if (currentPage > 1) {
-                const prevBtn = document.createElement('button');
-                prevBtn.className = 'action-btn';
-                prevBtn.textContent = 'Previous';
-                prevBtn.addEventListener('click', () => loadProducts(currentPage - 1));
-                paginationContainer.appendChild(prevBtn);
-            }
-            
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                const pageBtn = document.createElement('button');
-                pageBtn.className = `action-btn ${i === currentPage ? 'btn-success' : ''}`;
-                pageBtn.textContent = i;
-                pageBtn.style.margin = '0 5px';
-                pageBtn.addEventListener('click', () => loadProducts(i));
-                paginationContainer.appendChild(pageBtn);
-            }
-            
-            // Next button
-            if (currentPage < totalPages) {
-                const nextBtn = document.createElement('button');
-                nextBtn.className = 'action-btn';
-                nextBtn.textContent = 'Next';
-                nextBtn.addEventListener('click', () => loadProducts(currentPage + 1));
-                paginationContainer.appendChild(nextBtn);
-            }
-        }
-
-        // Handle add product - FIXED VERSION
+        // Handle add product
         async function handleAddProduct(e) {
             e.preventDefault();
             
@@ -1632,7 +1900,6 @@
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`
-                        // Don't set Content-Type for FormData - browser sets it automatically
                     },
                     body: formData
                 });
@@ -1641,7 +1908,7 @@
                     showNotification('Product added successfully!', 'success');
                     document.getElementById('addProductForm').style.display = 'none';
                     document.getElementById('productForm').reset();
-                    loadProducts(currentPage); // Refresh the products list
+                    loadProducts(currentPage);
                 } else {
                     const error = await response.json();
                     showNotification(error.error || 'Error adding product', 'error');
@@ -1668,11 +1935,8 @@
             }
             
             try {
-                const response = await fetch(`${ENDPOINTS.PRODUCTS}/${productId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
+                const response = await makeAuthenticatedRequest(`${ENDPOINTS.PRODUCTS}/${productId}`, {
+                    method: 'DELETE'
                 });
                 
                 if (response.ok) {
@@ -1705,76 +1969,12 @@
             renderProducts(filteredProducts);
         }
 
-        // Load orders
-        async function loadOrders() {
-            try {
-                const response = await fetch(ENDPOINTS.ORDERS, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    renderOrders(data.orders);
-                } else {
-                    // Mock orders data for demo
-                    renderOrders([
-                        {
-                            orderNumber: 'ORD-001',
-                            customerName: 'John Doe',
-                            status: 'Processing',
-                            totalAmount: 89.99,
-                            orderDate: new Date()
-                        }
-                    ]);
-                    showNotification('Using demo orders data', 'warning');
-                }
-            } catch (error) {
-                console.error('Error loading orders:', error);
-                showNotification('Error loading orders', 'error');
-            }
-        }
-
-        // Render orders table
-        function renderOrders(orders) {
-            const tableBody = document.getElementById('ordersTableBody');
-            tableBody.innerHTML = '';
-            
-            if (!orders || orders.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No orders found</td></tr>';
-                return;
-            }
-            
-            orders.forEach(order => {
-                const row = document.createElement('tr');
-                const statusClass = `status-${order.status.toLowerCase()}`;
-                const orderDate = new Date(order.orderDate).toLocaleDateString();
-                
-                row.innerHTML = `
-                    <td>#${order.orderNumber}</td>
-                    <td>${order.customerName}</td>
-                    <td><span class="status-badge ${statusClass}">${order.status}</span></td>
-                    <td>$${order.totalAmount?.toFixed(2) || '0.00'}</td>
-                    <td>${orderDate}</td>
-                    <td>
-                        <button class="action-btn">View</button>
-                        <button class="action-btn">Invoice</button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-        }
+        // ==================== USERS MANAGEMENT ====================
 
         // Load users
         async function loadUsers() {
             try {
-                const response = await fetch(ENDPOINTS.USERS, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const response = await makeAuthenticatedRequest(ENDPOINTS.USERS);
                 
                 if (response.ok) {
                     const data = await response.json();
@@ -1829,16 +2029,14 @@
             });
         }
 
+        // ==================== REPORTS ====================
+
         // Load reports
         async function loadReports() {
             const days = document.getElementById('reportRange').value;
             
             try {
-                const response = await fetch(`${ENDPOINTS.SALES_ANALYTICS}?days=${days}`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const response = await makeAuthenticatedRequest(`${ENDPOINTS.SALES_ANALYTICS}?days=${days}`);
                 
                 if (response.ok) {
                     const data = await response.json();
@@ -1857,6 +2055,104 @@
             // This would update the Chart.js charts with real data
             // For now, we'll keep the mock data
             initializeCharts();
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+
+        // Render pagination
+        function renderPagination(totalPages, currentPage, type) {
+            const paginationContainer = document.getElementById(`${type}Pagination`);
+            if (!paginationContainer) return;
+            
+            paginationContainer.innerHTML = '';
+            
+            if (!totalPages || totalPages <= 1) return;
+            
+            // Previous button
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'action-btn';
+                prevBtn.textContent = 'Previous';
+                prevBtn.addEventListener('click', () => {
+                    if (type === 'products') loadProducts(currentPage - 1);
+                });
+                paginationContainer.appendChild(prevBtn);
+            }
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `action-btn ${i === currentPage ? 'btn-success' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.style.margin = '0 5px';
+                pageBtn.addEventListener('click', () => {
+                    if (type === 'products') loadProducts(i);
+                });
+                paginationContainer.appendChild(pageBtn);
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'action-btn';
+                nextBtn.textContent = 'Next';
+                nextBtn.addEventListener('click', () => {
+                    if (type === 'products') loadProducts(currentPage + 1);
+                });
+                paginationContainer.appendChild(nextBtn);
+            }
+        }
+
+        // Utility function to get time ago
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minutes ago`;
+            if (diffHours < 24) return `${diffHours} hours ago`;
+            if (diffDays < 7) return `${diffDays} days ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        // Debounce function for search
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notificationContainer = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            notificationContainer.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide and remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
         }
 
         // System Diagnostics
@@ -1888,17 +2184,24 @@
                 
                 // Test 3: Admin products API
                 diagnosticLog += '3. Testing admin products API... ';
-                const adminProductsResponse = await fetch(ENDPOINTS.PRODUCTS, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
+                const adminProductsResponse = await makeAuthenticatedRequest(ENDPOINTS.PRODUCTS);
                 if (adminProductsResponse.ok) {
                     diagnosticLog += '✅ SUCCESS\n';
                 } else {
                     diagnosticLog += '❌ FAILED\n';
                 }
                 
-                // Test 4: Check localStorage
-                diagnosticLog += '4. Checking authentication... ';
+                // Test 4: Admin orders API
+                diagnosticLog += '4. Testing admin orders API... ';
+                const adminOrdersResponse = await makeAuthenticatedRequest(ENDPOINTS.ORDERS);
+                if (adminOrdersResponse.ok) {
+                    diagnosticLog += '✅ SUCCESS\n';
+                } else {
+                    diagnosticLog += '❌ FAILED\n';
+                }
+                
+                // Test 5: Check localStorage
+                diagnosticLog += '5. Checking authentication... ';
                 const token = localStorage.getItem('adminToken');
                 if (token) {
                     diagnosticLog += '✅ Token exists\n';
@@ -1906,8 +2209,8 @@
                     diagnosticLog += '❌ No token found\n';
                 }
                 
-                // Test 5: Check current user
-                diagnosticLog += '5. Current user state... ';
+                // Test 6: Check current user
+                diagnosticLog += '6. Current user state... ';
                 if (currentUser) {
                     diagnosticLog += `✅ ${currentUser.firstName} ${currentUser.lastName}\n`;
                 } else {
@@ -1921,57 +2224,7 @@
             results.innerHTML = `<pre>${diagnosticLog}</pre>`;
         }
 
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const notificationContainer = document.getElementById('notificationContainer');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            
-            notificationContainer.appendChild(notification);
-            
-            // Show notification
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 100);
-            
-            // Hide and remove after 5 seconds
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            }, 5000);
-        }
-
-        // Utility function to get time ago
-        function getTimeAgo(date) {
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 1) return 'Just now';
-            if (diffMins < 60) return `${diffMins} minutes ago`;
-            if (diffHours < 24) return `${diffHours} hours ago`;
-            if (diffDays < 7) return `${diffDays} days ago`;
-            
-            return date.toLocaleDateString();
-        }
-
-        // Debounce function for search
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
+        // ==================== UI CONTROLS ====================
 
         // Dark/Light Mode Toggle
         const modeToggle = document.querySelector('.mode-toggle');
