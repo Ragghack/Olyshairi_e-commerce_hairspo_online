@@ -182,7 +182,99 @@ router.post('/:productId/move-to-cart', auth, async (req, res) => {
         res.status(500).json({ error: 'Failed to move product to cart' });
     }
 });
+// ➕ ADD TO WISHLIST - UPDATED WITH BETTER ERROR HANDLING
+router.post('/', auth, async (req, res) => {
+    try {
+        const { productId, name, price, image } = req.body;
+        
+        console.log('➕ Adding to wishlist:', { productId, userId: req.user.id });
 
+        // Validate user authentication
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ error: 'User authentication required' });
+        }
+
+        // Validate product exists and is active
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        
+        if (!product.isActive) {
+            return res.status(400).json({ error: 'Product is not available' });
+        }
+
+        // Find or create wishlist with proper error handling
+        let wishlist = await Wishlist.findOne({ userId: req.user.id });
+        
+        if (!wishlist) {
+            try {
+                wishlist = new Wishlist({
+                    userId: req.user.id,
+                    items: []
+                });
+                await wishlist.save();
+            } catch (createError) {
+                // Handle case where wishlist might have been created by another request
+                if (createError.code === 11000) {
+                    wishlist = await Wishlist.findOne({ userId: req.user.id });
+                    if (!wishlist) {
+                        throw new Error('Failed to create wishlist');
+                    }
+                } else {
+                    throw createError;
+                }
+            }
+        }
+        
+        // Check if product already in wishlist
+        const existingItem = wishlist.items.find(
+            item => item.productId && item.productId.toString() === productId
+        );
+        
+        if (existingItem) {
+            return res.status(400).json({ error: 'Product already in wishlist' });
+        }
+        
+        // Add new item
+        wishlist.items.push({
+            productId,
+            name: name || product.name,
+            price: price || product.price,
+            image: image || (product.images && product.images[0]?.url) || product.image,
+            addedAt: new Date()
+        });
+        
+        await wishlist.save();
+        
+        // Populate the response
+        await wishlist.populate('items.productId', 'name price images category');
+        
+        console.log('✅ Product added to wishlist successfully');
+        res.json({
+            message: 'Product added to wishlist',
+            wishlist: wishlist.items
+        });
+        
+    } catch (error) {
+        console.error('❌ Add to wishlist error:', error);
+        
+        // Handle specific MongoDB errors
+        if (error.code === 11000) {
+            // Extract more details from the error
+            if (error.keyPattern && error.keyPattern.userId) {
+                return res.status(400).json({ 
+                    error: 'Duplicate wishlist detected. Please try again.' 
+                });
+            }
+        }
+        
+        res.status(500).json({ 
+            error: 'Failed to add to wishlist',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
 // ===============================
 // TEST WISHLIST ROUTE
 // ===============================
@@ -193,5 +285,6 @@ router.get('/test/endpoint', auth, (req, res) => {
         timestamp: new Date().toISOString()
     });
 });
+
 
 module.exports = router;

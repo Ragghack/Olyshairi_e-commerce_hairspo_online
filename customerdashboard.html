@@ -1167,9 +1167,27 @@ async function fetchOrders(limit = null) {
   return data.orders || [];
 }
 
+// Fix the fetchWishlist function
 async function fetchWishlist(limit = null) {
-  const data = await apiCall(limit ? `/wishlist?limit=${limit}` : '/wishlist');
-  return data || []; // Wishlist returns array directly
+    try {
+        console.log("📋 Fetching wishlist...");
+        const data = await apiCall('/wishlist');
+        
+        // Handle different response formats
+        if (Array.isArray(data)) {
+            return limit ? data.slice(0, limit) : data;
+        } else if (data.wishlist && Array.isArray(data.wishlist)) {
+            return limit ? data.wishlist.slice(0, limit) : data.wishlist;
+        } else if (data.items && Array.isArray(data.items)) {
+            return limit ? data.items.slice(0, limit) : data.items;
+        } else {
+            console.warn('⚠️ Unexpected wishlist format:', data);
+            return [];
+        }
+    } catch (error) {
+        console.error('❌ Error fetching wishlist:', error);
+        return [];
+    }
 }
 
 async function fetchCart() {
@@ -1360,44 +1378,112 @@ async function fetchLoyaltyPoints() {
             container.innerHTML = ordersHtml;
         }
 
-        function renderWishlistPreview(wishlist) {
-            const container = document.getElementById('wishlist-preview-container');
-            
-            if (!wishlist || wishlist.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-heart"></i>
-                        <p>Your wishlist is empty</p>
-                    </div>
-                `;
-                return;
-            }
+     function renderWishlistPreview(wishlist) {
+    const container = document.getElementById('wishlist-preview-container');
+    
+    if (!wishlist || wishlist.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-heart"></i>
+                <p>Your wishlist is empty</p>
+                <button class="action-btn" onclick="window.location.href='shop.html'" style="margin-top: 15px;">
+                    Browse Products
+                </button>
+            </div>
+        `;
+        return;
+    }
 
-            let wishlistHtml = '';
-            wishlist.slice(0, 2).forEach(item => {
-                wishlistHtml += `
-                    <div class="wishlist-item">
-                        <div class="item-image">
-                            <i class="fas fa-spa"></i>
-                        </div>
-                        <div class="item-details">
-                            <h4>${item.name}</h4>
-                            <div class="item-price">$${item.price?.toFixed(2) || '0.00'}</div>
-                        </div>
-                        <div class="item-actions">
-                            <button class="action-btn" onclick="addToCart('${item.id}')">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                            <button class="action-btn" onclick="removeFromWishlist('${item.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
+    let wishlistHtml = '';
+    wishlist.slice(0, 2).forEach(item => {
+        // Handle both direct items and nested productId objects
+        const product = item.productId || item;
+        const productId = product._id || product.id || item._id || item.id;
+        const productName = product.name || item.name || 'Unnamed Product';
+        const productPrice = product.price || item.price || 0;
+        const productImage = product.image || item.image || product.images?.[0]?.url || item.images?.[0]?.url;
+        
+        wishlistHtml += `
+            <div class="wishlist-item">
+                <div class="item-image">
+                    ${productImage ? 
+                        `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">` : 
+                        `<i class="fas fa-spa"></i>`
+                    }
+                </div>
+                <div class="item-details">
+                    <h4>${productName}</h4>
+                    <div class="item-price">$${productPrice.toFixed(2)}</div>
+                </div>
+                <div class="item-actions">
+                    <button class="action-btn" onclick="addToCartFromWishlist('${productId}')">
+                        <i class="fas fa-shopping-cart"></i>
+                    </button>
+                    <button class="action-btn" onclick="removeFromWishlist('${productId}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
 
-            container.innerHTML = wishlistHtml;
-        }
+    container.innerHTML = wishlistHtml;
+}
+
+function renderFullWishlist(wishlist) {
+    const container = document.getElementById('wishlist-full-container');
+    
+    if (!wishlist || wishlist.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-heart"></i>
+                <p>Your wishlist is empty</p>
+                <button class="action-btn" onclick="window.location.href='shop.html'" style="margin-top: 15px;">
+                    Browse Products
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    let wishlistHtml = '';
+    wishlist.forEach(item => {
+        // Handle both direct items and nested productId objects
+        const product = item.productId || item;
+        const productId = product._id || product.id || item._id || item.id;
+        const productName = product.name || item.name || 'Unnamed Product';
+        const productPrice = product.price || item.price || 0;
+        const productImage = product.image || item.image || product.images?.[0]?.url || item.images?.[0]?.url;
+        
+        wishlistHtml += `
+            <div class="dashboard-card">
+                <div class="wishlist-item">
+                    <div class="item-image">
+                        ${productImage ? 
+                            `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">` : 
+                            `<i class="fas fa-spa"></i>`
+                        }
+                    </div>
+                    <div class="item-details">
+                        <h4>${productName}</h4>
+                        <div class="item-price">$${productPrice.toFixed(2)}</div>
+                        <div class="product-detail">${product.category || item.category || 'Hair Product'}</div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="action-btn" onclick="addToCartFromWishlist('${productId}')">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        <button class="action-btn" onclick="removeFromWishlist('${productId}')" style="background-color: #ff6b6b;">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = wishlistHtml;
+}
 
         function renderCartPreview(cart) {
             const container = document.getElementById('cart-preview-container');
