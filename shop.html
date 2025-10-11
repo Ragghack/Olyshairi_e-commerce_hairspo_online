@@ -1439,7 +1439,7 @@
             if (!token) return;
 
             try {
-                const url = `${ENDPOINTS.WISHLIST}`;
+                const url = addToWishlist ? `${ENDPOINTS.WISHLIST}` : `${ENDPOINTS.WISHLIST}/${productId}`;
                 const method = addToWishlist ? 'POST' : 'DELETE';
                 const body = addToWishlist ? JSON.stringify({
                     productId: productId,
