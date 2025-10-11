@@ -1,5 +1,5 @@
 // ================================
-// 🌟 OLYSHAIR Backend Server (Enhanced Version)
+// 🌟 OLYSHAIR Backend Server (Enhanced Version - FIXED)
 // ================================
 
 const express = require('express');
@@ -7,18 +7,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: './olyshair.env' });
 
 const app = express();
-const paypalRouter = require('./routes/payments/paypal');
-app.use('/api/payments/paypal', paypalRouter);
-const applePayRouter = require('./routes/payments/apple-pay');
-app.use('/api/payments/apple-pay', applePayRouter);
-const stripeRouter = require('./routes/payments/stripe');
-app.use('/api/payments/stripe', stripeRouter);
 
 // ================================
-// 🧩 Middleware
+// 🧩 ENHANCED MIDDLEWARE
 // ================================
 app.use(cors({
   origin: [
@@ -28,25 +23,47 @@ app.use(cors({
     'http://localhost:3000',
     'http://localhost:8080',
     'http://127.0.0.1:3000',
-    'http://127.0.0.1:8080'
+    'http://127.0.0.1:8080',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-auth-token']
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With', 
+    'x-auth-token',
+    'Accept',
+    'Origin',
+    'Access-Control-Allow-Origin'
+  ],
+  exposedHeaders: ['x-auth-token']
 }));
 
-app.use(express.json({ limit: '20mb' }));
-app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Security middleware
+// Enhanced security middleware
 app.use((req, res, next) => {
   // Security headers
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   
-  // Request logging
+  // Enhanced request logging
   console.log(`🌐 ${req.method} ${req.originalUrl} - ${new Date().toISOString()}`);
+  console.log(`🔑 Auth: ${req.headers.authorization ? 'Present' : 'Missing'}`);
+  console.log(`👤 Origin: ${req.headers.origin}`);
+  
+  next();
+});
+
+// Route debugging middleware
+app.use('/api/admin/*', (req, res, next) => {
+  console.log(`🔍 ADMIN ROUTE ACCESS: ${req.method} ${req.originalUrl}`);
+  console.log(`🔐 Token Present: ${req.headers.authorization ? 'YES' : 'NO'}`);
   next();
 });
 
@@ -62,11 +79,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // ================================
-// 💾 MongoDB Connection
+// 💾 ENHANCED MONGODB CONNECTION
 // ================================
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://josymambo858_db_user:v3VSBGbeumlMZO9m@daviddbprogress.lgcze5s.mongodb.net/olyshair';
 
-// Enhanced MongoDB connection with retry logic
 const connectWithRetry = async (retries = 5, delay = 5000) => {
     for (let i = 0; i < retries; i++) {
         try {
@@ -86,7 +102,7 @@ const connectWithRetry = async (retries = 5, delay = 5000) => {
             if (i < retries - 1) {
                 console.log(`🔄 Retrying connection in ${delay / 1000} seconds...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
-                delay *= 1.5; // Exponential backoff
+                delay *= 1.5;
             } else {
                 console.error('💥 All MongoDB connection attempts failed');
                 throw error;
@@ -112,7 +128,6 @@ mongoose.connection.on('error', (err) => {
 
 mongoose.connection.on('disconnected', () => {
     console.warn('⚠️ Mongoose disconnected from database');
-    // Attempt to reconnect
     setTimeout(() => {
         console.log('🔄 Attempting to reconnect to MongoDB...');
         connectWithRetry(3, 3000);
@@ -120,7 +135,7 @@ mongoose.connection.on('disconnected', () => {
 });
 
 // ================================
-// 📦 Import Models (Preload for better performance)
+// 📦 PRELOAD MODELS
 // ================================
 console.log('📦 Preloading models...');
 const models = {
@@ -133,7 +148,44 @@ const models = {
 console.log('✅ Models loaded successfully');
 
 // ================================
-// 🚦 API Routes
+// 🔐 AUTHENTICATION MIDDLEWARE LOADING
+// ================================
+console.log('🔐 Loading authentication middleware...');
+
+// Load auth middleware AFTER models are loaded
+let auth, adminAuth;
+try {
+    auth = require('./middleware/auth');
+    console.log('✅ Customer auth middleware loaded');
+} catch (error) {
+    console.error('❌ Failed to load customer auth middleware:', error);
+    // Create fallback auth middleware
+    auth = (req, res, next) => {
+        res.status(501).json({
+            success: false,
+            error: 'Authentication system unavailable',
+            message: 'Auth middleware failed to load'
+        });
+    };
+}
+
+try {
+    adminAuth = require('./middleware/adminAuth');
+    console.log('✅ Admin auth middleware loaded');
+} catch (error) {
+    console.error('❌ Failed to load admin auth middleware:', error);
+    // Create fallback admin auth middleware
+    adminAuth = (req, res, next) => {
+        res.status(501).json({
+            success: false,
+            error: 'Admin authentication unavailable',
+            message: 'Admin auth middleware failed to load'
+        });
+    };
+}
+
+// ================================
+// 🚦 ENHANCED API ROUTES
 // ================================
 
 // --- Health Check ---
@@ -151,6 +203,21 @@ app.get('/api/health', (req, res) => {
   res.json(health);
 });
 
+// --- Admin Health Check ---
+app.get('/api/admin/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'Admin routes are working',
+    timestamp: new Date().toISOString(),
+    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    routes: {
+      orders: '/api/admin/orders',
+      products: '/api/admin/products',
+      users: '/api/admin/users'
+    }
+  });
+});
+
 // --- Test Route ---
 app.get('/api/test', (req, res) => {
   res.json({
@@ -158,8 +225,39 @@ app.get('/api/test', (req, res) => {
     message: '🧪 Test route working fine!',
     database: mongoose.connection.readyState === 1 ? 'Connected ✅' : 'Disconnected ❌',
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: '2.0.0'
   });
+});
+
+// --- Debug Routes for Authentication Testing ---
+app.post('/api/admin/debug/token-check', (req, res) => {
+  const { token } = req.body;
+  
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      error: 'No token provided for checking'
+    });
+  }
+
+  try {
+    const decoded = jwt.decode(token);
+    res.json({
+      success: true,
+      tokenInfo: {
+        length: token.length,
+        decoded: decoded,
+        isExpired: decoded?.exp ? (Date.now() >= decoded.exp * 1000) : null,
+        expiresAt: decoded?.exp ? new Date(decoded.exp * 1000).toISOString() : null
+      }
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      error: 'Token decoding failed',
+      message: error.message
+    });
+  }
 });
 
 // --- Public Products Endpoint ---
@@ -242,7 +340,6 @@ app.get('/api/categories', async (req, res) => {
   try {
     const categories = await models.Product.distinct('category', { isActive: true });
     
-    // Get category counts
     const categoryCounts = await models.Product.aggregate([
       { $match: { isActive: true } },
       { $group: { _id: '$category', count: { $sum: 1 } } }
@@ -271,40 +368,13 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
-// --- Cloudinary Test Route ---
-app.get('/api/test-cloudinary', async (req, res) => {
-  try {
-    if (!process.env.CLOUDINARY_CLOUD_NAME) {
-      return res.status(503).json({ 
-        success: false, 
-        error: 'Cloudinary not configured'
-      });
-    }
+// ================================
+// 🎯 ENHANCED ROUTE REGISTRATION
+// ================================
 
-    const cloudinary = require('cloudinary').v2;
-    
-    // Test upload of a small image
-    const result = await cloudinary.uploader.upload(
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2RkZCIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5Ij5UZXN0PC90ZXh0Pjwvc3ZnPg==',
-      { folder: 'olyshair/test' }
-    );
-    
-    res.json({ 
-      success: true, 
-      message: 'Cloudinary test successful!',
-      imageUrl: result.secure_url 
-    });
-  } catch (error) {
-    console.error('❌ Cloudinary test error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Cloudinary test failed',
-      details: error.message 
-    });
-  }
-});
+console.log('🎯 Registering enhanced routes...');
 
-// Safe route loader function with enhanced error handling
+// Safe route loader with enhanced error handling
 const loadRoute = (routePath, routeName, options = {}) => {
   try {
     console.log(`🔄 Loading route: ${routeName}`);
@@ -312,7 +382,19 @@ const loadRoute = (routePath, routeName, options = {}) => {
     // Check if route file exists
     if (!fs.existsSync(routePath + '.js') && !fs.existsSync(routePath)) {
       console.warn(`⚠️ Route file not found: ${routePath}`);
-      throw new Error(`Route file not found: ${routePath}`);
+      
+      // Return a mock router for missing routes
+      const router = express.Router();
+      router.all('*', (req, res) => {
+        res.status(501).json({
+          success: false,
+          error: 'Route not implemented',
+          message: `${routeName} routes are not yet available`,
+          path: req.originalUrl,
+          timestamp: new Date().toISOString()
+        });
+      });
+      return router;
     }
     
     const route = require(routePath);
@@ -331,8 +413,8 @@ const loadRoute = (routePath, routeName, options = {}) => {
     router.all('*', (req, res) => {
       res.status(501).json({
         success: false,
-        error: 'Route not implemented',
-        message: `${routeName} routes are not yet available`,
+        error: 'Route loading failed',
+        message: `${routeName} routes failed to load`,
         path: req.originalUrl,
         timestamp: new Date().toISOString()
       });
@@ -341,26 +423,11 @@ const loadRoute = (routePath, routeName, options = {}) => {
   }
 };
 
-// ================================
-// 🎯 ROUTE REGISTRATION
-// ================================
-
-console.log('🎯 Registering routes...');
-
 // --- Public Routes ---
 app.use('/api/auth', loadRoute('./routes/auth', 'Auth'));
 app.use('/api/customer', loadRoute('./routes/customer', 'Customer'));
 app.use('/api/config', loadRoute('./routes/config', 'Config'));
 app.use('/api/upload', loadRoute('./routes/uploads', 'Uploads'));
-
-// --- Customer Routes (with auth) ---
-const auth = require('./middleware/auth');
-app.use('/api/wishlist', auth, loadRoute('./routes/wishlist', 'Wishlist'));
-app.use('/api/cart', auth, loadRoute('./routes/cart', 'Cart'));
-app.use('/api/orders', auth, loadRoute('./routes/orders', 'Orders'));
-app.use('/api/bookings', auth, loadRoute('./routes/bookings', 'Bookings'));
-app.use('/api/notifications', auth, loadRoute('./routes/notifications', 'Notifications'));
-app.use('/api/loyalty', auth, loadRoute('./routes/loyalty', 'Loyalty'));
 
 // --- Product Routes ---
 app.use('/api/products', loadRoute('./routes/products', 'Products'));
@@ -370,17 +437,136 @@ app.use('/api/payments/paypal', loadRoute('./routes/payments/paypal', 'PayPal'))
 app.use('/api/payments/stripe', loadRoute('./routes/payments/stripe', 'Stripe'));
 app.use('/api/payments/apple-pay', loadRoute('./routes/payments/apple-pay', 'Apple Pay'));
 
-// --- Admin Routes ---
-const adminAuth = require('./middleware/adminAuth');
+// --- Customer Routes (with auth) ---
+app.use('/api/wishlist', auth, loadRoute('./routes/wishlist', 'Wishlist'));
+app.use('/api/cart', auth, loadRoute('./routes/cart', 'Cart'));
+app.use('/api/bookings', auth, loadRoute('./routes/bookings', 'Bookings'));
+app.use('/api/notifications', auth, loadRoute('./routes/notifications', 'Notifications'));
+app.use('/api/loyalty', auth, loadRoute('./routes/loyalty', 'Loyalty'));
+
+// --- ENHANCED ADMIN ROUTES REGISTRATION ---
+console.log('👑 Registering enhanced ADMIN routes...');
+
+// Admin Orders - CRITICAL FIX: Direct require with error handling
+try {
+  console.log('🔄 Loading Admin Orders route...');
+  const adminOrdersRoute = require('./routes/adminOrders');
+  app.use('/api/admin/orders', adminAuth, adminOrdersRoute);
+  console.log('✅ Admin Orders route registered successfully at /api/admin/orders');
+} catch (error) {
+  console.error('❌ Failed to load admin orders route:', error);
+  // Create fallback route
+  const adminOrdersFallback = express.Router();
+  adminOrdersFallback.all('*', (req, res) => {
+    res.status(500).json({
+      success: false,
+      error: 'Admin Orders route failed to load',
+      message: 'Check server logs for details',
+      timestamp: new Date().toISOString()
+    });
+  });
+  app.use('/api/admin/orders', adminAuth, adminOrdersFallback);
+}
+
+// Admin Products
+try {
+  console.log('🔄 Loading Admin Products route...');
+  const adminProductsRoute = require('./routes/products');
+  app.use('/api/admin/products', adminAuth, adminProductsRoute);
+  console.log('✅ Admin Products route registered successfully at /api/admin/products');
+} catch (error) {
+  console.error('❌ Failed to load admin products route:', error);
+}
+
+// Admin Users
+try {
+  console.log('🔄 Loading Admin Users route...');
+  const adminUsersRoute = require('./routes/users');
+  app.use('/api/admin/users', adminAuth, adminUsersRoute);
+  console.log('✅ Admin Users route registered successfully at /api/admin/users');
+} catch (error) {
+  console.error('❌ Failed to load admin users route:', error);
+}
+
+// Other Admin Routes
 app.use('/api/admin/auth', loadRoute('./routes/adminAuth', 'Admin Auth'));
-app.use('/api/admin/products', adminAuth, loadRoute('./routes/products', 'Admin Products'));
-app.use('/api/admin/orders', adminAuth, loadRoute('./routes/orders', 'Admin Orders'));
-app.use('/api/admin/users', adminAuth, loadRoute('./routes/users', 'Admin Users'));
 app.use('/api/admin/activities', adminAuth, loadRoute('./routes/activities', 'Admin Activities'));
 app.use('/api/admin/dashboard', adminAuth, loadRoute('./routes/adminDashboard', 'Admin Dashboard'));
 
+// --- Customer Orders Route (Separate from Admin) ---
+try {
+  console.log('🔄 Loading Customer Orders route...');
+  const customerOrdersRoute = require('./routes/orders');
+  app.use('/api/orders', auth, customerOrdersRoute);
+  console.log('✅ Customer Orders route registered successfully at /api/orders');
+} catch (error) {
+  console.error('❌ Failed to load customer orders route:', error);
+}
+
 // ================================
-// ⚠️ ERROR HANDLING MIDDLEWARE
+// 🔧 ENHANCED ADMIN ROUTE TESTING
+// ================================
+
+// Debug route for testing auth - MUST BE AFTER adminAuth is defined
+app.get('/api/admin/debug/auth-test', adminAuth, (req, res) => {
+  res.json({
+    success: true,
+    message: 'Authentication test successful!',
+    user: req.user,
+    headers: {
+      authorization: req.headers.authorization,
+      'x-auth-token': req.headers['x-auth-token'],
+      origin: req.headers.origin
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Test all admin routes
+app.get('/api/admin/test-all-routes', adminAuth, async (req, res) => {
+  const routeTests = {
+    orders: false,
+    products: false,
+    users: false,
+    auth: false
+  };
+
+  try {
+    // Test orders route
+    const ordersCount = await models.Order.countDocuments();
+    routeTests.orders = true;
+    
+    // Test products route  
+    const productsCount = await models.Product.countDocuments();
+    routeTests.products = true;
+    
+    // Test users route
+    const usersCount = await models.User.countDocuments();
+    routeTests.users = true;
+
+    res.json({
+      success: true,
+      message: 'Admin route tests completed',
+      routes: routeTests,
+      counts: {
+        orders: ordersCount,
+        products: productsCount,
+        users: usersCount
+      },
+      user: req.user
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: 'Some admin route tests failed',
+      routes: routeTests,
+      error: error.message
+    });
+  }
+});
+
+// ================================
+// ⚠️ ENHANCED ERROR HANDLING
 // ================================
 
 // Fallback payment route
@@ -403,13 +589,13 @@ app.use('/api/*', (req, res) => {
     method: req.method,
     availableEndpoints: [
       'GET /api/health',
+      'GET /api/admin/health',
       'GET /api/test',
       'GET /api/products',
       'GET /api/categories',
       'POST /api/auth/login',
-      'GET /api/customer/profile',
-      'GET /api/admin/products',
       'GET /api/admin/orders',
+      'GET /api/admin/products',
       'GET /api/admin/users'
     ],
     timestamp: new Date().toISOString()
@@ -450,6 +636,16 @@ app.use((err, req, res, next) => {
       timestamp: new Date().toISOString()
     });
   }
+
+  // CORS errors
+  if (err.message && err.message.includes('CORS')) {
+    return res.status(403).json({
+      success: false,
+      error: 'CORS policy violation',
+      message: 'Request blocked by CORS policy',
+      timestamp: new Date().toISOString()
+    });
+  }
   
   // Default error
   res.status(err.status || 500).json({
@@ -462,7 +658,7 @@ app.use((err, req, res, next) => {
 });
 
 // ================================
-// 🧹 GRACEFUL SHUTDOWN
+// 🧹 ENHANCED GRACEFUL SHUTDOWN
 // ================================
 
 const gracefulShutdown = async (signal) => {
@@ -470,13 +666,17 @@ const gracefulShutdown = async (signal) => {
   
   try {
     // Close server
-    server.close(() => {
-      console.log('✅ HTTP server closed.');
-    });
+    if (server) {
+      server.close(() => {
+        console.log('✅ HTTP server closed.');
+      });
+    }
     
     // Close database connection
-    await mongoose.connection.close();
-    console.log('✅ MongoDB connection closed.');
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.close();
+      console.log('✅ MongoDB connection closed.');
+    }
     
     // Exit process
     process.exit(0);
@@ -502,29 +702,47 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // ================================
-// 🚀 SERVER LISTENER
+// 🚀 ENHANCED SERVER LISTENER
 // ================================
+
 const PORT = process.env.PORT || 5001;
 
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`
-🚀 OLYSHAIR Server started successfully!
+🚀 OLYSHAIR ENHANCED Server started successfully!
 📍 Port: ${PORT}
 🌐 Environment: ${process.env.NODE_ENV || 'development'}
 📱 API Base: http://localhost:${PORT}/api
 🏥 Health Check: http://localhost:${PORT}/api/health
+👑 Admin Health: http://localhost:${PORT}/api/admin/health
 🧪 Test Route: http://localhost:${PORT}/api/test
+🔧 Debug Routes:
+   - POST /api/admin/debug/token-check (Check token format)
+   - GET /api/admin/debug/auth-test (Test authentication)
 🛍️ Public Products: http://localhost:${PORT}/api/products
 📊 Categories: http://localhost:${PORT}/api/categories
 🖼️ Uploads: http://localhost:${PORT}/uploads
 💾 Database: ${mongoose.connection.readyState === 1 ? 'Connected ✅' : 'Disconnected ❌'}
   
-📋 Available Routes:
+📋 ENHANCED ROUTES:
    👤 Customer: /api/cart, /api/wishlist, /api/orders, /api/bookings
    🔐 Auth: /api/auth
    🛍️ Products: /api/products
    💰 Payments: /api/payments
    👑 Admin: /api/admin
+      📦 Orders: /api/admin/orders
+      🛍️ Products: /api/admin/products  
+      👥 Users: /api/admin/users
+      📊 Dashboard: /api/admin/dashboard
+
+🔧 ENHANCED FEATURES:
+   ✅ Improved CORS configuration
+   ✅ Enhanced error handling
+   ✅ Route debugging middleware
+   ✅ Better admin route registration
+   ✅ Health check endpoints
+   ✅ Graceful shutdown handling
+   ✅ Authentication debugging tools
    
 =========================================
   `);
