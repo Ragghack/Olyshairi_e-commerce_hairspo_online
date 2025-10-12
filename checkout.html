@@ -1220,7 +1220,7 @@
     const CONFIG = {
         STRIPE_PUBLISHABLE_KEY: 'pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0',
         PAYPAL_CLIENT_ID: 'YOUR_PAYPAL_CLIENT_ID',
-        API_BASE_URL: 'http://localhost:5001/api',
+        API_BASE_URL: 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api',
         CURRENCY: 'USD',
         TAX_RATE: 0.08 // 8%
     };
@@ -1834,7 +1834,7 @@
    function loadPayPalButton() {
     paypal.Buttons({
         createOrder: async () => {
-            const res = await fetch(`http://localhost:5001/paypal/create-order`, {
+            const res = await fetch(`https://olyshairi-e-commerce-hairspo-online.onrender.com/paypal/create-order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1846,7 +1846,7 @@
             return data.orderId;
         },
         onApprove: async (data) => {
-            const res = await fetch(`http://localhost:5001/paypal/capture/${data.orderID}`, {
+            const res = await fetch(`https://olyshairi-e-commerce-hairspo-online.onrender.com/paypal/capture/${data.orderID}`, {
                 method: 'POST'
             });
             const capture = await res.json();
