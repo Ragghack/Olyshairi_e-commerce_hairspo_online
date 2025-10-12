@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
+const auth = require('../middleware/auth');
+const jwt = require('jsonwebtoken');
 
 // ===== Debug Info =====
 console.log('🔍 [ProductValidationRoute] Route loaded successfully');
@@ -10,7 +12,7 @@ console.log('🔍 [ProductValidationRoute] Route loaded successfully');
 // ===============================
 // ✅ PRODUCT VALIDATION ENDPOINT
 // ===============================
-router.get('/validate/stock', async (req, res) => {
+router.get('/validate', async (req, res) => {
   try {
     const { productId, quantity = 1 } = req.query;
     

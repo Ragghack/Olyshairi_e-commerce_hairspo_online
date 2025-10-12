@@ -1472,7 +1472,7 @@
     async function validateCartItems(cart) {
         try {
             // Check if products still exist and are in stock
-            const response = await fetch(`${CONFIG.API_BASE_URL}/products/validate`, {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/products/validate/batch`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ items: cart })

@@ -4,7 +4,9 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const User = require('../models/User');
-
+const auth =  require('../middleware/auth');
+const adminAuth = require('../middleware/adminAuth');
+const jwt = require('jsonwebtoke');
 // ===== Debug Info =====
 console.log('🔍 [AdminOrdersRoute] Route loaded successfully');
 
