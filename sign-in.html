@@ -895,7 +895,7 @@
       async function loadGoogleClientId() {
         try {
           const res = await fetch(
-            "http://localhost:5001/api/config/google-client-id"
+            "'https://olyshairi-e-commerce-hairspo-online.onrender.com/api/config/google-client-id"
           );
           const data = await res.json();
 
@@ -924,7 +924,7 @@
       // Handles Google Login
       async function handleGoogleLogin(response) {
         try {
-          const res = await fetch("http://localhost:5001/api/auth/google", {
+          const res = await fetch("https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/google", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token: response.credential }),
@@ -1077,10 +1077,10 @@
 
           try {
             console.log(
-              "📡 Sending request to: http://localhost:5001/api/auth/login"
+              "📡 Sending request to: https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/login"
             );
 
-            const res = await fetch("http://localhost:5001/api/auth/login", {
+            const res = await fetch("https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/login", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email, password }),
@@ -1168,7 +1168,7 @@
           const lastName = nameParts.slice(1).join(" ");
 
           try {
-            const res = await fetch("http://localhost:5001/api/auth/register", {
+            const res = await fetch("https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/register", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

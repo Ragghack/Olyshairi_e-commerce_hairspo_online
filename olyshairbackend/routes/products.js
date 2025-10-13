@@ -6,6 +6,7 @@ const multer = require('multer');
 const adminAuth = require('../middleware/adminAuth');
 const cloudinary = require('cloudinary').v2;
 
+
 // Configure multer for file uploads
 const upload = multer({ 
   storage: multer.memoryStorage(),
