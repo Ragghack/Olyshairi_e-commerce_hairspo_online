@@ -67,6 +67,13 @@
             z-index: 1000;
             box-shadow: var(--shadow);
         }
+        body.dark-mode .logo-container {
+  content: url("images/Artboard 1 copy.png");
+   max-width: 31mm;
+  max-height: 100mm;
+              display: flex;
+            justify-content: center;
+        }
         
         .logo-container {
             display: flex;
@@ -725,7 +732,10 @@
     <!-- Header -->
     <header>
         <div class="logo-container">
-            <img src="https://via.placeholder.com/120x50/392625/ffffff?text=OLYS+HAIR" alt="OLYS HAIR Logo" class="logo" />
+            <span>
+                    <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" style="max-width:50px; max-height:auto; display:block; margin:0 auto; object-fit:contain;" />
+                    
+                </span>
         </div>
         <div class="header-icons">
             <i class="fas fa-search"></i>
@@ -1071,8 +1081,7 @@
     <script>
         // API Configuration
         const API_BASE_URL = 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api';
-        
-        // Global state
+        const API_BASE_URL = 'http://localhost:5001/api'
         let userData = null;
         let authToken = localStorage.getItem('token') || '';
 
