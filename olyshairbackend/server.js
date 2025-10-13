@@ -18,6 +18,8 @@ const app = express();
 // ================================
 app.use(cors({
   origin: [
+    'https://olyshairi-e-commerce-hairspo-online.vercel.app',
+    'https://olyshairi-e-commerce-hairspo-online.onrender.com',
     'http://127.0.0.1:5500',
     'http://localhost:5500',
     'http://localhost:5001',
