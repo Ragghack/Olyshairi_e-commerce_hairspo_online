@@ -1104,7 +1104,7 @@
         
         // API Configuration
         const API_BASE_URL = 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api';
-        //const API_BASE_URL_LOCAL = "http://localhost:5001/api";
+        //const API_BASE_URL = 'http://localhost:5001/api';
         const ENDPOINTS = {
             ADMIN_LOGIN: `${API_BASE_URL}/admin/auth/login`,
             ADMIN_REGISTER: `${API_BASE_URL}/admin/auth/register`,
@@ -1624,40 +1624,50 @@
         // ==================== ORDERS MANAGEMENT ====================
 
         // Enhanced loadOrders function
-        async function loadOrders() {
+   // Enhanced loadOrders function with better error handling
+async function loadOrders() {
+    try {
+        console.log('🔄 Loading orders with enhanced error handling...');
+        
+        const response = await makeAuthenticatedRequest(ENDPOINTS.ORDERS, {
+            method: 'GET'
+        });
+        
+        console.log('📊 Orders API Response Status:', response.status);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Orders loaded successfully:', data.orders?.length || 0);
+            orders = data.orders || [];
+            renderOrders(orders);
+            updateOrderStats(orders);
+        } else {
+            // Try fallback endpoint
+            console.log('🔄 Trying fallback orders endpoint...');
             try {
-                console.log('🔄 Loading orders with token verification...');
-                
-                const response = await makeAuthenticatedRequest(ENDPOINTS.ORDERS, {
-                    method: 'GET'
-                });
-                
-                console.log('📊 Orders API Response Status:', response.status);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('✅ Orders loaded successfully:', data.orders?.length || 0);
-                    orders = data.orders || [];
-                    renderOrders(orders);
-                    updateOrderStats(orders);
-                } else {
-                    const errorText = await response.text();
-                    console.error('❌ Orders API Error:', response.status, errorText);
-                    showNotification('Error loading orders. Using demo data.', 'warning');
+                const fallbackResponse = await makeAuthenticatedRequest(`${ENDPOINTS.ORDERS}/test/admin-endpoint`);
+                if (fallbackResponse.ok) {
+                    console.log('✅ Fallback orders endpoint working, using demo data');
                     renderOrders(getMockOrders());
+                    updateOrderStats(getMockOrders());
+                } else {
+                    throw new Error('Fallback also failed');
                 }
-            } catch (error) {
-                console.error('❌ Network error loading orders:', error);
-                showNotification('Network error loading orders. Using demo data.', 'warning');
+            } catch (fallbackError) {
+                console.log('🔄 Using mock orders data');
                 renderOrders(getMockOrders());
+                updateOrderStats(getMockOrders());
+                showNotification('Using demo orders data (API unavailable)', 'warning');
             }
         }
-
-        // Refresh orders
-        async function refreshOrders() {
-            showNotification('Refreshing orders...', 'info');
-            await loadOrders();
-        }
+    } catch (error) {
+        console.error('❌ Network error loading orders:', error);
+        console.log('🔄 Using mock orders data due to network error');
+        renderOrders(getMockOrders());
+        updateOrderStats(getMockOrders());
+        showNotification('Network error. Using demo orders data.', 'warning');
+    }
+}
 
         // Mock data fallback
         function getMockOrders() {

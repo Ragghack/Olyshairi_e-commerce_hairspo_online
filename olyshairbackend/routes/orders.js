@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
-const jwt = require('jsonwebtoken')
+const jwt = require('../config/jwt');
 // ===== Debug Info on Load =====
 console.log('🔍 [OrdersRoute] Route loaded successfully');
 
