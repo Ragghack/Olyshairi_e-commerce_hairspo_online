@@ -195,5 +195,44 @@ router.delete('/:id', auth, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// In routes/products.js
+router.post('/validate/batch', async (req, res) => {
+  try {
+    const { productIds } = req.body;
+    
+    if (!productIds || !Array.isArray(productIds)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Product IDs array required'
+      });
+    }
+
+    const products = await Product.find({
+      _id: { $in: productIds },
+      isActive: true
+    }).select('_id name price stock');
+
+    const validProducts = products.map(product => ({
+      id: product._id,
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      isValid: product.stock > 0
+    }));
+
+    res.json({
+      success: true,
+      products: validProducts,
+      validCount: validProducts.filter(p => p.isValid).length
+    });
+
+  } catch (error) {
+    console.error('Batch validation error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Validation failed'
+    });
+  }
+});
 
 module.exports = router;
