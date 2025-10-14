@@ -1098,1250 +1098,971 @@
 
     <!-- Notification Container -->
     <div id="notificationContainer"></div>
+<script>
+    // ==================== ENHANCED ADMIN DASHBOARD ====================
+     const API_BASE_URL = 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api';
+    // API Configuration
+   // const API_BASE_URL = 'http://localhost:5001/api';
+    const ENDPOINTS = {
+        ADMIN_LOGIN: `${API_BASE_URL}/admin/auth/login`,
+        ADMIN_REGISTER: `${API_BASE_URL}/admin/auth/register`,
+        ADMIN_PROFILE: `${API_BASE_URL}/admin/auth/profile`,
+        PRODUCTS: `${API_BASE_URL}/admin/products`,
+        PUBLIC_PRODUCTS: `${API_BASE_URL}/products`,
+        ORDERS: `${API_BASE_URL}/admin/orders`,
+        USERS: `${API_BASE_URL}/admin/users`,
+        ACTIVITIES: `${API_BASE_URL}/admin/activities/dashboard-stats`,
+        RECENT_ACTIVITIES: `${API_BASE_URL}/admin/activities/recent-activities`,
+        SALES_ANALYTICS: `${API_BASE_URL}/admin/activities/sales-analytics`,
+        HEALTH: `${API_BASE_URL}/health`,
+        ADMIN_HEALTH: `${API_BASE_URL}/admin/health`
+    };
 
-    <script>
-        // ==================== ENHANCED ADMIN DASHBOARD ====================
+    // ==================== ENHANCED STATE MANAGEMENT ====================
+    const AppState = {
+        currentUser: null,
+        authToken: localStorage.getItem('adminToken'),
+        isTokenVerified: false,
+        products: [],
+        orders: [],
+        users: [],
+        currentPage: 1,
+        productsPerPage: 10,
+        ordersPerPage: 10,
+        chartInstances: {},
+        dataCache: new Map(),
+        apiRetryCount: new Map(),
+        MAX_RETRIES: 3
+    };
+
+    // ==================== ENHANCED UTILITY FUNCTIONS ====================
+    
+    // Safe data sanitization
+    const SecurityUtils = {
+        sanitizeInput: (input) => {
+            if (typeof input !== 'string') return input;
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        },
         
-        // API Configuration
-        const API_BASE_URL = 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api';
-        //const API_BASE_URL = 'http://localhost:5001/api';
-        const ENDPOINTS = {
-            ADMIN_LOGIN: `${API_BASE_URL}/admin/auth/login`,
-            ADMIN_REGISTER: `${API_BASE_URL}/admin/auth/register`,
-            ADMIN_PROFILE: `${API_BASE_URL}/admin/auth/profile`,
-            PRODUCTS: `${API_BASE_URL}/admin/products`,
-            PUBLIC_PRODUCTS: `${API_BASE_URL}/products`,
-            ORDERS: `${API_BASE_URL}/admin/orders`,
-            USERS: `${API_BASE_URL}/admin/users`,
-            ACTIVITIES: `${API_BASE_URL}/admin/activities/dashboard-stats`,
-            RECENT_ACTIVITIES: `${API_BASE_URL}/admin/activities/recent-activities`,
-            SALES_ANALYTICS: `${API_BASE_URL}/admin/activities/sales-analytics`,
-            HEALTH: `${API_BASE_URL}/health`,
-            ADMIN_HEALTH: `${API_BASE_URL}/admin/health`
-        };
-
-        // Global State
-        let currentUser = null;
-        let authToken = localStorage.getItem('adminToken');
-        let isTokenVerified = false;
-        let products = [];
-        let orders = [];
-        let currentPage = 1;
-        let productsPerPage = 10;
-        let ordersPerPage = 10;
-
-        // DOM Elements
-        const loginContainer = document.getElementById('loginContainer');
-        const registerContainer = document.getElementById('registerContainer');
-        const dashboard = document.getElementById('dashboard');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const showRegisterLink = document.getElementById('showRegister');
-        const showLoginLink = document.getElementById('showLogin');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
-
-        // ==================== ENHANCED AUTHENTICATION ====================
-
-        // Initialize Application
-        async function initializeApp() {
-            console.log('🚀 Initializing Enhanced Admin Dashboard...');
-            
-            // Test API connectivity first
-            const isApiReachable = await testApiConnectivity();
-            
-            if (!isApiReachable) {
-                showNotification('Cannot connect to server. Please ensure the backend is running.', 'error');
-            }
-            
-            // Check if user is already logged in
-            if (authToken) {
-                await verifyTokenAndLoadDashboard();
-            } else {
-                showLogin();
-            }
-
-            // Setup event listeners
-            setupEventListeners();
-        }
-
-        // Test API connectivity
-        async function testApiConnectivity() {
+        safeJSONParse: (jsonString) => {
             try {
-                console.log('🧪 Testing API connectivity...');
-                const response = await fetch(ENDPOINTS.HEALTH);
-                if (response.ok) {
-                    console.log('✅ API server is reachable');
-                    return true;
-                } else {
-                    console.log('❌ API server returned error:', response.status);
-                    return false;
-                }
-            } catch (error) {
-                console.error('❌ API server is not reachable:', error);
-                return false;
+                return JSON.parse(jsonString);
+            } catch {
+                return null;
             }
+        },
+        
+        validateEmail: (email) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
         }
+    };
 
-        // Enhanced token verification
-        async function verifyTokenAndLoadDashboard() {
-            if (!authToken) {
-                console.log('❌ No token found in localStorage');
-                showLogin();
-                return;
+    // Enhanced caching system
+    const CacheManager = {
+        set: (key, data, ttl = 300000) => { // 5 minutes default
+            AppState.dataCache.set(key, {
+                data,
+                timestamp: Date.now(),
+                ttl
+            });
+        },
+        
+        get: (key) => {
+            const cached = AppState.dataCache.get(key);
+            if (!cached) return null;
+            
+            if (Date.now() - cached.timestamp > cached.ttl) {
+                AppState.dataCache.delete(key);
+                return null;
             }
-
-            try {
-                console.log('🔐 Verifying admin token...');
-                
-                const response = await fetch(ENDPOINTS.ADMIN_PROFILE, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`,
-                        'Content-Type': 'application/json'
+            
+            return cached.data;
+        },
+        
+        clear: (pattern = null) => {
+            if (pattern) {
+                for (const key of AppState.dataCache.keys()) {
+                    if (key.includes(pattern)) {
+                        AppState.dataCache.delete(key);
                     }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    currentUser = data.user;
-                    isTokenVerified = true;
-                    console.log('✅ Token verified successfully');
-                    showDashboard();
-                } else {
-                    console.log('❌ Token verification failed:', response.status);
-                    localStorage.removeItem('adminToken');
-                    authToken = null;
-                    showNotification('Session expired. Please login again.', 'error');
-                    showLogin();
                 }
-            } catch (error) {
-                console.error('❌ Token verification error:', error);
-                localStorage.removeItem('adminToken');
-                authToken = null;
-                showNotification('Network error during authentication.', 'error');
-                showLogin();
+            } else {
+                AppState.dataCache.clear();
             }
         }
+    };
 
-        // Enhanced API request function with automatic token handling
-        async function makeAuthenticatedRequest(url, options = {}) {
-            if (!authToken) {
-                throw new Error('No authentication token available');
+    // ==================== ENHANCED API CLIENT ====================
+    const ApiClient = {
+        async request(url, options = {}) {
+            const cacheKey = `api_${url}_${JSON.stringify(options)}`;
+            const cached = CacheManager.get(cacheKey);
+            
+            // Return cached non-GET requests for better performance
+            if (cached && (!options.method || options.method === 'GET')) {
+                console.log('📦 Returning cached data for:', url);
+                return { ok: true, data: cached };
             }
 
             const defaultOptions = {
                 headers: {
-                    'Authorization': `Bearer ${authToken}`,
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     ...options.headers
-                }
+                },
+                timeout: 30000
             };
 
             const mergedOptions = { ...defaultOptions, ...options };
             
-            console.log(`🌐 Making authenticated request to: ${url}`);
-            console.log(`🔐 Token present: ${!!authToken}`);
+            // Add authorization if token exists
+            if (AppState.authToken && !url.includes('/auth/login') && !url.includes('/auth/register')) {
+                mergedOptions.headers.Authorization = `Bearer ${AppState.authToken}`;
+            }
 
             try {
+                console.log('🌐 API Request:', { url, method: mergedOptions.method || 'GET' });
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                mergedOptions.signal = controller.signal;
+
                 const response = await fetch(url, mergedOptions);
-                
-                // Handle token expiration
-                if (response.status === 401) {
-                    console.log('🔄 Token expired, clearing and redirecting to login');
-                    localStorage.removeItem('adminToken');
-                    authToken = null;
-                    showNotification('Session expired. Please login again.', 'error');
-                    showLogin();
-                    throw new Error('Authentication failed');
-                }
-                
-                return response;
-            } catch (error) {
-                console.error('❌ API request failed:', error);
-                throw error;
-            }
-        }
+                clearTimeout(timeoutId);
 
-        // Enhanced error handling
-        function handleApiError(status, resource) {
-            switch (status) {
-                case 401:
-                    showNotification('Authentication failed. Please login again.', 'error');
-                    handleLogout();
-                    break;
-                case 403:
-                    showNotification('Access denied. Insufficient permissions.', 'error');
-                    break;
-                case 404:
-                    showNotification(`${resource} endpoint not found.`, 'error');
-                    break;
-                case 500:
-                    showNotification('Server error. Please try again later.', 'error');
-                    break;
-                default:
-                    showNotification(`Error loading ${resource}.`, 'warning');
-            }
-        }
+                const data = await response.json().catch(() => null);
 
-        // ==================== EVENT LISTENERS ====================
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Login/Register forms
-            loginForm.addEventListener('submit', handleLogin);
-            registerForm.addEventListener('submit', handleRegister);
-            showRegisterLink.addEventListener('click', showRegister);
-            showLoginLink.addEventListener('click', showLogin);
-            logoutBtn.addEventListener('click', handleLogout);
-
-            // Product management
-            const addProductBtn = document.getElementById('addProductBtn');
-            const cancelAddProduct = document.getElementById('cancelAddProduct');
-            const productForm = document.getElementById('productForm');
-
-            if (addProductBtn) {
-                addProductBtn.addEventListener('click', () => {
-                    document.getElementById('addProductForm').style.display = 'block';
-                });
-            }
-
-            if (cancelAddProduct) {
-                cancelAddProduct.addEventListener('click', () => {
-                    document.getElementById('addProductForm').style.display = 'none';
-                    productForm.reset();
-                });
-            }
-
-            if (productForm) {
-                productForm.addEventListener('submit', handleAddProduct);
-            }
-
-            // Search functionality
-            const productSearch = document.getElementById('productSearch');
-            if (productSearch) {
-                productSearch.addEventListener('input', debounce(filterProducts, 300));
-            }
-
-            const orderSearch = document.getElementById('orderSearch');
-            if (orderSearch) {
-                orderSearch.addEventListener('input', debounce(filterOrders, 300));
-            }
-
-            // Report range change
-            const reportRange = document.getElementById('reportRange');
-            if (reportRange) {
-                reportRange.addEventListener('change', loadReports);
-            }
-
-            // Section navigation
-            setupSectionNavigation();
-        }
-
-        // Setup section navigation
-        function setupSectionNavigation() {
-            const sidebarBubbles = document.querySelectorAll('.sidebar-bubble');
-            const contentSections = document.querySelectorAll('.content-section');
-            
-            sidebarBubbles.forEach(bubble => {
-                bubble.addEventListener('click', () => {
-                    const sectionId = bubble.getAttribute('data-section');
-                    switchSection(sectionId);
-                });
-            });
-        }
-
-        // ==================== AUTHENTICATION HANDLERS ====================
-
-        // Show login form
-        function showLogin() {
-            loginContainer.style.display = 'flex';
-            registerContainer.style.display = 'none';
-            dashboard.style.display = 'none';
-        }
-
-        // Show register form
-        function showRegister() {
-            loginContainer.style.display = 'none';
-            registerContainer.style.display = 'flex';
-            dashboard.style.display = 'none';
-        }
-
-        // Show dashboard
-        function showDashboard() {
-            loginContainer.style.display = 'none';
-            registerContainer.style.display = 'none';
-            dashboard.style.display = 'block';
-            
-            // Update admin info
-            if (currentUser) {
-                document.getElementById('adminName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-                document.getElementById('adminGreeting').textContent = currentUser.firstName;
-                document.getElementById('welcomeMessage').textContent = `Welcome, ${currentUser.firstName}`;
-            }
-            
-            // Load dashboard data
-            loadDashboardData();
-            initializeCharts();
-        }
-
-        // Handle login
-        async function handleLogin(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            const loginBtn = document.getElementById('loginBtn');
-            const loginBtnText = document.getElementById('loginBtnText');
-            const loginLoading = document.getElementById('loginLoading');
-            
-            // Show loading state
-            loginBtnText.textContent = 'Logging in...';
-            loginLoading.style.display = 'inline-block';
-            loginBtn.disabled = true;
-            
-            try {
-                console.log('🔐 Attempting admin login...');
-                const response = await fetch(ENDPOINTS.ADMIN_LOGIN, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.token) {
-                    // Save token and user info
-                    authToken = data.token;
-                    localStorage.setItem('adminToken', authToken);
-                    currentUser = data.user;
-                    isTokenVerified = true;
-                    
-                    console.log('✅ Login successful, token saved');
-                    showNotification('Login successful!', 'success');
-                    showDashboard();
-                } else {
-                    console.error('❌ Login failed:', data.error);
-                    showNotification(data.error || 'Login failed. Please check your credentials.', 'error');
-                }
-            } catch (error) {
-                console.error('❌ Login network error:', error);
-                showNotification('Network error. Please check if the server is running.', 'error');
-            } finally {
-                // Reset button state
-                loginBtnText.textContent = 'Login';
-                loginLoading.style.display = 'none';
-                loginBtn.disabled = false;
-            }
-        }
-
-        // Handle register
-        async function handleRegister(e) {
-            e.preventDefault();
-            
-            const firstName = document.getElementById('registerFirstName').value;
-            const lastName = document.getElementById('registerLastName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const phoneNumber = document.getElementById('registerPhone').value;
-            
-            const registerBtn = document.getElementById('registerBtn');
-            const registerBtnText = document.getElementById('registerBtnText');
-            const registerLoading = document.getElementById('registerLoading');
-            
-            // Show loading state
-            registerBtnText.textContent = 'Registering...';
-            registerLoading.style.display = 'inline-block';
-            registerBtn.disabled = true;
-            
-            try {
-                const response = await fetch(ENDPOINTS.ADMIN_REGISTER, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        firstName, 
-                        lastName, 
-                        email, 
-                        password, 
-                        phoneNumber 
-                    })
-                });
-                
-                const data = await response.json();
-                
                 if (response.ok) {
-                    showNotification('Registration successful! Please login.', 'success');
-                    showLogin();
-                    registerForm.reset();
+                    // Cache successful GET responses
+                    if (!options.method || options.method === 'GET') {
+                        CacheManager.set(cacheKey, data);
+                    }
+                    return { ok: true, data, response };
                 } else {
-                    showNotification(data.error || 'Registration failed', 'error');
+                    throw new Error(data?.error || `HTTP ${response.status}`);
                 }
             } catch (error) {
-                console.error('Registration error:', error);
-                showNotification('Network error. Please try again.', 'error');
-            } finally {
-                // Reset button state
-                registerBtnText.textContent = 'Register';
-                registerLoading.style.display = 'none';
-                registerBtn.disabled = false;
+                console.error('❌ API Request Failed:', error.message);
+                
+                // Retry logic for network errors
+                const retryCount = AppState.apiRetryCount.get(url) || 0;
+                if (error.name === 'AbortError' && retryCount < AppState.MAX_RETRIES) {
+                    console.log(`🔄 Retrying request (${retryCount + 1}/${AppState.MAX_RETRIES})...`);
+                    AppState.apiRetryCount.set(url, retryCount + 1);
+                    await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+                    return this.request(url, options);
+                }
+
+                AppState.apiRetryCount.delete(url);
+                return { 
+                    ok: false, 
+                    error: error.message,
+                    status: error.name === 'AbortError' ? 408 : 500 
+                };
+            }
+        },
+
+        async authenticatedRequest(url, options = {}) {
+            if (!AppState.authToken) {
+                showNotification('Authentication required. Please login again.', 'error');
+                handleLogout();
+                return { ok: false, error: 'No authentication token' };
+            }
+
+            return this.request(url, options);
+        }
+    };
+
+    // ==================== ENHANCED CHART MANAGEMENT ====================
+    const ChartManager = {
+        instances: {},
+        
+        create(chartId, config) {
+            this.destroy(chartId);
+            
+            const canvas = document.getElementById(chartId);
+            if (!canvas) {
+                console.warn(`Canvas element not found: ${chartId}`);
+                return null;
+            }
+
+            const ctx = canvas.getContext('2d');
+            this.instances[chartId] = new Chart(ctx, {
+                ...config,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    ...config.options
+                }
+            });
+
+            return this.instances[chartId];
+        },
+
+        destroy(chartId) {
+            if (this.instances[chartId]) {
+                try {
+                    this.instances[chartId].destroy();
+                    delete this.instances[chartId];
+                } catch (error) {
+                    console.warn(`Error destroying chart ${chartId}:`, error);
+                }
+            }
+        },
+
+        destroyAll() {
+            Object.keys(this.instances).forEach(chartId => {
+                this.destroy(chartId);
+            });
+        },
+
+        updateData(chartId, newData) {
+            if (this.instances[chartId]) {
+                this.instances[chartId].data = newData;
+                this.instances[chartId].update();
             }
         }
+    };
 
-        // Handle logout
-        function handleLogout() {
-            console.log('🚪 Logging out admin...');
-            localStorage.removeItem('adminToken');
-            authToken = null;
-            currentUser = null;
-            isTokenVerified = false;
-            showNotification('Logged out successfully', 'success');
+    // ==================== ENHANCED ERROR HANDLER ====================
+    const ErrorHandler = {
+        handleApiError(error, context = '') {
+            console.error(`❌ ${context} Error:`, error);
+            
+            const message = error.message || 'An unexpected error occurred';
+            let userMessage = message;
+            let type = 'error';
+
+            if (error.status === 401) {
+                userMessage = 'Session expired. Please login again.';
+                handleLogout();
+            } else if (error.status === 403) {
+                userMessage = 'Access denied. Insufficient permissions.';
+            } else if (error.status === 404) {
+                userMessage = 'Requested resource not found.';
+                type = 'warning';
+            } else if (error.status === 408 || error.name === 'AbortError') {
+                userMessage = 'Request timeout. Please check your connection.';
+            } else if (error.status >= 500) {
+                userMessage = 'Server error. Please try again later.';
+            }
+
+            showNotification(userMessage, type);
+            return { success: false, error: userMessage };
+        },
+
+        wrapAsync(fn, context = '') {
+            return async (...args) => {
+                try {
+                    return await fn(...args);
+                } catch (error) {
+                    return this.handleApiError(error, context);
+                }
+            };
+        }
+    };
+
+    // ==================== ENHANCED INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
+    });
+
+    async function initializeApp() {
+        console.log('🚀 Initializing Enhanced Admin Dashboard...');
+        
+        // Test API connectivity first
+        const isApiReachable = await testApiConnectivity();
+        
+        if (!isApiReachable) {
+            showNotification('Cannot connect to server. Please ensure the backend is running.', 'error');
+        }
+        
+        // Check if user is already logged in
+        if (AppState.authToken) {
+            await verifyTokenAndLoadDashboard();
+        } else {
             showLogin();
         }
 
-        // ==================== DASHBOARD FUNCTIONALITY ====================
+        setupEventListeners();
+        setupPerformanceMonitoring();
+    }
 
-        // Switch sections
-        function switchSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
+    // ==================== ENHANCED AUTHENTICATION ====================
+    async function testApiConnectivity() {
+        try {
+            console.log('🧪 Testing API connectivity...');
+            const result = await ApiClient.request(ENDPOINTS.HEALTH);
+            return result.ok;
+        } catch (error) {
+            console.error('❌ API server is not reachable:', error);
+            return false;
+        }
+    }
+
+    async function verifyTokenAndLoadDashboard() {
+        if (!AppState.authToken) {
+            console.log('❌ No token found in localStorage');
+            showLogin();
+            return;
+        }
+
+        try {
+            console.log('🔐 Verifying admin token...');
+            const result = await ApiClient.authenticatedRequest(ENDPOINTS.ADMIN_PROFILE);
             
-            // Show the selected section
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Update sidebar active state
-            document.querySelectorAll('.sidebar-bubble').forEach(bubble => {
-                bubble.classList.remove('active');
-                if (bubble.getAttribute('data-section') === sectionId) {
-                    bubble.classList.add('active');
-                }
-            });
-            
-            // Load section-specific data
-            if (sectionId === 'reports') {
-                loadReports();
-            } else if (sectionId === 'products') {
-                loadProducts();
-            } else if (sectionId === 'orders') {
-                loadOrders();
-            } else if (sectionId === 'users') {
-                loadUsers();
+            if (result.ok) {
+                AppState.currentUser = result.data.user;
+                AppState.isTokenVerified = true;
+                console.log('✅ Token verified successfully');
+                showDashboard();
+            } else {
+                throw new Error(result.error);
             }
+        } catch (error) {
+            console.log('❌ Token verification failed:', error);
+            localStorage.removeItem('adminToken');
+            AppState.authToken = null;
+            showNotification('Session expired. Please login again.', 'error');
+            showLogin();
         }
+    }
 
-        // Load dashboard data
-        async function loadDashboardData() {
-            try {
-                // Load dashboard stats
-                const statsResponse = await makeAuthenticatedRequest(ENDPOINTS.ACTIVITIES);
-                
-                if (statsResponse.ok) {
-                    const statsData = await statsResponse.json();
-                    updateDashboardStats(statsData);
-                } else {
-                    // Use mock data if API fails
-                    updateDashboardStats({
-                        totalSalesToday: 1250,
-                        newOrdersCount: 8,
-                        lowStockProducts: 3,
-                        newCustomersCount: 5
-                    });
-                }
-                
-                // Load recent activities
-                const activitiesResponse = await makeAuthenticatedRequest(ENDPOINTS.RECENT_ACTIVITIES);
-                
-                if (activitiesResponse.ok) {
-                    const activitiesData = await activitiesResponse.json();
-                    updateRecentActivities(activitiesData.activities);
-                } else {
-                    // Use mock activities if API fails
-                    updateRecentActivities([
-                        {
-                            user: { firstName: 'John', lastName: 'Doe' },
-                            description: 'Placed a new order',
-                            createdAt: new Date(Date.now() - 300000)
-                        },
-                        {
-                            user: { firstName: 'Jane', lastName: 'Smith' },
-                            description: 'Created a new account',
-                            createdAt: new Date(Date.now() - 600000)
-                        }
-                    ]);
-                }
-                
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                showNotification('Error loading dashboard data', 'error');
-            }
-        }
+    // ==================== ENHANCED UI MANAGEMENT ====================
+    function showLogin() {
+        document.getElementById('loginContainer').style.display = 'flex';
+        document.getElementById('registerContainer').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'none';
+        ChartManager.destroyAll();
+    }
 
-        // Update dashboard stats
-        function updateDashboardStats(stats) {
-            document.getElementById('totalSales').textContent = `$${stats.totalSalesToday || 0}`;
-            document.getElementById('newOrders').textContent = stats.newOrdersCount || 0;
-            document.getElementById('lowStock').textContent = stats.lowStockProducts || 0;
-            document.getElementById('newCustomers').textContent = stats.newCustomersCount || 0;
-        }
+    function showRegister() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('registerContainer').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'none';
+    }
 
-        // Update recent activities
-        function updateRecentActivities(activities) {
-            const activitiesContainer = document.getElementById('recentActivities');
-            activitiesContainer.innerHTML = '';
-            
-            if (!activities || activities.length === 0) {
-                activitiesContainer.innerHTML = '<tr><td colspan="3" style="text-align: center;">No recent activities</td></tr>';
-                return;
-            }
-            
-            activities.forEach(activity => {
-                const row = document.createElement('tr');
-                const userName = activity.user ? `${activity.user.firstName} ${activity.user.lastName}` : 'Anonymous';
-                const timeAgo = getTimeAgo(new Date(activity.createdAt));
-                
-                row.innerHTML = `
-                    <td>${userName}</td>
-                    <td>${activity.description}</td>
-                    <td>${timeAgo}</td>
-                `;
-                
-                activitiesContainer.appendChild(row);
-            });
-        }
-
-        // ==================== ORDERS MANAGEMENT ====================
-
-        // Enhanced loadOrders function
-   // Enhanced loadOrders function with better error handling
-async function loadOrders() {
-    try {
-        console.log('🔄 Loading orders with enhanced error handling...');
+    function showDashboard() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('registerContainer').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
         
-        const response = await makeAuthenticatedRequest(ENDPOINTS.ORDERS, {
-            method: 'GET'
+        // Update admin info
+        if (AppState.currentUser) {
+            const name = SecurityUtils.sanitizeInput(`${AppState.currentUser.firstName} ${AppState.currentUser.lastName}`);
+            document.getElementById('adminName').textContent = name;
+            document.getElementById('adminGreeting').textContent = SecurityUtils.sanitizeInput(AppState.currentUser.firstName);
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${SecurityUtils.sanitizeInput(AppState.currentUser.firstName)}`;
+        }
+        
+        loadDashboardData();
+    }
+
+    // ==================== ENHANCED SECTION MANAGEMENT ====================
+    function switchSection(sectionId) {
+        // Clean up charts if leaving reports section
+        const currentSection = document.querySelector('.content-section.active');
+        if (currentSection && currentSection.id === 'reports') {
+            ChartManager.destroyAll();
+        }
+        
+        // Hide all sections with animation
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
         });
         
-        console.log('📊 Orders API Response Status:', response.status);
+        // Show the selected section
+        const targetSection = document.getElementById(sectionId);
+        targetSection.classList.add('active');
         
-        if (response.ok) {
-            const data = await response.json();
-            console.log('✅ Orders loaded successfully:', data.orders?.length || 0);
-            orders = data.orders || [];
-            renderOrders(orders);
-            updateOrderStats(orders);
-        } else {
-            // Try fallback endpoint
-            console.log('🔄 Trying fallback orders endpoint...');
-            try {
-                const fallbackResponse = await makeAuthenticatedRequest(`${ENDPOINTS.ORDERS}/test/admin-endpoint`);
-                if (fallbackResponse.ok) {
-                    console.log('✅ Fallback orders endpoint working, using demo data');
-                    renderOrders(getMockOrders());
-                    updateOrderStats(getMockOrders());
-                } else {
-                    throw new Error('Fallback also failed');
-                }
-            } catch (fallbackError) {
-                console.log('🔄 Using mock orders data');
-                renderOrders(getMockOrders());
-                updateOrderStats(getMockOrders());
-                showNotification('Using demo orders data (API unavailable)', 'warning');
+        // Update sidebar active state
+        document.querySelectorAll('.sidebar-bubble').forEach(bubble => {
+            bubble.classList.remove('active');
+            if (bubble.getAttribute('data-section') === sectionId) {
+                bubble.classList.add('active');
             }
-        }
-    } catch (error) {
-        console.error('❌ Network error loading orders:', error);
-        console.log('🔄 Using mock orders data due to network error');
-        renderOrders(getMockOrders());
-        updateOrderStats(getMockOrders());
-        showNotification('Network error. Using demo orders data.', 'warning');
+        });
+        
+        // Load section-specific data with debouncing
+        clearTimeout(window.sectionLoadTimeout);
+        window.sectionLoadTimeout = setTimeout(() => {
+            loadSectionData(sectionId);
+        }, 50);
     }
-}
 
-        // Mock data fallback
-        function getMockOrders() {
-            return [
-                {
-                    orderNumber: 'OL-' + Date.now(),
-                    customerName: 'Demo Customer',
-                    status: 'processing',
-                    totalAmount: 89.99,
-                    orderDate: new Date(),
-                    itemCount: 2,
-                    paymentStatus: 'paid'
-                },
-                {
-                    orderNumber: 'OL-' + (Date.now() - 1000000),
-                    customerName: 'Test User',
-                    status: 'delivered',
-                    totalAmount: 149.99,
-                    orderDate: new Date(Date.now() - 86400000),
-                    itemCount: 3,
-                    paymentStatus: 'paid'
-                },
-                {
-                    orderNumber: 'OL-' + (Date.now() - 2000000),
-                    customerName: 'Another Customer',
-                    status: 'pending',
-                    totalAmount: 199.99,
-                    orderDate: new Date(Date.now() - 172800000),
-                    itemCount: 1,
-                    paymentStatus: 'pending'
-                }
-            ];
+    async function loadSectionData(sectionId) {
+        switch (sectionId) {
+            case 'reports':
+                await loadReports();
+                break;
+            case 'products':
+                await loadProducts();
+                break;
+            case 'orders':
+                await loadOrders();
+                break;
+            case 'users':
+                await loadUsers();
+                break;
+            default:
+                // No data loading needed for other sections
+                break;
         }
+    }
 
-        // Render orders table
-        function renderOrders(ordersToRender) {
-            const tableBody = document.getElementById('ordersTableBody');
-            tableBody.innerHTML = '';
-            
-            if (!ordersToRender || ordersToRender.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No orders found</td></tr>';
-                return;
+    // ==================== ENHANCED DATA LOADING ====================
+    async function loadDashboardData() {
+        try {
+            const [statsResult, activitiesResult] = await Promise.allSettled([
+                ApiClient.authenticatedRequest(ENDPOINTS.ACTIVITIES),
+                ApiClient.authenticatedRequest(ENDPOINTS.RECENT_ACTIVITIES)
+            ]);
+
+            // Update dashboard stats
+            if (statsResult.status === 'fulfilled' && statsResult.value.ok) {
+                updateDashboardStats(statsResult.value.data);
+            } else {
+                updateDashboardStats({
+                    totalSalesToday: 1250,
+                    newOrdersCount: 8,
+                    lowStockProducts: 3,
+                    newCustomersCount: 5
+                });
+            }
+
+            // Update recent activities
+            if (activitiesResult.status === 'fulfilled' && activitiesResult.value.ok) {
+                updateRecentActivities(activitiesResult.value.data.activities);
+            } else {
+                updateRecentActivities([
+                    {
+                        user: { firstName: 'John', lastName: 'Doe' },
+                        description: 'Placed a new order',
+                        createdAt: new Date(Date.now() - 300000)
+                    }
+                ]);
             }
             
-            ordersToRender.forEach(order => {
-                const row = document.createElement('tr');
-                const statusClass = `status-${order.status.toLowerCase()}`;
-                const orderDate = new Date(order.orderDate).toLocaleDateString();
-                
-                row.innerHTML = `
-                    <td>#${order.orderNumber}</td>
-                    <td>${order.customerName}</td>
-                    <td><span class="status-badge ${statusClass}">${order.status}</span></td>
-                    <td>$${order.totalAmount?.toFixed(2) || '0.00'}</td>
-                    <td>${orderDate}</td>
-                    <td>${order.itemCount || 0}</td>
-                    <td>
-                        <button class="action-btn view-order" data-id="${order._id || order.id}">View</button>
-                        <button class="action-btn btn-warning update-status" data-id="${order._id || order.id}">Update</button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-            
-            // Add event listeners to action buttons
-            document.querySelectorAll('.view-order').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const orderId = e.target.dataset.id;
-                    viewOrder(orderId);
-                });
-            });
-            
-            document.querySelectorAll('.update-status').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const orderId = e.target.dataset.id;
-                    updateOrderStatus(orderId);
-                });
-            });
+        } catch (error) {
+            ErrorHandler.handleApiError(error, 'Dashboard data loading');
         }
+    }
 
-        // Update order statistics
-        function updateOrderStats(orders) {
-            const totalOrders = orders.length;
-            const pendingOrders = orders.filter(order => order.status === 'pending').length;
-            const processingOrders = orders.filter(order => order.status === 'processing').length;
-            const completedOrders = orders.filter(order => order.status === 'delivered').length;
-
-            document.getElementById('totalOrders').textContent = totalOrders;
-            document.getElementById('pendingOrders').textContent = pendingOrders;
-            document.getElementById('processingOrders').textContent = processingOrders;
-            document.getElementById('completedOrders').textContent = completedOrders;
+    // ==================== MISSING FUNCTION - ADD THIS ====================
+    function updateRecentActivities(activities) {
+        const activitiesContainer = document.getElementById('recentActivities');
+        if (!activitiesContainer) {
+            console.warn('❌ Recent activities container not found');
+            return;
         }
-
-        // Filter orders
-        function filterOrders() {
-            const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+        
+        activitiesContainer.innerHTML = '';
+        
+        if (!activities || activities.length === 0) {
+            activitiesContainer.innerHTML = '<tr><td colspan="3" style="text-align: center;">No recent activities</td></tr>';
+            return;
+        }
+        
+        activities.forEach(activity => {
+            const row = document.createElement('tr');
+            const userName = activity.user ? 
+                `${SecurityUtils.sanitizeInput(activity.user.firstName)} ${SecurityUtils.sanitizeInput(activity.user.lastName)}` : 
+                'Anonymous';
+            const timeAgo = getTimeAgo(new Date(activity.createdAt));
             
-            if (!searchTerm) {
-                renderOrders(orders);
-                return;
+            row.innerHTML = `
+                <td>${userName}</td>
+                <td>${SecurityUtils.sanitizeInput(activity.description)}</td>
+                <td>${timeAgo}</td>
+            `;
+            
+            activitiesContainer.appendChild(row);
+        });
+        
+        console.log(`✅ Updated ${activities.length} recent activities`);
+    }
+
+    // ==================== ENHANCED UTILITY FUNCTIONS ====================
+
+    function updateDashboardStats(stats) {
+        document.getElementById('totalSales').textContent = `$${stats.totalSalesToday || 0}`;
+        document.getElementById('newOrders').textContent = stats.newOrdersCount || 0;
+        document.getElementById('lowStock').textContent = stats.lowStockProducts || 0;
+        document.getElementById('newCustomers').textContent = stats.newCustomersCount || 0;
+    }
+
+    function getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} minutes ago`;
+        if (diffHours < 24) return `${diffHours} hours ago`;
+        if (diffDays < 7) return `${diffDays} days ago`;
+        
+        return date.toLocaleDateString();
+    }
+
+    // ==================== ENHANCED ORDERS MANAGEMENT ====================
+    async function loadOrders() {
+        console.log('🔄 Loading orders...');
+        
+        const result = await ApiClient.authenticatedRequest(ENDPOINTS.ORDERS);
+        
+        if (result.ok) {
+            AppState.orders = result.data.orders || [];
+            renderOrders(AppState.orders);
+            updateOrderStats(AppState.orders);
+            showNotification(`Loaded ${AppState.orders.length} orders`, 'success');
+        } else {
+            // Fallback to mock data
+            console.log('🔄 Using mock orders data');
+            const mockOrders = getMockOrders();
+            renderOrders(mockOrders);
+            updateOrderStats(mockOrders);
+            showNotification('Using demo orders data', 'warning');
+        }
+    }
+
+    function renderOrders(ordersToRender) {
+        const tableBody = document.getElementById('ordersTableBody');
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        if (!ordersToRender || ordersToRender.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No orders found</td></tr>';
+            return;
+        }
+        
+        ordersToRender.forEach(order => {
+            const row = document.createElement('tr');
+            const statusClass = `status-${order.status?.toLowerCase() || 'pending'}`;
+            const orderDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A';
+            
+            row.innerHTML = `
+                <td>#${SecurityUtils.sanitizeInput(order.orderNumber || 'N/A')}</td>
+                <td>${SecurityUtils.sanitizeInput(order.customerName || 'Unknown')}</td>
+                <td><span class="status-badge ${statusClass}">${SecurityUtils.sanitizeInput(order.status || 'pending')}</span></td>
+                <td>$${(order.totalAmount || 0).toFixed(2)}</td>
+                <td>${orderDate}</td>
+                <td>${order.itemCount || 0}</td>
+                <td>
+                    <button class="action-btn view-order" data-id="${order._id || order.id}">View</button>
+                    <button class="action-btn btn-warning update-status" data-id="${order._id || order.id}">Update</button>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+        
+        // Add event listeners with error handling
+        document.querySelectorAll('.view-order').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const orderId = e.target.dataset.id;
+                viewOrder(orderId);
+            });
+        });
+        
+        document.querySelectorAll('.update-status').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const orderId = e.target.dataset.id;
+                updateOrderStatus(orderId);
+            });
+        });
+    }
+
+    function updateOrderStats(orders) {
+        const totalOrders = orders.length;
+        const pendingOrders = orders.filter(order => order.status === 'pending').length;
+        const processingOrders = orders.filter(order => order.status === 'processing').length;
+        const completedOrders = orders.filter(order => order.status === 'delivered').length;
+
+        document.getElementById('totalOrders').textContent = totalOrders;
+        document.getElementById('pendingOrders').textContent = pendingOrders;
+        document.getElementById('processingOrders').textContent = processingOrders;
+        document.getElementById('completedOrders').textContent = completedOrders;
+    }
+
+    function getMockOrders() {
+        return [
+            {
+                orderNumber: 'OL-' + Date.now(),
+                customerName: 'Demo Customer',
+                status: 'processing',
+                totalAmount: 89.99,
+                orderDate: new Date(),
+                itemCount: 2,
+                paymentStatus: 'paid'
+            },
+            {
+                orderNumber: 'OL-' + (Date.now() - 1000000),
+                customerName: 'Test User',
+                status: 'delivered',
+                totalAmount: 149.99,
+                orderDate: new Date(Date.now() - 86400000),
+                itemCount: 3,
+                paymentStatus: 'paid'
+            },
+            {
+                orderNumber: 'OL-' + (Date.now() - 2000000),
+                customerName: 'Another Customer',
+                status: 'pending',
+                totalAmount: 199.99,
+                orderDate: new Date(Date.now() - 172800000),
+                itemCount: 1,
+                paymentStatus: 'pending'
             }
+        ];
+    }
+
+    function filterOrders() {
+        const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+        
+        if (!searchTerm) {
+            renderOrders(AppState.orders);
+            return;
+        }
+        
+        const filteredOrders = AppState.orders.filter(order => 
+            order.orderNumber.toLowerCase().includes(searchTerm) ||
+            order.customerName.toLowerCase().includes(searchTerm) ||
+            order.status.toLowerCase().includes(searchTerm)
+        );
+        
+        renderOrders(filteredOrders);
+    }
+
+    function viewOrder(orderId) {
+        showNotification('View order functionality coming soon', 'info');
+    }
+
+    function updateOrderStatus(orderId) {
+        showNotification('Update order status functionality coming soon', 'info');
+    }
+
+    // ==================== ENHANCED PRODUCTS MANAGEMENT ====================
+    async function loadProducts(page = 1) {
+        try {
+            console.log('🔄 Loading products...');
+            AppState.currentPage = page;
             
-            const filteredOrders = orders.filter(order => 
-                order.orderNumber.toLowerCase().includes(searchTerm) ||
-                order.customerName.toLowerCase().includes(searchTerm) ||
-                order.status.toLowerCase().includes(searchTerm)
+            const result = await ApiClient.authenticatedRequest(
+                `${ENDPOINTS.PRODUCTS}?page=${page}&limit=${AppState.productsPerPage}`
             );
             
-            renderOrders(filteredOrders);
-        }
-
-        // View order details
-        function viewOrder(orderId) {
-            showNotification('View order functionality coming soon', 'info');
-        }
-
-        // Update order status
-        function updateOrderStatus(orderId) {
-            showNotification('Update order status functionality coming soon', 'info');
-        }
-
-        // ==================== PRODUCTS MANAGEMENT ====================
-
-        // Load products
-        async function loadProducts(page = 1) {
-            try {
-                console.log('🔄 Loading products from admin endpoint...');
-                const response = await makeAuthenticatedRequest(`${ENDPOINTS.PRODUCTS}?page=${page}&limit=${productsPerPage}`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    products = data.products || data;
-                    currentPage = page;
-                    renderProducts(products);
-                    renderPagination(data.totalPages, data.currentPage, 'products');
-                } else {
-                    console.warn('Admin products endpoint failed, trying public endpoint...');
-                    // Fallback to public endpoint
-                    const publicResponse = await fetch(ENDPOINTS.PUBLIC_PRODUCTS);
-                    if (publicResponse.ok) {
-                        const publicData = await publicResponse.json();
-                        products = publicData;
-                        renderProducts(products);
-                        showNotification('Using public products data (admin endpoint unavailable)', 'warning');
-                    } else {
-                        showNotification('Error loading products', 'error');
-                    }
+            if (result.ok) {
+                AppState.products = result.data.products || result.data;
+                renderProducts(AppState.products);
+                if (result.data.pagination) {
+                    renderPagination(result.data.pagination, 'products');
                 }
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showNotification('Error loading products', 'error');
+            } else {
+                // Fallback to public endpoint
+                const publicResult = await ApiClient.request(ENDPOINTS.PUBLIC_PRODUCTS);
+                if (publicResult.ok) {
+                    AppState.products = publicResult.data;
+                    renderProducts(AppState.products);
+                    showNotification('Using public products data', 'warning');
+                } else {
+                    throw new Error('Failed to load products');
+                }
             }
+        } catch (error) {
+            ErrorHandler.handleApiError(error, 'Products loading');
         }
+    }
 
-        // Render products table
-        function renderProducts(productsToRender) {
-            const tableBody = document.getElementById('productsTableBody');
-            tableBody.innerHTML = '';
+    function renderProducts(productsToRender) {
+        const tableBody = document.getElementById('productsTableBody');
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        if (!productsToRender || productsToRender.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No products found</td></tr>';
+            return;
+        }
+        
+        productsToRender.forEach(product => {
+            const row = document.createElement('tr');
+            const statusClass = product.stock < 10 ? 'status-low' : 'status-delivered';
+            const statusText = product.stock < 10 ? 'Low Stock' : 'In Stock';
             
-            if (!productsToRender || productsToRender.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No products found</td></tr>';
-                return;
+            row.innerHTML = `
+                <td>${SecurityUtils.sanitizeInput(product.name)}</td>
+                <td>${SecurityUtils.sanitizeInput(product.category)}</td>
+                <td>$${product.price?.toFixed(2) || '0.00'}</td>
+                <td>${product.stock}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>
+                    <button class="action-btn btn-warning edit-product" data-id="${product._id || product.id}">Edit</button>
+                    <button class="action-btn btn-danger delete-product" data-id="${product._id || product.id}">Delete</button>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+        
+        // Add event listeners to action buttons
+        document.querySelectorAll('.edit-product').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const productId = e.target.dataset.id;
+                editProduct(productId);
+            });
+        });
+        
+        document.querySelectorAll('.delete-product').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const productId = e.target.dataset.id;
+                deleteProduct(productId);
+            });
+        });
+    }
+
+    function filterProducts() {
+        const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+        
+        if (!searchTerm) {
+            renderProducts(AppState.products);
+            return;
+        }
+        
+        const filteredProducts = AppState.products.filter(product => 
+            product.name.toLowerCase().includes(searchTerm) ||
+            (product.category && product.category.toLowerCase().includes(searchTerm)) ||
+            (product.type && product.type.toLowerCase().includes(searchTerm))
+        );
+        
+        renderProducts(filteredProducts);
+    }
+
+    async function handleAddProduct(e) {
+        e.preventDefault();
+        
+        const saveProductBtn = document.getElementById('saveProductBtn');
+        const originalText = saveProductBtn.textContent;
+        
+        // Show loading state
+        saveProductBtn.textContent = 'Saving...';
+        saveProductBtn.disabled = true;
+        
+        try {
+            const formData = new FormData();
+            
+            // Add text fields
+            formData.append('name', document.getElementById('productName').value);
+            formData.append('description', document.getElementById('productDescription').value);
+            formData.append('price', document.getElementById('productPrice').value);
+            formData.append('stock', document.getElementById('productStock').value);
+            formData.append('category', document.getElementById('productCategory').value);
+            formData.append('type', document.getElementById('productType').value);
+            formData.append('length', document.getElementById('productLength').value);
+            formData.append('texture', document.getElementById('productTexture').value);
+            formData.append('color', document.getElementById('productColor').value);
+            formData.append('quality', document.getElementById('productQuality').value);
+            formData.append('isActive', 'true');
+            
+            const oldPrice = document.getElementById('productOldPrice').value;
+            if (oldPrice) {
+                formData.append('oldPrice', oldPrice);
             }
             
-            productsToRender.forEach(product => {
-                const row = document.createElement('tr');
-                const statusClass = product.stock < 10 ? 'status-low' : 'status-delivered';
-                const statusText = product.stock < 10 ? 'Low Stock' : 'In Stock';
-                
-                row.innerHTML = `
-                    <td>${product.name}</td>
-                    <td>${product.category}</td>
-                    <td>$${product.price?.toFixed(2) || '0.00'}</td>
-                    <td>${product.stock}</td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                    <td>
-                        <button class="action-btn btn-warning edit-product" data-id="${product._id || product.id}">Edit</button>
-                        <button class="action-btn btn-danger delete-product" data-id="${product._id || product.id}">Delete</button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
+            // Add image files
+            const imageFiles = document.getElementById('productImages').files;
+            for (let i = 0; i < imageFiles.length; i++) {
+                formData.append('images', imageFiles[i]);
+            }
+
+            const response = await fetch(ENDPOINTS.PRODUCTS, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${AppState.authToken}`
+                },
+                body: formData
             });
             
-            // Add event listeners to action buttons
-            document.querySelectorAll('.edit-product').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const productId = e.target.dataset.id;
-                    editProduct(productId);
-                });
+            if (response.ok) {
+                showNotification('Product added successfully!', 'success');
+                document.getElementById('addProductForm').style.display = 'none';
+                document.getElementById('productForm').reset();
+                loadProducts(AppState.currentPage);
+            } else {
+                const error = await response.json();
+                showNotification(error.error || 'Error adding product', 'error');
+            }
+        } catch (error) {
+            console.error('Error adding product:', error);
+            showNotification('Error adding product', 'error');
+        } finally {
+            // Reset button state
+            saveProductBtn.textContent = originalText;
+            saveProductBtn.disabled = false;
+        }
+    }
+
+    async function editProduct(productId) {
+        showNotification('Edit functionality coming soon', 'warning');
+    }
+
+    async function deleteProduct(productId) {
+        if (!confirm('Are you sure you want to delete this product?')) {
+            return;
+        }
+        
+        try {
+            const response = await ApiClient.authenticatedRequest(`${ENDPOINTS.PRODUCTS}/${productId}`, {
+                method: 'DELETE'
             });
             
-            document.querySelectorAll('.delete-product').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const productId = e.target.dataset.id;
-                    deleteProduct(productId);
-                });
-            });
-        }
-
-        // Handle add product
-        async function handleAddProduct(e) {
-            e.preventDefault();
-            
-            const saveProductBtn = document.getElementById('saveProductBtn');
-            const originalText = saveProductBtn.textContent;
-            
-            // Show loading state
-            saveProductBtn.textContent = 'Saving...';
-            saveProductBtn.disabled = true;
-            
-            try {
-                const formData = new FormData();
-                
-                // Add text fields
-                formData.append('name', document.getElementById('productName').value);
-                formData.append('description', document.getElementById('productDescription').value);
-                formData.append('price', document.getElementById('productPrice').value);
-                formData.append('stock', document.getElementById('productStock').value);
-                formData.append('category', document.getElementById('productCategory').value);
-                formData.append('type', document.getElementById('productType').value);
-                formData.append('length', document.getElementById('productLength').value);
-                formData.append('texture', document.getElementById('productTexture').value);
-                formData.append('color', document.getElementById('productColor').value);
-                formData.append('quality', document.getElementById('productQuality').value);
-                formData.append('isActive', 'true');
-                
-                const oldPrice = document.getElementById('productOldPrice').value;
-                if (oldPrice) {
-                    formData.append('oldPrice', oldPrice);
-                }
-                
-                // Add image files
-                const imageFiles = document.getElementById('productImages').files;
-                for (let i = 0; i < imageFiles.length; i++) {
-                    formData.append('images', imageFiles[i]);
-                }
-
-                const response = await fetch(ENDPOINTS.PRODUCTS, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    showNotification('Product added successfully!', 'success');
-                    document.getElementById('addProductForm').style.display = 'none';
-                    document.getElementById('productForm').reset();
-                    loadProducts(currentPage);
-                } else {
-                    const error = await response.json();
-                    showNotification(error.error || 'Error adding product', 'error');
-                }
-            } catch (error) {
-                console.error('Error adding product:', error);
-                showNotification('Error adding product', 'error');
-            } finally {
-                // Reset button state
-                saveProductBtn.textContent = originalText;
-                saveProductBtn.disabled = false;
-            }
-        }
-
-        // Edit product
-        async function editProduct(productId) {
-            showNotification('Edit functionality coming soon', 'warning');
-        }
-
-        // Delete product
-        async function deleteProduct(productId) {
-            if (!confirm('Are you sure you want to delete this product?')) {
-                return;
-            }
-            
-            try {
-                const response = await makeAuthenticatedRequest(`${ENDPOINTS.PRODUCTS}/${productId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    showNotification('Product deleted successfully!', 'success');
-                    loadProducts(currentPage);
-                } else {
-                    showNotification('Error deleting product', 'error');
-                }
-            } catch (error) {
-                console.error('Error deleting product:', error);
+            if (response.ok) {
+                showNotification('Product deleted successfully!', 'success');
+                loadProducts(AppState.currentPage);
+            } else {
                 showNotification('Error deleting product', 'error');
             }
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            showNotification('Error deleting product', 'error');
         }
+    }
 
-        // Filter products
-        function filterProducts() {
-            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+    // ==================== ENHANCED USERS MANAGEMENT ====================
+    async function loadUsers() {
+        try {
+            const result = await ApiClient.authenticatedRequest(ENDPOINTS.USERS);
             
-            if (!searchTerm) {
-                renderProducts(products);
-                return;
+            if (result.ok) {
+                AppState.users = result.data.users || [];
+                renderUsers(AppState.users);
+            } else {
+                // Mock users data for demo
+                renderUsers([
+                    {
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        email: 'john@example.com',
+                        role: 'Customer',
+                        orderCount: 3,
+                        lastLogin: new Date(Date.now() - 86400000)
+                    }
+                ]);
+                showNotification('Using demo users data', 'warning');
             }
+        } catch (error) {
+            ErrorHandler.handleApiError(error, 'Users loading');
+        }
+    }
+
+    function renderUsers(users) {
+        const tableBody = document.getElementById('usersTableBody');
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        if (!users || users.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No users found</td></tr>';
+            return;
+        }
+        
+        users.forEach(user => {
+            const row = document.createElement('tr');
+            const lastActive = user.lastLogin ? getTimeAgo(new Date(user.lastLogin)) : 'Never';
             
-            const filteredProducts = products.filter(product => 
-                product.name.toLowerCase().includes(searchTerm) ||
-                (product.category && product.category.toLowerCase().includes(searchTerm)) ||
-                (product.type && product.type.toLowerCase().includes(searchTerm))
+            row.innerHTML = `
+                <td>${SecurityUtils.sanitizeInput(user.firstName)} ${SecurityUtils.sanitizeInput(user.lastName)}</td>
+                <td>${SecurityUtils.sanitizeInput(user.email)}</td>
+                <td>${SecurityUtils.sanitizeInput(user.role)}</td>
+                <td>${user.orderCount || 0}</td>
+                <td>${lastActive}</td>
+                <td>
+                    <button class="action-btn">Edit</button>
+                    <button class="action-btn btn-danger">Suspend</button>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+    }
+
+    // ==================== ENHANCED REPORTS & CHARTS ====================
+    async function loadReports() {
+        const days = document.getElementById('reportRange').value;
+        
+        try {
+            console.log('📊 Loading reports...');
+            
+            // Clear existing charts
+            ChartManager.destroyAll();
+            
+            const result = await ApiClient.authenticatedRequest(
+                `${ENDPOINTS.SALES_ANALYTICS}?days=${days}`
             );
             
-            renderProducts(filteredProducts);
-        }
-
-        // ==================== USERS MANAGEMENT ====================
-
-        // Load users
-        async function loadUsers() {
-            try {
-                const response = await makeAuthenticatedRequest(ENDPOINTS.USERS);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    renderUsers(data.users);
+            // Small delay to ensure DOM is ready for charts
+            setTimeout(() => {
+                if (result.ok) {
+                    initializeChartsWithData(result.data);
                 } else {
-                    // Mock users data for demo
-                    renderUsers([
-                        {
-                            firstName: 'John',
-                            lastName: 'Doe',
-                            email: 'john@example.com',
-                            role: 'Customer',
-                            orderCount: 3,
-                            lastLogin: new Date(Date.now() - 86400000)
-                        }
-                    ]);
-                    showNotification('Using demo users data', 'warning');
-                }
-            } catch (error) {
-                console.error('Error loading users:', error);
-                showNotification('Error loading users', 'error');
-            }
-        }
-
-        // Render users table
-        function renderUsers(users) {
-            const tableBody = document.getElementById('usersTableBody');
-            tableBody.innerHTML = '';
-            
-            if (!users || users.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No users found</td></tr>';
-                return;
-            }
-            
-            users.forEach(user => {
-                const row = document.createElement('tr');
-                const lastActive = user.lastLogin ? getTimeAgo(new Date(user.lastLogin)) : 'Never';
-                
-                row.innerHTML = `
-                    <td>${user.firstName} ${user.lastName}</td>
-                    <td>${user.email}</td>
-                    <td>${user.role}</td>
-                    <td>${user.orderCount || 0}</td>
-                    <td>${lastActive}</td>
-                    <td>
-                        <button class="action-btn">Edit</button>
-                        <button class="action-btn btn-danger">Suspend</button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-        }
-
-        // ==================== REPORTS ====================
-
-        // Load reports
-        async function loadReports() {
-            const days = document.getElementById('reportRange').value;
-            
-            try {
-                const response = await makeAuthenticatedRequest(`${ENDPOINTS.SALES_ANALYTICS}?days=${days}`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    updateCharts(data);
-                } else {
+                    initializeChartsWithMockData();
                     showNotification('Using demo reports data', 'warning');
                 }
-            } catch (error) {
-                console.error('Error loading reports:', error);
-                showNotification('Error loading reports', 'error');
-            }
-        }
-
-        // Update charts with data
-        function updateCharts(data) {
-            // This would update the Chart.js charts with real data
-            // For now, we'll keep the mock data
-            initializeCharts();
-        }
-
-        // ==================== UTILITY FUNCTIONS ====================
-
-        // Render pagination
-        function renderPagination(totalPages, currentPage, type) {
-            const paginationContainer = document.getElementById(`${type}Pagination`);
-            if (!paginationContainer) return;
-            
-            paginationContainer.innerHTML = '';
-            
-            if (!totalPages || totalPages <= 1) return;
-            
-            // Previous button
-            if (currentPage > 1) {
-                const prevBtn = document.createElement('button');
-                prevBtn.className = 'action-btn';
-                prevBtn.textContent = 'Previous';
-                prevBtn.addEventListener('click', () => {
-                    if (type === 'products') loadProducts(currentPage - 1);
-                });
-                paginationContainer.appendChild(prevBtn);
-            }
-            
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                const pageBtn = document.createElement('button');
-                pageBtn.className = `action-btn ${i === currentPage ? 'btn-success' : ''}`;
-                pageBtn.textContent = i;
-                pageBtn.style.margin = '0 5px';
-                pageBtn.addEventListener('click', () => {
-                    if (type === 'products') loadProducts(i);
-                });
-                paginationContainer.appendChild(pageBtn);
-            }
-            
-            // Next button
-            if (currentPage < totalPages) {
-                const nextBtn = document.createElement('button');
-                nextBtn.className = 'action-btn';
-                nextBtn.textContent = 'Next';
-                nextBtn.addEventListener('click', () => {
-                    if (type === 'products') loadProducts(currentPage + 1);
-                });
-                paginationContainer.appendChild(nextBtn);
-            }
-        }
-
-        // Utility function to get time ago
-        function getTimeAgo(date) {
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 1) return 'Just now';
-            if (diffMins < 60) return `${diffMins} minutes ago`;
-            if (diffHours < 24) return `${diffHours} hours ago`;
-            if (diffDays < 7) return `${diffDays} days ago`;
-            
-            return date.toLocaleDateString();
-        }
-
-        // Debounce function for search
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const notificationContainer = document.getElementById('notificationContainer');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            
-            notificationContainer.appendChild(notification);
-            
-            // Show notification
-            setTimeout(() => {
-                notification.classList.add('show');
             }, 100);
             
-            // Hide and remove after 5 seconds
+        } catch (error) {
+            ErrorHandler.handleApiError(error, 'Reports loading');
             setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            }, 5000);
+                initializeChartsWithMockData();
+            }, 100);
         }
+    }
 
-        // System Diagnostics
-        async function runDiagnostics() {
-            const results = document.getElementById('diagnosticResults');
-            results.innerHTML = 'Running diagnostics...';
-            
-            let diagnosticLog = '';
-            
-            try {
-                // Test 1: Backend connection
-                diagnosticLog += '1. Testing backend connection... ';
-                const testResponse = await fetch(ENDPOINTS.HEALTH);
-                if (testResponse.ok) {
-                    diagnosticLog += '✅ SUCCESS\n';
-                } else {
-                    diagnosticLog += '❌ FAILED\n';
-                }
-                
-                // Test 2: Public products API
-                diagnosticLog += '2. Testing public products API... ';
-                const publicResponse = await fetch(ENDPOINTS.PUBLIC_PRODUCTS);
-                const publicData = await publicResponse.json();
-                if (publicResponse.ok) {
-                    diagnosticLog += `✅ SUCCESS (${publicData.length} products)\n`;
-                } else {
-                    diagnosticLog += '❌ FAILED\n';
-                }
-                
-                // Test 3: Admin products API
-                diagnosticLog += '3. Testing admin products API... ';
-                const adminProductsResponse = await makeAuthenticatedRequest(ENDPOINTS.PRODUCTS);
-                if (adminProductsResponse.ok) {
-                    diagnosticLog += '✅ SUCCESS\n';
-                } else {
-                    diagnosticLog += '❌ FAILED\n';
-                }
-                
-                // Test 4: Admin orders API
-                diagnosticLog += '4. Testing admin orders API... ';
-                const adminOrdersResponse = await makeAuthenticatedRequest(ENDPOINTS.ORDERS);
-                if (adminOrdersResponse.ok) {
-                    diagnosticLog += '✅ SUCCESS\n';
-                } else {
-                    diagnosticLog += '❌ FAILED\n';
-                }
-                
-                // Test 5: Check localStorage
-                diagnosticLog += '5. Checking authentication... ';
-                const token = localStorage.getItem('adminToken');
-                if (token) {
-                    diagnosticLog += '✅ Token exists\n';
-                } else {
-                    diagnosticLog += '❌ No token found\n';
-                }
-                
-                // Test 6: Check current user
-                diagnosticLog += '6. Current user state... ';
-                if (currentUser) {
-                    diagnosticLog += `✅ ${currentUser.firstName} ${currentUser.lastName}\n`;
-                } else {
-                    diagnosticLog += '❌ No user data\n';
-                }
-                
-            } catch (error) {
-                diagnosticLog += `❌ Error: ${error.message}\n`;
-            }
-            
-            results.innerHTML = `<pre>${diagnosticLog}</pre>`;
-        }
+    function initializeChartsWithData(data) {
+        // Implement chart initialization with real data
+        initializeChartsWithMockData(); // Fallback for now
+    }
 
-        // ==================== UI CONTROLS ====================
-
-        // Dark/Light Mode Toggle
-        const modeToggle = document.querySelector('.mode-toggle');
-        const body = document.body;
-        
-        modeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            
-            // Save user preference in localStorage
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
-        
-        // Check for saved user preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            body.classList.add('dark-mode');
-        }
-        
-        // User profile dropdown
-        const userProfile = document.querySelector('.user-profile');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        
-        userProfile.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!userProfile.contains(e.target)) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
-        
-        // Header scroll effect
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-                header.style.padding = '15px 40px';
-            } else {
-                header.style.boxShadow = '';
-                header.style.padding = '20px 40px';
-            }
-        });
-        
-        // Charts initialization (using mock data for now)
-        function initializeCharts() {
+    function initializeChartsWithMockData() {
+        try {
             // Sales Trend Chart
-            const salesCtx = document.getElementById('salesChart').getContext('2d');
-            const salesChart = new Chart(salesCtx, {
+            ChartManager.create('salesChart', {
                 type: 'line',
                 data: {
-                    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                    labels: Array.from({length: 30}, (_, i) => (i + 1).toString()),
                     datasets: [{
                         label: 'Daily Sales ($)',
-                        data: [1200, 1900, 1500, 2100, 1800, 2500, 2200, 1900, 2300, 2800, 3200, 3000, 2700, 2900, 3100, 3300, 3500, 3700, 3400, 3600, 3800, 4000, 4200, 4100, 4300, 4500, 4400, 4600, 4800, 5000],
+                        data: Array.from({length: 30}, () => Math.floor(Math.random() * 5000) + 1000),
                         borderColor: '#392625',
                         backgroundColor: 'rgba(57, 38, 37, 0.1)',
                         tension: 0.4,
                         fill: true
                     }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    }
                 }
             });
-            
+
             // Products Chart
-            const productsCtx = document.getElementById('productsChart').getContext('2d');
-            const productsChart = new Chart(productsCtx, {
+            ChartManager.create('productsChart', {
                 type: 'doughnut',
                 data: {
                     labels: ['Brazilian', 'Peruvian', 'Malaysian', 'Accessories'],
                     datasets: [{
                         data: [45, 25, 20, 10],
-                        backgroundColor: [
-                            '#392625',
-                            '#6d4c3d',
-                            '#9f735f',
-                            '#d1b9a8'
-                        ]
+                        backgroundColor: ['#392625', '#6d4c3d', '#9f735f', '#d1b9a8']
                     }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    }
                 }
             });
-            
+
             // Sales by Month Chart
-            const salesByMonthCtx = document.getElementById('salesByMonthChart').getContext('2d');
-            const salesByMonthChart = new Chart(salesByMonthCtx, {
+            ChartManager.create('salesByMonthChart', {
                 type: 'bar',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -2350,46 +2071,23 @@ async function loadOrders() {
                         data: [12000, 19000, 15000, 21000, 18000, 25000, 22000, 29000, 23000, 28000, 32000, 40000],
                         backgroundColor: '#392625'
                     }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    }
                 }
             });
-            
+
             // Orders by Category Chart
-            const ordersByCategoryCtx = document.getElementById('ordersByCategoryChart').getContext('2d');
-            const ordersByCategoryChart = new Chart(ordersByCategoryCtx, {
+            ChartManager.create('ordersByCategoryChart', {
                 type: 'pie',
                 data: {
                     labels: ['Brazilian', 'Peruvian', 'Malaysian', 'Accessories'],
                     datasets: [{
                         data: [120, 80, 60, 40],
-                        backgroundColor: [
-                            '#392625',
-                            '#6d4c3d',
-                            '#9f735f',
-                            '#d1b9a8'
-                        ]
+                        backgroundColor: ['#392625', '#6d4c3d', '#9f735f', '#d1b9a8']
                     }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    }
                 }
             });
-            
+
             // Customer Growth Chart
-            const customerGrowthCtx = document.getElementById('customerGrowthChart').getContext('2d');
-            const customerGrowthChart = new Chart(customerGrowthCtx, {
+            ChartManager.create('customerGrowthChart', {
                 type: 'line',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -2408,17 +2106,435 @@ async function loadOrders() {
                         tension: 0.4,
                         fill: true
                     }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    }
                 }
             });
+            
+            console.log('✅ Charts initialized successfully');
+        } catch (error) {
+            console.error('❌ Chart initialization error:', error);
         }
-    </script>
+    }
+
+    // ==================== ENHANCED EVENT HANDLERS ====================
+    async function handleLogin(e) {
+        e.preventDefault();
+        
+        const email = SecurityUtils.sanitizeInput(document.getElementById('loginEmail').value);
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!SecurityUtils.validateEmail(email)) {
+            showNotification('Please enter a valid email address', 'error');
+            return;
+        }
+
+        const loginBtn = document.getElementById('loginBtn');
+        const loginBtnText = document.getElementById('loginBtnText');
+        const loginLoading = document.getElementById('loginLoading');
+        
+        // Show loading state
+        loginBtnText.textContent = 'Logging in...';
+        loginLoading.style.display = 'inline-block';
+        loginBtn.disabled = true;
+        
+        try {
+            console.log('🔐 Attempting admin login...');
+            const result = await ApiClient.request(ENDPOINTS.ADMIN_LOGIN, {
+                method: 'POST',
+                body: JSON.stringify({ email, password })
+            });
+            
+            if (result.ok && result.data.token) {
+                // Save token and user info
+                AppState.authToken = result.data.token;
+                localStorage.setItem('adminToken', AppState.authToken);
+                AppState.currentUser = result.data.user;
+                AppState.isTokenVerified = true;
+                
+                console.log('✅ Login successful, token saved');
+                showNotification('Login successful!', 'success');
+                showDashboard();
+            } else {
+                throw new Error(result.error || 'Login failed');
+            }
+        } catch (error) {
+            ErrorHandler.handleApiError(error, 'Login');
+        } finally {
+            // Reset button state
+            loginBtnText.textContent = 'Login';
+            loginLoading.style.display = 'none';
+            loginBtn.disabled = false;
+        }
+    }
+
+    async function handleRegister(e) {
+        e.preventDefault();
+        
+        const firstName = SecurityUtils.sanitizeInput(document.getElementById('registerFirstName').value);
+        const lastName = SecurityUtils.sanitizeInput(document.getElementById('registerLastName').value);
+        const email = SecurityUtils.sanitizeInput(document.getElementById('registerEmail').value);
+        const password = document.getElementById('registerPassword').value;
+        const phoneNumber = SecurityUtils.sanitizeInput(document.getElementById('registerPhone').value);
+        
+        if (!SecurityUtils.validateEmail(email)) {
+            showNotification('Please enter a valid email address', 'error');
+            return;
+        }
+
+        const registerBtn = document.getElementById('registerBtn');
+        const registerBtnText = document.getElementById('registerBtnText');
+        const registerLoading = document.getElementById('registerLoading');
+        
+        // Show loading state
+        registerBtnText.textContent = 'Registering...';
+        registerLoading.style.display = 'inline-block';
+        registerBtn.disabled = true;
+        
+        try {
+            const result = await ApiClient.request(ENDPOINTS.ADMIN_REGISTER, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    firstName, 
+                    lastName, 
+                    email, 
+                    password, 
+                    phoneNumber 
+                })
+            });
+            
+            if (result.ok) {
+                showNotification('Registration successful! Please login.', 'success');
+                showLogin();
+                document.getElementById('registerForm').reset();
+            } else {
+                throw new Error(result.error || 'Registration failed');
+            }
+        } catch (error) {
+            ErrorHandler.handleApiError(error, 'Registration');
+        } finally {
+            // Reset button state
+            registerBtnText.textContent = 'Register';
+            registerLoading.style.display = 'none';
+            registerBtn.disabled = false;
+        }
+    }
+
+    function handleLogout() {
+        console.log('🚪 Logging out admin...');
+        localStorage.removeItem('adminToken');
+        AppState.authToken = null;
+        AppState.currentUser = null;
+        AppState.isTokenVerified = false;
+        CacheManager.clear();
+        ChartManager.destroyAll();
+        showNotification('Logged out successfully', 'success');
+        showLogin();
+    }
+
+    function refreshOrders() {
+        CacheManager.clear('orders');
+        loadOrders();
+    }
+
+    // ==================== ENHANCED PERFORMANCE MONITORING ====================
+    function setupPerformanceMonitoring() {
+        // Monitor memory usage
+        if (performance.memory) {
+            setInterval(() => {
+                const used = performance.memory.usedJSHeapSize;
+                const limit = performance.memory.jsHeapSizeLimit;
+                const percentage = (used / limit) * 100;
+                
+                if (percentage > 80) {
+                    console.warn('⚠️ High memory usage detected:', percentage.toFixed(2) + '%');
+                    CacheManager.clear();
+                }
+            }, 30000);
+        }
+
+        // Monitor API response times
+        const originalFetch = window.fetch;
+        window.fetch = async function(...args) {
+            const start = performance.now();
+            const response = await originalFetch.apply(this, args);
+            const end = performance.now();
+            
+            if (end - start > 5000) { // 5 seconds threshold
+                console.warn(`🐌 Slow API response: ${(end - start).toFixed(2)}ms for`, args[0]);
+            }
+            
+            return response;
+        };
+    }
+
+    // ==================== ENHANCED UTILITY FUNCTIONS ====================
+    function showNotification(message, type = 'info') {
+        const notificationContainer = document.getElementById('notificationContainer');
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = SecurityUtils.sanitizeInput(message);
+        
+        notificationContainer.appendChild(notification);
+        
+        // Show notification with animation
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }, 5000);
+    }
+
+    function debounce(func, wait, immediate = false) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                timeout = null;
+                if (!immediate) func(...args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func(...args);
+        };
+    }
+
+    function renderPagination(paginationData, type) {
+        const paginationContainer = document.getElementById(`${type}Pagination`);
+        if (!paginationContainer || !paginationData) return;
+        
+        paginationContainer.innerHTML = '';
+        
+        const { totalPages, currentPage, total, hasNext, hasPrev } = paginationData;
+        
+        if (!totalPages || totalPages <= 1) return;
+        
+        // Previous button
+        if (hasPrev) {
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'action-btn';
+            prevBtn.textContent = 'Previous';
+            prevBtn.addEventListener('click', () => {
+                if (type === 'products') loadProducts(currentPage - 1);
+            });
+            paginationContainer.appendChild(prevBtn);
+        }
+        
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `action-btn ${i === currentPage ? 'btn-success' : ''}`;
+            pageBtn.textContent = i;
+            pageBtn.style.margin = '0 5px';
+            pageBtn.addEventListener('click', () => {
+                if (type === 'products') loadProducts(i);
+            });
+            paginationContainer.appendChild(pageBtn);
+        }
+        
+        // Next button
+        if (hasNext) {
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'action-btn';
+            nextBtn.textContent = 'Next';
+            nextBtn.addEventListener('click', () => {
+                if (type === 'products') loadProducts(currentPage + 1);
+            });
+            paginationContainer.appendChild(nextBtn);
+        }
+    }
+
+    // ==================== ENHANCED EVENT LISTENER SETUP ====================
+    function setupEventListeners() {
+        // Login/Register forms
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        document.getElementById('registerForm').addEventListener('submit', handleRegister);
+        document.getElementById('showRegister').addEventListener('click', showRegister);
+        document.getElementById('showLogin').addEventListener('click', showLogin);
+        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+        // Product management
+        const addProductBtn = document.getElementById('addProductBtn');
+        const cancelAddProduct = document.getElementById('cancelAddProduct');
+        const productForm = document.getElementById('productForm');
+
+        if (addProductBtn) {
+            addProductBtn.addEventListener('click', () => {
+                document.getElementById('addProductForm').style.display = 'block';
+            });
+        }
+
+        if (cancelAddProduct) {
+            cancelAddProduct.addEventListener('click', () => {
+                document.getElementById('addProductForm').style.display = 'none';
+                productForm.reset();
+            });
+        }
+
+        if (productForm) {
+            productForm.addEventListener('submit', handleAddProduct);
+        }
+
+        // Search functionality with enhanced debouncing
+        const productSearch = document.getElementById('productSearch');
+        if (productSearch) {
+            productSearch.addEventListener('input', debounce(filterProducts, 500));
+        }
+
+        const orderSearch = document.getElementById('orderSearch');
+        if (orderSearch) {
+            orderSearch.addEventListener('input', debounce(filterOrders, 500));
+        }
+
+        // Report range change
+        const reportRange = document.getElementById('reportRange');
+        if (reportRange) {
+            reportRange.addEventListener('change', debounce(loadReports, 300));
+        }
+
+        // Section navigation
+        setupSectionNavigation();
+
+        // Window unload cleanup
+        window.addEventListener('beforeunload', () => {
+            ChartManager.destroyAll();
+            CacheManager.clear();
+        });
+
+        // Visibility change cleanup
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                ChartManager.destroyAll();
+            }
+        });
+    }
+
+    function setupSectionNavigation() {
+        const sidebarBubbles = document.querySelectorAll('.sidebar-bubble');
+        
+        sidebarBubbles.forEach(bubble => {
+            bubble.addEventListener('click', () => {
+                const sectionId = bubble.getAttribute('data-section');
+                switchSection(sectionId);
+            });
+        });
+    }
+
+    // ==================== KEEP EXISTING UI CONTROLS ====================
+    const modeToggle = document.querySelector('.mode-toggle');
+    const body = document.body;
+    
+    modeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+    });
+    
+    // Check for saved user preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-mode');
+    }
+    
+    // User profile dropdown
+    const userProfile = document.querySelector('.user-profile');
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    
+    userProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!userProfile.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('header');
+        if (window.scrollY > 100) {
+            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            header.style.padding = '15px 40px';
+        } else {
+            header.style.boxShadow = '';
+            header.style.padding = '20px 40px';
+        }
+    });
+
+    // System Diagnostics
+    async function runDiagnostics() {
+        const results = document.getElementById('diagnosticResults');
+        results.innerHTML = 'Running diagnostics...';
+        
+        let diagnosticLog = '';
+        
+        try {
+            // Test 1: Backend connection
+            diagnosticLog += '1. Testing backend connection... ';
+            const testResponse = await ApiClient.request(ENDPOINTS.HEALTH);
+            if (testResponse.ok) {
+                diagnosticLog += '✅ SUCCESS\n';
+            } else {
+                diagnosticLog += '❌ FAILED\n';
+            }
+            
+            // Test 2: Public products API
+            diagnosticLog += '2. Testing public products API... ';
+            const publicResult = await ApiClient.request(ENDPOINTS.PUBLIC_PRODUCTS);
+            if (publicResult.ok) {
+                diagnosticLog += `✅ SUCCESS (${publicResult.data.length} products)\n`;
+            } else {
+                diagnosticLog += '❌ FAILED\n';
+            }
+            
+            // Test 3: Admin products API
+            diagnosticLog += '3. Testing admin products API... ';
+            const adminProductsResponse = await ApiClient.authenticatedRequest(ENDPOINTS.PRODUCTS);
+            if (adminProductsResponse.ok) {
+                diagnosticLog += '✅ SUCCESS\n';
+            } else {
+                diagnosticLog += '❌ FAILED\n';
+            }
+            
+            // Test 4: Admin orders API
+            diagnosticLog += '4. Testing admin orders API... ';
+            const adminOrdersResponse = await ApiClient.authenticatedRequest(ENDPOINTS.ORDERS);
+            if (adminOrdersResponse.ok) {
+                diagnosticLog += '✅ SUCCESS\n';
+            } else {
+                diagnosticLog += '❌ FAILED\n';
+            }
+            
+            // Test 5: Check localStorage
+            diagnosticLog += '5. Checking authentication... ';
+            const token = localStorage.getItem('adminToken');
+            if (token) {
+                diagnosticLog += '✅ Token exists\n';
+            } else {
+                diagnosticLog += '❌ No token found\n';
+            }
+            
+            // Test 6: Check current user
+            diagnosticLog += '6. Current user state... ';
+            if (AppState.currentUser) {
+                diagnosticLog += `✅ ${AppState.currentUser.firstName} ${AppState.currentUser.lastName}\n`;
+            } else {
+                diagnosticLog += '❌ No user data\n';
+            }
+            
+        } catch (error) {
+            diagnosticLog += `❌ Error: ${error.message}\n`;
+        }
+        
+        results.innerHTML = `<pre>${diagnosticLog}</pre>`;
+    }
+</script>
 </body>
 </html>
