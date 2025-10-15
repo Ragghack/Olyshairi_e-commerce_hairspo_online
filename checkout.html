@@ -1220,7 +1220,7 @@
     const CONFIG = {
         STRIPE_PUBLISHABLE_KEY: 'pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0',
         PAYPAL_CLIENT_ID: 'YOUR_PAYPAL_CLIENT_ID',
-        //API_BASE_URL_LOCAL: 'http://localhost:5001/api',
+        //API_BASE_URL: 'http://localhost:5001/api',
         API_BASE_URL: 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api',
         CURRENCY: 'EUR',
         TAX_RATE: 0.08 // 8%
@@ -1473,12 +1473,11 @@
     async function validateCartItems(cart) {
         try {
             // Check if products still exist and are in stock
-            const response = await fetch('/api/validation/products/validate/batch',  {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ items: cart })
-            });
-            
+const response = await fetch(`${CONFIG.API_BASE_URL}/validation/products/validate/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: cart })
+});        
             if (response.ok) {
                 const validation = await response.json();
                 return validation.validItems || cart;

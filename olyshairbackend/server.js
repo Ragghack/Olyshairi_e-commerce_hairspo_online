@@ -426,7 +426,7 @@ const loadRoute = (routePath, routeName, options = {}) => {
   }
 };
 // In server.js route registration section
-app.use('/api/validation', require('./routes/validation'));
+app.use('/api/validation', loadRoute('./routes/validation', 'Validation'));
 // --- Public Routes ---
 app.use('/api/auth', loadRoute('./routes/auth', 'Auth'));
 app.use('/api/customer', loadRoute('./routes/customer', 'Customer'));
@@ -711,6 +711,17 @@ app.use((err, req, res, next) => {
     message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong!',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
     timestamp: new Date().toISOString()
+  });
+});
+// Validation health check
+app.get('/api/validation/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'Validation routes are working',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      batchValidation: 'POST /api/validation/products/validate/batch'
+    }
   });
 });
 

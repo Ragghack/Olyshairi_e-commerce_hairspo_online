@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
+const jwt = require('../config/jwt')
 
 console.log('🔍 Validation routes loaded');
 
@@ -10,18 +11,16 @@ console.log('🔍 Validation routes loaded');
 // ===============================
 router.post('/products/validate/batch', async (req, res) => {
     try {
-        console.log('🔍 Batch product validation request received');
+        console.log('🔍 Batch product validation request received', req.body);
         
-        const { items } = req.body;
-
-        // Validate request structure
-        if (!items || !Array.isArray(items)) {
+        // Add request validation
+        if (!req.body || typeof req.body !== 'object') {
             return res.status(400).json({
                 success: false,
-                error: 'Invalid request format',
-                message: 'Request must contain { items: array }'
+                error: 'Invalid request body'
             });
         }
+        const { items } = req.body;
 
         // Limit batch size for performance
         if (items.length > 50) {
