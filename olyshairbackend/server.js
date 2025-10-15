@@ -425,7 +425,8 @@ const loadRoute = (routePath, routeName, options = {}) => {
     return router;
   }
 };
-
+// In server.js route registration section
+app.use('/api/validation', require('./routes/validation'));
 // --- Public Routes ---
 app.use('/api/auth', loadRoute('./routes/auth', 'Auth'));
 app.use('/api/customer', loadRoute('./routes/customer', 'Customer'));
@@ -557,6 +558,7 @@ try {
 } catch (error) {
   console.error('❌ Failed to load customer orders route:', error);
 }
+
 
 // ================================
 // 🔧 ENHANCED ADMIN ROUTE TESTING
