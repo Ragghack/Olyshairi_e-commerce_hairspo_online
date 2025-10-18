@@ -1834,7 +1834,7 @@ const response = await fetch(`${CONFIG.API_BASE_URL}/validation/products/validat
    function loadPayPalButton() {
     paypal.Buttons({
         createOrder: async () => {
-            const res = await fetch(`http://localhost:5001/paypal/create-order`, {
+            const res = await fetch(`https://olyshairi-e-commerce-hairspo-online.onrender.com/api/paypal/create-order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1846,7 +1846,7 @@ const response = await fetch(`${CONFIG.API_BASE_URL}/validation/products/validat
             return data.orderId;
         },
         onApprove: async (data) => {
-            const res = await fetch(`http://localhost:5001/paypal/capture/${data.orderID}`, {
+            const res = await fetch(`https://olyshairi-e-commerce-hairspo-online.onrender.com/api/paypal/capture/${data.orderID}`, {
                 method: 'POST'
             });
             const capture = await res.json();
