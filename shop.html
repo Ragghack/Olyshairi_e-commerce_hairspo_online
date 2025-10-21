@@ -1127,6 +1127,9 @@
             closeCart.addEventListener('click', () => {
                 cartPanel.classList.remove('active');
             });
+
+            // Load cart from backend if user is logged in
+            loadCartFromBackend();
             
             // Modal Close
             const productModal = document.getElementById('productModal');
@@ -1351,25 +1354,140 @@
             document.getElementById('productModal').classList.add('active');
         }
 
+        // // Add product to cart
+        // function addToCart(productId) {
+        //     const product = products.find(p => (p._id === productId) || (p.id === productId));
+        //     if (!product) {
+        //         showNotification('Product not found');
+        //         return;
+        //     }
+            
+        //     if (product.stock === 0) {
+        //         showNotification('This product is out of stock');
+        //         return;
+        //     }
+            
+        //     const existingItem = cart.find(item => item.id === productId);
+            
+        //     if (existingItem) {
+        //         // Check if we're exceeding available stock
+        //         if (existingItem.quantity >= product.stock) {
+        //             showNotification(`Only ${product.stock} items available in stock`);
+        //             return;
+        //         }
+        //         existingItem.quantity += 1;
+        //     } else {
+        //         cart.push({
+        //             id: productId,
+        //             name: product.name,
+        //             price: product.price,
+        //             image: product.image || product.images?.[0]?.url,
+        //             quantity: 1,
+        //             maxStock: product.stock
+        //         });
+        //     }
+            
+        //     // Save to localStorage
+        //     localStorage.setItem('olysHairCart', JSON.stringify(cart));
+            
+            
+        //     // Update UI
+        //     updateCartUI();
+            
+        //     // Show notification
+        //     showNotification('Item added to cart!');
+            
+        //     // Open cart panel
+        //     document.querySelector('.cart-panel').classList.add('active');
+        // }
+
         // Add product to cart
-        function addToCart(productId) {
+        async function addToCart(productId) {
             const product = products.find(p => (p._id === productId) || (p.id === productId));
             if (!product) {
-                showNotification('Product not found');
+                showNotification('Product not found', 'error');
                 return;
             }
             
             if (product.stock === 0) {
-                showNotification('This product is out of stock');
+                showNotification('This product is out of stock', 'error');
                 return;
             }
             
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                // User is logged in - sync with backend
+                try {
+                    console.log('🛒 Adding to cart via API:', productId);
+                    
+                    const response = await fetch(`${API_BASE_URL}/cart/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            productId: productId,
+                            quantity: 1
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to add to cart');
+                    }
+                    
+                    const data = await response.json();
+                    console.log('✅ Cart updated:', data);
+                    
+                    // Update local cart from backend response
+                    if (data.cart && data.cart.items) {
+                        cart = data.cart.items.map(item => ({
+                            id: item.productId._id || item.productId,
+                            name: item.name || item.productId.name,
+                            price: item.price || item.productId.price,
+                            image: item.image || item.productId.images?.[0]?.url,
+                            quantity: item.quantity,
+                            maxStock: item.productId.stock
+                        }));
+                        
+                        // Save to localStorage as backup
+                        localStorage.setItem('olysHairCart', JSON.stringify(cart));
+                    }
+                    
+                    showNotification('Item added to cart!');
+                    
+                } catch (error) {
+                    console.error('❌ Error adding to cart:', error);
+                    showNotification(error.message || 'Failed to add to cart', 'error');
+                    
+                    // Fallback to localStorage if API fails
+                    addToLocalCart(productId, product);
+                }
+            } else {
+                // User not logged in - use localStorage only
+                console.log('⚠️ User not logged in, using localStorage only');
+                addToLocalCart(productId, product);
+                showNotification('Item added to cart! Please log in to sync across devices.');
+            }
+            
+            // Update UI
+            updateCartUI();
+            
+            // Open cart panel
+            document.querySelector('.cart-panel').classList.add('active');
+        }
+
+        // Helper function for localStorage cart operations
+        function addToLocalCart(productId, product) {
             const existingItem = cart.find(item => item.id === productId);
             
             if (existingItem) {
                 // Check if we're exceeding available stock
                 if (existingItem.quantity >= product.stock) {
-                    showNotification(`Only ${product.stock} items available in stock`);
+                    showNotification(`Only ${product.stock} items available in stock`, 'error');
                     return;
                 }
                 existingItem.quantity += 1;
@@ -1386,16 +1504,10 @@
             
             // Save to localStorage
             localStorage.setItem('olysHairCart', JSON.stringify(cart));
-            
-            // Update UI
-            updateCartUI();
-            
-            // Show notification
-            showNotification('Item added to cart!');
-            
-            // Open cart panel
-            document.querySelector('.cart-panel').classList.add('active');
         }
+
+
+        
 
         // Toggle wishlist
         async function toggleWishlist(productId, buttonElement) {
@@ -1571,7 +1683,29 @@
         }
 
         // Update cart quantity
-        function updateCartQuantity(productId, change) {
+        // function updateCartQuantity(productId, change) {
+        //     const item = cart.find(item => item.id === productId);
+        //     if (!item) return;
+            
+        //     const newQuantity = item.quantity + change;
+            
+        //     // Check stock limits
+        //     if (item.maxStock && newQuantity > item.maxStock) {
+        //         showNotification(`Only ${item.maxStock} items available in stock`);
+        //         return;
+        //     }
+            
+        //     if (newQuantity <= 0) {
+        //         removeFromCart(productId);
+        //     } else {
+        //         item.quantity = newQuantity;
+        //         localStorage.setItem('olysHairCart', JSON.stringify(cart));
+        //         updateCartUI();
+        //     }
+        // }
+
+        // Update cart quantity (with backend sync)
+        async function updateCartQuantity(productId, change) {
             const item = cart.find(item => item.id === productId);
             if (!item) return;
             
@@ -1579,25 +1713,152 @@
             
             // Check stock limits
             if (item.maxStock && newQuantity > item.maxStock) {
-                showNotification(`Only ${item.maxStock} items available in stock`);
+                showNotification(`Only ${item.maxStock} items available in stock`, 'error');
                 return;
             }
             
             if (newQuantity <= 0) {
                 removeFromCart(productId);
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                // User is logged in - sync with backend
+                try {
+                    console.log('📝 Updating cart quantity via API:', productId, newQuantity);
+                    
+                    const response = await fetch(`${API_BASE_URL}/cart/update/${productId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            quantity: newQuantity
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to update cart');
+                    }
+                    
+                    const data = await response.json();
+                    console.log('✅ Cart quantity updated:', data);
+                    
+                    // Update local cart
+                    item.quantity = newQuantity;
+                    localStorage.setItem('olysHairCart', JSON.stringify(cart));
+                    
+                } catch (error) {
+                    console.error('❌ Error updating cart:', error);
+                    showNotification('Failed to update cart', 'error');
+                    return;
+                }
             } else {
+                // Update localStorage only
                 item.quantity = newQuantity;
                 localStorage.setItem('olysHairCart', JSON.stringify(cart));
-                updateCartUI();
             }
+            
+            updateCartUI();
         }
 
+
         // Remove item from cart
-        function removeFromCart(productId) {
+        // function removeFromCart(productId) {
+        //     cart = cart.filter(item => item.id !== productId);
+        //     localStorage.setItem('olysHairCart', JSON.stringify(cart));
+        //     updateCartUI();
+        //     showNotification('Item removed from cart');
+        // }
+
+        // Remove item from cart (with backend sync)
+        async function removeFromCart(productId) {
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                // User is logged in - sync with backend
+                try {
+                    console.log('🗑️ Removing from cart via API:', productId);
+                    
+                    const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to remove from cart');
+                    }
+                    
+                    console.log('✅ Item removed from cart');
+                    
+                } catch (error) {
+                    console.error('❌ Error removing from cart:', error);
+                    showNotification('Failed to remove from cart', 'error');
+                    return;
+                }
+            }
+            
+            // Update local cart
             cart = cart.filter(item => item.id !== productId);
             localStorage.setItem('olysHairCart', JSON.stringify(cart));
             updateCartUI();
             showNotification('Item removed from cart');
+        }
+
+        // Load cart from backend (call this on page load)
+        async function loadCartFromBackend() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                console.log('⚠️ No token found, using localStorage cart only');
+                return;
+            }
+            
+            try {
+                console.log('🔄 Loading cart from backend...');
+                
+                const response = await fetch(`${API_BASE_URL}/cart`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load cart from backend');
+                }
+                
+                const data = await response.json();
+                console.log('✅ Cart loaded from backend:', data);
+                
+                if (data.cart && data.cart.items) {
+                    cart = data.cart.items.map(item => ({
+                        id: item.productId?._id || item.productId,
+                        name: item.name || item.productId?.name || 'Unknown Product',
+                        price: item.price || item.productId?.price || 0,
+                        image: item.image || item.productId?.images?.[0]?.url || 'images/placeholder-product.jpg',
+                        quantity: item.quantity,
+                        maxStock: item.productId?.stock || 999
+                    }));
+                    
+                    // Save to localStorage as backup
+                    localStorage.setItem('olysHairCart', JSON.stringify(cart));
+                    
+                    // Update UI
+                    updateCartUI();
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading cart from backend:', error);
+                console.log('⚠️ Using localStorage cart as fallback');
+            }
         }
 
         // Update order count
