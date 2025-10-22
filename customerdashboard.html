@@ -1080,8 +1080,8 @@
 
     <script>
         // API Configuration
-        //const API_BASE_URL = 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api';
-         const API_BASE_URL = 'http://localhost:5001/api';
+        const API_BASE_URL = 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api';
+         //const API_BASE_URL = 'http://localhost:5001/api';
         let userData = null;
         let authToken = localStorage.getItem('token') || '';
 
@@ -1761,10 +1761,7 @@ function renderFullWishlist(wishlist) {
                 cartHtml += `
                     <div class="cart-item">
                         <div class="item-image">
-                            ${productImage ? 
-                                `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">` :
-                                <i class="fas fa-spa"></i>
-                            }
+                            <i class="fas fa-spa"></i>
                         </div>
                         <div class="item-details">
                             <h4>${item.name}</h4>
@@ -2074,60 +2071,12 @@ function renderFullWishlist(wishlist) {
             alert('Added product ' + productId + ' to cart');
         }
 
-        async function removeFromCart(productId) {
-            if (!confirm('Remove this item from your cart?')) return;
-    
-            try {
-                console.log('🗑️ Removing cart item:', productId);
-                
-                const response = await apiCall(`/cart/remove/${productId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response) {
-                    console.log('✅ Cart item removed');
-                    // Reload cart data
-                    await loadSectionData('cart');
-                    await loadDashboardData(); // Refresh dashboard preview
-                    showSuccessMessage('Item removed from cart');
-                }
-            } catch (error) {
-                console.error('❌ Error removing cart item:', error);
-                showError('Failed to remove item from cart');
-            }
-
+        function removeFromCart(productId) {
             console.log('Remove from cart:', productId);
             alert('Removed product ' + productId + ' from cart');
         }
 
-        async function updateCartItem(productId, newQuantity) {
-            if (newQuantity < 0) return;
-    
-            if (newQuantity === 0) {
-                await removeCartItem(productId);
-                return;
-            }
-            
-            try {
-                console.log('📝 Updating cart quantity:', productId, newQuantity);
-                
-                const response = await apiCall(`/cart/update/${productId}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ quantity: newQuantity })
-                });
-                
-                if (response) {
-                    console.log('✅ Cart quantity updated');
-                    // Reload cart data
-                    await loadSectionData('cart');
-                    await loadDashboardData(); // Refresh dashboard preview
-                    showSuccessMessage('Cart updated successfully');
-                }
-            } catch (error) {
-                console.error('❌ Error updating cart quantity:', error);
-                showError('Failed to update cart quantity');
-            }
-
+        function updateCartItem(productId, quantity) {
             console.log('Update cart item:', productId, quantity);
             alert('Updated quantity for product ' + productId + ' to ' + quantity);
         }
