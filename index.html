@@ -1,977 +1,1176 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OLYS HAIR - Premium Hair Extensions</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --cream: #392625;
-            --white: #ffffff;
-            --dark-gray: #000000;
-            --light-bg: #f8f5f2;
-            --text-dark: #1e1e1e;
-            --text-light: #423c3c;
-            --card-bg: #ffffff;
-            --shadow: 0 5px 15px rgba(235, 177, 177, 0.05);
-        }
-        
-        .dark-mode {
-            --cream: #c8b4a8;
-            --white: #1e1e1e;
-            --dark-gray: #f8f5f2;
-            --light-bg: #4e4646;
-            --text-dark: #f8f5f2;
-            --text-light: #1e1e1e;
-            --card-bg: #201f1f;
-            --shadow: 0 5px 15px rgba(119, 78, 78, 0.2);
-        }
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--white);
-            color: var(--text-dark);
-            overflow-x: hidden;
-            line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        
-        h1, h2, h3, h4 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            color: var(--cream);
-        }
-        
-        /* Header Styles */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            background-color: var(--white);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
-        }
-        .logo-placeholder {
-  max-width: 31mm;
-  height: auto;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-body.dark-mode .logo-container {
-  content: url("images/Artboard 1 copy.png");
-   max-width: 31mm;
-  max-height: 100mm;
-              display: flex;
-            justify-content: center
-}
+      :root {
+        --cream: #392625;
+        --white: #ffffff;
+        --dark-gray: #000000;
+        --light-bg: #f8f5f2;
+        --text-dark: #1e1e1e;
+        --text-light: #423c3c;
+        --card-bg: #ffffff;
+        --shadow: 0 5px 15px rgba(235, 177, 177, 0.05);
+      }
 
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 180px;
-            height: 80px;
-            background-color: var(--white);
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .logo-placeholder {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--cream);
-            text-align: center;
-        }
-        
-        .logo-placeholder span {
-            display: block;
-            font-size: 12px;
-            font-weight: 400;
-            margin-top: 5px;
-            color: var(--text-dark);
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-links a:hover {
-            color: var(--cream);
-        }
-        
-        .header-icons {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .header-icons i {
-            font-size: 20px;
-            color: var(--cream);
-            cursor: pointer;
-        }
-        
-        /* Dark/Light Mode Toggle */
-        .mode-toggle {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background-color: var(--light-bg);
-            border-radius: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 0 5px;
-            transition: background-color 0.3s ease;
-        }
-        
-        .toggle-circle {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background-color: var(--cream);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            left: 4px;
-        }
-        
-        .dark-mode .toggle-circle {
-            left: 34px;
-        }
-        
-        .mode-toggle i {
-            font-size: 14px;
-            z-index: 2;
-        }
-        
-        .fa-sun {
-            color: var(--cream);
-            margin-right: auto;
-        }
-        
-        .fa-moon {
-            color: var(--cream);
-            margin-left: auto;
-        }
-        
-        /* Bubble Navigation */
-        .bubble-nav {
-            position: fixed;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 1000;
-        }
-        
-        .bubble {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--cream);
-            color: var(--white);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
-            position: relative;
-        }
-        
-        .bubble:hover {
-            transform: scale(1.1);
-            background-color: var(--dark-gray);
-        }
-        
-        .bubble:hover::after {
-            content: attr(data-label);
-            position: absolute;
-            right: 70px;
-            background: var(--dark-gray);
-            color: var(--white);
-            padding: 5px 15px;
-            border-radius: 4px;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-        
-        .bubble i {
-            font-size: 20px;
-        }
-        
-        /* Hero Banner */
-        .hero-banner {
-            height: 100vh;
-            background:
-                linear-gradient(135deg, rgba(57,38,37,0.85) 0%, rgba(57,38,37,0.7) 60%, rgba(245,245,220,0.5) 100%),
-                url('images/WhatsApp Image 2025-09-15 à 09.28.27_69999fe3.jpg') no-repeat center center/cover;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--white);
-            padding: 0 20px;
-        }
-        
-        .hero-banner h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            max-width: 800px;
-            line-height: 1.2;
-            color: var(--white);
-               background: linear-gradient(45deg, #ffffff 30%, #392625 70%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 15px rgba(57, 38, 37, 0.5);
-    animation: pulse 4s infinite ease-in-out;
-     background: linear-gradient(45deg, #ffffff 20%, #392625 40%, #ffffff 60%, #392625 80%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shine 5s infinite linear;
-    text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
-    font-weight: 600;
-        }
-        
-        .hero-banner p {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            max-width: 600px;
-            font-weight: 300;
-              background: linear-gradient(45deg, #ffffff 30%, #392625 70%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 15px rgba(57, 38, 37, 0.5);
-    animation: pulse 4s infinite ease-in-out;
-     background: linear-gradient(45deg, #ffffff 20%, #392625 40%, #ffffff 60%, #392625 80%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shine 5s infinite linear;
-    text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
-    font-weight: 600;
-        }
-        /* Keyframes for animations */
-@keyframes shine {
-    0% { background-position: 0% center; }
-    100% { background-position: 200% center; }
-}
+      .dark-mode {
+        --cream: #c8b4a8;
+        --white: #1e1e1e;
+        --dark-gray: #f8f5f2;
+        --light-bg: #4e4646;
+        --text-dark: #f8f5f2;
+        --text-light: #1e1e1e;
+        --card-bg: #201f1f;
+        --shadow: 0 5px 15px rgba(119, 78, 78, 0.2);
+      }
 
-@keyframes pulse {
-    0%, 100% { text-shadow: 0 0 15px rgba(57, 38, 37, 0.5); }
-    50% { text-shadow: 0 0 20px rgba(57, 38, 37, 0.8), 0 0 30px rgba(57, 38, 37, 0.6); }
-}
-        
-        .cta-button {
-            padding: 15px 40px;
-            background-color: var(--white);
-            color: var(--cream);
-            border: none;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: var(--white);
+        color: var(--text-dark);
+        overflow-x: hidden;
+        line-height: 1.6;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Playfair Display", serif;
+        font-weight: 600;
+        color: var(--cream);
+      }
+
+      /* Header Styles */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 40px;
+        background-color: var(--white);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+      }
+      .logo-placeholder {
+        max-width: 31mm;
+        height: auto;
+      }
+
+      body.dark-mode .logo-container {
+        content: url("images/Artboard 1 copy.png");
+        max-width: 31mm;
+        max-height: 100mm;
+        display: flex;
+        justify-content: center;
+      }
+
+      .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 180px;
+        height: 80px;
+        background-color: var(--white);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+
+      .logo-placeholder {
+        font-family: "Playfair Display", serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--cream);
+        text-align: center;
+      }
+
+      .logo-placeholder span {
+        display: block;
+        font-size: 12px;
+        font-weight: 400;
+        margin-top: 5px;
+        color: var(--text-dark);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--cream);
+      }
+
+      .header-icons {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .header-icons i {
+        font-size: 20px;
+        color: var(--cream);
+        cursor: pointer;
+      }
+
+      /* Dark/Light Mode Toggle */
+      .mode-toggle {
+        position: relative;
+        width: 60px;
+        height: 30px;
+        background-color: var(--light-bg);
+        border-radius: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .toggle-circle {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background-color: var(--cream);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        left: 4px;
+      }
+
+      .dark-mode .toggle-circle {
+        left: 34px;
+      }
+
+      .mode-toggle i {
+        font-size: 14px;
+        z-index: 2;
+      }
+
+      .fa-sun {
+        color: var(--cream);
+        margin-right: auto;
+      }
+
+      .fa-moon {
+        color: var(--cream);
+        margin-left: auto;
+      }
+
+      /* Bubble Navigation */
+      .bubble-nav {
+        position: fixed;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 1000;
+      }
+
+      .bubble {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--cream);
+        color: var(--white);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+
+      .bubble:hover {
+        transform: scale(1.1);
+        background-color: var(--dark-gray);
+      }
+
+      .bubble:hover::after {
+        content: attr(data-label);
+        position: absolute;
+        right: 70px;
+        background: var(--dark-gray);
+        color: var(--white);
+        padding: 5px 15px;
+        border-radius: 4px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
+      .bubble i {
+        font-size: 20px;
+      }
+
+      /* Hero Banner */
+      .hero-banner {
+        height: 100vh;
+        background: linear-gradient(
+            135deg,
+            rgba(57, 38, 37, 0.85) 0%,
+            rgba(57, 38, 37, 0.7) 60%,
+            rgba(245, 245, 220, 0.5) 100%
+          ),
+          url("images/WhatsApp Image 2025-09-15 à 09.28.27_69999fe3.jpg")
+            no-repeat center center/cover;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: var(--white);
+        padding: 0 20px;
+      }
+
+      .hero-banner h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        max-width: 800px;
+        line-height: 1.2;
+        color: var(--white);
+        background: linear-gradient(45deg, #ffffff 30%, #392625 70%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 15px rgba(57, 38, 37, 0.5);
+        animation: pulse 4s infinite ease-in-out;
+        background: linear-gradient(
+          45deg,
+          #ffffff 20%,
+          #392625 40%,
+          #ffffff 60%,
+          #392625 80%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 5s infinite linear;
+        text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
+        font-weight: 600;
+      }
+
+      .hero-banner p {
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+        max-width: 600px;
+        font-weight: 300;
+        background: linear-gradient(45deg, #ffffff 30%, #392625 70%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 15px rgba(57, 38, 37, 0.5);
+        animation: pulse 4s infinite ease-in-out;
+        background: linear-gradient(
+          45deg,
+          #ffffff 20%,
+          #392625 40%,
+          #ffffff 60%,
+          #392625 80%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 5s infinite linear;
+        text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
+        font-weight: 600;
+      }
+      /* Keyframes for animations */
+      @keyframes shine {
+        0% {
+          background-position: 0% center;
         }
-        
-        .cta-button:hover {
-            background-color: var(--dark-gray);
-            color: var(--white);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        100% {
+          background-position: 200% center;
         }
-        
-        /* Premium Quality Section */
-        .premium-quality {
-            padding: 100px 40px;
-            text-align: center;
-            background-color: var(--light-bg);
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          text-shadow: 0 0 15px rgba(57, 38, 37, 0.5);
         }
-        
-        .premium-quality h2 {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
+        50% {
+          text-shadow: 0 0 20px rgba(57, 38, 37, 0.8),
+            0 0 30px rgba(57, 38, 37, 0.6);
         }
-        
-        .premium-quality p {
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin: 0 auto 40px;
-            line-height: 1.8;
-            color: var(--text-dark);
-        }
-        
-        .quality-features {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 40px;
-            margin-top: 40px;
-        }
-        
-        .feature {
-            width: 250px;
-            padding: 30px;
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-        }
-        
-        .feature:hover {
-            transform: translateY(-10px);
-        }
-        
-        .feature i {
-            font-size: 40px;
-            color: var(--cream);
-            margin-bottom: 20px;
-        }
-        
-        .feature h3 {
-            margin-bottom: 15px;
-            color: var(--text-dark);
-        }
-        
-        .feature p {
-            color: var(--text-dark);
-        }
-        
-        /* Products Section */
-        .products {
-            padding: 100px 40px;
-            background-color: var(--white);
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 50px;
-        }
-        
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .product-card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .product-image {
-            height: 300px;
-            overflow: hidden;
-        }
-        
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        
-        .product-card:hover .product-image img {
-            transform: scale(1.1);
-        }
-        
-        .product-info {
-            padding: 20px;
-        }
-        
-        .product-info h3 {
-            margin-bottom: 10px;
-            color: var(--text-dark);
-        }
-        
-        .product-info p {
-            color: var(--cream);
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-        
-        .product-info button {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--cream);
-            color: var(--white);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .product-info button:hover {
-            background-color: var(--dark-gray);
-        }
-        
-        /* Hair Types Showcase */
-        .hair-types {
-            padding: 80px 40px;
-            background: linear-gradient(to right, var(--light-bg) 50%, var(--white) 50%);
-        }
-        
+      }
+
+      .cta-button {
+        padding: 15px 40px;
+        background-color: var(--white);
+        color: var(--cream);
+        border: none;
+        border-radius: 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        letter-spacing: 1px;
+      }
+
+      .cta-button:hover {
+        background-color: var(--dark-gray);
+        color: var(--white);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Premium Quality Section */
+      .premium-quality {
+        padding: 100px 40px;
+        text-align: center;
+        background-color: var(--light-bg);
+      }
+
+      .premium-quality h2 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+      }
+
+      .premium-quality p {
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto 40px;
+        line-height: 1.8;
+        color: var(--text-dark);
+      }
+
+      .quality-features {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 40px;
+        margin-top: 40px;
+      }
+
+      .feature {
+        width: 250px;
+        padding: 30px;
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease;
+      }
+
+      .feature:hover {
+        transform: translateY(-10px);
+      }
+
+      .feature i {
+        font-size: 40px;
+        color: var(--cream);
+        margin-bottom: 20px;
+      }
+
+      .feature h3 {
+        margin-bottom: 15px;
+        color: var(--text-dark);
+      }
+
+      .feature p {
+        color: var(--text-dark);
+      }
+
+      /* Products Section */
+      .products {
+        padding: 100px 40px;
+        background-color: var(--white);
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 50px;
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+      }
+
+      .product-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .product-image {
+        height: 300px;
+        overflow: hidden;
+      }
+
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .product-card:hover .product-image img {
+        transform: scale(1.1);
+      }
+
+      .product-info {
+        padding: 20px;
+      }
+
+      .product-info h3 {
+        margin-bottom: 10px;
+        color: var(--text-dark);
+      }
+
+      .product-info p {
+        color: var(--cream);
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
+
+      .product-info button {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--cream);
+        color: var(--white);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-weight: 500;
+      }
+
+      .product-info button:hover {
+        background-color: var(--dark-gray);
+      }
+
+      /* Hair Types Showcase */
+      .hair-types {
+        padding: 80px 40px;
+        background: linear-gradient(
+          to right,
+          var(--light-bg) 50%,
+          var(--white) 50%
+        );
+      }
+
+      .hair-types-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .hair-types-content {
+        flex: 1;
+        padding: 40px;
+      }
+
+      .hair-types-content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+      }
+
+      .hair-types-content p {
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+      }
+
+      .hair-type-list {
+        list-style: none;
+      }
+
+      .hair-type-list li {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        color: var(--text-dark);
+      }
+
+      .hair-type-list li i {
+        color: var(--cream);
+        margin-right: 10px;
+      }
+
+      .hair-types-gallery {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px;
+      }
+
+      .hair-type-img {
+        height: 250px;
+        overflow: hidden;
+        border-radius: 10px;
+      }
+
+      .hair-type-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Footer */
+      footer {
+        background-color: var(--cream);
+        color: var(--text-light);
+        padding: 80px 40px 30px;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .footer-column h3 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--white);
+      }
+
+      .footer-column p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 20px;
+      }
+
+      .footer-column ul {
+        list-style: none;
+      }
+
+      .footer-column ul li {
+        margin-bottom: 10px;
+      }
+
+      .footer-column ul li a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .footer-column ul li a:hover {
+        color: var(--white);
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .social-icons a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        color: var(--white);
+        transition: all 0.3s ease;
+      }
+
+      .social-icons a:hover {
+        background-color: var(--white);
+        color: var(--cream);
+      }
+
+      .copyright {
+        text-align: center;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 968px) {
         .hair-types-container {
-            display: flex;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .hair-types-content {
-            flex: 1;
-            padding: 40px;
-        }
-        
-        .hair-types-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-        }
-        
-        .hair-types-content p {
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-            color: var(--text-dark);
-        }
-        
-        .hair-type-list {
-            list-style: none;
-        }
-        
-        .hair-type-list li {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            color: var(--text-dark);
-        }
-        
-        .hair-type-list li i {
-            color: var(--cream);
-            margin-right: 10px;
-        }
-        
-        .hair-types-gallery {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 15px;
-        }
-        
-        .hair-type-img {
-            height: 250px;
-            overflow: hidden;
-            border-radius: 10px;
-        }
-        
-        .hair-type-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        /* Footer */
-        footer {
-            background-color: var(--cream);
-            color: var(--text-light);
-            padding: 80px 40px 30px;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .footer-column h3 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: var(--white);
-        }
-        
-        .footer-column p {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 20px;
-        }
-        
-        .footer-column ul {
-            list-style: none;
-        }
-        
-        .footer-column ul li {
-            margin-bottom: 10px;
-        }
-        
-        .footer-column ul li a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .footer-column ul li a:hover {
-            color: var(--white);
-        }
-        
-        .social-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .social-icons a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            color: var(--white);
-            transition: all 0.3s ease;
-        }
-        
-        .social-icons a:hover {
-            background-color: var(--white);
-            color: var(--cream);
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 968px) {
-            .hair-types-container {
-                flex-direction: column;
-            }
-            
-            .hair-types {
-                background: var(--light-bg);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            header {
-                padding: 15px 20px;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .hero-banner h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero-banner p {
-                font-size: 1rem;
-            }
-            
-            .bubble-nav {
-                bottom: 20px;
-                top: auto;
-                left: 0;
-                right: 0;
-                flex-direction: row;
-                justify-content: center;
-                transform: none;
-            }
-            
-            .bubble {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .bubble:hover::after {
-                display: none;
-            }
-            
-            .premium-quality, .products {
-                padding: 60px 20px;
-            }
-            
-            .hair-types {
-                padding: 60px 20px;
-            }
+          flex-direction: column;
         }
 
-        .logo-img-light {
-            max-width: 120px;
-            max-height: 50px;
-            display: block;
-            margin: 0 auto;
-            object-fit: contain;
+        .hair-types {
+          background: var(--light-bg);
         }
-        .logo-img-dark {
-            max-width: 120px;
-            max-height: 50px;
-            width: auto;
-            height: auto;
-            display: none;
-            margin: 0 auto;
-            object-fit: contain;
-            background: transparent;
+      }
+
+      @media (max-width: 768px) {
+        header {
+          padding: 15px 20px;
         }
-        .dark-mode .logo-img-light {
-            display: none;
+
+        .nav-links {
+          display: none;
         }
-        .dark-mode .logo-img-dark {
-            display: block;
+
+        .hero-banner h1 {
+          font-size: 2.5rem;
         }
+
+        .hero-banner p {
+          font-size: 1rem;
+        }
+
+        .bubble-nav {
+          bottom: 20px;
+          top: auto;
+          left: 0;
+          right: 0;
+          flex-direction: row;
+          justify-content: center;
+          transform: none;
+        }
+
+        .bubble {
+          width: 50px;
+          height: 50px;
+        }
+
+        .bubble:hover::after {
+          display: none;
+        }
+
+        .premium-quality,
+        .products {
+          padding: 60px 20px;
+        }
+
+        .hair-types {
+          padding: 60px 20px;
+        }
+      }
+
+      .logo-img-light {
+        max-width: 120px;
+        max-height: 50px;
+        display: block;
+        margin: 0 auto;
+        object-fit: contain;
+      }
+      .logo-img-dark {
+        max-width: 120px;
+        max-height: 50px;
+        width: auto;
+        height: auto;
+        display: none;
+        margin: 0 auto;
+        object-fit: contain;
+        background: transparent;
+      }
+      .dark-mode .logo-img-light {
+        display: none;
+      }
+      .dark-mode .logo-img-dark {
+        display: block;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Header -->
     <header>
-        <div class="logo-container">
-            <div class="logo-placeholder">
-                <span>
-                    <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" style="max-width:50px; max-height:auto; display:block; margin:0 auto; object-fit:contain;" />
-                    
-                </span>
-            </div>
+      <div class="logo-container">
+        <div class="logo-placeholder">
+          <span>
+            <img
+              src="images/Logo Version Transparente-01.png"
+              alt="OLYS HAIR Logo"
+              class="logo-img-light"
+              style="
+                max-width: 50px;
+                max-height: auto;
+                display: block;
+                margin: 0 auto;
+                object-fit: contain;
+              "
+            />
+          </span>
         </div>
-        <div class="nav-links">
-           <!--<a href="#">Home</a>
-            <a href="#">Shop</a>--> 
-            <a href="collection.html">Collections</a>
-            <a href="about.html">About</a>
-            <a href="contact.html">Contact</a>
+      </div>
+      <div class="nav-links">
+        <!--<a href="#">Home</a>
+            <a href="#">Shop</a>-->
+        <a href="collection.html">Collections</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="header-icons">
+        <i class="fas fa-search"></i>
+        <i class="fas fa-shopping-bag"></i>
+        <i class="fas fa-user"></i>
+        <div class="mode-toggle">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+          <div class="toggle-circle"></div>
         </div>
-        <div class="header-icons">
-            <i class="fas fa-search"></i>
-            <i class="fas fa-shopping-bag"></i>
-            <i class="fas fa-user"></i>
-            <div class="mode-toggle">
-                <i class="fas fa-sun"></i>
-                <i class="fas fa-moon"></i>
-                <div class="toggle-circle"></div>
-            </div>
-        </div>
+      </div>
     </header>
 
     <!-- Bubble Navigation -->
     <div class="bubble-nav">
-        <div class="bubble" data-label="Home"><i class="fas fa-home"></i></div>
-        <div class="bubble" data-label="Product"  onclick="window.location.href='product.html'" title="Product"><i class="fas fa-shopping-bag"></i></div>
-       <!-- <div class="bubble" data-label="Best Sellers"><i class="fas fa-star"></i></div>-->
-        <div class="bubble" data-label="New Arrivals" onclick="window.location.href='new-arrivals.html'" title="New Arrivals"><i class="fas fa-newspaper"></i></div>
-        <!--<div class="bubble" data-label="Account"><i class="fas fa-user"></i></div>-->
-        <div class="bubble" data-label="Sign In" onclick="window.location.href='sign-in.html'" title="Sign In"><i class="fas fa-sign-in-alt"></i></div>
-<div class="bubble" data-label="Register" onclick="window.location.href='sign-in.html'" title="Register"><i class="fas fa-user-plus"></i></div>
+      <div class="bubble" data-label="Home"><i class="fas fa-home"></i></div>
+      <div
+        class="bubble"
+        data-label="Product"
+        onclick="window.location.href='product.html'"
+        title="Product"
+      >
+        <i class="fas fa-shopping-bag"></i>
+      </div>
+      <!-- <div class="bubble" data-label="Best Sellers"><i class="fas fa-star"></i></div>-->
+      <div
+        class="bubble"
+        data-label="New Arrivals"
+        onclick="window.location.href='new-arrivals.html'"
+        title="New Arrivals"
+      >
+        <i class="fas fa-newspaper"></i>
+      </div>
+      <!--<div class="bubble" data-label="Account"><i class="fas fa-user"></i></div>-->
+      <div
+        class="bubble"
+        data-label="Sign In"
+        onclick="window.location.href='sign-in.html'"
+        title="Sign In"
+      >
+        <i class="fas fa-sign-in-alt"></i>
+      </div>
+      <div
+        class="bubble"
+        data-label="Register"
+        onclick="window.location.href='sign-in.html'"
+        title="Register"
+      >
+        <i class="fas fa-user-plus"></i>
+      </div>
     </div>
 
     <!-- Hero Banner -->
     <section class="hero-banner">
-        <h1>Premium Quality Hair Extensions</h1>
-        <p>Discover our exclusive collection of luxury hair extensions and care products crafted for perfection</p>
-        <button class="cta-button" onclick="window.location.href='sign-in.html'">SHOP THE COLLECTION</button>
+      <h1>Premium Quality Hair Extensions</h1>
+      <p>
+        Discover our exclusive collection of luxury hair extensions and care
+        products crafted for perfection
+      </p>
+      <button class="cta-button" onclick="window.location.href='sign-in.html'">
+        SHOP THE COLLECTION
+      </button>
     </section>
 
     <!-- Premium Quality Section -->
     <section class="premium-quality">
-        <h2>Experience The OLYS HAIR Difference</h2>
-        <p>At OLYS HAIR, we are committed to providing the highest quality hair products sourced ethically and crafted with precision. Our products are designed to enhance your natural beauty and boost your confidence.</p>
-        
-        <div class="quality-features">
-            <div class="feature">
-                <i class="fas fa-gem"></i>
-                <h3>Premium Quality</h3>
-                <p>100% human hair, carefully selected for its durability and natural appearance.</p>
-            </div>
-            
-            <div class="feature">
-                <i class="fas fa-certificate"></i>
-                <h3>Ethically Sourced</h3>
-                <p>We ensure all our hair is sourced responsibly and ethically from trusted suppliers.</p>
-            </div>
-            
-            <div class="feature">
-                <i class="fas fa-tshirt"></i>
-                <h3>Silky & Smooth</h3>
-                <p>Experience the luxurious feel of our silky smooth hair extensions.</p>
-            </div>
-            
-            <div class="feature">
-                <i class="fas fa-heart"></i>
-                <h3>Long Lasting</h3>
-                <p>Our hair extensions maintain their quality and appearance through multiple uses.</p>
-            </div>
+      <h2>Experience The OLYS HAIR Difference</h2>
+      <p>
+        At OLYS HAIR, we are committed to providing the highest quality hair
+        products sourced ethically and crafted with precision. Our products are
+        designed to enhance your natural beauty and boost your confidence.
+      </p>
+
+      <div class="quality-features">
+        <div class="feature">
+          <i class="fas fa-gem"></i>
+          <h3>Premium Quality</h3>
+          <p>
+            100% human hair, carefully selected for its durability and natural
+            appearance.
+          </p>
         </div>
+
+        <div class="feature">
+          <i class="fas fa-certificate"></i>
+          <h3>Ethically Sourced</h3>
+          <p>
+            We ensure all our hair is sourced responsibly and ethically from
+            trusted suppliers.
+          </p>
+        </div>
+
+        <div class="feature">
+          <i class="fas fa-tshirt"></i>
+          <h3>Silky & Smooth</h3>
+          <p>
+            Experience the luxurious feel of our silky smooth hair extensions.
+          </p>
+        </div>
+
+        <div class="feature">
+          <i class="fas fa-heart"></i>
+          <h3>Long Lasting</h3>
+          <p>
+            Our hair extensions maintain their quality and appearance through
+            multiple uses.
+          </p>
+        </div>
+      </div>
     </section>
 
     <!-- Best Sellers -->
     <section class="products">
-        <h2 class="section-title">Best Sellers</h2>
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Brazilian Body Wave">
-                </div>
-                <div class="product-info">
-                    <h3>Brazilian Body Wave</h3>
-    
-                      <button onclick="window.location.href='sign-in.html'">shop now</button>
-                </div>
-            </div>
-            
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Peruvian Straight">
-                </div>
-                <div class="product-info">
-                    <h3>Peruvian Straight</h3>
-                    
-                      <button onclick="window.location.href='sign-in.html'">shop now</button>
-                </div>
-            </div>
-            
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1559629819-638d9a3c5b90?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Malaysian Curly">
-                </div>
-                <div class="product-info">
-                    <h3>Malaysian Curly</h3>
-                      <button onclick="window.location.href='sign-in.html'">shop now</button>
-                </div>
-            </div>
-            
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1596468132315-0de849300ff0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Mongolian Deep Wave">
-                </div>
-                <div class="product-info">
-                    <h3>Mongolian Deep Wave</h3>
-                
-                        <button onclick="window.location.href='sign-in.html'">shop now</button>
-                </div>
-            </div>
+      <h2 class="section-title">Best Sellers</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Brazilian Body Wave"
+            />
+          </div>
+          <div class="product-info">
+            <h3>Brazilian Body Wave</h3>
+
+            <button onclick="window.location.href='sign-in.html'">
+              shop now
+            </button>
+          </div>
         </div>
+
+        <div class="product-card">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Peruvian Straight"
+            />
+          </div>
+          <div class="product-info">
+            <h3>Peruvian Straight</h3>
+
+            <button onclick="window.location.href='sign-in.html'">
+              shop now
+            </button>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1559629819-638d9a3c5b90?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Malaysian Curly"
+            />
+          </div>
+          <div class="product-info">
+            <h3>Malaysian Curly</h3>
+            <button onclick="window.location.href='sign-in.html'">
+              shop now
+            </button>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1596468132315-0de849300ff0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Mongolian Deep Wave"
+            />
+          </div>
+          <div class="product-info">
+            <h3>Mongolian Deep Wave</h3>
+
+            <button onclick="window.location.href='sign-in.html'">
+              shop now
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Hair Types Showcase -->
     <section class="hair-types">
-        <div class="hair-types-container">
-            <div class="hair-types-content">
-                <h2>Find Your Perfect Hair Type</h2>
-                <p>We offer a wide variety of premium hair types to match your unique style and texture preferences. Each hair type is carefully selected and processed to maintain its natural beauty and integrity.</p>
-                
-                <ul class="hair-type-list">
-                    <li><i class="fas fa-check-circle"></i> Brazilian - Known for its thickness and durability</li>
-                    <li><i class="fas fa-check-circle"></i> Peruvian - Soft, lightweight and versatile</li>
-                    <li><i class="fas fa-check-circle"></i> Malaysian - Silky straight with natural shine</li>
-                    <li><i class="fas fa-check-circle"></i> Mongolian - Fine texture with natural volume</li>
-                    <li><i class="fas fa-check-circle"></i> Indian - Thick with natural wavy pattern</li>
-                </ul>
-            </div>
-            
-            <div class="hair-types-gallery">
-                <div class="hair-type-img">
-                    <img src="https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Hair Type 1">
-                </div>
-                <div class="hair-type-img">
-                    <img src="https://images.unsplash.com/photo-1559629819-638d9a3c5b90?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Hair Type 2">
-                </div>
-                <div class="hair-type-img">
-                    <img src="https://images.unsplash.com/photo-1588244271197-8cf4fb4c9f6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Hair Type 3">
-                </div>
-                <div class="hair-type-img">
-                    <img src="https://images.unsplash.com/photo-1570481662006-a3a137469f4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Hair Type 4">
-                </div>
-            </div>
+      <div class="hair-types-container">
+        <div class="hair-types-content">
+          <h2>Find Your Perfect Hair Type</h2>
+          <p>
+            We offer a wide variety of premium hair types to match your unique
+            style and texture preferences. Each hair type is carefully selected
+            and processed to maintain its natural beauty and integrity.
+          </p>
+
+          <ul class="hair-type-list">
+            <li>
+              <i class="fas fa-check-circle"></i> Brazilian - Known for its
+              thickness and durability
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i> Peruvian - Soft, lightweight
+              and versatile
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i> Malaysian - Silky straight
+              with natural shine
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i> Mongolian - Fine texture with
+              natural volume
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i> Indian - Thick with natural
+              wavy pattern
+            </li>
+          </ul>
         </div>
+
+        <div class="hair-types-gallery">
+          <div class="hair-type-img">
+            <img
+              src="https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Hair Type 1"
+            />
+          </div>
+          <div class="hair-type-img">
+            <img
+              src="https://images.unsplash.com/photo-1559629819-638d9a3c5b90?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Hair Type 2"
+            />
+          </div>
+          <div class="hair-type-img">
+            <img
+              src="https://images.unsplash.com/photo-1588244271197-8cf4fb4c9f6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Hair Type 3"
+            />
+          </div>
+          <div class="hair-type-img">
+            <img
+              src="https://images.unsplash.com/photo-1570481662006-a3a137469f4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Hair Type 4"
+            />
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- New Arrivals -->
     <section class="products">
-        <h2 class="section-title">New Arrivals</h2>
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1588244271197-8cf4fb4c9f6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Silky Straight">
-                </div>
-                <div class="product-info">
-                    <h3>Silky Straight</h3>
-                    <p>$179.99</p>
-                    <button>Add to Cart</button>
-                </div>
-            </div>
-            
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1558769136-3c6c18ec5b04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Kinky Curly">
-                </div>
-                <div class="product-info">
-                    <h3>Kinky Curly</h3>
-                    <p>$209.99</p>
-                    <button>Add to Cart</button>
-                </div>
-            </div>
-            
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1570481662006-a3a137469f4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Body Wave Bundle">
-                </div>
-                <div class="product-info">
-                    <h3>Body Wave Bundle</h3>
-                    <p>$259.99</p>
-                    <button>Add to Cart</button>
-                </div>
-            </div>
-            
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://images.unsplash.com/photo-1597212610042-6e2ad31e6b71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Loose Wave">
-                </div>
-                <div class="product-info">
-                    <h3>Loose Wave</h3>
-                    <p>$199.99</p>
-                    <button>Add to Cart</button>
-                </div>
-            </div>
+      <h2 class="section-title">New Arrivals</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1588244271197-8cf4fb4c9f6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Silky Straight"
+            />
+          </div>
+          <div class="product-info">
+            <h3>Silky Straight</h3>
+            <p>€179.99</p>
+            <button>Add to Cart</button>
+          </div>
         </div>
+
+        <div class="product-card">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1558769136-3c6c18ec5b04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Kinky Curly"
+            />
+          </div>
+          <div class="product-info">
+            <h3>Kinky Curly</h3>
+            <p>€209.99</p>
+            <button>Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1570481662006-a3a137469f4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Body Wave Bundle"
+            />
+          </div>
+          <div class="product-info">
+            <h3>Body Wave Bundle</h3>
+            <p>€259.99</p>
+            <button>Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1597212610042-6e2ad31e6b71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+              alt="Loose Wave"
+            />
+          </div>
+          <div class="product-info">
+            <h3>Loose Wave</h3>
+            <p>€199.99</p>
+            <button>Add to Cart</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <div class="footer-content">
-            <div class="footer-column">
-                <h3>OLYS HAIR</h3>
-                <p>Premium quality hair products for the modern woman who values luxury and style.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href=" https://wa.me/c/33674322387"><i class="fab fa-whatsapp"></i></a>
-                    <a href="https://www.tiktok.com/@olys.har?_t=ZN-90BZpnkAMru&_r=1"><i class="fab fa-tiktok"></i></a>
-                </div>
-            </div>
-            
-            <div class="footer-column">
-                <h3>Shop</h3>
-                <ul>
-                    <li><a href="product.html">Hair Extensions</a></li>
-                    <li><a href="product.html">Wigs</a></li>
-                    <li><a href="product.html">Closures</a></li>
-                    <li><a href="product.html">Frontals</a></li>
-                    <li><a href="product.html">Hair Care</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-column">
-                <h3>Support</h3>
-                <ul>
-                    <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="faqs.html">FAQs</a></li>
-                    <li><a href="shipping-returns.html">Shipping & Returns</a></li>
-                    <li><a href="track-order.html">Track Order</a></li>
-                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-column">
-                <h3>Newsletter</h3>
-                <p>Subscribe to get special offers, free giveaways, and new product alerts.</p>
-                <form>
-                    <input type="email" placeholder="Your email address" style="padding: 10px; width: 100%; margin-bottom: 10px; border-radius: 5px; border: none;">
-                    <button type="submit" style="padding: 10px; width: 100%; background-color: var(--white); color: var(--cream); border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">SUBSCRIBE</button>
-                </form>
-            </div>
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>OLYS HAIR</h3>
+          <p>
+            Premium quality hair products for the modern woman who values luxury
+            and style.
+          </p>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a
+              href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href=" https://wa.me/c/33674322387"
+              ><i class="fab fa-whatsapp"></i
+            ></a>
+            <a href="https://www.tiktok.com/@olys.har?_t=ZN-90BZpnkAMru&_r=1"
+              ><i class="fab fa-tiktok"></i
+            ></a>
+          </div>
         </div>
-        
-        <div class="copyright">
-            <p>© 2023 OLYS HAIR. All rights reserved. | www.olyshair.com</p>
+
+        <div class="footer-column">
+          <h3>Shop</h3>
+          <ul>
+            <li><a href="product.html">Hair Extensions</a></li>
+            <li><a href="product.html">Wigs</a></li>
+            <li><a href="product.html">Closures</a></li>
+            <li><a href="product.html">Frontals</a></li>
+            <li><a href="product.html">Hair Care</a></li>
+          </ul>
         </div>
+
+        <div class="footer-column">
+          <h3>Support</h3>
+          <ul>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="faqs.html">FAQs</a></li>
+            <li><a href="shipping-returns.html">Shipping & Returns</a></li>
+            <li><a href="track-order.html">Track Order</a></li>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>Newsletter</h3>
+          <p>
+            Subscribe to get special offers, free giveaways, and new product
+            alerts.
+          </p>
+          <form>
+            <input
+              type="email"
+              placeholder="Your email address"
+              style="
+                padding: 10px;
+                width: 100%;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                border: none;
+              "
+            />
+            <button
+              type="submit"
+              style="
+                padding: 10px;
+                width: 100%;
+                background-color: var(--white);
+                color: var(--cream);
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 500;
+              "
+            >
+              SUBSCRIBE
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="copyright">
+        <p>© 2023 OLYS HAIR. All rights reserved. | www.olyshair.com</p>
+      </div>
     </footer>
 
     <script>
-        // Dark/Light Mode Toggle
-        const modeToggle = document.querySelector('.mode-toggle');
-        const body = document.body;
-        
-        modeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            
-            // Save user preference in localStorage
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
-        
-        // Check for saved user preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            body.classList.add('dark-mode');
+      // Dark/Light Mode Toggle
+      const modeToggle = document.querySelector(".mode-toggle");
+      const body = document.body;
+
+      modeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+
+        // Save user preference in localStorage
+        if (body.classList.contains("dark-mode")) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
         }
-        
-        // Bubble Navigation
-        document.addEventListener('DOMContentLoaded', function() {
-            const bubbles = document.querySelectorAll('.bubble');
-            
-            bubbles.forEach(bubble => {
-                bubble.addEventListener('click', function() {
-                    bubbles.forEach(b => b.style.backgroundColor = '');
-                    this.style.backgroundColor = '';
-                });
-            });
-            
-            // Header scroll effect
-            window.addEventListener('scroll', function() {
-                const header = document.querySelector('header');
-                if (window.scrollY > 100) {
-                    header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-                    header.style.padding = '15px 40px';
-                } else {
-                    header.style.boxShadow = '';
-                    header.style.padding = '20px 40px';
-                }
-            });
+      });
+
+      // Check for saved user preference
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        body.classList.add("dark-mode");
+      }
+
+      // Bubble Navigation
+      document.addEventListener("DOMContentLoaded", function () {
+        const bubbles = document.querySelectorAll(".bubble");
+
+        bubbles.forEach((bubble) => {
+          bubble.addEventListener("click", function () {
+            bubbles.forEach((b) => (b.style.backgroundColor = ""));
+            this.style.backgroundColor = "";
+          });
         });
+
+        // Header scroll effect
+        window.addEventListener("scroll", function () {
+          const header = document.querySelector("header");
+          if (window.scrollY > 100) {
+            header.style.boxShadow = "0 2px 10px rgba(0, 0, 0, 0.1)";
+            header.style.padding = "15px 40px";
+          } else {
+            header.style.boxShadow = "";
+            header.style.padding = "20px 40px";
+          }
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
