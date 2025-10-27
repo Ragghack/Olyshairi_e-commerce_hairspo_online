@@ -1,1264 +1,1343 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OLYS HAIR - Shop</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --cream: #392625;
-            --white: #ffffff;
-            --dark-gray: #1e1e1e;
-            --light-bg: #f8f5f2;
-            --text-dark: #1e1e1e;
-            --text-light: #ffffff;
-            --card-bg: #ffffff;
-            --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            --success: #4caf50;
-            --error: #f44336;
-        }
-        
-        .dark-mode {
-            --cream: #c8b4a8;
-            --white: #1e1e1e;
-            --dark-gray: #f8f5f2;
-            --light-bg: #2d2d2d;
-            --text-dark: #f8f5f2;
-            --text-light: #1e1e1e;
-            --card-bg: #181212;
-            --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
-        }
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--white);
-            color: var(--text-dark);
-            overflow-x: hidden;
-            line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        
-        h1, h2, h3, h4 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            color: var(--cream);
-        }
-        
-        /* Header Styles */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            background-color: var(--white);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
-        }
-        
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 180px;
-            height: 80px;
-            background-color: var(--white);
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-        
-        .logo-img-light {
-            max-width: 120px;
-            max-height: 50px;
-            display: block;
-            margin: 0 auto;
-            object-fit: contain;
-        }
-        
-        .logo-img-dark {
-            max-width: 120px;
-            max-height: 50px;
-            display: none;
-            margin: 0 auto;
-            object-fit: contain;
-            background: transparent;
-        }
-        
-        .dark-mode .logo-img-light {
-            display: none;
-        }
-        
-        .dark-mode .logo-img-dark {
-            display: block;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-links a:hover {
-            color: var(--cream);
-        }
-        
-        .header-icons {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .header-icons i {
-            font-size: 20px;
-            color: var(--cream);
-            cursor: pointer;
-        }
-        
-        /* Order Tracking Bubble */
-        .order-tracking-bubble {
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .order-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: var(--cream);
-            color: var(--white);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        /* Cart Bubble */
-        .cart-bubble {
-            position: relative;
-        }
-        
-        .cart-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #ff6b6b;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        /* Dark/Light Mode Toggle */
-        .mode-toggle {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background-color: var(--light-bg);
-            border-radius: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 0 5px;
-            transition: background-color 0.3s ease;
-        }
-        
-        .toggle-circle {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background-color: var(--cream);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            left: 4px;
-        }
-        
-        .dark-mode .toggle-circle {
-            left: 34px;
-        }
-        
-        .mode-toggle i {
-            font-size: 14px;
-            z-index: 2;
-        }
-        
-        .fa-sun {
-            color: var(--cream);
-            margin-right: auto;
-        }
-        
-        .fa-moon {
-            color: var(--cream);
-            margin-left: auto;
-        }
-        
-        /* Hero Banner */
-        .shop-hero {
-            height: 50vh;
-            background: linear-gradient(135deg, rgba(57,38,37,0.85) 0%, rgba(57,38,37,0.7) 60%, rgba(245,245,220,0.5) 100%),
-                url('images/cover-banner.jpg') no-repeat center center/cover;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--white);
-            padding: 0 20px;
-            margin-top: 120px;
-        }
-        
-        .shop-hero h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            max-width: 800px;
-            line-height: 1.2;
-            color: var(--white);
-            background: linear-gradient(45deg, #ffffff 20%, #392625 40%, #ffffff 60%, #392625 80%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 5s infinite linear;
-            text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
-            font-weight: 600;
-        }
-        
-        .shop-hero p {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            max-width: 600px;
-            font-weight: 300;
-            color: var(--white);
-        }
-        
-        /* Filter Section */
-        .shop-filters {
-            padding: 30px 40px;
-            background-color: var(--light-bg);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .filter-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .filter-btn {
-            padding: 10px 20px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--cream);
-            border-radius: 25px;
-            color: var(--cream);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .filter-btn.active, .filter-btn:hover {
-            background-color: var(--cream);
-            color: var(--white);
-        }
-        
-        .filter-select {
-            padding: 10px 20px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--cream);
-            border-radius: 25px;
-            color: var(--cream);
-            cursor: pointer;
-        }
-        
-        /* Products Grid */
-        .products-grid {
-            padding: 40px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        
-        .product-card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .product-image {
-            height: 300px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        
-        .product-card:hover .product-image img {
-            transform: scale(1.1);
-        }
-        
-        .quality-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background-color: var(--cream);
-            color: var(--white);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .quick-view-btn {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--cream);
-            color: var(--white);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .product-card:hover .quick-view-btn {
-            opacity: 1;
-        }
-        
-        .product-info {
-            padding: 20px;
-        }
-        
-        .product-info h3 {
-            margin-bottom: 8px;
-            color: var(--text-dark);
-        }
-        
-        .product-detail {
-            font-size: 14px;
-            color: var(--cream);
-            margin-bottom: 10px;
-        }
-        
-        .price-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .price {
-            font-weight: 600;
-            color: var(--cream);
-        }
-        
-        .old-price {
-            text-decoration: line-through;
-            color: #999;
-            font-size: 14px;
-        }
-        
-        /* Product Actions */
-        .product-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .add-to-cart {
-            flex: 1;
-            padding: 12px;
-            background-color: var(--cream);
-            color: var(--white);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-weight: 500;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .add-to-cart:hover {
-            background-color: var(--dark-gray);
-        }
-        
-        .add-to-cart:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        
-        .wishlist-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--light-bg);
-            color: var(--cream);
-            border: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .wishlist-btn:hover {
-            background-color: var(--cream);
-            color: var(--white);
-        }
-        
-        .wishlist-btn.active {
-            background-color: #ff6b6b;
-            color: var(--white);
-        }
-        
-        /* Quick View Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --cream: #392625;
+        --white: #ffffff;
+        --dark-gray: #1e1e1e;
+        --light-bg: #f8f5f2;
+        --text-dark: #1e1e1e;
+        --text-light: #ffffff;
+        --card-bg: #ffffff;
+        --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        --success: #4caf50;
+        --error: #f44336;
+      }
+
+      .dark-mode {
+        --cream: #c8b4a8;
+        --white: #1e1e1e;
+        --dark-gray: #f8f5f2;
+        --light-bg: #2d2d2d;
+        --text-dark: #f8f5f2;
+        --text-light: #1e1e1e;
+        --card-bg: #181212;
+        --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: var(--white);
+        color: var(--text-dark);
+        overflow-x: hidden;
+        line-height: 1.6;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Playfair Display", serif;
+        font-weight: 600;
+        color: var(--cream);
+      }
+
+      /* Header Styles */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 40px;
+        background-color: var(--white);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+      }
+
+      .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 180px;
+        height: 80px;
+        background-color: var(--white);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .logo-img-light {
+        max-width: 120px;
+        max-height: 50px;
+        display: block;
+        margin: 0 auto;
+        object-fit: contain;
+      }
+
+      .logo-img-dark {
+        max-width: 120px;
+        max-height: 50px;
+        display: none;
+        margin: 0 auto;
+        object-fit: contain;
+        background: transparent;
+      }
+
+      .dark-mode .logo-img-light {
+        display: none;
+      }
+
+      .dark-mode .logo-img-dark {
+        display: block;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--cream);
+      }
+
+      .header-icons {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .header-icons i {
+        font-size: 20px;
+        color: var(--cream);
+        cursor: pointer;
+      }
+
+      /* Order Tracking Bubble */
+      .order-tracking-bubble {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .order-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: var(--cream);
+        color: var(--white);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* Cart Bubble */
+      .cart-bubble {
+        position: relative;
+      }
+
+      .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #ff6b6b;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* Dark/Light Mode Toggle */
+      .mode-toggle {
+        position: relative;
+        width: 60px;
+        height: 30px;
+        background-color: var(--light-bg);
+        border-radius: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .toggle-circle {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background-color: var(--cream);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        left: 4px;
+      }
+
+      .dark-mode .toggle-circle {
+        left: 34px;
+      }
+
+      .mode-toggle i {
+        font-size: 14px;
+        z-index: 2;
+      }
+
+      .fa-sun {
+        color: var(--cream);
+        margin-right: auto;
+      }
+
+      .fa-moon {
+        color: var(--cream);
+        margin-left: auto;
+      }
+
+      /* Hero Banner */
+      .shop-hero {
+        height: 50vh;
+        background: linear-gradient(
+            135deg,
+            rgba(57, 38, 37, 0.85) 0%,
+            rgba(57, 38, 37, 0.7) 60%,
+            rgba(245, 245, 220, 0.5) 100%
+          ),
+          url("images/cover-banner.jpg") no-repeat center center/cover;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: var(--white);
+        padding: 0 20px;
+        margin-top: 120px;
+      }
+
+      .shop-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        max-width: 800px;
+        line-height: 1.2;
+        color: var(--white);
+        background: linear-gradient(
+          45deg,
+          #ffffff 20%,
+          #392625 40%,
+          #ffffff 60%,
+          #392625 80%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 5s infinite linear;
+        text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
+        font-weight: 600;
+      }
+
+      .shop-hero p {
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+        max-width: 600px;
+        font-weight: 300;
+        color: var(--white);
+      }
+
+      /* Filter Section */
+      .shop-filters {
+        padding: 30px 40px;
+        background-color: var(--light-bg);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .filter-btn {
+        padding: 10px 20px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--cream);
+        border-radius: 25px;
+        color: var(--cream);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .filter-btn.active,
+      .filter-btn:hover {
+        background-color: var(--cream);
+        color: var(--white);
+      }
+
+      .filter-select {
+        padding: 10px 20px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--cream);
+        border-radius: 25px;
+        color: var(--cream);
+        cursor: pointer;
+      }
+
+      /* Products Grid */
+      .products-grid {
+        padding: 40px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .product-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease;
+        position: relative;
+      }
+
+      .product-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .product-image {
+        height: 300px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .product-card:hover .product-image img {
+        transform: scale(1.1);
+      }
+
+      .quality-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: var(--cream);
+        color: var(--white);
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .quick-view-btn {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--cream);
+        color: var(--white);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .product-card:hover .quick-view-btn {
+        opacity: 1;
+      }
+
+      .product-info {
+        padding: 20px;
+      }
+
+      .product-info h3 {
+        margin-bottom: 8px;
+        color: var(--text-dark);
+      }
+
+      .product-detail {
+        font-size: 14px;
+        color: var(--cream);
+        margin-bottom: 10px;
+      }
+
+      .price-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .price {
+        font-weight: 600;
+        color: var(--cream);
+      }
+
+      .old-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 14px;
+      }
+
+      /* Product Actions */
+      .product-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .add-to-cart {
+        flex: 1;
+        padding: 12px;
+        background-color: var(--cream);
+        color: var(--white);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .add-to-cart:hover {
+        background-color: var(--dark-gray);
+      }
+
+      .add-to-cart:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      .wishlist-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--light-bg);
+        color: var(--cream);
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .wishlist-btn:hover {
+        background-color: var(--cream);
+        color: var(--white);
+      }
+
+      .wishlist-btn.active {
+        background-color: #ff6b6b;
+        color: var(--white);
+      }
+
+      /* Quick View Modal */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .product-modal {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        width: 90%;
+        max-width: 900px;
+        max-height: 90vh;
+        overflow-y: auto;
+        display: flex;
+        box-shadow: var(--shadow);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: var(--cream);
+        color: var(--white);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 10;
+      }
+
+      .modal-image {
+        flex: 1;
+        min-height: 400px;
+      }
+
+      .modal-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px 0 0 10px;
+      }
+
+      .modal-content {
+        flex: 1;
+        padding: 30px;
+        position: relative;
+      }
+
+      .modal-content h2 {
+        margin-bottom: 10px;
+      }
+
+      .modal-details {
+        margin: 20px 0;
+      }
+
+      .detail-item {
+        display: flex;
+        margin-bottom: 10px;
+      }
+
+      .detail-label {
+        font-weight: 600;
+        width: 100px;
+        color: var(--cream);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .modal-actions button {
+        flex: 1;
+      }
+
+      /* Floating Bubbles */
+      .floating-bubbles {
+        position: fixed;
+        right: 30px;
+        bottom: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 1200;
+      }
+
+      .bubble-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--cream);
+        color: var(--white);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .bubble-btn span {
+        display: none;
+        position: absolute;
+        right: 70px;
+        background: var(--dark-gray);
+        color: var(--white);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
+      .bubble-btn:hover {
+        background-color: var(--dark-gray);
+        transform: scale(1.1);
+      }
+
+      .bubble-btn:hover span {
+        display: block;
+      }
+
+      /* Cart Panel */
+      .cart-panel {
+        position: fixed;
+        top: 0;
+        right: -400px;
+        width: 400px;
+        height: 100vh;
+        background-color: var(--card-bg);
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        z-index: 1500;
+        transition: right 0.4s ease;
+        overflow-y: auto;
+        padding: 20px;
+      }
+
+      .cart-panel.active {
+        right: 0;
+      }
+
+      .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--light-bg);
+      }
+
+      .close-cart {
+        cursor: pointer;
+        font-size: 20px;
+        color: var(--cream);
+      }
+
+      .cart-items {
+        margin-bottom: 20px;
+      }
+
+      .cart-item {
+        display: flex;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--light-bg);
+      }
+
+      .cart-item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 15px;
+      }
+
+      .cart-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .cart-item-details {
+        flex: 1;
+      }
+
+      .cart-item-details h4 {
+        margin-bottom: 5px;
+      }
+
+      .cart-item-price {
+        color: var(--cream);
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .cart-item-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .quantity-btn {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background-color: var(--light-bg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .remove-item {
+        color: #ff6b6b;
+        cursor: pointer;
+        margin-left: auto;
+      }
+
+      .cart-summary {
+        padding-top: 15px;
+        border-top: 1px solid var(--light-bg);
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .cart-total {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 15px 0;
+      }
+
+      .checkout-btn {
+        width: 100%;
+        padding: 15px;
+        background-color: var(--cream);
+        color: var(--white);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.3s;
+      }
+
+      .checkout-btn:hover {
+        background-color: var(--dark-gray);
+      }
+
+      /* Loading Spinner */
+      .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 40px;
+      }
+
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: var(--cream);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-dark);
+      }
+
+      .empty-state i {
+        font-size: 60px;
+        color: var(--cream);
+        margin-bottom: 20px;
+      }
+
+      /* Notification */
+      .shop-notification {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--cream);
+        color: var(--white);
+        padding: 12px 24px;
+        border-radius: 8px;
+        z-index: 2000;
+        box-shadow: var(--shadow);
+        font-weight: 500;
+        transition: opacity 0.3s ease;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
         .product-modal {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            width: 90%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow-y: auto;
-            display: flex;
-            box-shadow: var(--shadow);
+          flex-direction: column;
+          max-width: 500px;
         }
-        
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: var(--cream);
-            color: var(--white);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 10;
-        }
-        
+
         .modal-image {
-            flex: 1;
-            min-height: 400px;
+          min-height: 300px;
         }
-        
+
         .modal-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 10px 0 0 10px;
+          border-radius: 10px 10px 0 0;
         }
-        
-        .modal-content {
-            flex: 1;
-            padding: 30px;
-            position: relative;
+      }
+
+      @media (max-width: 768px) {
+        header {
+          padding: 15px 20px;
         }
-        
-        .modal-content h2 {
-            margin-bottom: 10px;
+
+        .nav-links {
+          display: none;
         }
-        
-        .modal-details {
-            margin: 20px 0;
+
+        .shop-hero {
+          margin-top: 100px;
+          height: 40vh;
         }
-        
-        .detail-item {
-            display: flex;
-            margin-bottom: 10px;
+
+        .shop-hero h1 {
+          font-size: 2rem;
         }
-        
-        .detail-label {
-            font-weight: 600;
-            width: 100px;
-            color: var(--cream);
+
+        .shop-filters {
+          padding: 20px;
+          flex-direction: column;
+          align-items: flex-start;
         }
-        
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+
+        .filter-group {
+          flex-wrap: wrap;
         }
-        
-        .modal-actions button {
-            flex: 1;
+
+        .products-grid {
+          padding: 20px;
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         }
-        
-        /* Floating Bubbles */
-        .floating-bubbles {
-            position: fixed;
-            right: 30px;
-            bottom: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 1200;
-        }
-        
-        .bubble-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--cream);
-            color: var(--white);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 22px;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .bubble-btn span {
-            display: none;
-            position: absolute;
-            right: 70px;
-            background: var(--dark-gray);
-            color: var(--white);
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-        
-        .bubble-btn:hover {
-            background-color: var(--dark-gray);
-            transform: scale(1.1);
-        }
-        
-        .bubble-btn:hover span {
-            display: block;
-        }
-        
-        /* Cart Panel */
+
         .cart-panel {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100vh;
-            background-color: var(--card-bg);
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 1500;
-            transition: right 0.4s ease;
-            overflow-y: auto;
-            padding: 20px;
+          width: 100%;
+          right: -100%;
         }
-        
-        .cart-panel.active {
-            right: 0;
+
+        .floating-bubbles {
+          bottom: 80px;
         }
-        
-        .cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--light-bg);
+
+        .bubble-btn span {
+          right: 65px;
+          bottom: 0;
         }
-        
-        .close-cart {
-            cursor: pointer;
-            font-size: 20px;
-            color: var(--cream);
+      }
+
+      @keyframes shine {
+        0% {
+          background-position: 0% center;
         }
-        
-        .cart-items {
-            margin-bottom: 20px;
+        100% {
+          background-position: 200% center;
         }
-        
-        .cart-item {
-            display: flex;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--light-bg);
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-        
-        .cart-item-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-right: 15px;
-        }
-        
-        .cart-item-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .cart-item-details {
-            flex: 1;
-        }
-        
-        .cart-item-details h4 {
-            margin-bottom: 5px;
-        }
-        
-        .cart-item-price {
-            color: var(--cream);
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .cart-item-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .quantity-btn {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background-color: var(--light-bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .remove-item {
-            color: #ff6b6b;
-            cursor: pointer;
-            margin-left: auto;
-        }
-        
-        .cart-summary {
-            padding-top: 15px;
-            border-top: 1px solid var(--light-bg);
-        }
-        
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .cart-total {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 15px 0;
-        }
-        
-        .checkout-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--cream);
-            color: var(--white);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-        
-        .checkout-btn:hover {
-            background-color: var(--dark-gray);
-        }
-        
-        /* Loading Spinner */
-        .loading-spinner {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--cream);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-dark);
-        }
-        
-        .empty-state i {
-            font-size: 60px;
-            color: var(--cream);
-            margin-bottom: 20px;
-        }
-        
-        /* Notification */
-        .shop-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--cream);
-            color: var(--white);
-            padding: 12px 24px;
-            border-radius: 8px;
-            z-index: 2000;
-            box-shadow: var(--shadow);
-            font-weight: 500;
-            transition: opacity 0.3s ease;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .product-modal {
-                flex-direction: column;
-                max-width: 500px;
-            }
-            
-            .modal-image {
-                min-height: 300px;
-            }
-            
-            .modal-image img {
-                border-radius: 10px 10px 0 0;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            header {
-                padding: 15px 20px;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .shop-hero {
-                margin-top: 100px;
-                height: 40vh;
-            }
-            
-            .shop-hero h1 {
-                font-size: 2rem;
-            }
-            
-            .shop-filters {
-                padding: 20px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .filter-group {
-                flex-wrap: wrap;
-            }
-            
-            .products-grid {
-                padding: 20px;
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-            
-            .cart-panel {
-                width: 100%;
-                right: -100%;
-            }
-            
-            .floating-bubbles {
-                bottom: 80px;
-            }
-            
-            .bubble-btn span {
-                right: 65px;
-                bottom: 0;
-            }
-        }
-        
-        @keyframes shine {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Header -->
     <header>
-        <div class="logo-container">
-            <span>
-                <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" />
-                <img src="images/logo-bright.png" alt="OLYS HAIR Logo Bright" class="logo-img-dark" />
-            </span>
+      <div class="logo-container">
+        <span>
+          <img
+            src="images/Logo Version Transparente-01.png"
+            alt="OLYS HAIR Logo"
+            class="logo-img-light"
+          />
+          <img
+            src="images/logo-bright.png"
+            alt="OLYS HAIR Logo Bright"
+            class="logo-img-dark"
+          />
+        </span>
+      </div>
+      <div class="nav-links">
+        <a href="shop.html" class="active">Shop</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="header-icons">
+        <i class="fas fa-search"></i>
+        <div class="cart-bubble">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="cart-count">0</span>
         </div>
-        <div class="nav-links">
-            <a href="shop.html" class="active">Shop</a>
-            <a href="contact.html">Contact</a>
+        <!-- Order Tracking Button -->
+        <div class="order-tracking-bubble" onclick="viewOrders()">
+          <i class="fas fa-box"></i>
+          <span class="order-count">0</span>
         </div>
-        <div class="header-icons">
-            <i class="fas fa-search"></i>
-            <div class="cart-bubble">
-                <i class="fas fa-shopping-bag"></i>
-                <span class="cart-count">0</span>
-            </div>
-            <!-- Order Tracking Button -->
-            <div class="order-tracking-bubble" onclick="viewOrders()">
-                <i class="fas fa-box"></i>
-                <span class="order-count">0</span>
-            </div>
-            <i class="fas fa-user"></i>
-            <div class="mode-toggle">
-                <i class="fas fa-sun"></i>
-                <i class="fas fa-moon"></i>
-                <div class="toggle-circle"></div>
-            </div>
+        <i class="fas fa-user"></i>
+        <div class="mode-toggle">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+          <div class="toggle-circle"></div>
         </div>
+      </div>
     </header>
 
     <!-- Shop Hero -->
     <section class="shop-hero">
-        <h1>Discover Your Perfect Look</h1>
-        <p style="color: #666; background: linear-gradient(45deg, #ffffff 20%, #392625 40%, #ffffff 60%, #392625 80%); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 5s infinite linear; text-shadow: 0 0 10px rgba(57, 38, 37, 0.5); font-weight: 600;">Explore our premium collection of hair extensions and find your perfect match</p>
+      <h1>Discover Your Perfect Look</h1>
+      <p
+        style="
+          color: #666;
+          background: linear-gradient(
+            45deg,
+            #ffffff 20%,
+            #392625 40%,
+            #ffffff 60%,
+            #392625 80%
+          );
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: shine 5s infinite linear;
+          text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
+          font-weight: 600;
+        "
+      >
+        Explore our premium collection of hair extensions and find your perfect
+        match
+      </p>
     </section>
 
     <!-- Filter Section -->
     <section class="shop-filters">
-        <div class="filter-group">
-            <div class="filter-btn active" data-category="all">All Products</div>
-            <div class="filter-btn" data-category="extensions">Extensions</div>
-            <div class="filter-btn" data-category="wigs">Wigs</div>
-            <div class="filter-btn" data-category="closures">Closures</div>
-            <div class="filter-btn" data-category="accessories">Accessories</div>
-        </div>
-        <div class="filter-group">
-            <select class="filter-select" id="sortSelect">
-                <option value="popularity">Sort by: Popularity</option>
-                <option value="price-low">Sort by: Price Low to High</option>
-                <option value="price-high">Sort by: Price High to Low</option>
-                <option value="newest">Sort by: Newest</option>
-            </select>
-            <select class="filter-select" id="lengthFilter">
-                <option value="all">Filter by: Length</option>
-                <option value="14-16">14-16 inches</option>
-                <option value="18-20">18-20 inches</option>
-                <option value="22-24">22-24 inches</option>
-                <option value="26+">26+ inches</option>
-            </select>
-        </div>
+      <div class="filter-group">
+        <div class="filter-btn active" data-category="all">All Products</div>
+        <div class="filter-btn" data-category="extensions">Extensions</div>
+        <div class="filter-btn" data-category="wigs">Wigs</div>
+        <div class="filter-btn" data-category="closures">Closures</div>
+        <div class="filter-btn" data-category="accessories">Accessories</div>
+      </div>
+      <div class="filter-group">
+        <select class="filter-select" id="sortSelect">
+          <option value="popularity">Sort by: Popularity</option>
+          <option value="price-low">Sort by: Price Low to High</option>
+          <option value="price-high">Sort by: Price High to Low</option>
+          <option value="newest">Sort by: Newest</option>
+        </select>
+        <select class="filter-select" id="lengthFilter">
+          <option value="all">Filter by: Length</option>
+          <option value="14-16">14-16 inches</option>
+          <option value="18-20">18-20 inches</option>
+          <option value="22-24">22-24 inches</option>
+          <option value="26+">26+ inches</option>
+        </select>
+      </div>
     </section>
 
     <!-- Products Grid -->
     <section class="products-grid" id="productsGrid">
-        <div class="loading-spinner" id="loadingSpinner">
-            <div class="spinner"></div>
-            <p>Loading products...</p>
-        </div>
-        <!-- Products will be dynamically loaded here -->
+      <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p>Loading products...</p>
+      </div>
+      <!-- Products will be dynamically loaded here -->
     </section>
 
     <!-- Quick View Modal -->
     <div class="modal-overlay" id="productModal">
-        <div class="product-modal">
-            <div class="modal-close">
-                <i class="fas fa-times"></i>
-            </div>
-            <div class="modal-image">
-                <img src="" alt="Product Image" id="modalImg">
-            </div>
-            <div class="modal-content">
-                <h2 id="modalTitle"></h2>
-                <div class="price-container">
-                    <div class="price" id="modalPrice"></div>
-                    <div class="old-price" id="modalOldPrice"></div>
-                </div>
-                
-                <div class="modal-details">
-                    <div class="detail-item">
-                        <span class="detail-label">Type:</span>
-                        <span id="modalType"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Length:</span>
-                        <span id="modalLength"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Texture:</span>
-                        <span id="modalTexture"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Color:</span>
-                        <span id="modalColor"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Quality:</span>
-                        <span id="modalQuality"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Stock:</span>
-                        <span id="modalStock"></span>
-                    </div>
-                </div>
-                
-                <p id="modalDescription"></p>
-                
-                <div class="modal-actions">
-                    <button class="add-to-cart" id="modalAddToCart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-                    <button class="wishlist-btn" id="modalWishlistBtn"><i class="fas fa-heart"></i> Wishlist</button>
-                </div>
-            </div>
+      <div class="product-modal">
+        <div class="modal-close">
+          <i class="fas fa-times"></i>
         </div>
+        <div class="modal-image">
+          <img src="" alt="Product Image" id="modalImg" />
+        </div>
+        <div class="modal-content">
+          <h2 id="modalTitle"></h2>
+          <div class="price-container">
+            <div class="price" id="modalPrice"></div>
+            <div class="old-price" id="modalOldPrice"></div>
+          </div>
+
+          <div class="modal-details">
+            <div class="detail-item">
+              <span class="detail-label">Type:</span>
+              <span id="modalType"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Length:</span>
+              <span id="modalLength"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Texture:</span>
+              <span id="modalTexture"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Color:</span>
+              <span id="modalColor"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Quality:</span>
+              <span id="modalQuality"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Stock:</span>
+              <span id="modalStock"></span>
+            </div>
+          </div>
+
+          <p id="modalDescription"></p>
+
+          <div class="modal-actions">
+            <button class="add-to-cart" id="modalAddToCart">
+              <i class="fas fa-cart-plus"></i> Add to Cart
+            </button>
+            <button class="wishlist-btn" id="modalWishlistBtn">
+              <i class="fas fa-heart"></i> Wishlist
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Cart Panel -->
     <div class="cart-panel">
-        <div class="cart-header">
-            <h3>Your Cart</h3>
-            <div class="close-cart">
-                <i class="fas fa-times"></i>
-            </div>
+      <div class="cart-header">
+        <h3>Your Cart</h3>
+        <div class="close-cart">
+          <i class="fas fa-times"></i>
         </div>
-        
-        <div class="cart-items" id="cartItems">
-            <!-- Cart items will be dynamically added here -->
+      </div>
+
+      <div class="cart-items" id="cartItems">
+        <!-- Cart items will be dynamically added here -->
+      </div>
+
+      <div class="cart-summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="cartSubtotal">€0.00</span>
         </div>
-        
-        <div class="cart-summary">
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span id="cartSubtotal">$0.00</span>
-            </div>
-            <div class="summary-row">
-                <span>Shipping</span>
-                <span id="cartShipping">$0.00</span>
-            </div>
-            <div class="summary-row cart-total">
-                <span>Total</span>
-                <span id="cartTotal">$0.00</span>
-            </div>
-            
-            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span id="cartShipping">€0.00</span>
         </div>
+        <div class="summary-row cart-total">
+          <span>Total</span>
+          <span id="cartTotal">€0.00</span>
+        </div>
+
+        <button class="checkout-btn" id="checkoutBtn">
+          Proceed to Checkout
+        </button>
+      </div>
     </div>
 
     <!-- Floating Bubbles -->
     <div class="floating-bubbles">
-        <div class="bubble-btn" id="cartBubble">
-            <i class="fas fa-shopping-cart"></i>
-            <span>View Cart</span>
-        </div>
-        <div class="bubble-btn" onclick="window.location.href='index.html'">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </div>
-        <div class="bubble-btn" onclick="window.location.href='customerdashboard.html'">
-            <i class="fas fa-user"></i>
-            <span>Account</span>
-        </div>
+      <div class="bubble-btn" id="cartBubble">
+        <i class="fas fa-shopping-cart"></i>
+        <span>View Cart</span>
+      </div>
+      <div class="bubble-btn" onclick="window.location.href='index.html'">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </div>
+      <div
+        class="bubble-btn"
+        onclick="window.location.href='customerdashboard.html'"
+      >
+        <i class="fas fa-user"></i>
+        <span>Account</span>
+      </div>
     </div>
 
     <script>
-        // API Configuration
-       const API_BASE_URL = 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api';
-        const API_BASE_URL_LOCAL = 'http://localhost:5001/api';
-        const ENDPOINTS = {
-            PRODUCTS: `${API_BASE_URL}/products`,
-            CATEGORIES: `${API_BASE_URL}/categories`,
-            CART: `${API_BASE_URL}/cart`,
-            ORDERS: `${API_BASE_URL}/orders`,
-            WISHLIST: `${API_BASE_URL}/wishlist`,
-            HEALTH: `${API_BASE_URL}/health`
-            
-        };
+      // API Configuration
+      const API_BASE_URL =
+        "https://olyshairi-e-commerce-hairspo-online.onrender.com/api";
+      const API_BASE_URL_LOCAL = "http://localhost:5001/api";
+      const ENDPOINTS = {
+        PRODUCTS: `${API_BASE_URL}/products`,
+        CATEGORIES: `${API_BASE_URL}/categories`,
+        CART: `${API_BASE_URL}/cart`,
+        ORDERS: `${API_BASE_URL}/orders`,
+        WISHLIST: `${API_BASE_URL}/wishlist`,
+        HEALTH: `${API_BASE_URL}/health`,
+      };
 
-        // Global State
-        let products = [];
-        let cart = JSON.parse(localStorage.getItem('olysHairCart')) || [];
-        let wishlist = JSON.parse(localStorage.getItem('olysHairWishlist')) || [];
-        let currentProductId = null;
-        let orderCount = 0;
+      // Global State
+      let products = [];
+      let cart = JSON.parse(localStorage.getItem("olysHairCart")) || [];
+      let wishlist = JSON.parse(localStorage.getItem("olysHairWishlist")) || [];
+      let currentProductId = null;
+      let orderCount = 0;
 
-        // DOM Elements
-        const productsGrid = document.getElementById('productsGrid');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const cartCount = document.querySelector('.cart-count');
-        const orderCountElement = document.querySelector('.order-count');
-        const cartItems = document.getElementById('cartItems');
-        const cartSubtotal = document.getElementById('cartSubtotal');
-        const cartShipping = document.getElementById('cartShipping');
-        const cartTotal = document.getElementById('cartTotal');
-        const checkoutBtn = document.getElementById('checkoutBtn');
+      // DOM Elements
+      const productsGrid = document.getElementById("productsGrid");
+      const loadingSpinner = document.getElementById("loadingSpinner");
+      const cartCount = document.querySelector(".cart-count");
+      const orderCountElement = document.querySelector(".order-count");
+      const cartItems = document.getElementById("cartItems");
+      const cartSubtotal = document.getElementById("cartSubtotal");
+      const cartShipping = document.getElementById("cartShipping");
+      const cartTotal = document.getElementById("cartTotal");
+      const checkoutBtn = document.getElementById("checkoutBtn");
 
-        // Initialize the shop
-        document.addEventListener('DOMContentLoaded', function() {
-            testConnection();
-            initializeShop();
-            updateCartUI();
-            updateOrderCount();
-            loadWishlist();
+      // Initialize the shop
+      document.addEventListener("DOMContentLoaded", function () {
+        testConnection();
+        initializeShop();
+        updateCartUI();
+        updateOrderCount();
+        loadWishlist();
+      });
+
+      // Test backend connection
+      async function testConnection() {
+        try {
+          console.log("🧪 Testing connection to backend...");
+
+          const healthResponse = await fetch(ENDPOINTS.HEALTH);
+          console.log("Health check:", healthResponse.ok);
+
+          const productsResponse = await fetch(ENDPOINTS.PRODUCTS);
+          console.log("Public products endpoint:", productsResponse.ok);
+
+          if (productsResponse.ok) {
+            const products = await productsResponse.json();
+            console.log(
+              `Found ${products.length} products via public endpoint`
+            );
+          }
+        } catch (error) {
+          console.error("Connection test failed:", error);
+          showErrorState(
+            "Cannot connect to server. Please make sure the backend is running on localhost:5001"
+          );
+        }
+      }
+
+      // Initialize Shop Functionality
+      function initializeShop() {
+        // Dark/Light Mode Toggle
+        const modeToggle = document.querySelector(".mode-toggle");
+        const body = document.body;
+
+        modeToggle.addEventListener("click", () => {
+          body.classList.toggle("dark-mode");
+          if (body.classList.contains("dark-mode")) {
+            localStorage.setItem("theme", "dark");
+          } else {
+            localStorage.setItem("theme", "light");
+          }
         });
 
-        // Test backend connection
-        async function testConnection() {
-            try {
-                console.log('🧪 Testing connection to backend...');
-                
-                const healthResponse = await fetch(ENDPOINTS.HEALTH);
-                console.log('Health check:', healthResponse.ok);
-                
-                const productsResponse = await fetch(ENDPOINTS.PRODUCTS);
-                console.log('Public products endpoint:', productsResponse.ok);
-                
-                if (productsResponse.ok) {
-                    const products = await productsResponse.json();
-                    console.log(`Found ${products.length} products via public endpoint`);
-                }
-                
-            } catch (error) {
-                console.error('Connection test failed:', error);
-                showErrorState('Cannot connect to server. Please make sure the backend is running on localhost:5001');
-            }
+        // Check for saved theme preference
+        if (localStorage.getItem("theme") === "dark") {
+          body.classList.add("dark-mode");
         }
 
-        // Initialize Shop Functionality
-        function initializeShop() {
-            // Dark/Light Mode Toggle
-            const modeToggle = document.querySelector('.mode-toggle');
-            const body = document.body;
-            
-            modeToggle.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                if (body.classList.contains('dark-mode')) {
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    localStorage.setItem('theme', 'light');
-                }
-            });
-            
-            // Check for saved theme preference
-            if (localStorage.getItem('theme') === 'dark') {
-                body.classList.add('dark-mode');
-            }
-            
-            // Cart Panel Toggle
-            const cartBubble = document.getElementById('cartBubble');
-            const cartPanel = document.querySelector('.cart-panel');
-            const closeCart = document.querySelector('.close-cart');
-            
-            cartBubble.addEventListener('click', () => {
-                cartPanel.classList.add('active');
-            });
-            
-            closeCart.addEventListener('click', () => {
-                cartPanel.classList.remove('active');
-            });
+        // Cart Panel Toggle
+        const cartBubble = document.getElementById("cartBubble");
+        const cartPanel = document.querySelector(".cart-panel");
+        const closeCart = document.querySelector(".close-cart");
 
-            // Load cart from backend if user is logged in
-            loadCartFromBackend();
-            
-            // Modal Close
-            const productModal = document.getElementById('productModal');
-            const modalClose = document.querySelector('.modal-close');
-            
-            modalClose.addEventListener('click', () => {
-                productModal.classList.remove('active');
-            });
-            
-            // Close modal when clicking outside
-            productModal.addEventListener('click', (e) => {
-                if (e.target === productModal) {
-                    productModal.classList.remove('active');
-                }
-            });
-            
-            // Filter functionality
-            setupFilters();
-            
-            // Checkout button
-            checkoutBtn.addEventListener('click', proceedToCheckout);
-            
-            // Load products
-            loadProducts();
+        cartBubble.addEventListener("click", () => {
+          cartPanel.classList.add("active");
+        });
+
+        closeCart.addEventListener("click", () => {
+          cartPanel.classList.remove("active");
+        });
+
+        // Load cart from backend if user is logged in
+        loadCartFromBackend();
+
+        // Modal Close
+        const productModal = document.getElementById("productModal");
+        const modalClose = document.querySelector(".modal-close");
+
+        modalClose.addEventListener("click", () => {
+          productModal.classList.remove("active");
+        });
+
+        // Close modal when clicking outside
+        productModal.addEventListener("click", (e) => {
+          if (e.target === productModal) {
+            productModal.classList.remove("active");
+          }
+        });
+
+        // Filter functionality
+        setupFilters();
+
+        // Checkout button
+        checkoutBtn.addEventListener("click", proceedToCheckout);
+
+        // Load products
+        loadProducts();
+      }
+
+      // Setup filter functionality
+      function setupFilters() {
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        const sortSelect = document.getElementById("sortSelect");
+        const lengthFilter = document.getElementById("lengthFilter");
+
+        filterBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            filterBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            filterProducts();
+          });
+        });
+
+        sortSelect.addEventListener("change", filterProducts);
+        lengthFilter.addEventListener("change", filterProducts);
+      }
+
+      // Load products from backend
+      async function loadProducts() {
+        showLoading();
+
+        try {
+          console.log("🔄 Loading products from:", ENDPOINTS.PRODUCTS);
+
+          const response = await fetch(ENDPOINTS.PRODUCTS, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          console.log("📡 API Response Status:", response.status);
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch products: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const productsData = await response.json();
+          console.log("📦 Products Data Received:", productsData);
+
+          // Handle different response formats
+          if (Array.isArray(productsData)) {
+            products = productsData;
+          } else if (
+            productsData.products &&
+            Array.isArray(productsData.products)
+          ) {
+            products = productsData.products;
+          } else if (Array.isArray(productsData.data)) {
+            products = productsData.data;
+          } else {
+            products = [];
+            console.warn("⚠️ Unexpected data format:", productsData);
+          }
+
+          console.log(`✅ Loaded ${products.length} products`);
+
+          if (products.length === 0) {
+            showEmptyState("No products available in the database");
+          } else {
+            renderProducts(products);
+          }
+        } catch (error) {
+          console.error("❌ Error loading products:", error);
+          showErrorState(error.message);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      // Render products to the grid
+      function renderProducts(productsToRender) {
+        productsGrid.innerHTML = "";
+
+        if (productsToRender.length === 0) {
+          showEmptyState("No products match your criteria");
+          return;
         }
 
-        // Setup filter functionality
-        function setupFilters() {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const sortSelect = document.getElementById('sortSelect');
-            const lengthFilter = document.getElementById('lengthFilter');
-            
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    filterProducts();
-                });
-            });
-            
-            sortSelect.addEventListener('change', filterProducts);
-            lengthFilter.addEventListener('change', filterProducts);
-        }
+        productsToRender.forEach((product) => {
+          const productCard = createProductCard(product);
+          productsGrid.appendChild(productCard);
+        });
+      }
 
-        // Load products from backend
-        async function loadProducts() {
-            showLoading();
-            
-            try {
-                console.log('🔄 Loading products from:', ENDPOINTS.PRODUCTS);
-                
-                const response = await fetch(ENDPOINTS.PRODUCTS, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                console.log('📡 API Response Status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
-                }
-                
-                const productsData = await response.json();
-                console.log('📦 Products Data Received:', productsData);
-                
-                // Handle different response formats
-                if (Array.isArray(productsData)) {
-                    products = productsData;
-                } else if (productsData.products && Array.isArray(productsData.products)) {
-                    products = productsData.products;
-                } else if (Array.isArray(productsData.data)) {
-                    products = productsData.data;
-                } else {
-                    products = [];
-                    console.warn('⚠️ Unexpected data format:', productsData);
-                }
-                
-                console.log(`✅ Loaded ${products.length} products`);
-                
-                if (products.length === 0) {
-                    showEmptyState('No products available in the database');
-                } else {
-                    renderProducts(products);
-                }
-            } catch (error) {
-                console.error('❌ Error loading products:', error);
-                showErrorState(error.message);
-            } finally {
-                hideLoading();
-            }
-        }
+      // Create product card HTML
+      function createProductCard(product) {
+        const card = document.createElement("div");
+        card.className = "product-card";
 
-        // Render products to the grid
-        function renderProducts(productsToRender) {
-            productsGrid.innerHTML = '';
-            
-            if (productsToRender.length === 0) {
-                showEmptyState('No products match your criteria');
-                return;
-            }
-            
-            productsToRender.forEach(product => {
-                const productCard = createProductCard(product);
-                productsGrid.appendChild(productCard);
-            });
-        }
+        // Use the correct property names from your backend
+        const productId = product._id || product.id;
+        const productName = product.name || "Unnamed Product";
+        const productPrice = product.price || 0;
+        const productImage =
+          product.image ||
+          product.images?.[0]?.url ||
+          "images/placeholder-product.jpg";
+        const productType =
+          product.type || product.category || "Hair Extension";
+        const productLength = product.length || "N/A";
+        const productQuality = product.quality || "Premium";
+        const productStock = product.stock || 0;
+        const productDescription = product.description || "";
 
-        // Create product card HTML
-        function createProductCard(product) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            
-            // Use the correct property names from your backend
-            const productId = product._id || product.id;
-            const productName = product.name || 'Unnamed Product';
-            const productPrice = product.price || 0;
-            const productImage = product.image || product.images?.[0]?.url || 'images/placeholder-product.jpg';
-            const productType = product.type || product.category || 'Hair Extension';
-            const productLength = product.length || 'N/A';
-            const productQuality = product.quality || 'Premium';
-            const productStock = product.stock || 0;
-            const productDescription = product.description || '';
-            
-            // Check if product is in wishlist
-            const isInWishlist = wishlist.some(item => item.productId === productId);
-            
-            card.innerHTML = `
+        // Check if product is in wishlist
+        const isInWishlist = wishlist.some(
+          (item) => item.productId === productId
+        );
+
+        card.innerHTML = `
                 <div class="product-image">
                     <img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">
                     <div class="quality-badge">${productQuality}</div>
@@ -1270,379 +1349,446 @@
                     <h3>${productName}</h3>
                     <div class="product-detail">${productType} • ${productLength}</div>
                     <div class="price-container">
-                        <div class="price">$${productPrice.toFixed(2)}</div>
-                        ${product.oldPrice ? `<div class="old-price">$${product.oldPrice.toFixed(2)}</div>` : ''}
+                        <div class="price">€${productPrice.toFixed(2)}</div>
+                        ${
+                          product.oldPrice
+                            ? `<div class="old-price">€${product.oldPrice.toFixed(
+                                2
+                              )}</div>`
+                            : ""
+                        }
                     </div>
                     <div class="product-actions">
-                        <button class="add-to-cart" data-product="${productId}" ${productStock === 0 ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
-                            <i class="fas fa-cart-plus"></i> ${productStock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                        <button class="add-to-cart" data-product="${productId}" ${
+          productStock === 0
+            ? 'disabled style="opacity: 0.6; cursor: not-allowed;"'
+            : ""
+        }>
+                            <i class="fas fa-cart-plus"></i> ${
+                              productStock === 0
+                                ? "Out of Stock"
+                                : "Add to Cart"
+                            }
                         </button>
-                        <button class="wishlist-btn ${isInWishlist ? 'active' : ''}" data-product="${productId}">
+                        <button class="wishlist-btn ${
+                          isInWishlist ? "active" : ""
+                        }" data-product="${productId}">
                             <i class="fas fa-heart"></i>
                         </button>
                     </div>
-                    ${productStock === 0 ? '<div style="color: #ff6b6b; font-size: 12px; margin-top: 5px;">Out of Stock</div>' : ''}
+                    ${
+                      productStock === 0
+                        ? '<div style="color: #ff6b6b; font-size: 12px; margin-top: 5px;">Out of Stock</div>'
+                        : ""
+                    }
                 </div>
             `;
-            
-            // Add event listeners only if product is in stock
-            if (productStock > 0) {
-                const quickViewBtn = card.querySelector('.quick-view-btn');
-                const addToCartBtn = card.querySelector('.add-to-cart');
-                const wishlistBtn = card.querySelector('.wishlist-btn');
-                
-                quickViewBtn.addEventListener('click', () => openQuickView(productId));
-                addToCartBtn.addEventListener('click', () => addToCart(productId));
-                wishlistBtn.addEventListener('click', () => toggleWishlist(productId, wishlistBtn));
-            }
-            
-            return card;
+
+        // Add event listeners only if product is in stock
+        if (productStock > 0) {
+          const quickViewBtn = card.querySelector(".quick-view-btn");
+          const addToCartBtn = card.querySelector(".add-to-cart");
+          const wishlistBtn = card.querySelector(".wishlist-btn");
+
+          quickViewBtn.addEventListener("click", () =>
+            openQuickView(productId)
+          );
+          addToCartBtn.addEventListener("click", () => addToCart(productId));
+          wishlistBtn.addEventListener("click", () =>
+            toggleWishlist(productId, wishlistBtn)
+          );
         }
 
-        // Open quick view modal
-        function openQuickView(productId) {
-            const product = products.find(p => (p._id === productId) || (p.id === productId));
-            if (!product) {
-                console.error('Product not found:', productId);
-                showNotification('Product not found');
-                return;
-            }
-            
-            currentProductId = productId;
-            
-            // Populate modal with product data
-            const productImage = product.image || product.images?.[0]?.url || 'images/placeholder-product.jpg';
-            const productName = product.name || 'Unnamed Product';
-            const productPrice = product.price || 0;
-            const productType = product.type || product.category || 'N/A';
-            const productLength = product.length || 'N/A';
-            const productTexture = product.texture || 'N/A';
-            const productColor = product.color || 'N/A';
-            const productQuality = product.quality || 'N/A';
-            const productStock = product.stock || 0;
-            const productDescription = product.description || 'No description available.';
-            
-            // Check if product is in wishlist
-            const isInWishlist = wishlist.some(item => item.productId === productId);
-            
-            document.getElementById('modalImg').src = productImage;
-            document.getElementById('modalTitle').textContent = productName;
-            document.getElementById('modalPrice').textContent = `$${productPrice.toFixed(2)}`;
-            document.getElementById('modalOldPrice').textContent = product.oldPrice ? `$${product.oldPrice.toFixed(2)}` : '';
-            document.getElementById('modalType').textContent = productType;
-            document.getElementById('modalLength').textContent = productLength;
-            document.getElementById('modalTexture').textContent = productTexture;
-            document.getElementById('modalColor').textContent = productColor;
-            document.getElementById('modalQuality').textContent = productQuality;
-            document.getElementById('modalStock').textContent = productStock;
-            document.getElementById('modalDescription').textContent = productDescription;
-            
-            // Update add to cart button in modal
-            const modalAddToCart = document.getElementById('modalAddToCart');
-            modalAddToCart.onclick = () => addToCart(productId);
-            modalAddToCart.disabled = productStock === 0;
-            modalAddToCart.innerHTML = productStock === 0 ? 
-                '<i class="fas fa-cart-plus"></i> Out of Stock' : 
-                '<i class="fas fa-cart-plus"></i> Add to Cart';
-            
-            // Update wishlist button in modal
-            const modalWishlistBtn = document.getElementById('modalWishlistBtn');
-            modalWishlistBtn.className = `wishlist-btn ${isInWishlist ? 'active' : ''}`;
-            modalWishlistBtn.onclick = () => toggleWishlist(productId, modalWishlistBtn);
-            
-            // Show modal
-            document.getElementById('productModal').classList.add('active');
+        return card;
+      }
+
+      // Open quick view modal
+      function openQuickView(productId) {
+        const product = products.find(
+          (p) => p._id === productId || p.id === productId
+        );
+        if (!product) {
+          console.error("Product not found:", productId);
+          showNotification("Product not found");
+          return;
         }
 
-        // // Add product to cart
-        // function addToCart(productId) {
-        //     const product = products.find(p => (p._id === productId) || (p.id === productId));
-        //     if (!product) {
-        //         showNotification('Product not found');
-        //         return;
-        //     }
-            
-        //     if (product.stock === 0) {
-        //         showNotification('This product is out of stock');
-        //         return;
-        //     }
-            
-        //     const existingItem = cart.find(item => item.id === productId);
-            
-        //     if (existingItem) {
-        //         // Check if we're exceeding available stock
-        //         if (existingItem.quantity >= product.stock) {
-        //             showNotification(`Only ${product.stock} items available in stock`);
-        //             return;
-        //         }
-        //         existingItem.quantity += 1;
-        //     } else {
-        //         cart.push({
-        //             id: productId,
-        //             name: product.name,
-        //             price: product.price,
-        //             image: product.image || product.images?.[0]?.url,
-        //             quantity: 1,
-        //             maxStock: product.stock
-        //         });
-        //     }
-            
-        //     // Save to localStorage
-        //     localStorage.setItem('olysHairCart', JSON.stringify(cart));
-            
-            
-        //     // Update UI
-        //     updateCartUI();
-            
-        //     // Show notification
-        //     showNotification('Item added to cart!');
-            
-        //     // Open cart panel
-        //     document.querySelector('.cart-panel').classList.add('active');
-        // }
+        currentProductId = productId;
 
-        // Add product to cart
-        async function addToCart(productId) {
-            const product = products.find(p => (p._id === productId) || (p.id === productId));
-            if (!product) {
-                showNotification('Product not found', 'error');
-                return;
-            }
-            
-            if (product.stock === 0) {
-                showNotification('This product is out of stock', 'error');
-                return;
-            }
-            
-            // Check if user is logged in
-            const token = localStorage.getItem('token');
-            
-            if (token) {
-                // User is logged in - sync with backend
-                try {
-                    console.log('🛒 Adding to cart via API:', productId);
-                    
-                    const response = await fetch(`${API_BASE_URL}/cart/add`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            productId: productId,
-                            quantity: 1
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Failed to add to cart');
-                    }
-                    
-                    const data = await response.json();
-                    console.log('✅ Cart updated:', data);
-                    
-                    // Update local cart from backend response
-                    if (data.cart && data.cart.items) {
-                        cart = data.cart.items.map(item => ({
-                            id: item.productId._id || item.productId,
-                            name: item.name || item.productId.name,
-                            price: item.price || item.productId.price,
-                            image: item.image || item.productId.images?.[0]?.url,
-                            quantity: item.quantity,
-                            maxStock: item.productId.stock
-                        }));
-                        
-                        // Save to localStorage as backup
-                        localStorage.setItem('olysHairCart', JSON.stringify(cart));
-                    }
-                    
-                    showNotification('Item added to cart!');
-                    
-                } catch (error) {
-                    console.error('❌ Error adding to cart:', error);
-                    showNotification(error.message || 'Failed to add to cart', 'error');
-                    
-                    // Fallback to localStorage if API fails
-                    addToLocalCart(productId, product);
-                }
-            } else {
-                // User not logged in - use localStorage only
-                console.log('⚠️ User not logged in, using localStorage only');
-                addToLocalCart(productId, product);
-                showNotification('Item added to cart! Please log in to sync across devices.');
-            }
-            
-            // Update UI
-            updateCartUI();
-            
-            // Open cart panel
-            document.querySelector('.cart-panel').classList.add('active');
+        // Populate modal with product data
+        const productImage =
+          product.image ||
+          product.images?.[0]?.url ||
+          "images/placeholder-product.jpg";
+        const productName = product.name || "Unnamed Product";
+        const productPrice = product.price || 0;
+        const productType = product.type || product.category || "N/A";
+        const productLength = product.length || "N/A";
+        const productTexture = product.texture || "N/A";
+        const productColor = product.color || "N/A";
+        const productQuality = product.quality || "N/A";
+        const productStock = product.stock || 0;
+        const productDescription =
+          product.description || "No description available.";
+
+        // Check if product is in wishlist
+        const isInWishlist = wishlist.some(
+          (item) => item.productId === productId
+        );
+
+        document.getElementById("modalImg").src = productImage;
+        document.getElementById("modalTitle").textContent = productName;
+        document.getElementById(
+          "modalPrice"
+        ).textContent = `€${productPrice.toFixed(2)}`;
+        document.getElementById("modalOldPrice").textContent = product.oldPrice
+          ? `€${product.oldPrice.toFixed(2)}`
+          : "";
+        document.getElementById("modalType").textContent = productType;
+        document.getElementById("modalLength").textContent = productLength;
+        document.getElementById("modalTexture").textContent = productTexture;
+        document.getElementById("modalColor").textContent = productColor;
+        document.getElementById("modalQuality").textContent = productQuality;
+        document.getElementById("modalStock").textContent = productStock;
+        document.getElementById("modalDescription").textContent =
+          productDescription;
+
+        // Update add to cart button in modal
+        const modalAddToCart = document.getElementById("modalAddToCart");
+        modalAddToCart.onclick = () => addToCart(productId);
+        modalAddToCart.disabled = productStock === 0;
+        modalAddToCart.innerHTML =
+          productStock === 0
+            ? '<i class="fas fa-cart-plus"></i> Out of Stock'
+            : '<i class="fas fa-cart-plus"></i> Add to Cart';
+
+        // Update wishlist button in modal
+        const modalWishlistBtn = document.getElementById("modalWishlistBtn");
+        modalWishlistBtn.className = `wishlist-btn ${
+          isInWishlist ? "active" : ""
+        }`;
+        modalWishlistBtn.onclick = () =>
+          toggleWishlist(productId, modalWishlistBtn);
+
+        // Show modal
+        document.getElementById("productModal").classList.add("active");
+      }
+
+      // // Add product to cart
+      // function addToCart(productId) {
+      //     const product = products.find(p => (p._id === productId) || (p.id === productId));
+      //     if (!product) {
+      //         showNotification('Product not found');
+      //         return;
+      //     }
+
+      //     if (product.stock === 0) {
+      //         showNotification('This product is out of stock');
+      //         return;
+      //     }
+
+      //     const existingItem = cart.find(item => item.id === productId);
+
+      //     if (existingItem) {
+      //         // Check if we're exceeding available stock
+      //         if (existingItem.quantity >= product.stock) {
+      //             showNotification(`Only ${product.stock} items available in stock`);
+      //             return;
+      //         }
+      //         existingItem.quantity += 1;
+      //     } else {
+      //         cart.push({
+      //             id: productId,
+      //             name: product.name,
+      //             price: product.price,
+      //             image: product.image || product.images?.[0]?.url,
+      //             quantity: 1,
+      //             maxStock: product.stock
+      //         });
+      //     }
+
+      //     // Save to localStorage
+      //     localStorage.setItem('olysHairCart', JSON.stringify(cart));
+
+      //     // Update UI
+      //     updateCartUI();
+
+      //     // Show notification
+      //     showNotification('Item added to cart!');
+
+      //     // Open cart panel
+      //     document.querySelector('.cart-panel').classList.add('active');
+      // }
+
+      // Add product to cart
+      async function addToCart(productId) {
+        const product = products.find(
+          (p) => p._id === productId || p.id === productId
+        );
+        if (!product) {
+          showNotification("Product not found", "error");
+          return;
         }
 
-        // Helper function for localStorage cart operations
-        function addToLocalCart(productId, product) {
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                // Check if we're exceeding available stock
-                if (existingItem.quantity >= product.stock) {
-                    showNotification(`Only ${product.stock} items available in stock`, 'error');
-                    return;
-                }
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id: productId,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image || product.images?.[0]?.url,
-                    quantity: 1,
-                    maxStock: product.stock
-                });
-            }
-            
-            // Save to localStorage
-            localStorage.setItem('olysHairCart', JSON.stringify(cart));
+        if (product.stock === 0) {
+          showNotification("This product is out of stock", "error");
+          return;
         }
 
+        // Check if user is logged in
+        const token = localStorage.getItem("token");
 
-        
+        if (token) {
+          // User is logged in - sync with backend
+          try {
+            console.log("🛒 Adding to cart via API:", productId);
 
-        // Toggle wishlist
-        async function toggleWishlist(productId, buttonElement) {
-            const product = products.find(p => (p._id === productId) || (p.id === productId));
-            if (!product) {
-                showNotification('Product not found');
-                return;
+            const response = await fetch(`${API_BASE_URL}/cart/add`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                productId: productId,
+                quantity: 1,
+              }),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || "Failed to add to cart");
             }
 
-            const isInWishlist = wishlist.some(item => item.productId === productId);
-            
-            if (isInWishlist) {
-                // Remove from wishlist
-                wishlist = wishlist.filter(item => item.productId !== productId);
-                showNotification('Removed from wishlist');
-            } else {
-                // Add to wishlist
-                wishlist.push({
-                    productId: productId,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image || product.images?.[0]?.url,
-                    addedAt: new Date().toISOString()
-                });
-                showNotification('Added to wishlist!');
+            const data = await response.json();
+            console.log("✅ Cart updated:", data);
+
+            // Update local cart from backend response
+            if (data.cart && data.cart.items) {
+              cart = data.cart.items.map((item) => ({
+                id: item.productId._id || item.productId,
+                name: item.name || item.productId.name,
+                price: item.price || item.productId.price,
+                image: item.image || item.productId.images?.[0]?.url,
+                quantity: item.quantity,
+                maxStock: item.productId.stock,
+              }));
+
+              // Save to localStorage as backup
+              localStorage.setItem("olysHairCart", JSON.stringify(cart));
             }
-            
-            // Save to localStorage
-            localStorage.setItem('olysHairWishlist', JSON.stringify(wishlist));
-            
-            // Update button appearance
-            if (buttonElement) {
-                buttonElement.classList.toggle('active', !isInWishlist);
-            }
-            
-            // Sync with backend if user is logged in
-            await syncWishlistWithBackend(productId, !isInWishlist);
+
+            showNotification("Item added to cart!");
+          } catch (error) {
+            console.error("❌ Error adding to cart:", error);
+            showNotification(error.message || "Failed to add to cart", "error");
+
+            // Fallback to localStorage if API fails
+            addToLocalCart(productId, product);
+          }
+        } else {
+          // User not logged in - use localStorage only
+          console.log("⚠️ User not logged in, using localStorage only");
+          addToLocalCart(productId, product);
+          showNotification(
+            "Item added to cart! Please log in to sync across devices."
+          );
         }
 
-        // Sync wishlist with backend
-        async function syncWishlistWithBackend(productId, addToWishlist) {
-            const token = localStorage.getItem('token');
-            if (!token) return;
+        // Update UI
+        updateCartUI();
 
-            try {
-                const url = addToWishlist ? `${ENDPOINTS.WISHLIST}` : `${ENDPOINTS.WISHLIST}/${productId}`;
-                const method = addToWishlist ? 'POST' : 'DELETE';
-                const body = addToWishlist ? JSON.stringify({
-                    productId: productId,
-                    name: products.find(p => (p._id === productId) || (p.id === productId))?.name,
-                    price: products.find(p => (p._id === productId) || (p.id === productId))?.price,
-                    image: products.find(p => (p._id === productId) || (p.id === productId))?.image
-                }) : JSON.stringify({ productId });
+        // Open cart panel
+        document.querySelector(".cart-panel").classList.add("active");
+      }
 
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: addToWishlist ? body : undefined
-                });
+      // Helper function for localStorage cart operations
+      function addToLocalCart(productId, product) {
+        const existingItem = cart.find((item) => item.id === productId);
 
-                if (!response.ok) {
-                    console.error('Failed to sync wishlist with backend');
-                }
-            } catch (error) {
-                console.error('Error syncing wishlist:', error);
-            }
+        if (existingItem) {
+          // Check if we're exceeding available stock
+          if (existingItem.quantity >= product.stock) {
+            showNotification(
+              `Only ${product.stock} items available in stock`,
+              "error"
+            );
+            return;
+          }
+          existingItem.quantity += 1;
+        } else {
+          cart.push({
+            id: productId,
+            name: product.name,
+            price: product.price,
+            image: product.image || product.images?.[0]?.url,
+            quantity: 1,
+            maxStock: product.stock,
+          });
         }
 
-        // Load wishlist from backend
-        async function loadWishlist() {
-            const token = localStorage.getItem('token');
-            if (!token) return;
+        // Save to localStorage
+        localStorage.setItem("olysHairCart", JSON.stringify(cart));
+      }
 
-            try {
-                const response = await fetch(ENDPOINTS.WISHLIST, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.ok) {
-                    const backendWishlist = await response.json();
-                    wishlist = backendWishlist || [];
-                    localStorage.setItem('olysHairWishlist', JSON.stringify(wishlist));
-                }
-            } catch (error) {
-                console.error('Error loading wishlist from backend:', error);
-            }
+      // Toggle wishlist
+      async function toggleWishlist(productId, buttonElement) {
+        const product = products.find(
+          (p) => p._id === productId || p.id === productId
+        );
+        if (!product) {
+          showNotification("Product not found");
+          return;
         }
 
-        // Update cart UI
-        function updateCartUI() {
-            // Update cart count
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.textContent = totalItems;
-            
-            // Update cart items
-            cartItems.innerHTML = '';
-            
-            if (cart.length === 0) {
-                cartItems.innerHTML = `
+        const isInWishlist = wishlist.some(
+          (item) => item.productId === productId
+        );
+
+        if (isInWishlist) {
+          // Remove from wishlist
+          wishlist = wishlist.filter((item) => item.productId !== productId);
+          showNotification("Removed from wishlist");
+        } else {
+          // Add to wishlist
+          wishlist.push({
+            productId: productId,
+            name: product.name,
+            price: product.price,
+            image: product.image || product.images?.[0]?.url,
+            addedAt: new Date().toISOString(),
+          });
+          showNotification("Added to wishlist!");
+        }
+
+        // Save to localStorage
+        localStorage.setItem("olysHairWishlist", JSON.stringify(wishlist));
+
+        // Update button appearance
+        if (buttonElement) {
+          buttonElement.classList.toggle("active", !isInWishlist);
+        }
+
+        // Sync with backend if user is logged in
+        await syncWishlistWithBackend(productId, !isInWishlist);
+      }
+
+      // Sync wishlist with backend
+      async function syncWishlistWithBackend(productId, addToWishlist) {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+          const url = addToWishlist
+            ? `${ENDPOINTS.WISHLIST}`
+            : `${ENDPOINTS.WISHLIST}/${productId}`;
+          const method = addToWishlist ? "POST" : "DELETE";
+          const body = addToWishlist
+            ? JSON.stringify({
+                productId: productId,
+                name: products.find(
+                  (p) => p._id === productId || p.id === productId
+                )?.name,
+                price: products.find(
+                  (p) => p._id === productId || p.id === productId
+                )?.price,
+                image: products.find(
+                  (p) => p._id === productId || p.id === productId
+                )?.image,
+              })
+            : JSON.stringify({ productId });
+
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: addToWishlist ? body : undefined,
+          });
+
+          if (!response.ok) {
+            console.error("Failed to sync wishlist with backend");
+          }
+        } catch (error) {
+          console.error("Error syncing wishlist:", error);
+        }
+      }
+
+      // Load wishlist from backend
+      async function loadWishlist() {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+          const response = await fetch(ENDPOINTS.WISHLIST, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const backendWishlist = await response.json();
+            wishlist = backendWishlist || [];
+            localStorage.setItem("olysHairWishlist", JSON.stringify(wishlist));
+          }
+        } catch (error) {
+          console.error("Error loading wishlist from backend:", error);
+        }
+      }
+
+      // Update cart UI
+      function updateCartUI() {
+        // Update cart count
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = totalItems;
+
+        // Update cart items
+        cartItems.innerHTML = "";
+
+        if (cart.length === 0) {
+          cartItems.innerHTML = `
                     <div class="empty-state" style="padding: 20px;">
                         <i class="fas fa-shopping-cart"></i>
                         <p>Your cart is empty</p>
                     </div>
                 `;
-                cartSubtotal.textContent = '$0.00';
-                cartShipping.textContent = '$0.00';
-                cartTotal.textContent = '$0.00';
-                return;
-            }
-            
-            let subtotal = 0;
-            
-            cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
-                
-                const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item';
-                cartItem.innerHTML = `
+          cartSubtotal.textContent = "€0.00";
+          cartShipping.textContent = "€0.00";
+          cartTotal.textContent = "€0.00";
+          return;
+        }
+
+        let subtotal = 0;
+
+        cart.forEach((item) => {
+          const itemTotal = item.price * item.quantity;
+          subtotal += itemTotal;
+
+          const cartItem = document.createElement("div");
+          cartItem.className = "cart-item";
+          cartItem.innerHTML = `
                     <div class="cart-item-image">
-                        <img src="${item.image || 'images/placeholder-product.jpg'}" alt="${item.name}" onerror="this.src='images/placeholder-product.jpg'">
+                        <img src="${
+                          item.image || "images/placeholder-product.jpg"
+                        }" alt="${
+            item.name
+          }" onerror="this.src='images/placeholder-product.jpg'">
                     </div>
                     <div class="cart-item-details">
                         <h4>${item.name}</h4>
-                        <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                        <div class="cart-item-price">€${item.price.toFixed(
+                          2
+                        )}</div>
                         <div class="cart-item-actions">
                             <div class="quantity-control">
-                                <div class="quantity-btn minus" data-product="${item.id}">-</div>
+                                <div class="quantity-btn minus" data-product="${
+                                  item.id
+                                }">-</div>
                                 <span>${item.quantity}</span>
-                                <div class="quantity-btn plus" data-product="${item.id}">+</div>
+                                <div class="quantity-btn plus" data-product="${
+                                  item.id
+                                }">+</div>
                             </div>
                             <div class="remove-item" data-product="${item.id}">
                                 <i class="fas fa-trash"></i>
@@ -1650,327 +1796,349 @@
                         </div>
                     </div>
                 `;
-                
-                cartItems.appendChild(cartItem);
-            });
-            
-            // Add event listeners to cart items
-            document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    updateCartQuantity(e.target.dataset.product, -1);
-                });
-            });
-            
-            document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    updateCartQuantity(e.target.dataset.product, 1);
-                });
-            });
-            
-            document.querySelectorAll('.remove-item').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    removeFromCart(e.target.closest('.remove-item').dataset.product);
-                });
-            });
-            
-            // Calculate totals
-            const shipping = subtotal > 0 ? 10.00 : 0; // $10 flat rate shipping
-            const total = subtotal + shipping;
-            
-            cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
-            cartShipping.textContent = `$${shipping.toFixed(2)}`;
-            cartTotal.textContent = `$${total.toFixed(2)}`;
+
+          cartItems.appendChild(cartItem);
+        });
+
+        // Add event listeners to cart items
+        document.querySelectorAll(".quantity-btn.minus").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            updateCartQuantity(e.target.dataset.product, -1);
+          });
+        });
+
+        document.querySelectorAll(".quantity-btn.plus").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            updateCartQuantity(e.target.dataset.product, 1);
+          });
+        });
+
+        document.querySelectorAll(".remove-item").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            removeFromCart(e.target.closest(".remove-item").dataset.product);
+          });
+        });
+
+        // Calculate totals
+        const shipping = subtotal > 0 ? 10.0 : 0; // $10 flat rate shipping
+        const total = subtotal + shipping;
+
+        cartSubtotal.textContent = `€${subtotal.toFixed(2)}`;
+        cartShipping.textContent = `€${shipping.toFixed(2)}`;
+        cartTotal.textContent = `€${total.toFixed(2)}`;
+      }
+
+      // Update cart quantity
+      // function updateCartQuantity(productId, change) {
+      //     const item = cart.find(item => item.id === productId);
+      //     if (!item) return;
+
+      //     const newQuantity = item.quantity + change;
+
+      //     // Check stock limits
+      //     if (item.maxStock && newQuantity > item.maxStock) {
+      //         showNotification(`Only ${item.maxStock} items available in stock`);
+      //         return;
+      //     }
+
+      //     if (newQuantity <= 0) {
+      //         removeFromCart(productId);
+      //     } else {
+      //         item.quantity = newQuantity;
+      //         localStorage.setItem('olysHairCart', JSON.stringify(cart));
+      //         updateCartUI();
+      //     }
+      // }
+
+      // Update cart quantity (with backend sync)
+      async function updateCartQuantity(productId, change) {
+        const item = cart.find((item) => item.id === productId);
+        if (!item) return;
+
+        const newQuantity = item.quantity + change;
+
+        // Check stock limits
+        if (item.maxStock && newQuantity > item.maxStock) {
+          showNotification(
+            `Only ${item.maxStock} items available in stock`,
+            "error"
+          );
+          return;
         }
 
-        // Update cart quantity
-        // function updateCartQuantity(productId, change) {
-        //     const item = cart.find(item => item.id === productId);
-        //     if (!item) return;
-            
-        //     const newQuantity = item.quantity + change;
-            
-        //     // Check stock limits
-        //     if (item.maxStock && newQuantity > item.maxStock) {
-        //         showNotification(`Only ${item.maxStock} items available in stock`);
-        //         return;
-        //     }
-            
-        //     if (newQuantity <= 0) {
-        //         removeFromCart(productId);
-        //     } else {
-        //         item.quantity = newQuantity;
-        //         localStorage.setItem('olysHairCart', JSON.stringify(cart));
-        //         updateCartUI();
-        //     }
-        // }
-
-        // Update cart quantity (with backend sync)
-        async function updateCartQuantity(productId, change) {
-            const item = cart.find(item => item.id === productId);
-            if (!item) return;
-            
-            const newQuantity = item.quantity + change;
-            
-            // Check stock limits
-            if (item.maxStock && newQuantity > item.maxStock) {
-                showNotification(`Only ${item.maxStock} items available in stock`, 'error');
-                return;
-            }
-            
-            if (newQuantity <= 0) {
-                removeFromCart(productId);
-                return;
-            }
-            
-            const token = localStorage.getItem('token');
-            
-            if (token) {
-                // User is logged in - sync with backend
-                try {
-                    console.log('📝 Updating cart quantity via API:', productId, newQuantity);
-                    
-                    const response = await fetch(`${API_BASE_URL}/cart/update/${productId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            quantity: newQuantity
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to update cart');
-                    }
-                    
-                    const data = await response.json();
-                    console.log('✅ Cart quantity updated:', data);
-                    
-                    // Update local cart
-                    item.quantity = newQuantity;
-                    localStorage.setItem('olysHairCart', JSON.stringify(cart));
-                    
-                } catch (error) {
-                    console.error('❌ Error updating cart:', error);
-                    showNotification('Failed to update cart', 'error');
-                    return;
-                }
-            } else {
-                // Update localStorage only
-                item.quantity = newQuantity;
-                localStorage.setItem('olysHairCart', JSON.stringify(cart));
-            }
-            
-            updateCartUI();
+        if (newQuantity <= 0) {
+          removeFromCart(productId);
+          return;
         }
 
+        const token = localStorage.getItem("token");
 
-        // Remove item from cart
-        // function removeFromCart(productId) {
-        //     cart = cart.filter(item => item.id !== productId);
-        //     localStorage.setItem('olysHairCart', JSON.stringify(cart));
-        //     updateCartUI();
-        //     showNotification('Item removed from cart');
-        // }
+        if (token) {
+          // User is logged in - sync with backend
+          try {
+            console.log(
+              "📝 Updating cart quantity via API:",
+              productId,
+              newQuantity
+            );
 
-        // Remove item from cart (with backend sync)
-        async function removeFromCart(productId) {
-            const token = localStorage.getItem('token');
-            
-            if (token) {
-                // User is logged in - sync with backend
-                try {
-                    console.log('🗑️ Removing from cart via API:', productId);
-                    
-                    const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to remove from cart');
-                    }
-                    
-                    console.log('✅ Item removed from cart');
-                    
-                } catch (error) {
-                    console.error('❌ Error removing from cart:', error);
-                    showNotification('Failed to remove from cart', 'error');
-                    return;
-                }
+            const response = await fetch(
+              `${API_BASE_URL}/cart/update/${productId}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  quantity: newQuantity,
+                }),
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to update cart");
             }
-            
+
+            const data = await response.json();
+            console.log("✅ Cart quantity updated:", data);
+
             // Update local cart
-            cart = cart.filter(item => item.id !== productId);
-            localStorage.setItem('olysHairCart', JSON.stringify(cart));
+            item.quantity = newQuantity;
+            localStorage.setItem("olysHairCart", JSON.stringify(cart));
+          } catch (error) {
+            console.error("❌ Error updating cart:", error);
+            showNotification("Failed to update cart", "error");
+            return;
+          }
+        } else {
+          // Update localStorage only
+          item.quantity = newQuantity;
+          localStorage.setItem("olysHairCart", JSON.stringify(cart));
+        }
+
+        updateCartUI();
+      }
+
+      // Remove item from cart
+      // function removeFromCart(productId) {
+      //     cart = cart.filter(item => item.id !== productId);
+      //     localStorage.setItem('olysHairCart', JSON.stringify(cart));
+      //     updateCartUI();
+      //     showNotification('Item removed from cart');
+      // }
+
+      // Remove item from cart (with backend sync)
+      async function removeFromCart(productId) {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+          // User is logged in - sync with backend
+          try {
+            console.log("🗑️ Removing from cart via API:", productId);
+
+            const response = await fetch(
+              `${API_BASE_URL}/cart/remove/${productId}`,
+              {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to remove from cart");
+            }
+
+            console.log("✅ Item removed from cart");
+          } catch (error) {
+            console.error("❌ Error removing from cart:", error);
+            showNotification("Failed to remove from cart", "error");
+            return;
+          }
+        }
+
+        // Update local cart
+        cart = cart.filter((item) => item.id !== productId);
+        localStorage.setItem("olysHairCart", JSON.stringify(cart));
+        updateCartUI();
+        showNotification("Item removed from cart");
+      }
+
+      // Load cart from backend (call this on page load)
+      async function loadCartFromBackend() {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.log("⚠️ No token found, using localStorage cart only");
+          return;
+        }
+
+        try {
+          console.log("🔄 Loading cart from backend...");
+
+          const response = await fetch(`${API_BASE_URL}/cart`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to load cart from backend");
+          }
+
+          const data = await response.json();
+          console.log("✅ Cart loaded from backend:", data);
+
+          if (data.cart && data.cart.items) {
+            cart = data.cart.items.map((item) => ({
+              id: item.productId?._id || item.productId,
+              name: item.name || item.productId?.name || "Unknown Product",
+              price: item.price || item.productId?.price || 0,
+              image:
+                item.image ||
+                item.productId?.images?.[0]?.url ||
+                "images/placeholder-product.jpg",
+              quantity: item.quantity,
+              maxStock: item.productId?.stock || 999,
+            }));
+
+            // Save to localStorage as backup
+            localStorage.setItem("olysHairCart", JSON.stringify(cart));
+
+            // Update UI
             updateCartUI();
-            showNotification('Item removed from cart');
+          }
+        } catch (error) {
+          console.error("❌ Error loading cart from backend:", error);
+          console.log("⚠️ Using localStorage cart as fallback");
+        }
+      }
+
+      // Update order count
+      async function updateOrderCount() {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+          const response = await fetch(`${ENDPOINTS.ORDERS}/count`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            orderCount = data.count || 0;
+            orderCountElement.textContent = orderCount;
+          }
+        } catch (error) {
+          console.error("Error fetching order count:", error);
+        }
+      }
+
+      // View orders
+      function viewOrders() {
+        window.location.href = "customerdashboard.html?section=orders";
+      }
+
+      // Filter products based on selected filters
+      function filterProducts() {
+        const activeCategory =
+          document.querySelector(".filter-btn.active").dataset.category;
+        const sortValue = document.getElementById("sortSelect").value;
+        const lengthValue = document.getElementById("lengthFilter").value;
+
+        let filteredProducts = [...products];
+
+        // Filter by category
+        if (activeCategory !== "all") {
+          filteredProducts = filteredProducts.filter((product) => {
+            const productCategory = product.category?.toLowerCase();
+            return productCategory === activeCategory;
+          });
         }
 
-        // Load cart from backend (call this on page load)
-        async function loadCartFromBackend() {
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                console.log('⚠️ No token found, using localStorage cart only');
-                return;
+        // Filter by length
+        if (lengthValue !== "all") {
+          filteredProducts = filteredProducts.filter((product) => {
+            if (!product.length) return false;
+
+            // Extract numeric length from string (e.g., "22 inches" -> 22)
+            const lengthMatch = product.length.match(/(\d+)/);
+            if (!lengthMatch) return false;
+
+            const productLength = parseInt(lengthMatch[1]);
+            switch (lengthValue) {
+              case "14-16":
+                return productLength >= 14 && productLength <= 16;
+              case "18-20":
+                return productLength >= 18 && productLength <= 20;
+              case "22-24":
+                return productLength >= 22 && productLength <= 24;
+              case "26+":
+                return productLength >= 26;
+              default:
+                return true;
             }
-            
-            try {
-                console.log('🔄 Loading cart from backend...');
-                
-                const response = await fetch(`${API_BASE_URL}/cart`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load cart from backend');
-                }
-                
-                const data = await response.json();
-                console.log('✅ Cart loaded from backend:', data);
-                
-                if (data.cart && data.cart.items) {
-                    cart = data.cart.items.map(item => ({
-                        id: item.productId?._id || item.productId,
-                        name: item.name || item.productId?.name || 'Unknown Product',
-                        price: item.price || item.productId?.price || 0,
-                        image: item.image || item.productId?.images?.[0]?.url || 'images/placeholder-product.jpg',
-                        quantity: item.quantity,
-                        maxStock: item.productId?.stock || 999
-                    }));
-                    
-                    // Save to localStorage as backup
-                    localStorage.setItem('olysHairCart', JSON.stringify(cart));
-                    
-                    // Update UI
-                    updateCartUI();
-                }
-                
-            } catch (error) {
-                console.error('❌ Error loading cart from backend:', error);
-                console.log('⚠️ Using localStorage cart as fallback');
-            }
+          });
         }
 
-        // Update order count
-        async function updateOrderCount() {
-            const token = localStorage.getItem('token');
-            if (!token) return;
-
-            try {
-                const response = await fetch(`${ENDPOINTS.ORDERS}/count`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    orderCount = data.count || 0;
-                    orderCountElement.textContent = orderCount;
-                }
-            } catch (error) {
-                console.error('Error fetching order count:', error);
-            }
+        // Sort products
+        switch (sortValue) {
+          case "price-low":
+            filteredProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+            break;
+          case "price-high":
+            filteredProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
+            break;
+          case "newest":
+            filteredProducts.sort(
+              (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+            );
+            break;
+          default: // popularity
+            // Default sorting - by name
+            filteredProducts.sort((a, b) =>
+              (a.name || "").localeCompare(b.name || "")
+            );
+            break;
         }
 
-        // View orders
-        function viewOrders() {
-            window.location.href = 'customerdashboard.html?section=orders';
+        renderProducts(filteredProducts);
+      }
+
+      // Proceed to checkout
+      function proceedToCheckout() {
+        if (cart.length === 0) {
+          showNotification("Your cart is empty");
+          return;
         }
 
-        // Filter products based on selected filters
-        function filterProducts() {
-            const activeCategory = document.querySelector('.filter-btn.active').dataset.category;
-            const sortValue = document.getElementById('sortSelect').value;
-            const lengthValue = document.getElementById('lengthFilter').value;
-            
-            let filteredProducts = [...products];
-            
-            // Filter by category
-            if (activeCategory !== 'all') {
-                filteredProducts = filteredProducts.filter(product => {
-                    const productCategory = product.category?.toLowerCase();
-                    return productCategory === activeCategory;
-                });
-            }
-            
-            // Filter by length
-            if (lengthValue !== 'all') {
-                filteredProducts = filteredProducts.filter(product => {
-                    if (!product.length) return false;
-                    
-                    // Extract numeric length from string (e.g., "22 inches" -> 22)
-                    const lengthMatch = product.length.match(/(\d+)/);
-                    if (!lengthMatch) return false;
-                    
-                    const productLength = parseInt(lengthMatch[1]);
-                    switch(lengthValue) {
-                        case '14-16': return productLength >= 14 && productLength <= 16;
-                        case '18-20': return productLength >= 18 && productLength <= 20;
-                        case '22-24': return productLength >= 22 && productLength <= 24;
-                        case '26+': return productLength >= 26;
-                        default: return true;
-                    }
-                });
-            }
-            
-            // Sort products
-            switch(sortValue) {
-                case 'price-low':
-                    filteredProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
-                    break;
-                case 'price-high':
-                    filteredProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
-                    break;
-                case 'newest':
-                    filteredProducts.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-                    break;
-                default: // popularity
-                    // Default sorting - by name
-                    filteredProducts.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-                    break;
-            }
-            
-            renderProducts(filteredProducts);
-        }
+        // Save cart to localStorage for checkout page
+        localStorage.setItem("olysHairCart", JSON.stringify(cart));
 
-        // Proceed to checkout
-        function proceedToCheckout() {
-            if (cart.length === 0) {
-                showNotification('Your cart is empty');
-                return;
-            }
-            
-            // Save cart to localStorage for checkout page
-            localStorage.setItem('olysHairCart', JSON.stringify(cart));
-            
-            // Redirect to checkout page
-            window.location.href = 'checkout.html';
-        }
+        // Redirect to checkout page
+        window.location.href = "checkout.html";
+      }
 
-        // Show loading spinner
-        function showLoading() {
-            loadingSpinner.style.display = 'block';
-        }
+      // Show loading spinner
+      function showLoading() {
+        loadingSpinner.style.display = "block";
+      }
 
-        // Hide loading spinner
-        function hideLoading() {
-            loadingSpinner.style.display = 'none';
-        }
+      // Hide loading spinner
+      function hideLoading() {
+        loadingSpinner.style.display = "none";
+      }
 
-        // Show empty state
-        function showEmptyState(message = 'No products found') {
-            productsGrid.innerHTML = `
+      // Show empty state
+      function showEmptyState(message = "No products found") {
+        productsGrid.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-box-open"></i>
                     <h3>${message}</h3>
@@ -1980,15 +2148,18 @@
                     </button>
                 </div>
             `;
-        }
+      }
 
-        // Show error state
-        function showErrorState(errorMessage = '') {
-            productsGrid.innerHTML = `
+      // Show error state
+      function showErrorState(errorMessage = "") {
+        productsGrid.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-exclamation-triangle"></i>
                     <h3>Unable to Load Products</h3>
-                    <p>${errorMessage || 'Please try refreshing the page or check your connection.'}</p>
+                    <p>${
+                      errorMessage ||
+                      "Please try refreshing the page or check your connection."
+                    }</p>
                     <div style="margin-top: 15px; font-size: 14px; color: #666;">
                         <p>Make sure your backend server is running on localhost:5001</p>
                         <p>API Endpoint: ${ENDPOINTS.PRODUCTS}</p>
@@ -1998,34 +2169,37 @@
                     </button>
                 </div>
             `;
-        }
+      }
 
-        // Show notification
-        function showNotification(message, type = 'success') {
-            // Remove existing notifications
-            document.querySelectorAll('.shop-notification').forEach(notification => {
-                notification.remove();
-            });
-            
-            const notification = document.createElement('div');
-            notification.className = 'shop-notification';
-            notification.style.backgroundColor = type === 'success' ? 'var(--success)' : 'var(--error)';
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
+      // Show notification
+      function showNotification(message, type = "success") {
+        // Remove existing notifications
+        document
+          .querySelectorAll(".shop-notification")
+          .forEach((notification) => {
+            notification.remove();
+          });
+
+        const notification = document.createElement("div");
+        notification.className = "shop-notification";
+        notification.style.backgroundColor =
+          type === "success" ? "var(--success)" : "var(--error)";
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.style.opacity = "0";
+            notification.style.transition = "opacity 0.3s ease";
             setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.opacity = '0';
-                    notification.style.transition = 'opacity 0.3s ease';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.remove();
-                        }
-                    }, 300);
-                }
-            }, 3000);
-        }
+              if (notification.parentNode) {
+                notification.remove();
+              }
+            }, 300);
+          }
+        }, 3000);
+      }
     </script>
-</body>
+  </body>
 </html>

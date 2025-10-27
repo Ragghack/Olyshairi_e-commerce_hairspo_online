@@ -1,1307 +1,1424 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OLYS HAIR - Customer Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --cream: #392625;
+        --white: #ffffff;
+        --dark-gray: #1e1e1e;
+        --light-bg: #f8f5f2;
+        --text-dark: #1e1e1e;
+        --text-light: #ffffff;
+        --card-bg: #ffffff;
+        --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        --accent: #c8a97e;
+        --success: #4caf50;
+        --warning: #ff9800;
+        --info: #2196f3;
+      }
+
+      .dark-mode {
+        --cream: #c8b4a8;
+        --white: #1e1e1e;
+        --dark-gray: #f8f5f2;
+        --light-bg: #2d2d2d;
+        --text-dark: #f8f5f2;
+        --text-light: #1e1e1e;
+        --card-bg: #181212;
+        --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
+        --accent: #d4b896;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: var(--white);
+        color: var(--text-dark);
+        line-height: 1.6;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Playfair Display", serif;
+        font-weight: 600;
+        color: var(--cream);
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 40px;
+        background-color: var(--white);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        box-shadow: var(--shadow);
+      }
+      body.dark-mode .logo-container {
+        content: url("images/Artboard 1 copy.png");
+        max-width: 31mm;
+        max-height: 100mm;
+        display: flex;
+        justify-content: center;
+      }
+
+      .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 180px;
+        height: 80px;
+        background-color: var(--white);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .logo {
+        max-width: 120px;
+        max-height: 50px;
+        display: block;
+        margin: 0 auto;
+        object-fit: contain;
+      }
+
+      .header-icons {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .header-icons i {
+        font-size: 20px;
+        color: var(--cream);
+        cursor: pointer;
+      }
+
+      .user-profile {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--cream);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-weight: bold;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        width: 200px;
+        padding: 15px;
+        display: none;
+        z-index: 1001;
+      }
+
+      .dropdown-menu.show {
+        display: block;
+      }
+
+      .dropdown-menu a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        text-decoration: none;
+        color: var(--text-dark);
+        border-radius: 4px;
+      }
+
+      .dropdown-menu a:hover {
+        background-color: var(--light-bg);
+      }
+
+      /* Dark/Light Mode Toggle */
+      .mode-toggle {
+        position: relative;
+        width: 60px;
+        height: 30px;
+        background-color: var(--light-bg);
+        border-radius: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+      }
+
+      .toggle-circle {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background-color: var(--cream);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        left: 4px;
+      }
+
+      .dark-mode .toggle-circle {
+        left: 34px;
+      }
+
+      .mode-toggle i {
+        font-size: 14px;
+        z-index: 2;
+      }
+
+      .fa-sun {
+        color: var(--cream);
+        margin-right: auto;
+      }
+
+      .fa-moon {
+        color: var(--cream);
+        margin-left: auto;
+      }
+
+      /* Dashboard Layout */
+      .dashboard-container {
+        display: flex;
+        margin-top: 120px;
+        min-height: calc(100vh - 180px);
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 280px;
+        background-color: var(--light-bg);
+        padding: 30px 20px;
+        position: fixed;
+        height: calc(100vh - 120px);
+        overflow-y: auto;
+      }
+
+      .sidebar-bubble {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        background-color: var(--card-bg);
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar-bubble:hover,
+      .sidebar-bubble.active {
+        background-color: var(--cream);
+        color: var(--white);
+        transform: translateX(5px);
+      }
+
+      .sidebar-bubble i {
+        margin-right: 15px;
+        font-size: 18px;
+      }
+
+      /* Main Content */
+      .dashboard-content {
+        flex: 1;
+        margin-left: 280px;
+        padding: 30px 40px;
+      }
+
+      .content-section {
+        display: none;
+      }
+
+      .content-section.active {
+        display: block;
+      }
+
+      /* Welcome Banner */
+      .welcome-banner {
+        background: linear-gradient(
+          135deg,
+          rgba(57, 38, 37, 0.85),
+          rgba(200, 169, 126, 0.85)
+        );
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: var(--white);
+        box-shadow: var(--shadow);
+      }
+
+      .welcome-banner h1 {
+        color: var(--white);
+        margin-bottom: 10px;
+      }
+
+      .points-display {
+        display: inline-block;
+        background-color: var(--white);
+        color: var(--cream);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        margin: 15px 0;
+      }
+
+      .quick-shortcuts {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .shortcut-btn {
+        padding: 10px 20px;
+        background-color: var(--white);
+        color: var(--cream);
+        border-radius: 8px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .shortcut-btn:hover {
+        background-color: var(--dark-gray);
+        color: var(--white);
+        transform: translateY(-3px);
+      }
+
+      /* Dashboard Sections */
+      .dashboard-section {
+        margin-bottom: 40px;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .view-all {
+        color: var(--cream);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .dashboard-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      /* Stats */
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--light-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: var(--cream);
+        font-size: 20px;
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--cream);
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: var(--text-dark);
+      }
+
+      /* Loading States */
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        color: var(--cream);
+      }
+
+      .loading-spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--light-bg);
+        border-top: 2px solid var(--cream);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
         }
-        
-        :root {
-            --cream: #392625;
-            --white: #ffffff;
-            --dark-gray: #1e1e1e;
-            --light-bg: #f8f5f2;
-            --text-dark: #1e1e1e;
-            --text-light: #ffffff;
-            --card-bg: #ffffff;
-            --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            --accent: #c8a97e;
-            --success: #4caf50;
-            --warning: #ff9800;
-            --info: #2196f3;
+        100% {
+          transform: rotate(360deg);
         }
-        
-        .dark-mode {
-            --cream: #c8b4a8;
-            --white: #1e1e1e;
-            --dark-gray: #f8f5f2;
-            --light-bg: #2d2d2d;
-            --text-dark: #f8f5f2;
-            --text-light: #1e1e1e;
-            --card-bg: #181212;
-            --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
-            --accent: #d4b896;
-        }
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--white);
-            color: var(--text-dark);
-            line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        
-        h1, h2, h3, h4 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            color: var(--cream);
-        }
-        
-        /* Header */
+      }
+
+      /* Empty States */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--cream);
+      }
+
+      .empty-state i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.7;
+      }
+
+      /* Form Styles */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--cream);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--light-bg);
+        border-radius: 8px;
+        background-color: var(--card-bg);
+        color: var(--text-dark);
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--cream);
+      }
+
+      .action-btn {
+        padding: 12px 25px;
+        background-color: var(--cream);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+      }
+
+      .action-btn:hover {
+        background-color: var(--accent);
+      }
+
+      /* Profile Section */
+      .profile-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--light-bg);
+      }
+
+      .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: var(--cream);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 40px;
+        margin-right: 20px;
+      }
+
+      /* Order Table */
+      .order-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .order-table th,
+      .order-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--light-bg);
+      }
+
+      .order-table th {
+        font-weight: 600;
+        color: var(--cream);
+      }
+
+      .status-badge {
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-delivered {
+        background-color: #e6f7ee;
+        color: #0c9770;
+      }
+
+      .status-processing {
+        background-color: #fef5e7;
+        color: #e58e02;
+      }
+
+      .status-shipped {
+        background-color: #e6f0ff;
+        color: #2d6bdb;
+      }
+
+      .status-pending {
+        background-color: #f5f5f5;
+        color: #6c757d;
+      }
+
+      /* Wishlist and Cart Items */
+      .wishlist-item,
+      .cart-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--light-bg);
+      }
+
+      .item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 15px;
+        background-color: var(--light-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .item-image i {
+        font-size: 24px;
+        color: var(--cream);
+      }
+
+      .item-details {
+        flex: 1;
+      }
+
+      .item-price {
+        color: var(--cream);
+        font-weight: 600;
+        margin: 5px 0;
+      }
+
+      .item-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      /* Booking Cards */
+      .booking-card {
+        margin-bottom: 15px;
+        padding: 15px;
+        border-left: 4px solid var(--cream);
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .booking-date {
+        font-weight: 600;
+        color: var(--cream);
+      }
+
+      .booking-service {
+        margin: 5px 0;
+      }
+
+      /* Notifications */
+      .notification-item {
+        padding: 15px;
+        border-left: 4px solid var(--cream);
+        margin-bottom: 15px;
+        background-color: var(--light-bg);
+        border-radius: 8px;
+      }
+
+      .notification-unread {
+        border-left: 4px solid var(--accent);
+      }
+
+      .notification-time {
+        font-size: 12px;
+        color: var(--cream);
+        margin-top: 5px;
+      }
+
+      /* Floating Bubbles */
+      .floating-bubbles {
+        position: fixed;
+        right: 30px;
+        bottom: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 1200;
+      }
+
+      .bubble-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--cream);
+        color: var(--white);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .bubble-btn span {
+        display: none;
+        position: absolute;
+        right: 70px;
+        background: var(--dark-gray);
+        color: var(--white);
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
+      .bubble-btn:hover {
+        background-color: var(--accent);
+        transform: scale(1.1);
+      }
+
+      .bubble-btn:hover span {
+        display: block;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            background-color: var(--white);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow);
+          padding: 15px 20px;
         }
-        body.dark-mode .logo-container {
-  content: url("images/Artboard 1 copy.png");
-   max-width: 31mm;
-  max-height: 100mm;
-              display: flex;
-            justify-content: center;
-        }
-        
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 180px;
-            height: 80px;
-            background-color: var(--white);
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-        
-        .logo {
-            max-width: 120px;
-            max-height: 50px;
-            display: block;
-            margin: 0 auto;
-            object-fit: contain;
-        }
-        
-        .header-icons {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .header-icons i {
-            font-size: 20px;
-            color: var(--cream);
-            cursor: pointer;
-        }
-        
-        .user-profile {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--cream);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-weight: bold;
-        }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            background-color: var(--white);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            width: 200px;
-            padding: 15px;
-            display: none;
-            z-index: 1001;
-        }
-        
-        .dropdown-menu.show {
-            display: block;
-        }
-        
-        .dropdown-menu a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            text-decoration: none;
-            color: var(--text-dark);
-            border-radius: 4px;
-        }
-        
-        .dropdown-menu a:hover {
-            background-color: var(--light-bg);
-        }
-        
-        /* Dark/Light Mode Toggle */
-        .mode-toggle {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background-color: var(--light-bg);
-            border-radius: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 0 5px;
-        }
-        
-        .toggle-circle {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background-color: var(--cream);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            left: 4px;
-        }
-        
-        .dark-mode .toggle-circle {
-            left: 34px;
-        }
-        
-        .mode-toggle i {
-            font-size: 14px;
-            z-index: 2;
-        }
-        
-        .fa-sun {
-            color: var(--cream);
-            margin-right: auto;
-        }
-        
-        .fa-moon {
-            color: var(--cream);
-            margin-left: auto;
-        }
-        
-        /* Dashboard Layout */
+
         .dashboard-container {
-            display: flex;
-            margin-top: 120px;
-            min-height: calc(100vh - 180px);
+          flex-direction: column;
+          margin-top: 100px;
         }
-        
-        /* Sidebar */
+
         .sidebar {
-            width: 280px;
-            background-color: var(--light-bg);
-            padding: 30px 20px;
-            position: fixed;
-            height: calc(100vh - 120px);
-            overflow-y: auto;
+          position: relative;
+          width: 100%;
+          height: auto;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          padding: 15px;
+          justify-content: center;
         }
-        
+
         .sidebar-bubble {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            background-color: var(--card-bg);
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: all 0.3s ease;
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          padding: 0;
+          justify-content: center;
+          margin-bottom: 0;
         }
-        
-        .sidebar-bubble:hover, .sidebar-bubble.active {
-            background-color: var(--cream);
-            color: var(--white);
-            transform: translateX(5px);
+
+        .sidebar-bubble span {
+          display: none;
         }
-        
+
         .sidebar-bubble i {
-            margin-right: 15px;
-            font-size: 18px;
+          margin-right: 0;
+          font-size: 20px;
         }
-        
-        /* Main Content */
+
         .dashboard-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 30px 40px;
+          margin-left: 0;
+          padding: 20px;
         }
-        
-        .content-section {
-            display: none;
-        }
-        
-        .content-section.active {
-            display: block;
-        }
-        
-        /* Welcome Banner */
-        .welcome-banner {
-            background: linear-gradient(135deg, rgba(57, 38, 37, 0.85), rgba(200, 169, 126, 0.85));
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            color: var(--white);
-            box-shadow: var(--shadow);
-        }
-        
-        .welcome-banner h1 {
-            color: var(--white);
-            margin-bottom: 10px;
-        }
-        
-        .points-display {
-            display: inline-block;
-            background-color: var(--white);
-            color: var(--cream);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            margin: 15px 0;
-        }
-        
-        .quick-shortcuts {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .shortcut-btn {
-            padding: 10px 20px;
-            background-color: var(--white);
-            color: var(--cream);
-            border-radius: 8px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .shortcut-btn:hover {
-            background-color: var(--dark-gray);
-            color: var(--white);
-            transform: translateY(-3px);
-        }
-        
-        /* Dashboard Sections */
-        .dashboard-section {
-            margin-bottom: 40px;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .view-all {
-            color: var(--cream);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
+
         .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+          grid-template-columns: 1fr;
         }
-        
-        .dashboard-card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-        
-        /* Stats */
+
         .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+          grid-template-columns: repeat(2, 1fr);
         }
-        
-        .stat-card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: var(--light-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            color: var(--cream);
-            font-size: 20px;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--cream);
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            color: var(--text-dark);
-        }
-        
-        /* Loading States */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: var(--cream);
-        }
-        
-        .loading-spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--light-bg);
-            border-top: 2px solid var(--cream);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Empty States */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--cream);
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.7;
-        }
-        
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--cream);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--light-bg);
-            border-radius: 8px;
-            background-color: var(--card-bg);
-            color: var(--text-dark);
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--cream);
-        }
-        
-        .action-btn {
-            padding: 12px 25px;
-            background-color: var(--cream);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-        }
-        
-        .action-btn:hover {
-            background-color: var(--accent);
-        }
-        
-        /* Profile Section */
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--light-bg);
-        }
-        
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: var(--cream);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 40px;
-            margin-right: 20px;
-        }
-        
-        /* Order Table */
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .order-table th, .order-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--light-bg);
-        }
-        
-        .order-table th {
-            font-weight: 600;
-            color: var(--cream);
-        }
-        
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .status-delivered {
-            background-color: #e6f7ee;
-            color: #0c9770;
-        }
-        
-        .status-processing {
-            background-color: #fef5e7;
-            color: #e58e02;
-        }
-        
-        .status-shipped {
-            background-color: #e6f0ff;
-            color: #2d6bdb;
-        }
-        
-        .status-pending {
-            background-color: #f5f5f5;
-            color: #6c757d;
-        }
-        
-        /* Wishlist and Cart Items */
-        .wishlist-item, .cart-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--light-bg);
-        }
-        
-        .item-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-right: 15px;
-            background-color: var(--light-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .item-image i {
-            font-size: 24px;
-            color: var(--cream);
-        }
-        
-        .item-details {
-            flex: 1;
-        }
-        
-        .item-price {
-            color: var(--cream);
-            font-weight: 600;
-            margin: 5px 0;
-        }
-        
-        .item-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        /* Booking Cards */
-        .booking-card {
-            margin-bottom: 15px;
-            padding: 15px;
-            border-left: 4px solid var(--cream);
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-        }
-        
-        .booking-date {
-            font-weight: 600;
-            color: var(--cream);
-        }
-        
-        .booking-service {
-            margin: 5px 0;
-        }
-        
-        /* Notifications */
-        .notification-item {
-            padding: 15px;
-            border-left: 4px solid var(--cream);
-            margin-bottom: 15px;
-            background-color: var(--light-bg);
-            border-radius: 8px;
-        }
-        
-        .notification-unread {
-            border-left: 4px solid var(--accent);
-        }
-        
-        .notification-time {
-            font-size: 12px;
-            color: var(--cream);
-            margin-top: 5px;
-        }
-        
-        /* Floating Bubbles */
+
         .floating-bubbles {
-            position: fixed;
-            right: 30px;
-            bottom: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 1200;
+          bottom: 80px;
+          right: 15px;
         }
-        
-        .bubble-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--cream);
-            color: var(--white);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 22px;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
+      }
+
+      @media (max-width: 480px) {
+        .stats-container {
+          grid-template-columns: 1fr;
         }
-        
-        .bubble-btn span {
-            display: none;
-            position: absolute;
-            right: 70px;
-            background: var(--dark-gray);
-            color: var(--white);
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            white-space: nowrap;
+
+        .quick-shortcuts {
+          flex-direction: column;
         }
-        
-        .bubble-btn:hover {
-            background-color: var(--accent);
-            transform: scale(1.1);
+
+        .shortcut-btn {
+          width: 100%;
+          justify-content: center;
         }
-        
-        .bubble-btn:hover span {
-            display: block;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            header {
-                padding: 15px 20px;
-            }
-            
-            .dashboard-container {
-                flex-direction: column;
-                margin-top: 100px;
-            }
-            
-            .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                padding: 15px;
-                justify-content: center;
-            }
-            
-            .sidebar-bubble {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                padding: 0;
-                justify-content: center;
-                margin-bottom: 0;
-            }
-            
-            .sidebar-bubble span {
-                display: none;
-            }
-            
-            .sidebar-bubble i {
-                margin-right: 0;
-                font-size: 20px;
-            }
-            
-            .dashboard-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-            
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .floating-bubbles {
-                bottom: 80px;
-                right: 15px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .quick-shortcuts {
-                flex-direction: column;
-            }
-            
-            .shortcut-btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Header -->
     <header>
-        <div class="logo-container">
-            <span>
-                    <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" style="max-width:50px; max-height:auto; display:block; margin:0 auto; object-fit:contain;" />
-                    
-                </span>
+      <div class="logo-container">
+        <span>
+          <img
+            src="images/Logo Version Transparente-01.png"
+            alt="OLYS HAIR Logo"
+            class="logo-img-light"
+            style="
+              max-width: 50px;
+              max-height: auto;
+              display: block;
+              margin: 0 auto;
+              object-fit: contain;
+            "
+          />
+        </span>
+      </div>
+      <div class="header-icons">
+        <i class="fas fa-search"></i>
+        <i class="fas fa-shopping-bag"></i>
+        <div class="user-profile">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <span id="username">User</span>
+          <div class="dropdown-menu">
+            <a href="#" data-section="profile"
+              ><i class="fas fa-user"></i> My Profile</a
+            >
+            <a href="#" data-section="settings"
+              ><i class="fas fa-cog"></i> Settings</a
+            >
+            <a href="#" id="logout-btn"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+          </div>
         </div>
-        <div class="header-icons">
-            <i class="fas fa-search"></i>
-            <i class="fas fa-shopping-bag"></i>
-            <div class="user-profile">
-                <div class="user-avatar" id="user-avatar">U</div>
-                <span id="username">User</span>
-                <div class="dropdown-menu">
-                    <a href="#" data-section="profile"><i class="fas fa-user"></i> My Profile</a>
-                    <a href="#" data-section="settings"><i class="fas fa-cog"></i> Settings</a>
-                    <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
-            <div class="mode-toggle">
-                <i class="fas fa-sun"></i>
-                <i class="fas fa-moon"></i>
-                <div class="toggle-circle"></div>
-            </div>
+        <div class="mode-toggle">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+          <div class="toggle-circle"></div>
         </div>
+      </div>
     </header>
 
     <!-- Floating Bubbles -->
     <div class="floating-bubbles">
-        <div class="bubble-btn" onclick="window.location.href='index.html'">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </div>
-        <div class="bubble-btn" onclick="window.location.href='shop.html'">
-            <i class="fas fa-shopping-bag"></i>
-            <span>Shop</span>
-        </div>
+      <div class="bubble-btn" onclick="window.location.href='index.html'">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </div>
+      <div class="bubble-btn" onclick="window.location.href='shop.html'">
+        <i class="fas fa-shopping-bag"></i>
+        <span>Shop</span>
+      </div>
     </div>
 
     <!-- Dashboard Container -->
     <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
-        <div class="sidebar">
-            <div class="sidebar-bubble active" data-section="dashboard">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
+      <!-- Sidebar Navigation -->
+      <div class="sidebar">
+        <div class="sidebar-bubble active" data-section="dashboard">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </div>
+        <div class="sidebar-bubble" data-section="cart">
+          <i class="fas fa-shopping-cart"></i>
+          <span>My Cart</span>
+        </div>
+        <div class="sidebar-bubble" data-section="wishlist">
+          <i class="fas fa-heart"></i>
+          <span>Wishlist</span>
+        </div>
+        <div class="sidebar-bubble" data-section="orders">
+          <i class="fas fa-box"></i>
+          <span>My Orders</span>
+        </div>
+        <div class="sidebar-bubble" data-section="bookings">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Bookings</span>
+        </div>
+        <div class="sidebar-bubble" data-section="notifications">
+          <i class="fas fa-bell"></i>
+          <span>Notifications</span>
+        </div>
+        <div class="sidebar-bubble" data-section="settings">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="dashboard-content">
+        <!-- Dashboard Section -->
+        <div class="content-section active" id="dashboard">
+          <!-- Welcome Banner -->
+          <div class="welcome-banner">
+            <h1 id="welcome-message">Welcome back!</h1>
+            <p id="welcome-subtitle">
+              Ready to discover your next favorite hair product?
+            </p>
+            <div class="points-display">
+              <i class="fas fa-gem"></i>
+              <span id="loyalty-points">0</span> Loyalty Points
             </div>
-            <div class="sidebar-bubble" data-section="cart">
-                <i class="fas fa-shopping-cart"></i>
-                <span>My Cart</span>
+            <div class="quick-shortcuts">
+              <div
+                class="shortcut-btn"
+                onclick="window.location.href='shop.html'"
+              >
+                <i class="fas fa-shopping-bag"></i>
+                <span>Shop New Arrivals</span>
+              </div>
+              <div class="shortcut-btn" data-section="bookings">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Book Appointment</span>
+              </div>
+              <div class="shortcut-btn" data-section="orders">
+                <i class="fas fa-box-open"></i>
+                <span>Track Orders</span>
+              </div>
             </div>
-            <div class="sidebar-bubble" data-section="wishlist">
-                <i class="fas fa-heart"></i>
-                <span>Wishlist</span>
+          </div>
+
+          <!-- Stats Overview -->
+          <div class="stats-container" id="stats-container">
+            <div class="loading">
+              <div class="loading-spinner"></div>
+              <span>Loading statistics...</span>
             </div>
-            <div class="sidebar-bubble" data-section="orders">
-                <i class="fas fa-box"></i>
-                <span>My Orders</span>
+          </div>
+
+          <!-- Recent Orders Section -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <h2>Recent Orders</h2>
+              <a href="#" class="view-all" data-section="orders">View All</a>
             </div>
-            <div class="sidebar-bubble" data-section="bookings">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Bookings</span>
+            <div class="dashboard-card">
+              <div id="recent-orders-container">
+                <div class="loading">
+                  <div class="loading-spinner"></div>
+                  <span>Loading recent orders...</span>
+                </div>
+              </div>
             </div>
-            <div class="sidebar-bubble" data-section="notifications">
-                <i class="fas fa-bell"></i>
-                <span>Notifications</span>
+          </div>
+
+          <!-- Wishlist and Cart Section -->
+          <div class="card-grid">
+            <!-- Wishlist -->
+            <div class="dashboard-section">
+              <div class="section-header">
+                <h2>Wishlist</h2>
+                <a href="#" class="view-all" data-section="wishlist"
+                  >View All</a
+                >
+              </div>
+              <div class="dashboard-card">
+                <div id="wishlist-preview-container">
+                  <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>Loading wishlist...</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="sidebar-bubble" data-section="settings">
-                <i class="fas fa-cog"></i>
-                <span>Settings</span>
+
+            <!-- Cart -->
+            <div class="dashboard-section">
+              <div class="section-header">
+                <h2>Cart</h2>
+                <a href="#" class="view-all" data-section="cart">View Cart</a>
+              </div>
+              <div class="dashboard-card">
+                <div id="cart-preview-container">
+                  <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>Loading cart...</span>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Upcoming Bookings -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <h2>Upcoming Bookings</h2>
+              <a href="#" class="view-all" data-section="bookings">View All</a>
+            </div>
+            <div class="dashboard-card">
+              <div id="upcoming-bookings-container">
+                <div class="loading">
+                  <div class="loading-spinner"></div>
+                  <span>Loading upcoming bookings...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <h2>Notifications</h2>
+              <a href="#" class="view-all" data-section="notifications"
+                >View All</a
+              >
+            </div>
+            <div class="dashboard-card">
+              <div id="notifications-preview-container">
+                <div class="loading">
+                  <div class="loading-spinner"></div>
+                  <span>Loading notifications...</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Main Content Area -->
-        <div class="dashboard-content">
-            <!-- Dashboard Section -->
-            <div class="content-section active" id="dashboard">
-                <!-- Welcome Banner -->
-                <div class="welcome-banner">
-                    <h1 id="welcome-message">Welcome back!</h1>
-                    <p id="welcome-subtitle">Ready to discover your next favorite hair product?</p>
-                    <div class="points-display">
-                        <i class="fas fa-gem"></i> <span id="loyalty-points">0</span> Loyalty Points
-                    </div>
-                    <div class="quick-shortcuts">
-                        <div class="shortcut-btn" onclick="window.location.href='shop.html'">
-                            <i class="fas fa-shopping-bag"></i>
-                            <span>Shop New Arrivals</span>
-                        </div>
-                        <div class="shortcut-btn" data-section="bookings">
-                            <i class="fas fa-calendar-plus"></i>
-                            <span>Book Appointment</span>
-                        </div>
-                        <div class="shortcut-btn" data-section="orders">
-                            <i class="fas fa-box-open"></i>
-                            <span>Track Orders</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Stats Overview -->
-                <div class="stats-container" id="stats-container">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <span>Loading statistics...</span>
-                    </div>
-                </div>
-
-                <!-- Recent Orders Section -->
-                <div class="dashboard-section">
-                    <div class="section-header">
-                        <h2>Recent Orders</h2>
-                        <a href="#" class="view-all" data-section="orders">View All</a>
-                    </div>
-                    <div class="dashboard-card">
-                        <div id="recent-orders-container">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span>Loading recent orders...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Wishlist and Cart Section -->
-                <div class="card-grid">
-                    <!-- Wishlist -->
-                    <div class="dashboard-section">
-                        <div class="section-header">
-                            <h2>Wishlist</h2>
-                            <a href="#" class="view-all" data-section="wishlist">View All</a>
-                        </div>
-                        <div class="dashboard-card">
-                            <div id="wishlist-preview-container">
-                                <div class="loading">
-                                    <div class="loading-spinner"></div>
-                                    <span>Loading wishlist...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cart -->
-                    <div class="dashboard-section">
-                        <div class="section-header">
-                            <h2>Cart</h2>
-                            <a href="#" class="view-all" data-section="cart">View Cart</a>
-                        </div>
-                        <div class="dashboard-card">
-                            <div id="cart-preview-container">
-                                <div class="loading">
-                                    <div class="loading-spinner"></div>
-                                    <span>Loading cart...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Upcoming Bookings -->
-                <div class="dashboard-section">
-                    <div class="section-header">
-                        <h2>Upcoming Bookings</h2>
-                        <a href="#" class="view-all" data-section="bookings">View All</a>
-                    </div>
-                    <div class="dashboard-card">
-                        <div id="upcoming-bookings-container">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span>Loading upcoming bookings...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="dashboard-section">
-                    <div class="section-header">
-                        <h2>Notifications</h2>
-                        <a href="#" class="view-all" data-section="notifications">View All</a>
-                    </div>
-                    <div class="dashboard-card">
-                        <div id="notifications-preview-container">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span>Loading notifications...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Cart Section -->
+        <div class="content-section" id="cart">
+          <div class="section-header">
+            <h2>My Cart</h2>
+          </div>
+          <div class="dashboard-card">
+            <div id="cart-full-container">
+              <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Loading cart...</span>
+              </div>
             </div>
-
-            <!-- Cart Section -->
-            <div class="content-section" id="cart">
-                <div class="section-header">
-                    <h2>My Cart</h2>
-                </div>
-                <div class="dashboard-card">
-                    <div id="cart-full-container">
-                        <div class="loading">
-                            <div class="loading-spinner"></div>
-                            <span>Loading cart...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Wishlist Section -->
-            <div class="content-section" id="wishlist">
-                <div class="section-header">
-                    <h2>My Wishlist</h2>
-                </div>
-                <div class="card-grid" id="wishlist-full-container">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <span>Loading wishlist...</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Orders Section -->
-            <div class="content-section" id="orders">
-                <div class="section-header">
-                    <h2>Order History</h2>
-                </div>
-                <div class="dashboard-card">
-                    <div id="orders-full-container">
-                        <div class="loading">
-                            <div class="loading-spinner"></div>
-                            <span>Loading order history...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bookings Section -->
-            <div class="content-section" id="bookings">
-                <div class="section-header">
-                    <h2>My Appointments</h2>
-                </div>
-                <div class="dashboard-card">
-                    <div id="bookings-full-container">
-                        <div class="loading">
-                            <div class="loading-spinner"></div>
-                            <span>Loading appointments...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Notifications Section -->
-            <div class="content-section" id="notifications">
-                <div class="section-header">
-                    <h2>Notifications</h2>
-                    <button class="action-btn" id="mark-all-read">Mark All as Read</button>
-                </div>
-                <div class="dashboard-card">
-                    <div id="notifications-full-container">
-                        <div class="loading">
-                            <div class="loading-spinner"></div>
-                            <span>Loading notifications...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings Section -->
-            <div class="content-section" id="settings">
-                <div class="section-header">
-                    <h2>Account Settings</h2>
-                </div>
-                <div class="dashboard-card">
-                    <div class="profile-header">
-                        <div class="profile-avatar" id="settings-avatar">U</div>
-                        <div class="profile-info">
-                            <h2 id="settings-name">User</h2>
-                            <p id="settings-membership">Member since ...</p>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" class="form-control">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" class="form-control">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" class="form-control">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <textarea id="address" class="form-control" rows="3"></textarea>
-                    </div>
-                    
-                    <button class="action-btn" id="save-profile">Save Changes</button>
-                </div>
-                
-                <div class="dashboard-card" style="margin-top: 30px;">
-                    <h3 style="margin-bottom: 20px;">Security Settings</h3>
-                    
-                    <div class="form-group">
-                        <label for="current-password">Current Password</label>
-                        <input type="password" id="current-password" class="form-control">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="new-password">New Password</label>
-                        <input type="password" id="new-password" class="form-control">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="confirm-password">Confirm New Password</label>
-                        <input type="password" id="confirm-password" class="form-control">
-                    </div>
-                    
-                    <button class="action-btn" id="update-password">Update Password</button>
-                </div>
-                
-                <div class="dashboard-card" style="margin-top: 30px;">
-                    <h3 style="margin-bottom: 20px;">Notification Preferences</h3>
-                    
-                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-                        <label for="email-notifications" style="margin-bottom: 0;">Email Notifications</label>
-                        <input type="checkbox" id="email-notifications">
-                    </div>
-                    
-                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-                        <label for="sms-notifications" style="margin-bottom: 0;">SMS Notifications</label>
-                        <input type="checkbox" id="sms-notifications">
-                    </div>
-                    
-                    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-                        <label for="promotional-emails" style="margin-bottom: 0;">Promotional Emails</label>
-                        <input type="checkbox" id="promotional-emails">
-                    </div>
-                    
-                    <button class="action-btn" id="save-preferences">Save Preferences</button>
-                </div>
-            </div>
+          </div>
         </div>
+
+        <!-- Wishlist Section -->
+        <div class="content-section" id="wishlist">
+          <div class="section-header">
+            <h2>My Wishlist</h2>
+          </div>
+          <div class="card-grid" id="wishlist-full-container">
+            <div class="loading">
+              <div class="loading-spinner"></div>
+              <span>Loading wishlist...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="content-section" id="orders">
+          <div class="section-header">
+            <h2>Order History</h2>
+          </div>
+          <div class="dashboard-card">
+            <div id="orders-full-container">
+              <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Loading order history...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bookings Section -->
+        <div class="content-section" id="bookings">
+          <div class="section-header">
+            <h2>My Appointments</h2>
+          </div>
+          <div class="dashboard-card">
+            <div id="bookings-full-container">
+              <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Loading appointments...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="content-section" id="notifications">
+          <div class="section-header">
+            <h2>Notifications</h2>
+            <button class="action-btn" id="mark-all-read">
+              Mark All as Read
+            </button>
+          </div>
+          <div class="dashboard-card">
+            <div id="notifications-full-container">
+              <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Loading notifications...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="content-section" id="settings">
+          <div class="section-header">
+            <h2>Account Settings</h2>
+          </div>
+          <div class="dashboard-card">
+            <div class="profile-header">
+              <div class="profile-avatar" id="settings-avatar">U</div>
+              <div class="profile-info">
+                <h2 id="settings-name">User</h2>
+                <p id="settings-membership">Member since ...</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="address">Address</label>
+              <textarea id="address" class="form-control" rows="3"></textarea>
+            </div>
+
+            <button class="action-btn" id="save-profile">Save Changes</button>
+          </div>
+
+          <div class="dashboard-card" style="margin-top: 30px">
+            <h3 style="margin-bottom: 20px">Security Settings</h3>
+
+            <div class="form-group">
+              <label for="current-password">Current Password</label>
+              <input
+                type="password"
+                id="current-password"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="new-password">New Password</label>
+              <input type="password" id="new-password" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="confirm-password">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirm-password"
+                class="form-control"
+              />
+            </div>
+
+            <button class="action-btn" id="update-password">
+              Update Password
+            </button>
+          </div>
+
+          <div class="dashboard-card" style="margin-top: 30px">
+            <h3 style="margin-bottom: 20px">Notification Preferences</h3>
+
+            <div
+              class="form-group"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <label for="email-notifications" style="margin-bottom: 0"
+                >Email Notifications</label
+              >
+              <input type="checkbox" id="email-notifications" />
+            </div>
+
+            <div
+              class="form-group"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <label for="sms-notifications" style="margin-bottom: 0"
+                >SMS Notifications</label
+              >
+              <input type="checkbox" id="sms-notifications" />
+            </div>
+
+            <div
+              class="form-group"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <label for="promotional-emails" style="margin-bottom: 0"
+                >Promotional Emails</label
+              >
+              <input type="checkbox" id="promotional-emails" />
+            </div>
+
+            <button class="action-btn" id="save-preferences">
+              Save Preferences
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
+<<<<<<< HEAD
         // API Configuration
         const API_BASE_URL = 'https://olyshairi-e-commerce-hairspo-online.onrender.com/api';
         // const API_BASE_URL = 'http://localhost:5001/api';
         let userData = null;
         let authToken = localStorage.getItem('token') || '';
+=======
+      // API Configuration
+      const API_BASE_URL =
+        "https://olyshairi-e-commerce-hairspo-online.onrender.com/api";
+      //const API_BASE_URL = 'http://localhost:5001/api';
+      let userData = null;
+      let authToken = localStorage.getItem("token") || "";
+>>>>>>> 82a851bc95df2cb25d9cf6facbcbf7722f4f0f84
 
-        // DOM Elements
-        const modeToggle = document.querySelector('.mode-toggle');
-        const body = document.body;
-        const userProfile = document.querySelector('.user-profile');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        const sidebarBubbles = document.querySelectorAll('.sidebar-bubble');
-        const contentSections = document.querySelectorAll('.content-section');
-        const quickShortcuts = document.querySelectorAll('.shortcut-btn');
-        const viewAllLinks = document.querySelectorAll('.view-all');
-        const logoutBtn = document.getElementById('logout-btn');
+      // DOM Elements
+      const modeToggle = document.querySelector(".mode-toggle");
+      const body = document.body;
+      const userProfile = document.querySelector(".user-profile");
+      const dropdownMenu = document.querySelector(".dropdown-menu");
+      const sidebarBubbles = document.querySelectorAll(".sidebar-bubble");
+      const contentSections = document.querySelectorAll(".content-section");
+      const quickShortcuts = document.querySelectorAll(".shortcut-btn");
+      const viewAllLinks = document.querySelectorAll(".view-all");
+      const logoutBtn = document.getElementById("logout-btn");
 
-        // Initialize the dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeDashboard();
-        });
+      // Initialize the dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeDashboard();
+      });
 
-        // Initialize dashboard
-        async function initializeDashboard() {
-            console.log("🚀 Initializing dashboard...");
-            
-            // Check authentication
-            if (!authToken) {
-                console.error("❌ No authentication token found");
-                redirectToLogin();
-                return;
-            }
+      // Initialize dashboard
+      async function initializeDashboard() {
+        console.log("🚀 Initializing dashboard...");
 
-            try {
-                console.log("📡 Loading user data...");
-                userData = await fetchUserData();
-                
-                if (!userData) {
-                    throw new Error('No user data received');
-                }
-                
-                updateUserInterface();
-                await loadDashboardData();
-                
-                console.log("✅ Dashboard initialized successfully");
-            } catch (error) {
-                console.error('❌ Failed to initialize dashboard:', error);
-                showError('Failed to load dashboard data');
-            }
+        // Check authentication
+        if (!authToken) {
+          console.error("❌ No authentication token found");
+          redirectToLogin();
+          return;
         }
 
-        // API Functions
-        async function apiCall(endpoint, options = {}) {
-            const url = `${API_BASE_URL}${endpoint}`;
-            const headers = {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json',
-                ...options.headers
-            };
+        try {
+          console.log("📡 Loading user data...");
+          userData = await fetchUserData();
 
-            try {
-                const response = await fetch(url, { ...options, headers });
-                
-                if (response.status === 401) {
-                    redirectToLogin();
-                    return null;
-                }
+          if (!userData) {
+            throw new Error("No user data received");
+          }
 
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
-                }
+          updateUserInterface();
+          await loadDashboardData();
 
-                return await response.json();
-            } catch (error) {
-                console.error('API call failed:', error);
-                throw error;
-            }
+          console.log("✅ Dashboard initialized successfully");
+        } catch (error) {
+          console.error("❌ Failed to initialize dashboard:", error);
+          showError("Failed to load dashboard data");
         }
+      }
 
-        async function fetchUserData() {
-            try {
-                console.log("🔐 Fetching user profile...");
-                const data = await apiCall('/auth/profile');
-                console.log("✅ User data received:", data.user);
-                return data.user;
-            } catch (error) {
-                console.error('❌ Error fetching user data:', error);
-                throw error;
-            }
+      // API Functions
+      async function apiCall(endpoint, options = {}) {
+        const url = `${API_BASE_URL}${endpoint}`;
+        const headers = {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          ...options.headers,
+        };
+
+        try {
+          const response = await fetch(url, { ...options, headers });
+
+          if (response.status === 401) {
+            redirectToLogin();
+            return null;
+          }
+
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error("API call failed:", error);
+          throw error;
         }
+      }
 
-        // Update all API response handlers to use the new format
-async function fetchOrders(limit = null) {
-  const data = await apiCall(limit ? `/orders?limit=${limit}` : '/orders');
-  return data.orders || [];
-}
+      async function fetchUserData() {
+        try {
+          console.log("🔐 Fetching user profile...");
+          const data = await apiCall("/auth/profile");
+          console.log("✅ User data received:", data.user);
+          return data.user;
+        } catch (error) {
+          console.error("❌ Error fetching user data:", error);
+          throw error;
+        }
+      }
 
-// Fix the fetchWishlist function
-async function fetchWishlist(limit = null) {
-    try {
-        console.log("📋 Fetching wishlist...");
-        const data = await apiCall('/wishlist');
-        
-        // Handle different response formats
-        if (Array.isArray(data)) {
+      // Update all API response handlers to use the new format
+      async function fetchOrders(limit = null) {
+        const data = await apiCall(
+          limit ? `/orders?limit=${limit}` : "/orders"
+        );
+        return data.orders || [];
+      }
+
+      // Fix the fetchWishlist function
+      async function fetchWishlist(limit = null) {
+        try {
+          console.log("📋 Fetching wishlist...");
+          const data = await apiCall("/wishlist");
+
+          // Handle different response formats
+          if (Array.isArray(data)) {
             return limit ? data.slice(0, limit) : data;
-        } else if (data.wishlist && Array.isArray(data.wishlist)) {
+          } else if (data.wishlist && Array.isArray(data.wishlist)) {
             return limit ? data.wishlist.slice(0, limit) : data.wishlist;
-        } else if (data.items && Array.isArray(data.items)) {
+          } else if (data.items && Array.isArray(data.items)) {
             return limit ? data.items.slice(0, limit) : data.items;
-        } else {
-            console.warn('⚠️ Unexpected wishlist format:', data);
+          } else {
+            console.warn("⚠️ Unexpected wishlist format:", data);
             return [];
+          }
+        } catch (error) {
+          console.error("❌ Error fetching wishlist:", error);
+          return [];
         }
-    } catch (error) {
-        console.error('❌ Error fetching wishlist:', error);
-        return [];
-    }
-}
+      }
 
-async function fetchCart() {
-  const data = await apiCall('/cart');
-  return data.cart || { items: [] };
-}
+      async function fetchCart() {
+        const data = await apiCall("/cart");
+        return data.cart || { items: [] };
+      }
 
-async function fetchBookings(limit = null) {
-  const data = await apiCall(limit ? `/bookings?limit=${limit}` : '/bookings');
-  return data.bookings || [];
-}
+      async function fetchBookings(limit = null) {
+        const data = await apiCall(
+          limit ? `/bookings?limit=${limit}` : "/bookings"
+        );
+        return data.bookings || [];
+      }
 
-async function fetchNotifications(limit = null) {
-  const data = await apiCall(limit ? `/notifications?limit=${limit}` : '/notifications');
-  return data.notifications || [];
-}
+      async function fetchNotifications(limit = null) {
+        const data = await apiCall(
+          limit ? `/notifications?limit=${limit}` : "/notifications"
+        );
+        return data.notifications || [];
+      }
 
-async function fetchLoyaltyPoints() {
-  const data = await apiCall('/loyalty');
-  return data || { points: 0 };
-}
+      async function fetchLoyaltyPoints() {
+        const data = await apiCall("/loyalty");
+        return data || { points: 0 };
+      }
 
-        // UI Update Functions
-        function updateUserInterface() {
-            if (!userData) return;
+      // UI Update Functions
+      function updateUserInterface() {
+        if (!userData) return;
 
-            console.log("🎨 Updating UI with user data:", userData);
+        console.log("🎨 Updating UI with user data:", userData);
 
-            // Update user info
-            const userInitials = (userData.firstName?.charAt(0) || '') + (userData.lastName?.charAt(0) || '') || 'U';
-            document.getElementById('user-avatar').textContent = userInitials;
-            document.getElementById('username').textContent = userData.firstName || 'User';
-            document.getElementById('welcome-message').textContent = `Welcome back, ${userData.firstName || 'User'}!`;
-            document.getElementById('settings-avatar').textContent = userInitials;
-            document.getElementById('settings-name').textContent = `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
-            
-            // Format membership date
-            if (userData.memberSince) {
-                const memberSince = new Date(userData.memberSince).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long' 
-                });
-                document.getElementById('settings-membership').textContent = `Member since ${memberSince}`;
+        // Update user info
+        const userInitials =
+          (userData.firstName?.charAt(0) || "") +
+            (userData.lastName?.charAt(0) || "") || "U";
+        document.getElementById("user-avatar").textContent = userInitials;
+        document.getElementById("username").textContent =
+          userData.firstName || "User";
+        document.getElementById(
+          "welcome-message"
+        ).textContent = `Welcome back, ${userData.firstName || "User"}!`;
+        document.getElementById("settings-avatar").textContent = userInitials;
+        document.getElementById("settings-name").textContent = `${
+          userData.firstName || ""
+        } ${userData.lastName || ""}`.trim();
+
+        // Format membership date
+        if (userData.memberSince) {
+          const memberSince = new Date(userData.memberSince).toLocaleDateString(
+            "en-US",
+            {
+              year: "numeric",
+              month: "long",
             }
-
-            // Update form fields
-            document.getElementById('name').value = `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
-            document.getElementById('email').value = userData.email || '';
-            document.getElementById('phone').value = userData.phoneNumber || '';
-            document.getElementById('address').value = userData.address || '';
+          );
+          document.getElementById(
+            "settings-membership"
+          ).textContent = `Member since ${memberSince}`;
         }
 
-        async function loadDashboardData() {
-            try {
-                // Load all dashboard data in parallel
-                const [loyaltyData, orders, wishlist, cart, bookings, notifications] = await Promise.all([
-                    fetchLoyaltyPoints(),
-                    fetchOrders(3),
-                    fetchWishlist(2),
-                    fetchCart(),
-                    fetchBookings(1),
-                    fetchNotifications(3)
-                ]);
+        // Update form fields
+        document.getElementById("name").value = `${userData.firstName || ""} ${
+          userData.lastName || ""
+        }`.trim();
+        document.getElementById("email").value = userData.email || "";
+        document.getElementById("phone").value = userData.phoneNumber || "";
+        document.getElementById("address").value = userData.address || "";
+      }
 
-                // Update loyalty points
-                if (loyaltyData && loyaltyData.points !== undefined) {
-                    document.getElementById('loyalty-points').textContent = loyaltyData.points;
-                }
+      async function loadDashboardData() {
+        try {
+          // Load all dashboard data in parallel
+          const [loyaltyData, orders, wishlist, cart, bookings, notifications] =
+            await Promise.all([
+              fetchLoyaltyPoints(),
+              fetchOrders(3),
+              fetchWishlist(2),
+              fetchCart(),
+              fetchBookings(1),
+              fetchNotifications(3),
+            ]);
 
-                // Update stats
-                updateStats(orders, wishlist, cart, bookings);
+          // Update loyalty points
+          if (loyaltyData && loyaltyData.points !== undefined) {
+            document.getElementById("loyalty-points").textContent =
+              loyaltyData.points;
+          }
 
-                // Update recent orders
-                renderRecentOrders(orders);
+          // Update stats
+          updateStats(orders, wishlist, cart, bookings);
 
-                // Update wishlist preview
-                renderWishlistPreview(wishlist);
+          // Update recent orders
+          renderRecentOrders(orders);
 
-                // Update cart preview
-                renderCartPreview(cart);
+          // Update wishlist preview
+          renderWishlistPreview(wishlist);
 
-                // Update upcoming bookings
-                renderUpcomingBookings(bookings);
+          // Update cart preview
+          renderCartPreview(cart);
 
-                // Update notifications preview
-                renderNotificationsPreview(notifications);
+          // Update upcoming bookings
+          renderUpcomingBookings(bookings);
 
-            } catch (error) {
-                console.error('Failed to load dashboard data:', error);
-                // Use mock data as fallback for better UX
-                useMockData();
-            }
+          // Update notifications preview
+          renderNotificationsPreview(notifications);
+        } catch (error) {
+          console.error("Failed to load dashboard data:", error);
+          // Use mock data as fallback for better UX
+          useMockData();
         }
+      }
 
-        function updateStats(orders, wishlist, cart, bookings) {
-            const statsContainer = document.getElementById('stats-container');
-            
-            const stats = {
-                orders: orders?.length || 0,
-                wishlist: wishlist?.length || 0,
-                cart: cart?.items?.length || 0,
-                bookings: bookings?.length || 0
-            };
+      function updateStats(orders, wishlist, cart, bookings) {
+        const statsContainer = document.getElementById("stats-container");
 
-            statsContainer.innerHTML = `
+        const stats = {
+          orders: orders?.length || 0,
+          wishlist: wishlist?.length || 0,
+          cart: cart?.items?.length || 0,
+          bookings: bookings?.length || 0,
+        };
+
+        statsContainer.innerHTML = `
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-shopping-bag"></i>
@@ -1327,17 +1444,19 @@ async function fetchLoyaltyPoints() {
                     <div class="stat-icon">
                         <i class="fas fa-gem"></i>
                     </div>
-                    <div class="stat-value" id="loyalty-stat">${document.getElementById('loyalty-points').textContent}</div>
+                    <div class="stat-value" id="loyalty-stat">${
+                      document.getElementById("loyalty-points").textContent
+                    }</div>
                     <div class="stat-label">Loyalty Points</div>
                 </div>
             `;
-        }
+      }
 
-        function renderRecentOrders(orders) {
-            const container = document.getElementById('recent-orders-container');
-            
-            if (!orders || orders.length === 0) {
-                container.innerHTML = `
+      function renderRecentOrders(orders) {
+        const container = document.getElementById("recent-orders-container");
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-box-open"></i>
                         <p>No recent orders</p>
@@ -1346,10 +1465,10 @@ async function fetchLoyaltyPoints() {
                         </button>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let ordersHtml = `
+        let ordersHtml = `
                 <table class="order-table">
                     <thead>
                         <tr>
@@ -1363,35 +1482,43 @@ async function fetchLoyaltyPoints() {
                     <tbody>
             `;
 
-            orders.forEach(order => {
-                const statusClass = `status-${order.status?.toLowerCase() || 'pending'}`;
-                const formattedDate = new Date(order.date || new Date()).toLocaleDateString();
-                const formattedTotal = `$${order.total?.toFixed(2) || '0.00'}`;
+        orders.forEach((order) => {
+          const statusClass = `status-${
+            order.status?.toLowerCase() || "pending"
+          }`;
+          const formattedDate = new Date(
+            order.date || new Date()
+          ).toLocaleDateString();
+          const formattedTotal = `€${order.total?.toFixed(2) || "0.00"}`;
 
-                ordersHtml += `
+          ordersHtml += `
                     <tr>
-                        <td>${order.id || 'N/A'}</td>
+                        <td>${order.id || "N/A"}</td>
                         <td>${formattedDate}</td>
-                        <td><span class="status-badge ${statusClass}">${order.status || 'Processing'}</span></td>
+                        <td><span class="status-badge ${statusClass}">${
+            order.status || "Processing"
+          }</span></td>
                         <td>${formattedTotal}</td>
                         <td>
-                            <button class="action-btn" onclick="viewOrder('${order.id}')">
+                            <button class="action-btn" onclick="viewOrder('${
+                              order.id
+                            }')">
                                 <i class="fas fa-eye"></i> View
                             </button>
                         </td>
                     </tr>
                 `;
-            });
+        });
 
-            ordersHtml += '</tbody></table>';
-            container.innerHTML = ordersHtml;
-        }
+        ordersHtml += "</tbody></table>";
+        container.innerHTML = ordersHtml;
+      }
 
-     function renderWishlistPreview(wishlist) {
-    const container = document.getElementById('wishlist-preview-container');
-    
-    if (!wishlist || wishlist.length === 0) {
-        container.innerHTML = `
+      function renderWishlistPreview(wishlist) {
+        const container = document.getElementById("wishlist-preview-container");
+
+        if (!wishlist || wishlist.length === 0) {
+          container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-heart"></i>
                 <p>Your wishlist is empty</p>
@@ -1400,29 +1527,34 @@ async function fetchLoyaltyPoints() {
                 </button>
             </div>
         `;
-        return;
-    }
+          return;
+        }
 
-    let wishlistHtml = '';
-    wishlist.slice(0, 2).forEach(item => {
-        // Handle both direct items and nested productId objects
-        const product = item.productId || item;
-        const productId = product._id || product.id || item._id || item.id;
-        const productName = product.name || item.name || 'Unnamed Product';
-        const productPrice = product.price || item.price || 0;
-        const productImage = product.image || item.image || product.images?.[0]?.url || item.images?.[0]?.url;
-        
-        wishlistHtml += `
+        let wishlistHtml = "";
+        wishlist.slice(0, 2).forEach((item) => {
+          // Handle both direct items and nested productId objects
+          const product = item.productId || item;
+          const productId = product._id || product.id || item._id || item.id;
+          const productName = product.name || item.name || "Unnamed Product";
+          const productPrice = product.price || item.price || 0;
+          const productImage =
+            product.image ||
+            item.image ||
+            product.images?.[0]?.url ||
+            item.images?.[0]?.url;
+
+          wishlistHtml += `
             <div class="wishlist-item">
                 <div class="item-image">
-                    ${productImage ? 
-                        `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">` : 
-                        `<i class="fas fa-spa"></i>`
+                    ${
+                      productImage
+                        ? `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">`
+                        : `<i class="fas fa-spa"></i>`
                     }
                 </div>
                 <div class="item-details">
                     <h4>${productName}</h4>
-                    <div class="item-price">$${productPrice.toFixed(2)}</div>
+                    <div class="item-price">€${productPrice.toFixed(2)}</div>
                 </div>
                 <div class="item-actions">
                     <button class="action-btn" onclick="addToCartFromWishlist('${productId}')">
@@ -1434,16 +1566,16 @@ async function fetchLoyaltyPoints() {
                 </div>
             </div>
         `;
-    });
+        });
 
-    container.innerHTML = wishlistHtml;
-}
+        container.innerHTML = wishlistHtml;
+      }
 
-function renderFullWishlist(wishlist) {
-    const container = document.getElementById('wishlist-full-container');
-    
-    if (!wishlist || wishlist.length === 0) {
-        container.innerHTML = `
+      function renderFullWishlist(wishlist) {
+        const container = document.getElementById("wishlist-full-container");
+
+        if (!wishlist || wishlist.length === 0) {
+          container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-heart"></i>
                 <p>Your wishlist is empty</p>
@@ -1452,31 +1584,40 @@ function renderFullWishlist(wishlist) {
                 </button>
             </div>
         `;
-        return;
-    }
+          return;
+        }
 
-    let wishlistHtml = '';
-    wishlist.forEach(item => {
-        // Handle both direct items and nested productId objects
-        const product = item.productId || item;
-        const productId = product._id || product.id || item._id || item.id;
-        const productName = product.name || item.name || 'Unnamed Product';
-        const productPrice = product.price || item.price || 0;
-        const productImage = product.image || item.image || product.images?.[0]?.url || item.images?.[0]?.url;
-        
-        wishlistHtml += `
+        let wishlistHtml = "";
+        wishlist.forEach((item) => {
+          // Handle both direct items and nested productId objects
+          const product = item.productId || item;
+          const productId = product._id || product.id || item._id || item.id;
+          const productName = product.name || item.name || "Unnamed Product";
+          const productPrice = product.price || item.price || 0;
+          const productImage =
+            product.image ||
+            item.image ||
+            product.images?.[0]?.url ||
+            item.images?.[0]?.url;
+
+          wishlistHtml += `
             <div class="dashboard-card">
                 <div class="wishlist-item">
                     <div class="item-image">
-                        ${productImage ? 
-                            `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">` : 
-                            `<i class="fas fa-spa"></i>`
+                        ${
+                          productImage
+                            ? `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">`
+                            : `<i class="fas fa-spa"></i>`
                         }
                     </div>
                     <div class="item-details">
                         <h4>${productName}</h4>
-                        <div class="item-price">$${productPrice.toFixed(2)}</div>
-                        <div class="product-detail">${product.category || item.category || 'Hair Product'}</div>
+                        <div class="item-price">$${productPrice.toFixed(
+                          2
+                        )}</div>
+                        <div class="product-detail">${
+                          product.category || item.category || "Hair Product"
+                        }</div>
                     </div>
                     <div class="item-actions">
                         <button class="action-btn" onclick="addToCartFromWishlist('${productId}')">
@@ -1489,73 +1630,79 @@ function renderFullWishlist(wishlist) {
                 </div>
             </div>
         `;
-    });
+        });
 
-    container.innerHTML = wishlistHtml;
-}
+        container.innerHTML = wishlistHtml;
+      }
 
-        function renderCartPreview(cart) {
-            const container = document.getElementById('cart-preview-container');
-            
-            if (!cart || !cart.items || cart.items.length === 0) {
-                container.innerHTML = `
+      function renderCartPreview(cart) {
+        const container = document.getElementById("cart-preview-container");
+
+        if (!cart || !cart.items || cart.items.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-shopping-cart"></i>
                         <p>Your cart is empty</p>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let cartHtml = '';
-            let subtotal = 0;
+        let cartHtml = "";
+        let subtotal = 0;
 
-            cart.items.slice(0, 2).forEach(item => {
-                const itemTotal = (item.price || 0) * (item.quantity || 1);
-                subtotal += itemTotal;
-                
-                cartHtml += `
+        cart.items.slice(0, 2).forEach((item) => {
+          const itemTotal = (item.price || 0) * (item.quantity || 1);
+          subtotal += itemTotal;
+
+          cartHtml += `
                     <div class="cart-item">
                         <div class="item-image">
                             <i class="fas fa-spa"></i>
                         </div>
                         <div class="item-details">
                             <h4>${item.name}</h4>
-                            <div class="item-price">$${(item.price || 0).toFixed(2)}</div>
+                            <div class="item-price">€${(
+                              item.price || 0
+                            ).toFixed(2)}</div>
                             <div>Qty: ${item.quantity || 1}</div>
                         </div>
                     </div>
                 `;
-            });
+        });
 
-            // Add checkout button
-            cartHtml += `
+        // Add checkout button
+        cartHtml += `
                 <button class="action-btn" onclick="switchSection('cart')" style="width: 100%; margin-top: 10px; padding: 12px;">
-                    Checkout ($${subtotal.toFixed(2)})
+                    Checkout (€${subtotal.toFixed(2)})
                 </button>
             `;
 
-            container.innerHTML = cartHtml;
-        }
+        container.innerHTML = cartHtml;
+      }
 
-        function renderUpcomingBookings(bookings) {
-            const container = document.getElementById('upcoming-bookings-container');
-            
-            if (!bookings || bookings.length === 0) {
-                container.innerHTML = `
+      function renderUpcomingBookings(bookings) {
+        const container = document.getElementById(
+          "upcoming-bookings-container"
+        );
+
+        if (!bookings || bookings.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
                         <p>No upcoming appointments</p>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let bookingsHtml = '';
-            bookings.forEach(booking => {
-                const formattedDate = new Date(booking.date || new Date()).toLocaleString();
-                
-                bookingsHtml += `
+        let bookingsHtml = "";
+        bookings.forEach((booking) => {
+          const formattedDate = new Date(
+            booking.date || new Date()
+          ).toLocaleString();
+
+          bookingsHtml += `
                     <div class="booking-card">
                         <div class="booking-date">${formattedDate}</div>
                         <div class="booking-service">${booking.service}</div>
@@ -1566,47 +1713,49 @@ function renderFullWishlist(wishlist) {
                         </div>
                     </div>
                 `;
-            });
+        });
 
-            container.innerHTML = bookingsHtml;
-        }
+        container.innerHTML = bookingsHtml;
+      }
 
-        function renderNotificationsPreview(notifications) {
-            const container = document.getElementById('notifications-preview-container');
-            
-            if (!notifications || notifications.length === 0) {
-                container.innerHTML = `
+      function renderNotificationsPreview(notifications) {
+        const container = document.getElementById(
+          "notifications-preview-container"
+        );
+
+        if (!notifications || notifications.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-bell-slash"></i>
                         <p>No notifications</p>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let notificationsHtml = '';
-            notifications.slice(0, 3).forEach(notification => {
-                const unreadClass = notification.unread ? 'notification-unread' : '';
-                
-                notificationsHtml += `
+        let notificationsHtml = "";
+        notifications.slice(0, 3).forEach((notification) => {
+          const unreadClass = notification.unread ? "notification-unread" : "";
+
+          notificationsHtml += `
                     <div class="notification-item ${unreadClass}">
                         <h4>${notification.title}</h4>
                         <p>${notification.message}</p>
                         <div class="notification-time">${notification.time}</div>
                     </div>
                 `;
-            });
+        });
 
-            container.innerHTML = notificationsHtml;
-        }
+        container.innerHTML = notificationsHtml;
+      }
 
-        // Mock data fallback
-        function useMockData() {
-            console.log("📋 Using mock data as fallback");
-            
-            // Mock stats
-            const statsContainer = document.getElementById('stats-container');
-            statsContainer.innerHTML = `
+      // Mock data fallback
+      function useMockData() {
+        console.log("📋 Using mock data as fallback");
+
+        // Mock stats
+        const statsContainer = document.getElementById("stats-container");
+        statsContainer.innerHTML = `
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-shopping-bag"></i>
@@ -1636,94 +1785,105 @@ function renderFullWishlist(wishlist) {
                     <div class="stat-label">Loyalty Points</div>
                 </div>
             `;
-            
-            // Mock empty states
-            const containers = [
-                'recent-orders-container',
-                'wishlist-preview-container', 
-                'cart-preview-container',
-                'upcoming-bookings-container',
-                'notifications-preview-container'
-            ];
-            
-            containers.forEach(containerId => {
-                const container = document.getElementById(containerId);
-                if (container) {
-                    const type = containerId.includes('wishlist') ? 'heart' : 
-                                containerId.includes('cart') ? 'shopping-cart' :
-                                containerId.includes('orders') ? 'box-open' :
-                                containerId.includes('bookings') ? 'calendar-times' : 'bell-slash';
-                    
-                    const message = containerId.includes('wishlist') ? 'Your wishlist is empty' :
-                                  containerId.includes('cart') ? 'Your cart is empty' :
-                                  containerId.includes('orders') ? 'No recent orders' :
-                                  containerId.includes('bookings') ? 'No upcoming appointments' : 'No notifications';
-                    
-                    container.innerHTML = `
+
+        // Mock empty states
+        const containers = [
+          "recent-orders-container",
+          "wishlist-preview-container",
+          "cart-preview-container",
+          "upcoming-bookings-container",
+          "notifications-preview-container",
+        ];
+
+        containers.forEach((containerId) => {
+          const container = document.getElementById(containerId);
+          if (container) {
+            const type = containerId.includes("wishlist")
+              ? "heart"
+              : containerId.includes("cart")
+              ? "shopping-cart"
+              : containerId.includes("orders")
+              ? "box-open"
+              : containerId.includes("bookings")
+              ? "calendar-times"
+              : "bell-slash";
+
+            const message = containerId.includes("wishlist")
+              ? "Your wishlist is empty"
+              : containerId.includes("cart")
+              ? "Your cart is empty"
+              : containerId.includes("orders")
+              ? "No recent orders"
+              : containerId.includes("bookings")
+              ? "No upcoming appointments"
+              : "No notifications";
+
+            container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-${type}"></i>
                             <p>${message}</p>
                         </div>
                     `;
-                }
-            });
-        }
+          }
+        });
+      }
 
-        // Section switching
-        function switchSection(sectionId) {
-            contentSections.forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            const activeSection = document.getElementById(sectionId);
-            activeSection.classList.add('active');
-            
-            sidebarBubbles.forEach(bubble => {
-                bubble.classList.remove('active');
-                if (bubble.getAttribute('data-section') === sectionId) {
-                    bubble.classList.add('active');
-                }
-            });
-            
-            // Load section-specific data
-            loadSectionData(sectionId);
-            
-            window.scrollTo(0, 0);
-        }
+      // Section switching
+      function switchSection(sectionId) {
+        contentSections.forEach((section) => {
+          section.classList.remove("active");
+        });
 
-        async function loadSectionData(sectionId) {
-            try {
-                switch(sectionId) {
-                    case 'cart':
-                        await loadFullCart();
-                        break;
-                    case 'wishlist':
-                        await loadFullWishlist();
-                        break;
-                    case 'orders':
-                        await loadFullOrders();
-                        break;
-                    case 'bookings':
-                        await loadFullBookings();
-                        break;
-                    case 'notifications':
-                        await loadFullNotifications();
-                        break;
-                }
-            } catch (error) {
-                console.error(`Failed to load ${sectionId} data:`, error);
-            }
-        }
+        const activeSection = document.getElementById(sectionId);
+        activeSection.classList.add("active");
 
-        async function loadFullCart() {
-            const container = document.getElementById('cart-full-container');
-            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading cart...</span></div>';
-            
-            try {
-                const cart = await fetchCart();
-                renderFullCart(cart);
-            } catch (error) {
-                container.innerHTML = `
+        sidebarBubbles.forEach((bubble) => {
+          bubble.classList.remove("active");
+          if (bubble.getAttribute("data-section") === sectionId) {
+            bubble.classList.add("active");
+          }
+        });
+
+        // Load section-specific data
+        loadSectionData(sectionId);
+
+        window.scrollTo(0, 0);
+      }
+
+      async function loadSectionData(sectionId) {
+        try {
+          switch (sectionId) {
+            case "cart":
+              await loadFullCart();
+              break;
+            case "wishlist":
+              await loadFullWishlist();
+              break;
+            case "orders":
+              await loadFullOrders();
+              break;
+            case "bookings":
+              await loadFullBookings();
+              break;
+            case "notifications":
+              await loadFullNotifications();
+              break;
+          }
+        } catch (error) {
+          console.error(`Failed to load ${sectionId} data:`, error);
+        }
+      }
+
+      async function loadFullCart() {
+        const container = document.getElementById("cart-full-container");
+        container.innerHTML =
+          '<div class="loading"><div class="loading-spinner"></div><span>Loading cart...</span></div>';
+
+        try {
+          const cart = await fetchCart();
+          renderFullCart(cart);
+        } catch (error) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-shopping-cart"></i>
                         <p>Your cart is empty</p>
@@ -1732,14 +1892,14 @@ function renderFullWishlist(wishlist) {
                         </button>
                     </div>
                 `;
-            }
         }
+      }
 
-        function renderFullCart(cart) {
-            const container = document.getElementById('cart-full-container');
-            
-            if (!cart || !cart.items || cart.items.length === 0) {
-                container.innerHTML = `
+      function renderFullCart(cart) {
+        const container = document.getElementById("cart-full-container");
+
+        if (!cart || !cart.items || cart.items.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-shopping-cart"></i>
                         <p>Your cart is empty</p>
@@ -1748,57 +1908,65 @@ function renderFullWishlist(wishlist) {
                         </button>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let cartHtml = '';
-            let subtotal = 0;
+        let cartHtml = "";
+        let subtotal = 0;
 
-            cart.items.forEach(item => {
-                const itemTotal = (item.price || 0) * (item.quantity || 1);
-                subtotal += itemTotal;
-                
-                cartHtml += `
+        cart.items.forEach((item) => {
+          const itemTotal = (item.price || 0) * (item.quantity || 1);
+          subtotal += itemTotal;
+
+          cartHtml += `
                     <div class="cart-item">
                         <div class="item-image">
                             <i class="fas fa-spa"></i>
                         </div>
                         <div class="item-details">
                             <h4>${item.name}</h4>
-                            <div class="item-price">$${(item.price || 0).toFixed(2)}</div>
+                            <div class="item-price">€${(
+                              item.price || 0
+                            ).toFixed(2)}</div>
                             <div>Qty: ${item.quantity || 1}</div>
                         </div>
                         <div class="item-actions">
-                            <button class="action-btn" onclick="updateCartItem('${item.id}', ${(item.quantity || 1) - 1})">
+                            <button class="action-btn" onclick="updateCartItem('${
+                              item.id
+                            }', ${(item.quantity || 1) - 1})">
                                 <i class="fas fa-minus"></i>
                             </button>
-                            <button class="action-btn" onclick="updateCartItem('${item.id}', ${(item.quantity || 1) + 1})">
+                            <button class="action-btn" onclick="updateCartItem('${
+                              item.id
+                            }', ${(item.quantity || 1) + 1})">
                                 <i class="fas fa-plus"></i>
                             </button>
-                            <button class="action-btn" onclick="removeFromCart('${item.id}')">
+                            <button class="action-btn" onclick="removeFromCart('${
+                              item.id
+                            }')">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     </div>
                 `;
-            });
+        });
 
-            const shipping = 5.00;
-            const total = subtotal + shipping;
+        const shipping = 5.0;
+        const total = subtotal + shipping;
 
-            cartHtml += `
+        cartHtml += `
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--light-bg);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                         <h4>Subtotal</h4>
-                        <h4>$${subtotal.toFixed(2)}</h4>
+                        <h4>€${subtotal.toFixed(2)}</h4>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                         <h4>Shipping</h4>
-                        <h4>$${shipping.toFixed(2)}</h4>
+                        <h4>€${shipping.toFixed(2)}</h4>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.2rem;">
                         <h3>Total</h3>
-                        <h3>$${total.toFixed(2)}</h3>
+                        <h3>€${total.toFixed(2)}</h3>
                     </div>
                     <button class="action-btn" style="width: 100%; padding: 15px; font-size: 1.1rem;" onclick="checkout()">
                         Proceed to Checkout
@@ -1806,18 +1974,19 @@ function renderFullWishlist(wishlist) {
                 </div>
             `;
 
-            container.innerHTML = cartHtml;
-        }
+        container.innerHTML = cartHtml;
+      }
 
-        async function loadFullWishlist() {
-            const container = document.getElementById('wishlist-full-container');
-            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading wishlist...</span></div>';
-            
-            try {
-                const wishlist = await fetchWishlist();
-                renderFullWishlist(wishlist);
-            } catch (error) {
-                container.innerHTML = `
+      async function loadFullWishlist() {
+        const container = document.getElementById("wishlist-full-container");
+        container.innerHTML =
+          '<div class="loading"><div class="loading-spinner"></div><span>Loading wishlist...</span></div>';
+
+        try {
+          const wishlist = await fetchWishlist();
+          renderFullWishlist(wishlist);
+        } catch (error) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-heart"></i>
                         <p>Your wishlist is empty</p>
@@ -1826,14 +1995,14 @@ function renderFullWishlist(wishlist) {
                         </button>
                     </div>
                 `;
-            }
         }
+      }
 
-        function renderFullWishlist(wishlist) {
-            const container = document.getElementById('wishlist-full-container');
-            
-            if (!wishlist || wishlist.length === 0) {
-                container.innerHTML = `
+      function renderFullWishlist(wishlist) {
+        const container = document.getElementById("wishlist-full-container");
+
+        if (!wishlist || wishlist.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-heart"></i>
                         <p>Your wishlist is empty</p>
@@ -1842,12 +2011,12 @@ function renderFullWishlist(wishlist) {
                         </button>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let wishlistHtml = '';
-            wishlist.forEach(item => {
-                wishlistHtml += `
+        let wishlistHtml = "";
+        wishlist.forEach((item) => {
+          wishlistHtml += `
                     <div class="dashboard-card">
                         <div class="wishlist-item">
                             <div class="item-image">
@@ -1855,33 +2024,40 @@ function renderFullWishlist(wishlist) {
                             </div>
                             <div class="item-details">
                                 <h4>${item.name}</h4>
-                                <div class="item-price">$${item.price?.toFixed(2) || '0.00'}</div>
+                                <div class="item-price">€${
+                                  item.price?.toFixed(2) || "0.00"
+                                }</div>
                             </div>
                             <div class="item-actions">
-                                <button class="action-btn" onclick="addToCart('${item.id}')">
+                                <button class="action-btn" onclick="addToCart('${
+                                  item.id
+                                }')">
                                     <i class="fas fa-shopping-cart"></i>
                                 </button>
-                                <button class="action-btn" onclick="removeFromWishlist('${item.id}')">
+                                <button class="action-btn" onclick="removeFromWishlist('${
+                                  item.id
+                                }')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 `;
-            });
+        });
 
-            container.innerHTML = wishlistHtml;
-        }
+        container.innerHTML = wishlistHtml;
+      }
 
-        async function loadFullOrders() {
-            const container = document.getElementById('orders-full-container');
-            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading order history...</span></div>';
-            
-            try {
-                const orders = await fetchOrders();
-                renderFullOrders(orders);
-            } catch (error) {
-                container.innerHTML = `
+      async function loadFullOrders() {
+        const container = document.getElementById("orders-full-container");
+        container.innerHTML =
+          '<div class="loading"><div class="loading-spinner"></div><span>Loading order history...</span></div>';
+
+        try {
+          const orders = await fetchOrders();
+          renderFullOrders(orders);
+        } catch (error) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-box-open"></i>
                         <p>No order history</p>
@@ -1890,14 +2066,14 @@ function renderFullWishlist(wishlist) {
                         </button>
                     </div>
                 `;
-            }
         }
+      }
 
-        function renderFullOrders(orders) {
-            const container = document.getElementById('orders-full-container');
-            
-            if (!orders || orders.length === 0) {
-                container.innerHTML = `
+      function renderFullOrders(orders) {
+        const container = document.getElementById("orders-full-container");
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-box-open"></i>
                         <p>No order history</p>
@@ -1906,10 +2082,10 @@ function renderFullWishlist(wishlist) {
                         </button>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let ordersHtml = `
+        let ordersHtml = `
                 <table class="order-table">
                     <thead>
                         <tr>
@@ -1923,42 +2099,53 @@ function renderFullWishlist(wishlist) {
                     <tbody>
             `;
 
-            orders.forEach(order => {
-                const statusClass = `status-${order.status?.toLowerCase() || 'pending'}`;
-                const formattedDate = new Date(order.date || new Date()).toLocaleDateString();
-                const formattedTotal = `$${order.total?.toFixed(2) || '0.00'}`;
+        orders.forEach((order) => {
+          const statusClass = `status-${
+            order.status?.toLowerCase() || "pending"
+          }`;
+          const formattedDate = new Date(
+            order.date || new Date()
+          ).toLocaleDateString();
+          const formattedTotal = `$${order.total?.toFixed(2) || "0.00"}`;
 
-                ordersHtml += `
+          ordersHtml += `
                     <tr>
-                        <td>${order.id || 'N/A'}</td>
+                        <td>${order.id || "N/A"}</td>
                         <td>${formattedDate}</td>
-                        <td><span class="status-badge ${statusClass}">${order.status || 'Processing'}</span></td>
+                        <td><span class="status-badge ${statusClass}">${
+            order.status || "Processing"
+          }</span></td>
                         <td>${formattedTotal}</td>
                         <td>
-                            <button class="action-btn" onclick="viewOrder('${order.id}')">
+                            <button class="action-btn" onclick="viewOrder('${
+                              order.id
+                            }')">
                                 <i class="fas fa-eye"></i> View
                             </button>
-                            <button class="action-btn" onclick="reorder('${order.id}')">
+                            <button class="action-btn" onclick="reorder('${
+                              order.id
+                            }')">
                                 <i class="fas fa-redo"></i> Reorder
                             </button>
                         </td>
                     </tr>
                 `;
-            });
+        });
 
-            ordersHtml += '</tbody></table>';
-            container.innerHTML = ordersHtml;
-        }
+        ordersHtml += "</tbody></table>";
+        container.innerHTML = ordersHtml;
+      }
 
-        async function loadFullBookings() {
-            const container = document.getElementById('bookings-full-container');
-            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading appointments...</span></div>';
-            
-            try {
-                const bookings = await fetchBookings();
-                renderFullBookings(bookings);
-            } catch (error) {
-                container.innerHTML = `
+      async function loadFullBookings() {
+        const container = document.getElementById("bookings-full-container");
+        container.innerHTML =
+          '<div class="loading"><div class="loading-spinner"></div><span>Loading appointments...</span></div>';
+
+        try {
+          const bookings = await fetchBookings();
+          renderFullBookings(bookings);
+        } catch (error) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
                         <p>No appointments scheduled</p>
@@ -1967,14 +2154,14 @@ function renderFullWishlist(wishlist) {
                         </button>
                     </div>
                 `;
-            }
         }
+      }
 
-        function renderFullBookings(bookings) {
-            const container = document.getElementById('bookings-full-container');
-            
-            if (!bookings || bookings.length === 0) {
-                container.innerHTML = `
+      function renderFullBookings(bookings) {
+        const container = document.getElementById("bookings-full-container");
+
+        if (!bookings || bookings.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
                         <p>No appointments scheduled</p>
@@ -1983,259 +2170,291 @@ function renderFullWishlist(wishlist) {
                         </button>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let bookingsHtml = '';
-            bookings.forEach(booking => {
-                const formattedDate = new Date(booking.date || new Date()).toLocaleString();
-                const isUpcoming = new Date(booking.date || new Date()) > new Date();
-                
-                bookingsHtml += `
+        let bookingsHtml = "";
+        bookings.forEach((booking) => {
+          const formattedDate = new Date(
+            booking.date || new Date()
+          ).toLocaleString();
+          const isUpcoming = new Date(booking.date || new Date()) > new Date();
+
+          bookingsHtml += `
                     <div class="booking-card">
                         <div class="booking-date">${formattedDate}</div>
                         <div class="booking-service">${booking.service}</div>
                         <div>With Stylist: ${booking.stylist}</div>
-                        ${isUpcoming ? `
+                        ${
+                          isUpcoming
+                            ? `
                             <div class="item-actions" style="margin-top: 10px;">
                                 <button class="action-btn" onclick="rescheduleBooking('${booking.id}')">Reschedule</button>
                                 <button class="action-btn" onclick="cancelBooking('${booking.id}')">Cancel</button>
                             </div>
-                        ` : `<div><span class="status-badge status-delivered">Completed</span></div>`}
+                        `
+                            : `<div><span class="status-badge status-delivered">Completed</span></div>`
+                        }
                     </div>
                 `;
-            });
+        });
 
-            container.innerHTML = bookingsHtml;
-        }
+        container.innerHTML = bookingsHtml;
+      }
 
-        async function loadFullNotifications() {
-            const container = document.getElementById('notifications-full-container');
-            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><span>Loading notifications...</span></div>';
-            
-            try {
-                const notifications = await fetchNotifications();
-                renderFullNotifications(notifications);
-            } catch (error) {
-                container.innerHTML = `
+      async function loadFullNotifications() {
+        const container = document.getElementById(
+          "notifications-full-container"
+        );
+        container.innerHTML =
+          '<div class="loading"><div class="loading-spinner"></div><span>Loading notifications...</span></div>';
+
+        try {
+          const notifications = await fetchNotifications();
+          renderFullNotifications(notifications);
+        } catch (error) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-bell-slash"></i>
                         <p>No notifications</p>
                     </div>
                 `;
-            }
         }
+      }
 
-        function renderFullNotifications(notifications) {
-            const container = document.getElementById('notifications-full-container');
-            
-            if (!notifications || notifications.length === 0) {
-                container.innerHTML = `
+      function renderFullNotifications(notifications) {
+        const container = document.getElementById(
+          "notifications-full-container"
+        );
+
+        if (!notifications || notifications.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-bell-slash"></i>
                         <p>No notifications</p>
                     </div>
                 `;
-                return;
-            }
+          return;
+        }
 
-            let notificationsHtml = '';
-            notifications.forEach(notification => {
-                const unreadClass = notification.unread ? 'notification-unread' : '';
-                
-                notificationsHtml += `
+        let notificationsHtml = "";
+        notifications.forEach((notification) => {
+          const unreadClass = notification.unread ? "notification-unread" : "";
+
+          notificationsHtml += `
                     <div class="notification-item ${unreadClass}">
                         <h4>${notification.title}</h4>
                         <p>${notification.message}</p>
                         <div class="notification-time">${notification.time}</div>
                     </div>
                 `;
+        });
+
+        container.innerHTML = notificationsHtml;
+      }
+
+      // Action functions
+      function viewOrder(orderId) {
+        console.log("View order:", orderId);
+        alert("Order details for: " + orderId);
+      }
+
+      function reorder(orderId) {
+        console.log("Reorder:", orderId);
+        alert("Adding items from order " + orderId + " to cart");
+      }
+
+      function addToCart(productId) {
+        console.log("Add to cart:", productId);
+        alert("Added product " + productId + " to cart");
+      }
+
+      function removeFromCart(productId) {
+        console.log("Remove from cart:", productId);
+        alert("Removed product " + productId + " from cart");
+      }
+
+      function updateCartItem(productId, quantity) {
+        console.log("Update cart item:", productId, quantity);
+        alert("Updated quantity for product " + productId + " to " + quantity);
+      }
+
+      function removeFromWishlist(productId) {
+        console.log("Remove from wishlist:", productId);
+        alert("Removed product " + productId + " from wishlist");
+      }
+
+      function rescheduleBooking(bookingId) {
+        console.log("Reschedule booking:", bookingId);
+        alert("Rescheduling booking: " + bookingId);
+      }
+
+      function cancelBooking(bookingId) {
+        console.log("Cancel booking:", bookingId);
+        alert("Cancelling booking: " + bookingId);
+      }
+
+      function checkout() {
+        window.location.href = "checkout.html";
+      }
+
+      function redirectToLogin() {
+        localStorage.removeItem("token");
+        window.location.href = "sign-in.html";
+      }
+
+      function showError(message) {
+        alert("Error: " + message);
+      }
+
+      // Event Listeners
+      modeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+        localStorage.setItem(
+          "theme",
+          body.classList.contains("dark-mode") ? "dark" : "light"
+        );
+      });
+
+      if (localStorage.getItem("theme") === "dark") {
+        body.classList.add("dark-mode");
+      }
+
+      userProfile.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle("show");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!userProfile.contains(e.target)) {
+          dropdownMenu.classList.remove("show");
+        }
+      });
+
+      sidebarBubbles.forEach((bubble) => {
+        bubble.addEventListener("click", () => {
+          switchSection(bubble.getAttribute("data-section"));
+        });
+      });
+
+      quickShortcuts.forEach((shortcut) => {
+        shortcut.addEventListener("click", () => {
+          const sectionId = shortcut.getAttribute("data-section");
+          if (sectionId) {
+            switchSection(sectionId);
+          }
+        });
+      });
+
+      viewAllLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const sectionId = link.getAttribute("data-section");
+          switchSection(sectionId);
+        });
+      });
+
+      document.querySelectorAll(".dropdown-menu a").forEach((item) => {
+        item.addEventListener("click", (e) => {
+          e.preventDefault();
+          const sectionId = item.getAttribute("data-section");
+          if (sectionId) {
+            switchSection(sectionId);
+          }
+          dropdownMenu.classList.remove("show");
+        });
+      });
+
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        redirectToLogin();
+      });
+
+      // Settings form handlers
+      document
+        .getElementById("save-profile")
+        .addEventListener("click", async function () {
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          const phone = document.getElementById("phone").value;
+          const address = document.getElementById("address").value;
+
+          try {
+            // API call to update profile would go here
+            console.log("Update profile:", { name, email, phone, address });
+            alert("Profile updated successfully!");
+          } catch (error) {
+            console.error("Error updating profile:", error);
+            alert("Error updating profile");
+          }
+        });
+
+      document
+        .getElementById("update-password")
+        .addEventListener("click", async function () {
+          const currentPassword =
+            document.getElementById("current-password").value;
+          const newPassword = document.getElementById("new-password").value;
+          const confirmPassword =
+            document.getElementById("confirm-password").value;
+
+          if (newPassword !== confirmPassword) {
+            alert("New passwords do not match");
+            return;
+          }
+
+          try {
+            // API call to update password would go here
+            console.log("Update password");
+            alert("Password updated successfully!");
+
+            document.getElementById("current-password").value = "";
+            document.getElementById("new-password").value = "";
+            document.getElementById("confirm-password").value = "";
+          } catch (error) {
+            console.error("Error updating password:", error);
+            alert("Error updating password");
+          }
+        });
+
+      document
+        .getElementById("save-preferences")
+        .addEventListener("click", async function () {
+          const emailNotifications = document.getElementById(
+            "email-notifications"
+          ).checked;
+          const smsNotifications =
+            document.getElementById("sms-notifications").checked;
+          const promotionalEmails =
+            document.getElementById("promotional-emails").checked;
+
+          try {
+            // API call to update preferences would go here
+            console.log("Update preferences:", {
+              emailNotifications,
+              smsNotifications,
+              promotionalEmails,
             });
-
-            container.innerHTML = notificationsHtml;
-        }
-
-        // Action functions
-        function viewOrder(orderId) {
-            console.log('View order:', orderId);
-            alert('Order details for: ' + orderId);
-        }
-
-        function reorder(orderId) {
-            console.log('Reorder:', orderId);
-            alert('Adding items from order ' + orderId + ' to cart');
-        }
-
-        function addToCart(productId) {
-            console.log('Add to cart:', productId);
-            alert('Added product ' + productId + ' to cart');
-        }
-
-        function removeFromCart(productId) {
-            console.log('Remove from cart:', productId);
-            alert('Removed product ' + productId + ' from cart');
-        }
-
-        function updateCartItem(productId, quantity) {
-            console.log('Update cart item:', productId, quantity);
-            alert('Updated quantity for product ' + productId + ' to ' + quantity);
-        }
-
-        function removeFromWishlist(productId) {
-            console.log('Remove from wishlist:', productId);
-            alert('Removed product ' + productId + ' from wishlist');
-        }
-
-        function rescheduleBooking(bookingId) {
-            console.log('Reschedule booking:', bookingId);
-            alert('Rescheduling booking: ' + bookingId);
-        }
-
-        function cancelBooking(bookingId) {
-            console.log('Cancel booking:', bookingId);
-            alert('Cancelling booking: ' + bookingId);
-        }
-
-        function checkout() {
-            window.location.href = 'checkout.html';
-        }
-
-        function redirectToLogin() {
-            localStorage.removeItem('token');
-            window.location.href = 'sign-in.html';
-        }
-
-        function showError(message) {
-            alert('Error: ' + message);
-        }
-
-        // Event Listeners
-        modeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
-        });
-        
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-        }
-        
-        userProfile.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
-        
-        document.addEventListener('click', (e) => {
-            if (!userProfile.contains(e.target)) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
-        
-        sidebarBubbles.forEach(bubble => {
-            bubble.addEventListener('click', () => {
-                switchSection(bubble.getAttribute('data-section'));
-            });
-        });
-        
-        quickShortcuts.forEach(shortcut => {
-            shortcut.addEventListener('click', () => {
-                const sectionId = shortcut.getAttribute('data-section');
-                if (sectionId) {
-                    switchSection(sectionId);
-                }
-            });
-        });
-        
-        viewAllLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const sectionId = link.getAttribute('data-section');
-                switchSection(sectionId);
-            });
+            alert("Preferences updated successfully!");
+          } catch (error) {
+            console.error("Error updating preferences:", error);
+            alert("Error updating preferences");
+          }
         });
 
-        document.querySelectorAll('.dropdown-menu a').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const sectionId = item.getAttribute('data-section');
-                if (sectionId) {
-                    switchSection(sectionId);
-                }
-                dropdownMenu.classList.remove('show');
-            });
-        });
-
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('token');
-            redirectToLogin();
-        });
-
-        // Settings form handlers
-        document.getElementById('save-profile').addEventListener('click', async function() {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
-            
-            try {
-                // API call to update profile would go here
-                console.log('Update profile:', { name, email, phone, address });
-                alert('Profile updated successfully!');
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                alert('Error updating profile');
-            }
-        });
-
-        document.getElementById('update-password').addEventListener('click', async function() {
-            const currentPassword = document.getElementById('current-password').value;
-            const newPassword = document.getElementById('new-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            
-            if (newPassword !== confirmPassword) {
-                alert('New passwords do not match');
-                return;
-            }
-            
-            try {
-                // API call to update password would go here
-                console.log('Update password');
-                alert('Password updated successfully!');
-                
-                document.getElementById('current-password').value = '';
-                document.getElementById('new-password').value = '';
-                document.getElementById('confirm-password').value = '';
-            } catch (error) {
-                console.error('Error updating password:', error);
-                alert('Error updating password');
-            }
-        });
-
-        document.getElementById('save-preferences').addEventListener('click', async function() {
-            const emailNotifications = document.getElementById('email-notifications').checked;
-            const smsNotifications = document.getElementById('sms-notifications').checked;
-            const promotionalEmails = document.getElementById('promotional-emails').checked;
-            
-            try {
-                // API call to update preferences would go here
-                console.log('Update preferences:', { emailNotifications, smsNotifications, promotionalEmails });
-                alert('Preferences updated successfully!');
-            } catch (error) {
-                console.error('Error updating preferences:', error);
-                alert('Error updating preferences');
-            }
-        });
-
-        document.getElementById('mark-all-read').addEventListener('click', async function() {
-            try {
-                // API call to mark all as read would go here
-                console.log('Mark all notifications as read');
-                alert('All notifications marked as read!');
-            } catch (error) {
-                console.error('Error marking notifications as read:', error);
-                alert('Error marking notifications as read');
-            }
+      document
+        .getElementById("mark-all-read")
+        .addEventListener("click", async function () {
+          try {
+            // API call to mark all as read would go here
+            console.log("Mark all notifications as read");
+            alert("All notifications marked as read!");
+          } catch (error) {
+            console.error("Error marking notifications as read:", error);
+            alert("Error marking notifications as read");
+          }
         });
     </script>
-</body>
+  </body>
 </html>
