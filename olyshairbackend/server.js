@@ -80,7 +80,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 // ================================
 // 💾 ENHANCED MONGODB CONNECTION
 // ================================
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://josymambo858_db_user:z9z9IwWRM8zhgzlx@ac-7kkdtc6.lgcze5s.mongodb.net/olyshair?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://Davidj_User:KNhA8m39kRZHzuZV@ac-7kkdtc6.lgcze5s.mongodb.net/olyshair?retryWrites=true&w=majority';
 
 const connectWithRetry = async (retries = 5, delay = 5000) => {
     for (let i = 0; i < retries; i++) {
