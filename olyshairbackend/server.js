@@ -18,17 +18,13 @@ const app = express();
 // ================================
 app.use(cors({
   origin: [
-    'https://olyshairi-e-commerce-hairspo-online.vercel.app',
-    'https://olyshairi-e-commerce-hairspo-online.onrender.com',
-    'http://127.0.0.1:5500',
-    'http://localhost:5500',
-    'http://localhost:5001',
-    'http://localhost:3000',
-    'http://localhost:8080',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:8080',
-    'http://localhost:5000',
-    'http://127.0.0.1:5000'
+'https://www.olyshair.com',
+  'https://olyshair.com',
+  'https://olyshairi-e-commerce-hairspo-online.vercel.app',
+  'https://olyshairi-e-commerce-hairspo-online.onrender.com',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'http://127.0.0.1:5500'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -84,7 +80,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 // ================================
 // 💾 ENHANCED MONGODB CONNECTION
 // ================================
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://josymambo858_db_user:v3VSBGbeumlMZO9m@daviddbprogress.lgcze5s.mongodb.net/olyshair';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://Davidj_User:KNhA8m39kRZHzuZV@daviddbprogress.lgcze5s.mongodb.net/olyshair?retryWrites=true&w=majority';
 
 const connectWithRetry = async (retries = 5, delay = 5000) => {
     for (let i = 0; i < retries; i++) {
