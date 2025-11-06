@@ -1,37 +1,64 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { secret } = require('../config/jwt'); // Import from central config
+const { secret } = require('../config/jwt');
 
 const auth = async (req, res, next) => {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        let token = req.header('Authorization')?.replace('Bearer ', '');
+        
+        // Also check for token in x-auth-token header
+        if (!token) {
+            token = req.header('x-auth-token');
+        }
         
         if (!token) {
-            return res.status(401).json({ error: 'No token provided' });
+            return res.status(401).json({ 
+                success: false,
+                error: 'No token provided' 
+            });
         }
-          // For development, we'll use a simple mock user
-    // In production, you would verify the JWT token
-    const mockUser = {
-      id: 'user123',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      role: 'customer'
-    };
+
+        console.log('🔐 Token verification attempt:', {
+            tokenLength: token.length,
+            tokenPrefix: token.substring(0, 20) + '...'
+        });
 
         // Use the centralized secret
         const decoded = jwt.verify(token, secret);
+        console.log('✅ Token decoded:', { id: decoded.id, email: decoded.email });
         
         const user = await User.findById(decoded.id).select('-passwordHash');
         if (!user) {
-            return res.status(401).json({ error: 'User not found' });
+            return res.status(401).json({ 
+                success: false,
+                error: 'User not found' 
+            });
         }
 
         req.user = user;
+        console.log('✅ User authenticated:', user.email);
         next();
     } catch (error) {
-        console.error('Auth Middleware Error:', error);
-        res.status(401).json({ error: 'Invalid token' });
+        console.error('❌ Auth Middleware Error:', error.message);
+        
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ 
+                success: false,
+                error: 'Invalid token format' 
+            });
+        }
+        
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ 
+                success: false,
+                error: 'Token expired' 
+            });
+        }
+        
+        res.status(401).json({ 
+            success: false,
+            error: 'Authentication failed' 
+        });
     }
 };
 

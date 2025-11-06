@@ -654,6 +654,39 @@ app.use('/api/*', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+// Add this to your server.js in the route section
+app.get('/api/auth/debug/verify', async (req, res) => {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    if (!token) {
+        return res.status(400).json({
+            success: false,
+            error: 'No token provided for debugging'
+        });
+    }
+
+    try {
+        const decoded = jwt.decode(token);
+        const isExpired = decoded?.exp ? (Date.now() >= decoded.exp * 1000) : null;
+        
+        res.json({
+            success: true,
+            tokenInfo: {
+                length: token.length,
+                decoded: decoded,
+                isExpired: isExpired,
+                expiresAt: decoded?.exp ? new Date(decoded.exp * 1000).toISOString() : null,
+                currentTime: new Date().toISOString()
+            }
+        });
+    } catch (error) {
+        res.json({
+            success: false,
+            error: 'Token decoding failed',
+            message: error.message
+        });
+    }
+});
 
 // Global error handler
 app.use((err, req, res, next) => {

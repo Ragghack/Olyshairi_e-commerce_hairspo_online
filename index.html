@@ -12,6 +12,7 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
+   
     <style>
       * {
         margin: 0;
@@ -732,15 +733,16 @@
         <a href="about.html">About</a>
         <a href="contact.html">Contact</a>
       </div>
-      <div class="header-icons">
-        <i class="fas fa-search"></i>
-        <i class="fas fa-shopping-bag"></i>
-        <i class="fas fa-user"></i>
-        <div class="mode-toggle">
-          <i class="fas fa-sun"></i>
-          <i class="fas fa-moon"></i>
-          <div class="toggle-circle"></div>
-        </div>
+<div class="header-icons">
+    <i class="fas fa-search"></i>
+    <i class="fas fa-shopping-bag"></i>
+    <i class="fas fa-user" id="userIcon" onclick="handleUserIconClick()"></i>
+    <div class="mode-toggle">
+        <i class="fas fa-sun"></i>
+        <i class="fas fa-moon"></i>
+        <div class="toggle-circle"></div>
+    </div>
+</div>
       </div>
     </header>
 
@@ -790,7 +792,7 @@
         Discover our exclusive collection of luxury hair extensions and care
         products crafted for perfection
       </p>
-      <button class="cta-button" onclick="window.location.href='sign-in.html'">
+      <button class="cta-button" onclick="handleShopCollection()" href = "shop.html">
         SHOP THE COLLECTION
       </button>
     </section>
@@ -1107,52 +1109,314 @@
         <p>© 2023 OLYS HAIR. All rights reserved. | www.olyshair.com</p>
       </div>
     </footer>
+<script>
+// Authentication utility functions
+//const API_BASE_URL = "http://localhost:5001/api";
+const API_BASE_URL = "https://olyshairi-e-commerce-hairspo-online.onrender.com/api";
+// Enhanced authentication check
+async function checkAuthStatus() {
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
+    if (!token) {
+        console.log('❌ No token found in localStorage');
+        return { isAuthenticated: false, user: null };
+    }
 
-    <script>
-      // Dark/Light Mode Toggle
-      const modeToggle = document.querySelector(".mode-toggle");
-      const body = document.body;
-
-      modeToggle.addEventListener("click", () => {
-        body.classList.toggle("dark-mode");
-
-        // Save user preference in localStorage
-        if (body.classList.contains("dark-mode")) {
-          localStorage.setItem("theme", "dark");
-        } else {
-          localStorage.setItem("theme", "light");
+    // Check if it's a demo token (starts with demo-token-)
+    if (token.startsWith('demo-token-')) {
+        console.log('🔐 Using demo authentication');
+        try {
+            const user = userData ? JSON.parse(userData) : null;
+            return { isAuthenticated: true, user };
+        } catch (error) {
+            console.error('Error parsing demo user data:', error);
+            return { isAuthenticated: true, user: null };
         }
-      });
+    }
 
-      // Check for saved user preference
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark") {
-        body.classList.add("dark-mode");
-      }
-
-      // Bubble Navigation
-      document.addEventListener("DOMContentLoaded", function () {
-        const bubbles = document.querySelectorAll(".bubble");
-
-        bubbles.forEach((bubble) => {
-          bubble.addEventListener("click", function () {
-            bubbles.forEach((b) => (b.style.backgroundColor = ""));
-            this.style.backgroundColor = "";
-          });
+    // Regular JWT token verification - FIXED ENDPOINT
+    try {
+        console.log('🔐 Verifying token with backend...');
+        
+        const response = await fetch(`${API_BASE_URL}/auth`, { // Removed trailing slash
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
 
-        // Header scroll effect
-        window.addEventListener("scroll", function () {
-          const header = document.querySelector("header");
-          if (window.scrollY > 100) {
+        console.log('📨 Auth check response status:', response.status);
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Token verified successfully:', data.user?.email);
+            return { isAuthenticated: true, user: data.user };
+        } else if (response.status === 401) {
+            console.log('❌ Token invalid or expired');
+            // Clear invalid token
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            return { isAuthenticated: false, user: null };
+        } else {
+            console.log('⚠️ Auth endpoint returned status:', response.status);
+            // For other status codes, assume not authenticated to be safe
+            return { isAuthenticated: false, user: null };
+        }
+    } catch (error) {
+        console.error('❌ Auth check failed:', error);
+        // If server is unreachable, we can't verify - redirect to sign-in for safety
+        return { isAuthenticated: false, user: null };
+    }
+}
+
+// Handle "Shop the Collection" button
+async function handleShopCollection() {
+    console.log('🛍️ Shop Collection button clicked');
+    
+    try {
+        const { isAuthenticated } = await checkAuthStatus();
+        console.log('🔐 Authentication status:', isAuthenticated);
+        
+        if (isAuthenticated) {
+            // User is authenticated - go directly to shop
+            console.log('✅ User authenticated, redirecting to shop');
+            window.location.href = 'shop.html';
+        } else {
+            // User not authenticated - redirect to sign-in
+            console.log('❌ User not authenticated, redirecting to sign-in');
+            window.location.href = 'sign-in.html';
+        }
+    } catch (error) {
+        console.error('Error checking auth status:', error);
+        // If there's an error, redirect to sign-in for safety
+        window.location.href = 'sign-in.html';
+    }
+}
+
+// Handle user icon click
+async function handleUserIconClick() {
+    console.log('👤 User icon clicked');
+    
+    try {
+        const { isAuthenticated } = await checkAuthStatus();
+        
+        if (isAuthenticated) {
+            window.location.href = 'customerdashboard.html';
+        } else {
+            window.location.href = 'sign-in.html';
+        }
+    } catch (error) {
+        console.error('Error handling user icon click:', error);
+        window.location.href = 'sign-in.html';
+    }
+}
+
+// Handle bubble navigation with auth check
+async function handleBubbleNavigation(targetPage) {
+    console.log('🫧 Bubble navigation to:', targetPage);
+    
+    try {
+        const { isAuthenticated } = await checkAuthStatus();
+        
+        if (isAuthenticated) {
+            window.location.href = targetPage;
+        } else {
+            window.location.href = 'sign-in.html';
+        }
+    } catch (error) {
+        console.error('Error in bubble navigation:', error);
+        window.location.href = 'sign-in.html';
+    }
+}
+
+// Update UI based on auth status on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Index page loaded');
+    
+    try {
+        const { isAuthenticated, user } = await checkAuthStatus();
+        const userIcon = document.getElementById('userIcon');
+        
+        console.log('🔐 Initial auth status:', { isAuthenticated, user });
+        
+        if (isAuthenticated) {
+            userIcon.style.color = '#4CAF50'; // Green color for logged in
+            userIcon.title = 'My Account';
+            
+            // Optional: Update welcome message if you have one
+            if (user && user.firstName) {
+                console.log(`👋 Welcome back, ${user.firstName}!`);
+            }
+        } else {
+            userIcon.style.color = 'var(--cream)';
+            userIcon.title = 'Sign In';
+        }
+
+        // Initialize other page functionality
+        initializePage();
+        
+    } catch (error) {
+        console.error('Error during page initialization:', error);
+        initializePage(); // Still initialize basic functionality
+    }
+});
+
+// Initialize page functionality
+function initializePage() {
+    console.log('🔧 Initializing page functionality');
+    
+    // Dark/Light Mode Toggle
+    const modeToggle = document.querySelector(".mode-toggle");
+    const body = document.body;
+
+    if (modeToggle) {
+        modeToggle.addEventListener("click", () => {
+            body.classList.toggle("dark-mode");
+
+            // Save user preference in localStorage
+            if (body.classList.contains("dark-mode")) {
+                localStorage.setItem("theme", "dark");
+            } else {
+                localStorage.setItem("theme", "light");
+            }
+        });
+
+        // Check for saved user preference
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+            body.classList.add("dark-mode");
+        }
+    }
+
+    // Bubble Navigation - FIXED VERSION
+    const bubbles = document.querySelectorAll(".bubble");
+
+    bubbles.forEach((bubble) => {
+        bubble.addEventListener("click", function () {
+            const target = this.getAttribute('onclick');
+            console.log('🫧 Bubble clicked with onclick:', target);
+            
+            if (target && target.includes('window.location.href')) {
+                // Extract the URL from the onclick attribute
+                const urlMatch = target.match(/window\.location\.href='([^']+)'/);
+                if (urlMatch && urlMatch[1]) {
+                    const targetPage = urlMatch[1];
+                    console.log('🎯 Target page:', targetPage);
+                    
+                    if (targetPage === 'sign-in.html') {
+                        // Allow direct access to sign-in page
+                        console.log('➡️ Direct redirect to sign-in');
+                        window.location.href = targetPage;
+                    } else {
+                        // For other pages, check authentication
+                        handleBubbleNavigation(targetPage);
+                    }
+                }
+            } else {
+                // Handle bubbles without onclick (like the home bubble)
+                const label = this.getAttribute('data-label');
+                console.log('🏠 Home bubble clicked:', label);
+                
+                if (label === 'Home') {
+                    // Scroll to top or reload home
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        });
+    });
+
+    // Update all "Shop Now" buttons to use auth check
+    const shopButtons = document.querySelectorAll('.product-info button');
+    shopButtons.forEach(button => {
+        if (button.textContent.toLowerCase().includes('shop now')) {
+            console.log('🛒 Found shop now button, attaching auth check');
+            button.onclick = handleShopCollection;
+        }
+    });
+
+    // Update the main CTA button
+    const ctaButton = document.querySelector('.cta-button');
+    if (ctaButton && ctaButton.textContent.includes('SHOP THE COLLECTION')) {
+        console.log('🎯 Main CTA button found, attaching auth check');
+        ctaButton.onclick = handleShopCollection;
+    }
+
+    // Header scroll effect
+    window.addEventListener("scroll", function () {
+        const header = document.querySelector("header");
+        if (header && window.scrollY > 100) {
             header.style.boxShadow = "0 2px 10px rgba(0, 0, 0, 0.1)";
             header.style.padding = "15px 40px";
-          } else {
+        } else if (header) {
             header.style.boxShadow = "";
             header.style.padding = "20px 40px";
-          }
-        });
-      });
-    </script>
+        }
+    });
+
+    // Check if user just logged in and show welcome message
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === 'success') {
+        showWelcomeNotification();
+    }
+    
+    console.log('✅ Page initialization complete');
+}
+
+// Show welcome notification after login
+function showWelcomeNotification() {
+    console.log('🎉 Showing welcome notification');
+    
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: var(--cream);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+    `;
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-check-circle" style="font-size: 18px;"></i>
+            <span>Welcome back! Ready to shop?</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 500);
+    }, 3000);
+}
+
+// Debug function to check login status
+function checkLoginStatus() {
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
+    console.log('🔐 Debug - Login Status:', {
+        hasToken: !!token,
+        token: token ? (token.startsWith('demo-token-') ? 'Demo Token' : 'JWT Token') : 'No Token',
+        userData: userData ? JSON.parse(userData) : 'No User Data'
+    });
+}
+
+// Uncomment the line below for debugging
+// checkLoginStatus();
+</script>
   </body>
 </html>
