@@ -425,13 +425,13 @@
 
       /* Product Actions */
       .product-actions {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
         gap: 10px;
         align-items: center;
       }
 
       .add-to-cart {
-        flex: 1;
         padding: 12px;
         background-color: var(--cream);
         color: var(--white);
@@ -451,6 +451,31 @@
       }
 
       .add-to-cart:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      /* Pay Now Button Styles */
+      .pay-now-btn {
+        padding: 12px;
+        background-color: #10b981;
+        color: var(--white);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .pay-now-btn:hover {
+        background-color: #059669;
+      }
+
+      .pay-now-btn:disabled {
         background-color: #cccccc;
         cursor: not-allowed;
       }
@@ -565,14 +590,36 @@
         color: var(--cream);
       }
 
+      /* Quick View Modal Actions */
       .modal-actions {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
         gap: 10px;
         margin-top: 20px;
       }
 
-      .modal-actions button {
-        flex: 1;
+      .modal-pay-now {
+        background-color: #10b981;
+        color: var(--white);
+        border: none;
+        border-radius: 5px;
+        padding: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-weight: 500;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .modal-pay-now:hover {
+        background-color: #059669;
+      }
+
+      .modal-pay-now:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
       }
 
       /* Floating Bubbles */
@@ -854,6 +901,16 @@
           grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         }
 
+        .product-actions {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .modal-actions {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
         .cart-panel {
           width: 100%;
           right: -100%;
@@ -1037,8 +1094,11 @@
             <button class="add-to-cart" id="modalAddToCart">
               <i class="fas fa-cart-plus"></i> Add to Cart
             </button>
+            <button class="modal-pay-now" id="modalPayNow">
+              <i class="fas fa-bolt"></i> Pay Now
+            </button>
             <button class="wishlist-btn" id="modalWishlistBtn">
-              <i class="fas fa-heart"></i> Wishlist
+              <i class="fas fa-heart"></i>
             </button>
           </div>
         </div>
@@ -1099,8 +1159,12 @@
 
     <script>
       // API Configuration
-      const API_BASE_URL ="https://olyshairi-e-commerce-hairspo-online.onrender.com/api";
-      //const API_BASE_URL_LOCAL = "http://localhost:5001/api";
+      // Use this at the top of your JavaScript in each file
+const API_BASE_URL = window.location.hostname.includes('localhost') 
+    ? "http://localhost:5001/api" 
+    : "https://olyshairi-e-commerce-hairspo-online.onrender.com/api";
+
+console.log("🌐 Using API Base URL:", API_BASE_URL);
       const ENDPOINTS = {
         PRODUCTS: `${API_BASE_URL}/products`,
         CATEGORIES: `${API_BASE_URL}/categories`,
@@ -1369,6 +1433,15 @@
                                 : "Add to Cart"
                             }
                         </button>
+                        <button class="pay-now-btn" data-product="${productId}" ${
+          productStock === 0
+            ? 'disabled style="opacity: 0.6; cursor: not-allowed;"'
+            : ""
+        }>
+                            <i class="fas fa-bolt"></i> ${
+                              productStock === 0 ? "Out of Stock" : "Pay Now"
+                            }
+                        </button>
                         <button class="wishlist-btn ${
                           isInWishlist ? "active" : ""
                         }" data-product="${productId}">
@@ -1387,12 +1460,14 @@
         if (productStock > 0) {
           const quickViewBtn = card.querySelector(".quick-view-btn");
           const addToCartBtn = card.querySelector(".add-to-cart");
+          const payNowBtn = card.querySelector(".pay-now-btn");
           const wishlistBtn = card.querySelector(".wishlist-btn");
 
           quickViewBtn.addEventListener("click", () =>
             openQuickView(productId)
           );
           addToCartBtn.addEventListener("click", () => addToCart(productId));
+          payNowBtn.addEventListener("click", () => payNow(productId));
           wishlistBtn.addEventListener("click", () =>
             toggleWishlist(productId, wishlistBtn)
           );
@@ -1461,6 +1536,15 @@
             ? '<i class="fas fa-cart-plus"></i> Out of Stock'
             : '<i class="fas fa-cart-plus"></i> Add to Cart';
 
+        // Update pay now button in modal
+        const modalPayNow = document.getElementById("modalPayNow");
+        modalPayNow.onclick = () => payNow(productId);
+        modalPayNow.disabled = productStock === 0;
+        modalPayNow.innerHTML =
+          productStock === 0
+            ? '<i class="fas fa-bolt"></i> Out of Stock'
+            : '<i class="fas fa-bolt"></i> Pay Now';
+
         // Update wishlist button in modal
         const modalWishlistBtn = document.getElementById("modalWishlistBtn");
         modalWishlistBtn.className = `wishlist-btn ${
@@ -1472,52 +1556,6 @@
         // Show modal
         document.getElementById("productModal").classList.add("active");
       }
-
-      // // Add product to cart
-      // function addToCart(productId) {
-      //     const product = products.find(p => (p._id === productId) || (p.id === productId));
-      //     if (!product) {
-      //         showNotification('Product not found');
-      //         return;
-      //     }
-
-      //     if (product.stock === 0) {
-      //         showNotification('This product is out of stock');
-      //         return;
-      //     }
-
-      //     const existingItem = cart.find(item => item.id === productId);
-
-      //     if (existingItem) {
-      //         // Check if we're exceeding available stock
-      //         if (existingItem.quantity >= product.stock) {
-      //             showNotification(`Only ${product.stock} items available in stock`);
-      //             return;
-      //         }
-      //         existingItem.quantity += 1;
-      //     } else {
-      //         cart.push({
-      //             id: productId,
-      //             name: product.name,
-      //             price: product.price,
-      //             image: product.image || product.images?.[0]?.url,
-      //             quantity: 1,
-      //             maxStock: product.stock
-      //         });
-      //     }
-
-      //     // Save to localStorage
-      //     localStorage.setItem('olysHairCart', JSON.stringify(cart));
-
-      //     // Update UI
-      //     updateCartUI();
-
-      //     // Show notification
-      //     showNotification('Item added to cart!');
-
-      //     // Open cart panel
-      //     document.querySelector('.cart-panel').classList.add('active');
-      // }
 
       // Add product to cart
       async function addToCart(productId) {
@@ -1599,6 +1637,44 @@
 
         // Open cart panel
         document.querySelector(".cart-panel").classList.add("active");
+      }
+
+      // Pay Now function for direct purchase
+      async function payNow(productId) {
+        console.log('⚡ Pay Now clicked for product:', productId);
+        
+        const product = products.find(p => (p._id === productId) || (p.id === productId));
+        if (!product) {
+            showNotification('Product not found', 'error');
+            return;
+        }
+
+        if (product.stock === 0) {
+            showNotification('This product is out of stock', 'error');
+            return;
+        }
+
+        // Create a single-item cart for direct purchase
+        const directPurchaseCart = [{
+            id: productId,
+            name: product.name,
+            price: product.price,
+            image: product.image || product.images?.[0]?.url,
+            quantity: 1,
+            maxStock: product.stock,
+            isDirectPurchase: true // Flag to identify direct purchases
+        }];
+
+        // Save to localStorage
+        localStorage.setItem('olysHairDirectPurchase', JSON.stringify(directPurchaseCart));
+        
+        // Show loading notification
+        showNotification('Redirecting to checkout...', 'success');
+        
+        // Redirect to checkout page after a brief delay
+        setTimeout(() => {
+            window.location.href = 'checkout.html?direct=true';
+        }, 1000);
       }
 
       // Helper function for localStorage cart operations
@@ -1827,28 +1903,6 @@
         cartTotal.textContent = `€${total.toFixed(2)}`;
       }
 
-      // Update cart quantity
-      // function updateCartQuantity(productId, change) {
-      //     const item = cart.find(item => item.id === productId);
-      //     if (!item) return;
-
-      //     const newQuantity = item.quantity + change;
-
-      //     // Check stock limits
-      //     if (item.maxStock && newQuantity > item.maxStock) {
-      //         showNotification(`Only ${item.maxStock} items available in stock`);
-      //         return;
-      //     }
-
-      //     if (newQuantity <= 0) {
-      //         removeFromCart(productId);
-      //     } else {
-      //         item.quantity = newQuantity;
-      //         localStorage.setItem('olysHairCart', JSON.stringify(cart));
-      //         updateCartUI();
-      //     }
-      // }
-
       // Update cart quantity (with backend sync)
       async function updateCartQuantity(productId, change) {
         const item = cart.find((item) => item.id === productId);
@@ -1918,14 +1972,6 @@
 
         updateCartUI();
       }
-
-      // Remove item from cart
-      // function removeFromCart(productId) {
-      //     cart = cart.filter(item => item.id !== productId);
-      //     localStorage.setItem('olysHairCart', JSON.stringify(cart));
-      //     updateCartUI();
-      //     showNotification('Item removed from cart');
-      // }
 
       // Remove item from cart (with backend sync)
       async function removeFromCart(productId) {

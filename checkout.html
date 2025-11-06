@@ -1329,48 +1329,54 @@
     <!-- PayPal SDK -->
     <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
 
-    <script>
-      // ==================== ENHANCED CONFIGURATION ====================
-      const CONFIG = {
-        STRIPE_PUBLISHABLE_KEY:
-          "pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0",
+   <script>
+    // ==================== ENHANCED CONFIGURATION ====================
+    const CONFIG = {
+        STRIPE_PUBLISHABLE_KEY: "pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0",
         PAYPAL_CLIENT_ID: "YOUR_PAYPAL_CLIENT_ID",
+        API_BASE_URL: "https://olyshairi-e-commerce-hairspo-online.onrender.com/api",
         //API_BASE_URL: 'http://localhost:5001/api',
-        API_BASE_URL:
-          "https://olyshairi-e-commerce-hairspo-online.onrender.com/api",
         CURRENCY: "EUR",
         TAX_RATE: 0.08, // 8%
-      };
+    };
 
-      // ==================== ENHANCED GLOBAL VARIABLES ====================
-      let stripe = null;
-      let elements = null;
-      let cardElement = null;
-      let selectedPaymentMethod = "credit-card";
-      let currentOrderData = null;
-      let appliedPromoCode = null;
+    // ==================== ENHANCED GLOBAL VARIABLES ====================
+    let stripe = null;
+    let elements = null;
+    let cardElement = null;
+    let selectedPaymentMethod = "credit-card";
+    let currentOrderData = null;
+    let appliedPromoCode = null;
+    let isDirectPurchase = false;
 
-      // ==================== UI INITIALIZATION ====================
-      function initializeUI() {
+    // ==================== UI INITIALIZATION ====================
+    function initializeUI() {
         console.log("🔄 Initializing UI components...");
+
+        // Check for direct purchase
+        isDirectPurchase = checkDirectPurchase();
+        if (isDirectPurchase) {
+            console.log('⚡ Direct purchase detected');
+            showNotification('Direct purchase mode activated', 'success');
+        }
 
         // Dark/Light Mode Toggle
         const modeToggle = document.querySelector(".mode-toggle");
         const body = document.body;
 
         modeToggle.addEventListener("click", () => {
-          body.classList.toggle("dark-mode");
-          // Save preference to localStorage
-          if (body.classList.contains("dark-mode")) {
-            localStorage.setItem("theme", "dark");
-          } else {
-            localStorage.setItem("theme", "light");
-          }
+            body.classList.toggle("dark-mode");
+            // Save preference to localStorage
+            if (body.classList.contains("dark-mode")) {
+                localStorage.setItem("theme", "dark");
+            } else {
+                localStorage.setItem("theme", "light");
+            }
         });
 
         // Check for saved theme preference
         if (localStorage.getItem("theme") === "dark") {
-          body.classList.add("dark-mode");
+            body.classList.add("dark-mode");
         }
 
         // Billing Address Toggle
@@ -1378,82 +1384,88 @@
         const billingAddress = document.getElementById("billingAddress");
 
         sameAsShipping.addEventListener("change", () => {
-          if (sameAsShipping.checked) {
-            billingAddress.style.display = "none";
-          } else {
-            billingAddress.style.display = "block";
-          }
+            if (sameAsShipping.checked) {
+                billingAddress.style.display = "none";
+            } else {
+                billingAddress.style.display = "block";
+            }
         });
 
         // Setup event listeners
         setupEventListeners();
 
         console.log("✅ UI components initialized");
-      }
+    }
 
-      // ==================== ENHANCED EVENT LISTENERS ====================
-      function setupEventListeners() {
+    // Check for direct purchase parameter
+    function checkDirectPurchase() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('direct') === 'true';
+    }
+
+    // ==================== ENHANCED EVENT LISTENERS ====================
+    function setupEventListeners() {
         console.log("🔄 Setting up event listeners...");
 
         // Place Order Button
         const placeOrderBtn = document.getElementById("placeOrder");
         if (placeOrderBtn) {
-          placeOrderBtn.addEventListener("click", processPayment);
+            placeOrderBtn.addEventListener("click", processPayment);
         }
 
         // Promo Code
         const applyPromoBtn = document.getElementById("applyPromo");
         if (applyPromoBtn) {
-          applyPromoBtn.addEventListener("click", applyPromoCode);
+            applyPromoBtn.addEventListener("click", applyPromoCode);
         }
 
         const promoCodeInput = document.getElementById("promoCode");
         if (promoCodeInput) {
-          promoCodeInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") applyPromoCode();
-          });
+            promoCodeInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") applyPromoCode();
+            });
         }
 
         // Shipping Method Changes
         document.querySelectorAll('input[name="shipping"]').forEach((radio) => {
-          radio.addEventListener("change", updateShippingCost);
+            radio.addEventListener("change", updateShippingCost);
         });
 
         // Real-time Form Validation
         const formFields = [
-          "email",
-          "firstName",
-          "lastName",
-          "address",
-          "city",
-          "zipCode",
-          "country",
-          "phone",
+            "email",
+            "firstName",
+            "lastName",
+            "address",
+            "city",
+            "zipCode",
+            "country",
+            "phone",
         ];
         formFields.forEach((field) => {
-          const element = document.getElementById(field);
-          if (element) {
-            element.addEventListener("blur", () => validateField(field));
-            element.addEventListener("input", () => {
-              element.classList.remove("error");
-              const errorElement = document.getElementById(`${field}-error`);
-              if (errorElement) {
-                errorElement.textContent = "";
-              }
-            });
-          }
+            const element = document.getElementById(field);
+            if (element) {
+                element.addEventListener("blur", () => validateField(field));
+                element.addEventListener("input", () => {
+                    element.classList.remove("error");
+                    const errorElement = document.getElementById(`${field}-error`);
+                    if (errorElement) {
+                        errorElement.textContent = "";
+                    }
+                });
+            }
         });
 
         // Payment Method Selection
         document.querySelectorAll(".payment-method").forEach((method) => {
-          method.addEventListener("click", function () {
-            document
-              .querySelectorAll(".payment-method")
-              .forEach((m) => m.classList.remove("active"));
-            this.classList.add("active");
-            selectedPaymentMethod = this.dataset.method;
-            togglePaymentForms(selectedPaymentMethod);
-          });
+            method.addEventListener("click", function () {
+                document
+                    .querySelectorAll(".payment-method")
+                    .forEach((m) => m.classList.remove("active"));
+                this.classList.add("active");
+                selectedPaymentMethod = this.dataset.method;
+                togglePaymentForms(selectedPaymentMethod);
+            });
         });
 
         // Receipt Modal
@@ -1462,95 +1474,102 @@
         const receiptCloseBtn = document.querySelector(".receipt-close-btn");
 
         if (receiptClose) {
-          receiptClose.addEventListener("click", () => {
-            receiptModal.classList.remove("active");
-          });
+            receiptClose.addEventListener("click", () => {
+                receiptModal.classList.remove("active");
+            });
         }
 
         if (receiptCloseBtn) {
-          receiptCloseBtn.addEventListener("click", () => {
-            receiptModal.classList.remove("active");
-            // Redirect to customer dashboard
-            window.location.href = "customerdashboard.html";
-          });
+            receiptCloseBtn.addEventListener("click", () => {
+                receiptModal.classList.remove("active");
+                // Redirect to customer dashboard
+                window.location.href = "customerdashboard.html";
+            });
         }
 
         // Print Receipt
         const printBtn = document.querySelector(".receipt-print");
         if (printBtn) {
-          printBtn.addEventListener("click", () => {
-            window.print();
-          });
+            printBtn.addEventListener("click", () => {
+                window.print();
+            });
         }
 
         console.log("✅ Event listeners setup complete");
-      }
+    }
 
-      // ==================== ENHANCED INITIALIZATION ====================
-      document.addEventListener("DOMContentLoaded", async function () {
+    // ==================== ENHANCED INITIALIZATION ====================
+    document.addEventListener("DOMContentLoaded", async function () {
         console.log("🚀 Initializing enhanced checkout system...");
 
         try {
-          // Initialize UI components
-          initializeUI();
+            // Initialize UI components
+            initializeUI();
 
-          // Load cart data with enhanced validation
-          await loadOrderReview();
+            // Load cart data with enhanced validation
+            await loadOrderReview();
 
-          // Initialize payment systems
-          await initializePaymentSystems();
+            // Initialize payment systems
+            await initializePaymentSystems();
 
-          // Check system health
-          await checkSystemHealth();
+            // Check system health
+            await checkSystemHealth();
 
-          console.log("✅ Enhanced checkout system initialized successfully");
+            console.log("✅ Enhanced checkout system initialized successfully");
         } catch (error) {
-          console.error("❌ Checkout initialization failed:", error);
-          showNotification(
-            "Failed to initialize checkout. Please refresh the page.",
-            "error"
-          );
+            console.error("❌ Checkout initialization failed:", error);
+            showNotification(
+                "Failed to initialize checkout. Please refresh the page.",
+                "error"
+            );
         }
-      });
+    });
 
-      // ==================== ENHANCED SYSTEM HEALTH CHECK ====================
-      async function checkSystemHealth() {
+    // ==================== ENHANCED SYSTEM HEALTH CHECK ====================
+    async function checkSystemHealth() {
         try {
-          const response = await fetch(`${CONFIG.API_BASE_URL}/health`);
-          const health = await response.json();
+            const response = await fetch(`${CONFIG.API_BASE_URL}/health`);
+            const health = await response.json();
 
-          if (health.status !== "OK") {
-            throw new Error("Server health check failed");
-          }
+            if (health.status !== "OK") {
+                throw new Error("Server health check failed");
+            }
 
-          console.log("✅ System health check passed");
-          return true;
+            console.log("✅ System health check passed");
+            return true;
         } catch (error) {
-          console.error("❌ System health check failed:", error);
-          showNotification(
-            "Payment system is temporarily unavailable",
-            "warning"
-          );
-          return false;
+            console.error("❌ System health check failed:", error);
+            showNotification(
+                "Payment system is temporarily unavailable",
+                "warning"
+            );
+            return false;
         }
-      }
+    }
 
-      // ==================== ENHANCED ORDER MANAGEMENT ====================
-      async function loadOrderReview() {
+    // ==================== ENHANCED ORDER MANAGEMENT ====================
+    async function loadOrderReview() {
         const orderItemsContainer = document.querySelector(".order-items");
-        const cart = JSON.parse(localStorage.getItem("olysHairCart")) || [];
+        
+        // Check for direct purchase first
+        const directPurchase = JSON.parse(localStorage.getItem('olysHairDirectPurchase')) || [];
+        const regularCart = JSON.parse(localStorage.getItem("olysHairCart")) || [];
+        
+        // Use direct purchase if available, otherwise use regular cart
+        const cart = directPurchase.length > 0 ? directPurchase : regularCart;
+        const isDirectPurchase = directPurchase.length > 0;
 
         let subtotal = 0;
 
         if (!orderItemsContainer) {
-          console.error("Order items container not found");
-          return;
+            console.error("Order items container not found");
+            return;
         }
 
         orderItemsContainer.innerHTML = "";
 
         if (cart.length === 0) {
-          orderItemsContainer.innerHTML = `
+            orderItemsContainer.innerHTML = `
                 <div class="empty-cart-message">
                     <i class="fas fa-shopping-cart"></i>
                     <p>Your cart is empty</p>
@@ -1559,43 +1578,60 @@
                     </button>
                 </div>
             `;
-          updateTotals(0, 0, 0);
-          const placeOrderBtn = document.getElementById("placeOrder");
-          if (placeOrderBtn) {
-            placeOrderBtn.disabled = true;
-          }
-          return;
+            updateTotals(0, 0, 0);
+            const placeOrderBtn = document.getElementById("placeOrder");
+            if (placeOrderBtn) {
+                placeOrderBtn.disabled = true;
+            }
+            return;
+        }
+
+        // Show direct purchase notice
+        if (isDirectPurchase) {
+            const notice = document.createElement('div');
+            notice.style.cssText = `
+                background: #d1fae5;
+                color: #065f46;
+                padding: 10px 15px;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                border-left: 4px solid #10b981;
+                font-size: 14px;
+            `;
+            notice.innerHTML = `
+                <i class="fas fa-bolt"></i> 
+                <strong>Direct Purchase:</strong> You're buying this item immediately
+                <button onclick="cancelDirectPurchase()" style="margin-left: 10px; background: #059669; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    Cancel
+                </button>
+            `;
+            orderItemsContainer.appendChild(notice);
         }
 
         // Validate cart items
         const validCartItems = await validateCartItems(cart);
 
         validCartItems.forEach((item) => {
-          const itemTotal = item.price * item.quantity;
-          subtotal += itemTotal;
+            const itemTotal = item.price * item.quantity;
+            subtotal += itemTotal;
 
-          const orderItem = document.createElement("div");
-          orderItem.className = "order-item";
-          orderItem.innerHTML = `
+            const orderItem = document.createElement("div");
+            orderItem.className = "order-item";
+            orderItem.innerHTML = `
                 <div class="order-item-image">
-                    <img src="${
-                      item.image || "images/placeholder-product.jpg"
-                    }" 
+                    <img src="${item.image || "images/placeholder-product.jpg"}" 
                          alt="${item.name}" 
                          onerror="this.src='images/placeholder-product.jpg'">
                 </div>
                 <div class="order-item-details">
                     <h4>${item.name}</h4>
                     <p class="item-sku">SKU: ${item.sku || "N/A"}</p>
-                    <div class="order-item-price">€${item.price.toFixed(2)} × ${
-            item.quantity
-          }</div>
-                    <div class="item-total">Total: €${itemTotal.toFixed(
-                      2
-                    )}</div>
+                    <div class="order-item-price">€${item.price.toFixed(2)} × ${item.quantity}</div>
+                    <div class="item-total">Total: €${itemTotal.toFixed(2)}</div>
+                    ${isDirectPurchase ? '<div style="color: #10b981; font-size: 12px; margin-top: 5px;"><i class="fas fa-bolt"></i> Direct Purchase</div>' : ''}
                 </div>
             `;
-          orderItemsContainer.appendChild(orderItem);
+            orderItemsContainer.appendChild(orderItem);
         });
 
         // Update totals with default shipping
@@ -1605,54 +1641,70 @@
         // Enable order button
         const placeOrderBtn = document.getElementById("placeOrder");
         if (placeOrderBtn) {
-          placeOrderBtn.disabled = false;
-        }
-      }
-
-      async function validateCartItems(cart) {
-        try {
-          // Check if products still exist and are in stock
-          const response = await fetch(
-            `${CONFIG.API_BASE_URL}/validation/products/validate/batch`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ items: cart }),
+            placeOrderBtn.disabled = false;
+            
+            // Update button text for direct purchases
+            if (isDirectPurchase) {
+                placeOrderBtn.innerHTML = '<i class="fas fa-bolt"></i> Complete Direct Purchase';
+            } else {
+                placeOrderBtn.innerHTML = '<i class="fas fa-lock"></i> Place Order';
             }
-          );
-          if (response.ok) {
-            const validation = await response.json();
-            return validation.validItems || cart;
-          }
+        }
+    }
+
+    // Cancel direct purchase and return to shop
+    function cancelDirectPurchase() {
+        localStorage.removeItem('olysHairDirectPurchase');
+        showNotification('Direct purchase cancelled', 'warning');
+        setTimeout(() => {
+            window.location.href = 'shop.html';
+        }, 1000);
+    }
+
+    async function validateCartItems(cart) {
+        try {
+            // Check if products still exist and are in stock
+            const response = await fetch(
+                `${CONFIG.API_BASE_URL}/validation/products/validate/batch`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ items: cart }),
+                }
+            );
+            if (response.ok) {
+                const validation = await response.json();
+                return validation.validItems || cart;
+            }
         } catch (error) {
-          console.error("Cart validation failed:", error);
+            console.error("Cart validation failed:", error);
         }
 
         // Return original cart if validation fails
         return cart;
-      }
+    }
 
-      function getShippingCost(method) {
+    function getShippingCost(method) {
         const shippingRates = {
-          standard: 9.99,
-          express: 19.99,
-          overnight: 29.99,
+            standard: 9.99,
+            express: 19.99,
+            overnight: 29.99,
         };
         return shippingRates[method] || shippingRates.standard;
-      }
+    }
 
-      function updateShippingCost() {
+    function updateShippingCost() {
         const selectedShipping = document.querySelector(
-          'input[name="shipping"]:checked'
+            'input[name="shipping"]:checked'
         );
         if (!selectedShipping) return;
 
         const shippingCost = getShippingCost(selectedShipping.value);
         const subtotal = currentOrderData?.subtotal || 0;
         updateTotals(subtotal, shippingCost, CONFIG.TAX_RATE);
-      }
+    }
 
-      function updateTotals(subtotal, shipping, taxRate) {
+    function updateTotals(subtotal, shipping, taxRate) {
         const tax = subtotal * taxRate;
         const total = subtotal + shipping + tax;
 
@@ -1667,40 +1719,41 @@
         const totalElement = document.getElementById("total");
 
         if (subtotalElement)
-          subtotalElement.textContent = `€${subtotal.toFixed(2)}`;
+            subtotalElement.textContent = `€${subtotal.toFixed(2)}`;
         if (shippingElement)
-          shippingElement.textContent = `€${shipping.toFixed(2)}`;
+            shippingElement.textContent = `€${shipping.toFixed(2)}`;
         if (taxElement) taxElement.textContent = `€${tax.toFixed(2)}`;
 
         if (totalElement) {
-          if (appliedPromoCode) {
-            totalElement.innerHTML = `
+            if (appliedPromoCode) {
+                totalElement.innerHTML = `
                     <span style="text-decoration: line-through; color: #999; margin-right: 10px;">
                         €${total.toFixed(2)}
                     </span>
                     €${finalTotal.toFixed(2)}
                 `;
-          } else {
-            totalElement.textContent = `€${finalTotal.toFixed(2)}`;
-          }
+            } else {
+                totalElement.textContent = `€${finalTotal.toFixed(2)}`;
+            }
         }
 
         // Store current order data
         currentOrderData = {
-          subtotal,
-          shipping,
-          tax,
-          total: finalTotal,
-          discount,
-          items: JSON.parse(localStorage.getItem("olysHairCart")) || [],
+            subtotal,
+            shipping,
+            tax,
+            total: finalTotal,
+            discount,
+            items: JSON.parse(localStorage.getItem("olysHairCart")) || [],
+            directPurchaseItems: JSON.parse(localStorage.getItem('olysHairDirectPurchase')) || []
         };
-      }
+    }
 
-      // ==================== PAYMENT METHODS ====================
-      function togglePaymentForms(method) {
+    // ==================== PAYMENT METHODS ====================
+    function togglePaymentForms(method) {
         const creditCardForm = document.getElementById("credit-card-form");
         const paypalContainer = document.getElementById(
-          "paypal-button-container"
+            "paypal-button-container"
         );
         const applePayButton = document.getElementById("apple-pay-button");
         const klarnaForm = document.getElementById("klarna-payment-form");
@@ -1713,59 +1766,59 @@
 
         // Show selected
         switch (method) {
-          case "credit-card":
-            if (creditCardForm) creditCardForm.style.display = "block";
-            break;
-          case "paypal":
-            if (paypalContainer) paypalContainer.style.display = "block";
-            break;
-          case "apple-pay":
-            if (applePayButton) applePayButton.style.display = "block";
-            break;
-          case "klarna":
-            if (klarnaForm) klarnaForm.style.display = "block";
-            break;
+            case "credit-card":
+                if (creditCardForm) creditCardForm.style.display = "block";
+                break;
+            case "paypal":
+                if (paypalContainer) paypalContainer.style.display = "block";
+                break;
+            case "apple-pay":
+                if (applePayButton) applePayButton.style.display = "block";
+                break;
+            case "klarna":
+                if (klarnaForm) klarnaForm.style.display = "block";
+                break;
         }
-      }
+    }
 
-      // ==================== PROMO CODE ====================
-      function applyPromoCode() {
+    // ==================== PROMO CODE ====================
+    function applyPromoCode() {
         const promoCode = document.getElementById("promoCode").value.trim();
         const promoMessage = document.getElementById("promo-message");
 
         if (!promoCode) {
-          showNotification("Please enter a promo code", "warning");
-          return;
+            showNotification("Please enter a promo code", "warning");
+            return;
         }
 
         // Simulate promo code validation
         showLoading(true);
         setTimeout(() => {
-          showLoading(false);
-          if (promoCode.toUpperCase() === "SAVE10") {
-            appliedPromoCode = promoCode;
-            const subtotal = currentOrderData.subtotal;
-            const shipping = currentOrderData.shipping;
-            updateTotals(subtotal, shipping, CONFIG.TAX_RATE);
+            showLoading(false);
+            if (promoCode.toUpperCase() === "SAVE10") {
+                appliedPromoCode = promoCode;
+                const subtotal = currentOrderData.subtotal;
+                const shipping = currentOrderData.shipping;
+                updateTotals(subtotal, shipping, CONFIG.TAX_RATE);
 
-            if (promoMessage) {
-              promoMessage.innerHTML =
-                '<div class="promo-success">Promo code applied successfully! 10% discount applied.</div>';
+                if (promoMessage) {
+                    promoMessage.innerHTML =
+                        '<div class="promo-success">Promo code applied successfully! 10% discount applied.</div>';
+                }
+                showNotification("Promo code applied successfully!", "success");
+            } else {
+                appliedPromoCode = null;
+                if (promoMessage) {
+                    promoMessage.innerHTML =
+                        '<div style="color: var(--error);">Invalid promo code</div>';
+                }
+                showNotification("Invalid promo code", "error");
             }
-            showNotification("Promo code applied successfully!", "success");
-          } else {
-            appliedPromoCode = null;
-            if (promoMessage) {
-              promoMessage.innerHTML =
-                '<div style="color: var(--error);">Invalid promo code</div>';
-            }
-            showNotification("Invalid promo code", "error");
-          }
         }, 1000);
-      }
+    }
 
-      // ==================== FORM VALIDATION ====================
-      function validateField(fieldId) {
+    // ==================== FORM VALIDATION ====================
+    function validateField(fieldId) {
         const field = document.getElementById(fieldId);
         const errorElement = document.getElementById(`${fieldId}-error`);
 
@@ -1775,120 +1828,121 @@
         let errorMessage = "";
 
         switch (fieldId) {
-          case "email":
-            if (!field.value) {
-              isValid = false;
-              errorMessage = "Email is required";
-            } else if (!isValidEmail(field.value)) {
-              isValid = false;
-              errorMessage = "Please enter a valid email address";
-            }
-            break;
-          case "firstName":
-          case "lastName":
-            if (!field.value.trim()) {
-              isValid = false;
-              errorMessage = "This field is required";
-            }
-            break;
-          case "phone":
-            if (!field.value.trim()) {
-              isValid = false;
-              errorMessage = "Phone number is required";
-            } else if (!isValidPhone(field.value)) {
-              isValid = false;
-              errorMessage = "Please enter a valid phone number";
-            }
-            break;
-          default:
-            if (!field.value.trim()) {
-              isValid = false;
-              errorMessage = "This field is required";
-            }
+            case "email":
+                if (!field.value) {
+                    isValid = false;
+                    errorMessage = "Email is required";
+                } else if (!isValidEmail(field.value)) {
+                    isValid = false;
+                    errorMessage = "Please enter a valid email address";
+                }
+                break;
+            case "firstName":
+            case "lastName":
+                if (!field.value.trim()) {
+                    isValid = false;
+                    errorMessage = "This field is required";
+                }
+                break;
+            case "phone":
+                if (!field.value.trim()) {
+                    isValid = false;
+                    errorMessage = "Phone number is required";
+                } else if (!isValidPhone(field.value)) {
+                    isValid = false;
+                    errorMessage = "Please enter a valid phone number";
+                }
+                break;
+            default:
+                if (!field.value.trim()) {
+                    isValid = false;
+                    errorMessage = "This field is required";
+                }
         }
 
         if (isValid) {
-          field.classList.remove("error");
-          errorElement.textContent = "";
+            field.classList.remove("error");
+            errorElement.textContent = "";
         } else {
-          field.classList.add("error");
-          errorElement.textContent = errorMessage;
+            field.classList.add("error");
+            errorElement.textContent = errorMessage;
         }
 
         return isValid;
-      }
+    }
 
-      function validateCheckoutForm() {
+    function validateCheckoutForm() {
         const requiredFields = [
-          "email",
-          "firstName",
-          "lastName",
-          "address",
-          "city",
-          "zipCode",
-          "country",
-          "phone",
+            "email",
+            "firstName",
+            "lastName",
+            "address",
+            "city",
+            "zipCode",
+            "country",
+            "phone",
         ];
 
         let isValid = true;
 
         requiredFields.forEach((field) => {
-          if (!validateField(field)) {
-            isValid = false;
-          }
+            if (!validateField(field)) {
+                isValid = false;
+            }
         });
 
         // Validate card details if credit card is selected
         if (selectedPaymentMethod === "credit-card") {
-          const cardName = document.getElementById("cardName");
-          if (!cardName.value.trim()) {
-            cardName.classList.add("error");
-            const cardNameError = document.getElementById("cardName-error");
-            if (cardNameError) {
-              cardNameError.textContent = "Name on card is required";
+            const cardName = document.getElementById("cardName");
+            if (!cardName.value.trim()) {
+                cardName.classList.add("error");
+                const cardNameError = document.getElementById("cardName-error");
+                if (cardNameError) {
+                    cardNameError.textContent = "Name on card is required";
+                }
+                isValid = false;
             }
-            isValid = false;
-          }
         }
 
         if (!isValid) {
-          showNotification(
-            "Please fix the errors in the form before proceeding",
-            "error"
-          );
-          // Scroll to first error
-          const firstError = document.querySelector(".error");
-          if (firstError) {
-            firstError.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
+            showNotification(
+                "Please fix the errors in the form before proceeding",
+                "error"
+            );
+            // Scroll to first error
+            const firstError = document.querySelector(".error");
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
         }
 
         return isValid;
-      }
+    }
 
-      function getFormData() {
+    function getFormData() {
         const shippingMethod = document.querySelector(
-          'input[name="shipping"]:checked'
+            'input[name="shipping"]:checked'
         );
 
         return {
-          email: document.getElementById("email").value,
-          firstName: document.getElementById("firstName").value,
-          lastName: document.getElementById("lastName").value,
-          address: document.getElementById("address").value,
-          city: document.getElementById("city").value,
-          zipCode: document.getElementById("zipCode").value,
-          country: document.getElementById("country").value,
-          phone: document.getElementById("phone").value,
-          cardName: document.getElementById("cardName").value,
-          shippingMethod: shippingMethod ? shippingMethod.value : "standard",
+            email: document.getElementById("email").value,
+            firstName: document.getElementById("firstName").value,
+            lastName: document.getElementById("lastName").value,
+            address: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            zipCode: document.getElementById("zipCode").value,
+            country: document.getElementById("country").value,
+            phone: document.getElementById("phone").value,
+            cardName: document.getElementById("cardName").value,
+            shippingMethod: shippingMethod ? shippingMethod.value : "standard",
+            isDirectPurchase: isDirectPurchase
         };
-      }
+    }
 
-      // ==================== PAYMENT PROCESSING ====================
-      async function processPayment() {
+    // ==================== PAYMENT PROCESSING ====================
+    async function processPayment() {
         if (!validateCheckoutForm()) {
-          return;
+            return;
         }
 
         const submitButton = document.getElementById("placeOrder");
@@ -1896,224 +1950,231 @@
 
         submitButton.disabled = true;
         submitButton.innerHTML =
-          '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            '<i class="fas fa-spinner fa-spin"></i> Processing...';
         showLoading(true);
 
         try {
-          const formData = getFormData();
-          const orderId = generateOrderId();
+            const formData = getFormData();
+            const orderId = generateOrderId();
 
-          // For demo purposes - simulate successful payment
-          await simulatePayment(orderId, formData);
+            // For demo purposes - simulate successful payment
+            await simulatePayment(orderId, formData);
         } catch (error) {
-          console.error("Payment processing error:", error);
-          showNotification(
-            error.message || "Payment failed. Please try again.",
-            "error"
-          );
-        } finally {
-          submitButton.disabled = false;
-          submitButton.innerHTML = originalText;
-          showLoading(false);
-        }
-      }
-
-      // Simulate payment for demo
-      async function simulatePayment(orderId, formData) {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            handlePaymentSuccess(
-              {
-                transactionId: "DEMO_" + Date.now(),
-                method: selectedPaymentMethod,
-                amount: currentOrderData.total,
-                orderId: orderId,
-              },
-              formData,
-              orderId
+            console.error("Payment processing error:", error);
+            showNotification(
+                error.message || "Payment failed. Please try again.",
+                "error"
             );
-            resolve();
-          }, 2000);
-        });
-      }
-
-      // ==================== PAYMENT SYSTEM INITIALIZATION ====================
-      async function initializePaymentSystems() {
-        try {
-          // Initialize Stripe
-          if (
-            CONFIG.STRIPE_PUBLISHABLE_KEY &&
-            CONFIG.STRIPE_PUBLISHABLE_KEY.includes("pk_")
-          ) {
-            stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
-            elements = stripe.elements();
-            initializeStripeElements();
-          } else {
-            console.warn("Stripe publishable key not configured properly");
-          }
-
-          // Initialize PayPal
-          if (
-            CONFIG.PAYPAL_CLIENT_ID &&
-            CONFIG.PAYPAL_CLIENT_ID !== "YOUR_PAYPAL_CLIENT_ID"
-          ) {
-            loadPayPalButton();
-          }
-
-          // Initialize Apple Pay
-          await initializeApplePay();
-        } catch (error) {
-          console.error("Payment system initialization failed:", error);
-          showNotification(
-            "Some payment methods may not be available",
-            "warning"
-          );
+        } finally {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+            showLoading(false);
         }
-      }
+    }
 
-      function initializeStripeElements() {
+    // Simulate payment for demo
+    async function simulatePayment(orderId, formData) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                handlePaymentSuccess(
+                    {
+                        transactionId: "DEMO_" + Date.now(),
+                        method: selectedPaymentMethod,
+                        amount: currentOrderData.total,
+                        orderId: orderId,
+                    },
+                    formData,
+                    orderId
+                );
+                resolve();
+            }, 2000);
+        });
+    }
+
+    // ==================== PAYMENT SYSTEM INITIALIZATION ====================
+    async function initializePaymentSystems() {
+        try {
+            // Initialize Stripe
+            if (
+                CONFIG.STRIPE_PUBLISHABLE_KEY &&
+                CONFIG.STRIPE_PUBLISHABLE_KEY.includes("pk_")
+            ) {
+                stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
+                elements = stripe.elements();
+                initializeStripeElements();
+            } else {
+                console.warn("Stripe publishable key not configured properly");
+            }
+
+            // Initialize PayPal
+            if (
+                CONFIG.PAYPAL_CLIENT_ID &&
+                CONFIG.PAYPAL_CLIENT_ID !== "YOUR_PAYPAL_CLIENT_ID"
+            ) {
+                loadPayPalButton();
+            }
+
+            // Initialize Apple Pay
+            await initializeApplePay();
+        } catch (error) {
+            console.error("Payment system initialization failed:", error);
+            showNotification(
+                "Some payment methods may not be available",
+                "warning"
+            );
+        }
+    }
+
+    function initializeStripeElements() {
         // Create card element
         const cardElementContainer = document.getElementById("card-element");
         if (!cardElementContainer) return;
 
         cardElement = elements.create("card", {
-          style: {
-            base: {
-              fontSize: "16px",
-              color: getComputedStyle(
-                document.documentElement
-              ).getPropertyValue("--text-dark"),
-              fontFamily: '"Montserrat", sans-serif',
-              "::placeholder": {
-                color: "#aab7c4",
-              },
+            style: {
+                base: {
+                    fontSize: "16px",
+                    color: getComputedStyle(
+                        document.documentElement
+                    ).getPropertyValue("--text-dark"),
+                    fontFamily: '"Montserrat", sans-serif',
+                    "::placeholder": {
+                        color: "#aab7c4",
+                    },
+                },
+                invalid: {
+                    color: "#fa755a",
+                    iconColor: "#fa755a",
+                },
             },
-            invalid: {
-              color: "#fa755a",
-              iconColor: "#fa755a",
-            },
-          },
         });
 
         cardElement.mount("#card-element");
 
         // Handle real-time validation errors
         cardElement.on("change", (event) => {
-          const displayError = document.getElementById("card-errors");
-          if (displayError) {
-            if (event.error) {
-              displayError.textContent = event.error.message;
-            } else {
-              displayError.textContent = "";
+            const displayError = document.getElementById("card-errors");
+            if (displayError) {
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = "";
+                }
             }
-          }
         });
-      }
+    }
 
-      function loadPayPalButton() {
+    function loadPayPalButton() {
         paypal
-          .Buttons({
-            createOrder: async () => {
-              const res = await fetch(
-                `https://olyshairi-e-commerce-hairspo-online.onrender.com/api/paypal/create-order`,
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    amount: currentOrderData.total,
-                    items: currentOrderData.items,
-                  }),
-                }
-              );
-              const data = await res.json();
-              return data.orderId;
-            },
-            onApprove: async (data) => {
-              const res = await fetch(
-                `https://olyshairi-e-commerce-hairspo-online.onrender.com/api/paypal/capture/${data.orderID}`,
-                {
-                  method: "POST",
-                }
-              );
-              const capture = await res.json();
-              if (capture.success) {
-                handlePaymentSuccess(
-                  {
-                    transactionId: capture.transactionId,
-                    method: "paypal",
-                    amount: currentOrderData.total,
-                    orderId: data.orderID,
-                  },
-                  getFormData(),
-                  data.orderID
-                );
-              } else {
-                showNotification("Payment capture failed.", "error");
-              }
-            },
-            onError: (err) => {
-              console.error("PayPal error:", err);
-              showNotification("PayPal payment failed.", "error");
-            },
-          })
-          .render("#paypal-button-container");
-      }
+            .Buttons({
+                createOrder: async () => {
+                    const res = await fetch(
+                        `${CONFIG.API_BASE_URL}/paypal/create-order`,
+                        {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                amount: currentOrderData.total,
+                                items: currentOrderData.items,
+                                isDirectPurchase: isDirectPurchase
+                            }),
+                        }
+                    );
+                    const data = await res.json();
+                    return data.orderId;
+                },
+                onApprove: async (data) => {
+                    const res = await fetch(
+                        `${CONFIG.API_BASE_URL}/paypal/capture/${data.orderID}`,
+                        {
+                            method: "POST",
+                        }
+                    );
+                    const capture = await res.json();
+                    if (capture.success) {
+                        handlePaymentSuccess(
+                            {
+                                transactionId: capture.transactionId,
+                                method: "paypal",
+                                amount: currentOrderData.total,
+                                orderId: data.orderID,
+                            },
+                            getFormData(),
+                            data.orderID
+                        );
+                    } else {
+                        showNotification("Payment capture failed.", "error");
+                    }
+                },
+                onError: (err) => {
+                    console.error("PayPal error:", err);
+                    showNotification("PayPal payment failed.", "error");
+                },
+            })
+            .render("#paypal-button-container");
+    }
 
-      async function initializeApplePay() {
+    async function initializeApplePay() {
         // Apple Pay implementation would go here
         console.log("Apple Pay initialized");
-      }
+    }
 
-      // ==================== SUCCESS HANDLING ====================
-      async function handlePaymentSuccess(paymentResult, formData, orderId) {
+    // ==================== SUCCESS HANDLING ====================
+    async function handlePaymentSuccess(paymentResult, formData, orderId) {
         try {
-          // Clear cart
-          localStorage.removeItem("olysHairCart");
+            // Clear both cart and direct purchase
+            localStorage.removeItem("olysHairCart");
+            localStorage.removeItem("olysHairDirectPurchase");
 
-          // Update UI
-          updateReceiptModal(paymentResult, formData);
-          updateCheckoutSteps("completed");
+            // Update UI
+            updateReceiptModal(paymentResult, formData);
+            updateCheckoutSteps("completed");
 
-          // Show success
-          showNotification(
-            "Payment successful! Thank you for your order.",
-            "success"
-          );
+            // Show success message based on purchase type
+            const successMessage = isDirectPurchase 
+                ? "Direct purchase successful! Thank you for your order." 
+                : "Payment successful! Thank you for your order.";
+                
+            showNotification(successMessage, "success");
 
-          // Show receipt modal after a brief delay
-          setTimeout(() => {
-            const receiptModal = document.getElementById("receiptModal");
-            if (receiptModal) {
-              receiptModal.classList.add("active");
-            }
-          }, 1000);
+            // Show receipt modal after a brief delay
+            setTimeout(() => {
+                const receiptModal = document.getElementById("receiptModal");
+                if (receiptModal) {
+                    receiptModal.classList.add("active");
+                }
+            }, 1000);
         } catch (error) {
-          console.error("Post-payment processing error:", error);
+            console.error("Post-payment processing error:", error);
         }
-      }
+    }
 
-      function updateReceiptModal(paymentResult, formData) {
+    function updateReceiptModal(paymentResult, formData) {
         // Update order number
         const orderNumberElement = document.getElementById("orderNumber");
         if (orderNumberElement) {
-          orderNumberElement.textContent = `Order #${paymentResult.orderId}`;
+            orderNumberElement.textContent = `Order #${paymentResult.orderId}`;
         }
 
         // Update receipt items
         const receiptItems = document.getElementById("receipt-items");
         if (receiptItems) {
-          receiptItems.innerHTML = "";
+            receiptItems.innerHTML = "";
 
-          currentOrderData.items.forEach((item) => {
-            const itemTotal = item.price * item.quantity;
-            const itemElement = document.createElement("div");
-            itemElement.className = "receipt-row";
-            itemElement.innerHTML = `
+            const itemsToShow = isDirectPurchase 
+                ? currentOrderData.directPurchaseItems 
+                : currentOrderData.items;
+
+            itemsToShow.forEach((item) => {
+                const itemTotal = item.price * item.quantity;
+                const itemElement = document.createElement("div");
+                itemElement.className = "receipt-row";
+                itemElement.innerHTML = `
                     <span>${item.name} × ${item.quantity}</span>
                     <span>€${itemTotal.toFixed(2)}</span>
                 `;
-            receiptItems.appendChild(itemElement);
-          });
+                receiptItems.appendChild(itemElement);
+            });
         }
 
         // Update totals
@@ -2123,22 +2184,18 @@
         const receiptTotal = document.getElementById("receipt-total");
 
         if (receiptSubtotal)
-          receiptSubtotal.textContent = `€${currentOrderData.subtotal.toFixed(
-            2
-          )}`;
+            receiptSubtotal.textContent = `€${currentOrderData.subtotal.toFixed(2)}`;
         if (receiptShipping)
-          receiptShipping.textContent = `€${currentOrderData.shipping.toFixed(
-            2
-          )}`;
+            receiptShipping.textContent = `€${currentOrderData.shipping.toFixed(2)}`;
         if (receiptTax)
-          receiptTax.textContent = `€${currentOrderData.tax.toFixed(2)}`;
+            receiptTax.textContent = `€${currentOrderData.tax.toFixed(2)}`;
         if (receiptTotal)
-          receiptTotal.textContent = `€${currentOrderData.total.toFixed(2)}`;
+            receiptTotal.textContent = `€${currentOrderData.total.toFixed(2)}`;
 
         // Update shipping info
         const shippingInfo = document.getElementById("receipt-shipping-info");
         if (shippingInfo) {
-          shippingInfo.innerHTML = `
+            shippingInfo.innerHTML = `
                 <p>${formData.firstName} ${formData.lastName}</p>
                 <p>${formData.address}</p>
                 <p>${formData.city}, ${formData.zipCode}</p>
@@ -2150,67 +2207,82 @@
         // Update delivery estimate
         const deliveryElement = document.getElementById("receipt-delivery");
         if (deliveryElement) {
-          switch (formData.shippingMethod) {
-            case "express":
-              deliveryElement.textContent = "2-3 business days";
-              break;
-            case "overnight":
-              deliveryElement.textContent = "1 business day";
-              break;
-            default:
-              deliveryElement.textContent = "5-7 business days";
-          }
+            switch (formData.shippingMethod) {
+                case "express":
+                    deliveryElement.textContent = "2-3 business days";
+                    break;
+                case "overnight":
+                    deliveryElement.textContent = "1 business day";
+                    break;
+                default:
+                    deliveryElement.textContent = "5-7 business days";
+            }
         }
-      }
 
-      function updateCheckoutSteps(status) {
+        // Add direct purchase note if applicable
+        if (isDirectPurchase) {
+            const receiptHeader = document.querySelector('.receipt-header');
+            if (receiptHeader) {
+                const directPurchaseNote = document.createElement('p');
+                directPurchaseNote.style.cssText = `
+                    color: #10b981;
+                    font-weight: 500;
+                    margin-top: 5px;
+                `;
+                directPurchaseNote.innerHTML = '<i class="fas fa-bolt"></i> Direct Purchase';
+                receiptHeader.appendChild(directPurchaseNote);
+            }
+        }
+    }
+
+    function updateCheckoutSteps(status) {
         const steps = document.querySelectorAll(".step");
         steps.forEach((step) => {
-          step.classList.remove("active", "completed");
+            step.classList.remove("active", "completed");
         });
 
         if (status === "completed") {
-          steps.forEach((step) => {
-            step.classList.add("completed");
-          });
-          if (steps[2]) {
-            steps[2].classList.add("active");
-          }
+            steps.forEach((step) => {
+                step.classList.add("completed");
+            });
+            if (steps[2]) {
+                steps[2].classList.add("active");
+            }
         }
-      }
+    }
 
-      // ==================== UTILITY FUNCTIONS ====================
-      function generateOrderId() {
+    // ==================== UTILITY FUNCTIONS ====================
+    function generateOrderId() {
         const timestamp = Date.now().toString(36);
         const random = Math.random().toString(36).substr(2, 9);
         return `OL-${timestamp}-${random}`.toUpperCase();
-      }
+    }
 
-      function isValidEmail(email) {
+    function isValidEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      }
+    }
 
-      function isValidPhone(phone) {
+    function isValidPhone(phone) {
         // Basic phone validation - adjust as needed
         return /^[\+]?[1-9][\d]{0,15}$/.test(phone.replace(/[\s\-\(\)]/g, ""));
-      }
+    }
 
-      function showNotification(message, type = "info", duration = 5000) {
+    function showNotification(message, type = "info", duration = 5000) {
         const notification = document.getElementById("notification");
         if (!notification) return;
 
         // Add icon based on type
         let icon = "info-circle";
         switch (type) {
-          case "success":
-            icon = "check-circle";
-            break;
-          case "error":
-            icon = "exclamation-circle";
-            break;
-          case "warning":
-            icon = "exclamation-triangle";
-            break;
+            case "success":
+                icon = "check-circle";
+                break;
+            case "error":
+                icon = "exclamation-circle";
+                break;
+            case "warning":
+                icon = "exclamation-triangle";
+                break;
         }
 
         notification.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
@@ -2218,20 +2290,20 @@
         notification.classList.add("show");
 
         setTimeout(() => {
-          notification.classList.remove("show");
+            notification.classList.remove("show");
         }, duration);
-      }
+    }
 
-      function showLoading(show) {
+    function showLoading(show) {
         const loadingOverlay = document.getElementById("loadingOverlay");
         if (loadingOverlay) {
-          if (show) {
-            loadingOverlay.classList.add("active");
-          } else {
-            loadingOverlay.classList.remove("active");
-          }
+            if (show) {
+                loadingOverlay.classList.add("active");
+            } else {
+                loadingOverlay.classList.remove("active");
+            }
         }
-      }
-    </script>
+    }
+</script>
   </body>
 </html>
