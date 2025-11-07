@@ -720,6 +720,101 @@
       .dark-mode .logo-img-dark {
         display: block;
       }
+      /* Newsletter Styles */
+.newsletter-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.newsletter-input {
+  padding: 12px 15px;
+  width: 100%;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.3s ease;
+}
+
+.newsletter-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.newsletter-input:focus {
+  outline: none;
+  border-color: var(--white);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.newsletter-btn {
+  padding: 12px;
+  width: 100%;
+  background-color: var(--white);
+  color: var(--cream);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.newsletter-btn:hover:not(:disabled) {
+  background-color: var(--dark-gray);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+.newsletter-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: 5px;
+  display: none;
+}
+
+.success-message {
+  color: #4CAF50;
+  font-size: 14px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.5s ease;
+}
+
+.loading-spinner {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dark mode support */
+.dark-mode .newsletter-input {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .newsletter-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+}
     </style>
   </head>
   <body>
@@ -1048,12 +1143,12 @@
             and style.
           </p>
           <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
+           <!--- <a href="#"><i class="fab fa-facebook-f"></i></a>--->
             <a
               href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="
               ><i class="fab fa-instagram"></i
             ></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
+           <!-- <a href="#"><i class="fab fa-twitter"></i></a>-->
             <a href=" https://wa.me/c/33674322387"
               ><i class="fab fa-whatsapp"></i
             ></a>
@@ -1085,42 +1180,38 @@
           </ul>
         </div>
 
-        <div class="footer-column">
-          <h3>Newsletter</h3>
-          <p>
-            Subscribe to get special offers, free giveaways, and new product
-            alerts.
-          </p>
-          <form>
-            <input
-              type="email"
-              placeholder="Your email address"
-              style="
-                padding: 10px;
-                width: 100%;
-                margin-bottom: 10px;
-                border-radius: 5px;
-                border: none;
-              "
-            />
-            <button
-              type="submit"
-              style="
-                padding: 10px;
-                width: 100%;
-                background-color: var(--white);
-                color: var(--cream);
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-weight: 500;
-              "
-            >
-              SUBSCRIBE
-            </button>
-          </form>
-        </div>
+      <!-- In your footer section, replace the newsletter form with: -->
+<div class="footer-column">
+  <h3>Newsletter</h3>
+  <p>
+    Subscribe to get special offers, free giveaways, and new product alerts.
+  </p>
+  
+  <form id="newsletterForm" class="newsletter-form">
+    <div class="form-group">
+      <input
+        type="email"
+        id="newsletterEmail"
+        placeholder="Your email address"
+        class="newsletter-input"
+        required
+      />
+      <div class="error-message" id="emailError"></div>
+    </div>
+    
+    <button type="submit" class="newsletter-btn" id="subscribeBtn">
+      <span class="btn-text">SUBSCRIBE</span>
+      <div class="loading-spinner" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i>
       </div>
+    </button>
+    
+    <div class="success-message" id="successMessage" style="display: none;">
+      <i class="fas fa-check-circle"></i>
+      Thank you for subscribing!
+    </div>
+  </form>
+</div>
 
       <div class="copyright">
         <p>© 2023 OLYS HAIR. All rights reserved. | www.olyshair.com</p>
@@ -1452,6 +1543,122 @@ function showWelcomeNotification() {
         }, 500);
     }, 3000);
 }
+// Newsletter functionality
+function initializeNewsletter() {
+  const newsletterForm = document.getElementById('newsletterForm');
+  const emailInput = document.getElementById('newsletterEmail');
+  const emailError = document.getElementById('emailError');
+  const successMessage = document.getElementById('successMessage');
+  const subscribeBtn = document.getElementById('subscribeBtn');
+  const btnText = subscribeBtn.querySelector('.btn-text');
+  const loadingSpinner = subscribeBtn.querySelector('.loading-spinner');
+
+  if (!newsletterForm) return;
+
+  newsletterForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = emailInput.value.trim();
+    
+    // Reset previous states
+    hideError();
+    hideSuccess();
+    
+    // Validate email
+    if (!isValidEmail(email)) {
+      showError('Please enter a valid email address');
+      return;
+    }
+    
+    // Show loading state
+    setLoadingState(true);
+    
+    try {
+      // API call to subscribe
+      const response = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Success
+        showSuccess();
+        newsletterForm.reset();
+        
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          hideSuccess();
+        }, 5000);
+        
+      } else {
+        // Error from server
+        showError(data.error || 'Subscription failed. Please try again.');
+      }
+      
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      showError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoadingState(false);
+    }
+  });
+
+  // Helper functions
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  function showError(message) {
+    emailError.textContent = message;
+    emailError.style.display = 'block';
+    emailInput.style.borderColor = '#ff6b6b';
+  }
+
+  function hideError() {
+    emailError.style.display = 'none';
+    emailInput.style.borderColor = '';
+  }
+
+  function showSuccess() {
+    successMessage.style.display = 'flex';
+  }
+
+  function hideSuccess() {
+    successMessage.style.display = 'none';
+  }
+
+  function setLoadingState(isLoading) {
+    if (isLoading) {
+      subscribeBtn.disabled = true;
+      btnText.style.display = 'none';
+      loadingSpinner.style.display = 'block';
+    } else {
+      subscribeBtn.disabled = false;
+      btnText.style.display = 'block';
+      loadingSpinner.style.display = 'none';
+    }
+  }
+
+  // Real-time email validation
+  emailInput.addEventListener('input', function() {
+    if (this.value.trim() && !isValidEmail(this.value.trim())) {
+      showError('Please enter a valid email address');
+    } else {
+      hideError();
+    }
+  });
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  initializeNewsletter();
+});
 
 // Debug function to check login status
 function checkLoginStatus() {

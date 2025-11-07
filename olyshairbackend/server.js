@@ -370,7 +370,29 @@ app.get('/api/categories', async (req, res) => {
 // ================================
 // 🎯 ENHANCED ROUTE REGISTRATION
 // ================================
+// In server.js route registration section
 
+// --- Newsletter Routes ---
+try {
+  console.log('🔄 Loading Newsletter route...');
+  const newsletterRoute = require('./routes/newsletter');
+  app.use('/api/newsletter', newsletterRoute);
+  console.log('✅ Newsletter route registered successfully at /api/newsletter');
+} catch (error) {
+  console.error('❌ Failed to load newsletter route:', error);
+  
+  // Fallback newsletter route
+  const newsletterFallback = express.Router();
+  newsletterFallback.post('/subscribe', (req, res) => {
+    res.status(501).json({
+      success: false,
+      error: 'Newsletter service temporarily unavailable',
+      message: 'Please try again later'
+    });
+  });
+  app.use('/api/newsletter', newsletterFallback);
+  console.log('⚠️ Newsletter using fallback routes');
+}
 console.log('🎯 Registering enhanced routes...');
 
 // Safe route loader with enhanced error handling
