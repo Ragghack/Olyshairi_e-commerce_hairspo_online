@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <head>
     <!-- 🖼️ Favicon (shows in browser tab) -->
-<!-- 🖼️ Favicon (shows in browser tab) -->
-<link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
-<!-- Optional for Apple/Android homescreens -->
-<link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
+    <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
+    <!-- Optional for Apple/Android homescreens -->
+    <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
 
-<!-- 🔍 Google Structured Data (shows logo in search results) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "url": "https://www.olyshair.com",
-  "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
-}
-</script>
+    <!-- 🔍 Google Structured Data (shows logo in search results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://www.olyshair.com",
+      "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
+    }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OLYS HAIR - About Us</title>
@@ -38,6 +36,7 @@
             --text-light: #423c3c;
             --card-bg: #ffffff;
             --shadow: 0 5px 15px rgba(235, 177, 177, 0.05);
+            --transition: all 0.3s ease;
         }
         
         .dark-mode {
@@ -57,7 +56,7 @@
             color: var(--text-dark);
             overflow-x: hidden;
             line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: var(--transition);
         }
         
         h1, h2, h3, h4 {
@@ -71,50 +70,38 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
+            padding: 15px 20px;
             background-color: var(--white);
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             box-shadow: var(--shadow);
         }
-                .logo-placeholder {
-  max-width: 31mm;
-  height: auto;
-}
-
-body.dark-mode .logo-container {
-  content: url("images/Artboard 1 copy.png");
-   max-width: 31mm;
-  max-height: 100mm;
-              display: flex;
-            justify-content: center
-}
         
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 180px;
-            height: 80px;
+            width: 150px;
+            height: 60px;
             background-color: var(--white);
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: var(--shadow);
         }
         
         .logo-img-light {
-            max-width: 120px;
-            max-height: 50px;
+            max-width: 100px;
+            max-height: 40px;
             display: block;
             margin: 0 auto;
             object-fit: contain;
         }
         
         .logo-img-dark {
-            max-width: 120px;
-            max-height: 50px;
+            max-width: 100px;
+            max-height: 40px;
             width: auto;
             height: auto;
             display: none;
@@ -131,16 +118,28 @@ body.dark-mode .logo-container {
             display: block;
         }
         
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--cream);
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 20px;
         }
         
         .nav-links a {
             text-decoration: none;
             color: var(--text-dark);
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: var(--transition);
+            font-size: 15px;
         }
         
         .nav-links a:hover {
@@ -149,12 +148,12 @@ body.dark-mode .logo-container {
         
         .header-icons {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
         
         .header-icons i {
-            font-size: 20px;
+            font-size: 18px;
             color: var(--cream);
             cursor: pointer;
         }
@@ -162,33 +161,33 @@ body.dark-mode .logo-container {
         /* Dark/Light Mode Toggle */
         .mode-toggle {
             position: relative;
-            width: 60px;
-            height: 30px;
+            width: 50px;
+            height: 25px;
             background-color: var(--light-bg);
             border-radius: 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
             padding: 0 5px;
-            transition: background-color 0.3s ease;
+            transition: var(--transition);
         }
         
         .toggle-circle {
             position: absolute;
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             background-color: var(--cream);
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             left: 4px;
         }
         
         .dark-mode .toggle-circle {
-            left: 34px;
+            left: 28px;
         }
         
         .mode-toggle i {
-            font-size: 14px;
+            font-size: 12px;
             z-index: 2;
         }
         
@@ -204,202 +203,60 @@ body.dark-mode .logo-container {
         
         /* Page Content */
         .page-content {
-            margin-top: 120px;
-            padding: 40px;
+            margin-top: 90px;
+            padding: 20px;
         }
         
         .page-hero {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
         }
         
         .page-hero h1 {
-            font-size: 2.8rem;
-            margin-bottom: 20px;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
         }
         
         .page-hero p {
             max-width: 700px;
             margin: 0 auto;
-            font-size: 1.1rem;
-        }
-        
-        /* Collections Grid */
-        .collections-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-        
-        .collection-card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-        }
-        
-        .collection-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .collection-media {
-            height: 250px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .collection-media img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        
-        .collection-card:hover .collection-media img {
-            transform: scale(1.1);
-        }
-        
-        .collection-media video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .collection-info {
-            padding: 20px;
-        }
-        
-        .collection-info h3 {
-            margin-bottom: 10px;
-            color: var(--text-dark);
-        }
-        
-        .collection-info p {
-            color: var(--text-dark);
-            margin-bottom: 15px;
-        }
-        
-        .collection-types {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .collection-type {
-            padding: 5px 12px;
-            background-color: var(--light-bg);
-            border-radius: 15px;
-            font-size: 12px;
-            color: var(--cream);
-        }
-        
-        .view-collection {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--cream);
-            color: var(--white);
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-        
-        .view-collection:hover {
-            background-color: var(--dark-gray);
-        }
-        
-        /* Video Showcase Section */
-        .video-showcase {
-            margin-bottom: 60px;
-        }
-        
-        .video-showcase h2 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .video-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-            gap: 30px;
-        }
-        
-        .video-item {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-        
-        .video-player {
-            width: 100%;
-            height: 300px;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-        
-        .video-player video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .play-btn {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .play-btn i {
-            color: var(--cream);
-            font-size: 20px;
-        }
-        
-        .play-btn:hover {
-            transform: scale(1.1);
-            background-color: var(--white);
-        }
-        
-        .video-info {
-            padding: 20px;
-        }
-        
-        .video-info h3 {
-            margin-bottom: 10px;
+            font-size: 1rem;
         }
         
         /* About Page Styles */
         .about-section {
-            margin-bottom: 60px;
+            margin-bottom: 50px;
         }
         
         .about-content {
             display: flex;
-            gap: 40px;
+            gap: 30px;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         
         .about-text {
             flex: 1;
         }
         
+        .about-text p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .about-text ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .about-text li {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
         .about-image {
             flex: 1;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             box-shadow: var(--shadow);
         }
@@ -413,138 +270,61 @@ body.dark-mode .logo-container {
         .values-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 30px;
+            gap: 20px;
         }
         
         .value-card {
             background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 8px;
             box-shadow: var(--shadow);
             text-align: center;
+            transition: var(--transition);
+        }
+        
+        .value-card:hover {
+            transform: translateY(-5px);
         }
         
         .value-card i {
-            font-size: 40px;
+            font-size: 35px;
             color: var(--cream);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .value-card h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
         }
         
-        /* Contact Page Styles */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 40px;
-        }
-        
-        .contact-info {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .contact-info h2 {
-            margin-bottom: 20px;
-        }
-        
-        .contact-details {
-            margin-bottom: 30px;
-        }
-        
-        .contact-item {
-            display: flex;
-            margin-bottom: 15px;
-        }
-        
-        .contact-item i {
-            color: var(--cream);
-            font-size: 20px;
-            margin-right: 15px;
-            width: 24px;
-        }
-        
-        .contact-form {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--cream);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--light-bg);
-            border-radius: 8px;
-            background-color: var(--card-bg);
-            color: var(--text-dark);
-            font-family: 'Montserrat', sans-serif;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--cream);
-        }
-        
-        textarea.form-control {
-            min-height: 150px;
-            resize: vertical;
-        }
-        
-        .submit-btn {
-            padding: 12px 25px;
-            background-color: var(--cream);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-        
-        .submit-btn:hover {
-            background-color: var(--dark-gray);
+        .value-card p {
+            font-size: 0.9rem;
         }
         
         /* Footer */
         footer {
             background-color: var(--cream);
             color: var(--text-light);
-            padding: 80px 40px 30px;
+            padding: 50px 20px 20px;
         }
         
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
         }
         
         .footer-column h3 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             color: var(--white);
         }
         
         .footer-column p {
             color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
         }
         
         .footer-column ul {
@@ -552,13 +332,14 @@ body.dark-mode .logo-container {
         }
         
         .footer-column ul li {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .footer-column ul li a {
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: var(--transition);
+            font-size: 0.9rem;
         }
         
         .footer-column ul li a:hover {
@@ -567,20 +348,21 @@ body.dark-mode .logo-container {
         
         .social-icons {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
         }
         
         .social-icons a {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             color: var(--white);
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            font-size: 14px;
         }
         
         .social-icons a:hover {
@@ -590,53 +372,247 @@ body.dark-mode .logo-container {
         
         .copyright {
             text-align: center;
-            padding-top: 30px;
+            padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Newsletter Form */
+        .newsletter-form input {
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .newsletter-form button {
+            padding: 10px;
+            width: 100%;
+            background-color: var(--white);
+            color: var(--cream);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .newsletter-form button:hover {
+            background-color: var(--dark-gray);
+            color: var(--white);
         }
         
         /* Responsive Design */
-        @media (max-width: 968px) {
-            .about-content {
-                flex-direction: column;
-            }
-            
-            .video-container {
-                grid-template-columns: 1fr;
+        @media (max-width: 1024px) {
+            .values-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
         
         @media (max-width: 768px) {
             header {
-                padding: 15px 20px;
+                padding: 12px 15px;
+            }
+            
+            .logo-container {
+                width: 130px;
+                height: 50px;
+            }
+            
+            .logo-img-light, .logo-img-dark {
+                max-width: 90px;
+                max-height: 35px;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
             }
             
             .nav-links {
-                display: true;
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--white);
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: var(--shadow);
+                z-index: 999;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links a {
+                padding: 12px 0;
+                border-bottom: 1px solid var(--light-bg);
+                width: 100%;
+                text-align: center;
+            }
+            
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+            
+            .header-icons {
+                gap: 12px;
+            }
+            
+            .header-icons i {
+                font-size: 16px;
+            }
+            
+            .mode-toggle {
+                width: 45px;
+                height: 22px;
+            }
+            
+            .toggle-circle {
+                width: 16px;
+                height: 16px;
+            }
+            
+            .dark-mode .toggle-circle {
+                left: 25px;
             }
             
             .page-content {
-                margin-top: 100px;
-                padding: 20px;
+                margin-top: 80px;
+                padding: 15px;
             }
             
             .page-hero h1 {
-                font-size: 2.2rem;
+                font-size: 1.8rem;
             }
             
-            .collections-grid {
-                grid-template-columns: 1fr;
+            .page-hero p {
+                font-size: 0.9rem;
             }
             
-            .contact-grid {
+            .about-content {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .values-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .value-card {
+                padding: 20px;
+            }
+            
+            .value-card i {
+                font-size: 30px;
+            }
+            
+            .value-card h3 {
+                font-size: 1.1rem;
+            }
+            
+            footer {
+                padding: 40px 15px 15px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .footer-column h3 {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .page-content {
+                margin-top: 70px;
+                padding: 10px;
+            }
+            
+            .page-hero {
+                margin-bottom: 30px;
+            }
+            
+            .page-hero h1 {
+                font-size: 1.6rem;
+            }
+            
+            .page-hero p {
+                font-size: 0.85rem;
+            }
+            
+            .about-section {
+                margin-bottom: 40px;
+            }
+            
+            .about-text p {
+                font-size: 0.9rem;
+            }
+            
+            .about-text li {
+                font-size: 0.85rem;
+            }
+            
+            .value-card {
+                padding: 18px;
+            }
+            
+            .value-card i {
+                font-size: 28px;
+            }
+            
+            .value-card h3 {
+                font-size: 1rem;
+            }
+            
+            .value-card p {
+                font-size: 0.85rem;
+            }
+            
+            .footer-column h3 {
+                font-size: 1.1rem;
+            }
+            
+            .footer-column p, 
+            .footer-column ul li a {
+                font-size: 0.85rem;
+            }
+            
+            .social-icons a {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+            
+            .copyright {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .page-hero h1 {
+                font-size: 1.4rem;
+            }
+            
+            .values-grid {
+                gap: 12px;
+            }
+            
+            .value-card {
+                padding: 15px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header (same as collections page) -->
+    <!-- Header -->
     <header>
         <div class="logo-container">
             <span>
@@ -644,12 +620,19 @@ body.dark-mode .logo-container {
                 <img src="images/logo-bright.png" alt="OLYS HAIR Logo Bright" class="logo-img-dark" />
             </span>
         </div>
-        <div class="nav-links">
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
             <a href="index.html">Home</a>
+            <a href="product.html">Products</a>
             <a href="collection.html">Collections</a>
-            <!--<a href="about.html" class="active">About</a>-->
+            <a href="about.html" class="active">About</a>
             <a href="contact.html">Contact</a>
         </div>
+        
         <div class="header-icons">
             <i class="fas fa-search"></i>
             <i class="fas fa-shopping-bag"></i>
@@ -669,40 +652,9 @@ body.dark-mode .logo-container {
             <p>Discover the story behind our passion for premium hair extensions and our commitment to quality.</p>
         </div>
 
-        <!-- Our Story Section 
-        <div class="about-section">
-            <div class="logo-container">
-                <div class="logo-placeholder">
-                    <span>
-                        <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" style="max-width:50px; max-height:auto; display:block; margin:0 auto; object-fit:contain;" />
-                        <img src="images/Artboard 1 copy.png" alt="OLYS HAIR Logo Dark" class="logo-img-dark" style="max-width:50px; max-height:auto; display:none; margin:0 auto; object-fit:contain; background:transparent;" />
-                    </span>
-                </div>
-            </div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="shop.html">Shop</a>
-                <a href="collections.html">Collections</a>
-                <a href="about.html" class="active">About</a>
-                <a href="contact.html">Contact</a>
-            </div>
-            <div class="header-icons">
-                <i class="fas fa-search"></i>
-                <i class="fas fa-shopping-bag"></i>
-                <i class="fas fa-user"></i>
-                <div class="mode-toggle">
-                    <i class="fas fa-sun"></i>
-                    <i class="fas fa-moon"></i>
-                    <div class="toggle-circle"></div>
-                </div>
-            </div>
-                </div>
-            </div>
-        </div>-->
-
         <!-- Our Values Section -->
         <div class="about-section">
-            <h2 style="text-align: center; margin-bottom: 40px;">Our Values</h2>
+            <h2 style="text-align: center; margin-bottom: 30px;">Our Values</h2>
             <div class="values-grid">
                 <div class="value-card">
                     <i class="fas fa-gem"></i>
@@ -732,11 +684,11 @@ body.dark-mode .logo-container {
 
         <!-- Our Specialties Section -->
         <div class="about-section">
-            <h2 style="text-align: center; margin-bottom: 40px;">Our Specialties</h2>
+            <h2 style="text-align: center; margin-bottom: 30px;">Our Specialties</h2>
             <div class="about-content">
                 <div class="about-text">
                     <p>OLYS HAIR specializes in 100% human hair extensions sourced from various regions around the world. Our expertise includes:</p>
-                    <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <ul>
                         <li>Brazilian Virgin Hair - Known for its thickness and durability</li>
                         <li>Peruvian Hair - Celebrated for its softness and versatility</li>
                         <li>Malaysian Hair - Prized for its incredible shine and silky texture</li>
@@ -750,16 +702,31 @@ body.dark-mode .logo-container {
                 </div>
             </div>
         </div>
+        
+        <!-- Our Story Section -->
+        <div class="about-section">
+            <h2 style="text-align: center; margin-bottom: 30px;">Our Story</h2>
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1596468132315-0de849300ff0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Our Story">
+                </div>
+                <div class="about-text">
+                    <p>Founded with a passion for beauty and empowerment, OLYS HAIR began as a small boutique with a big vision: to provide women with the highest quality hair extensions that enhance their natural beauty and boost their confidence.</p>
+                    <p>Over the years, we've grown into a trusted brand known for our commitment to excellence, attention to detail, and dedication to customer satisfaction. Our journey has been guided by the belief that every woman deserves to feel beautiful and confident.</p>
+                    <p>Today, we continue to innovate and expand our product line while staying true to our core values of quality, integrity, and exceptional customer service.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Footer (same as collections page) -->
+    <!-- Footer -->
     <footer>
         <div class="footer-content">
             <div class="footer-column">
                 <h3>OLYS HAIR</h3>
                 <p>Premium quality hair products for the modern woman who values luxury and style.</p>
                 <div class="social-icons">
-                   <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="><i class="fab fa-instagram"></i></a>
                     <a href="https://twitter.com/olys_hair"><i class="fab fa-twitter"></i></a>
                     <a href="https://wa.me/c/33674322387"><i class="fab fa-whatsapp"></i></a>
@@ -770,18 +737,18 @@ body.dark-mode .logo-container {
             <div class="footer-column">
                 <h3>Shop</h3>
                 <ul>
-                    <li><a href="#">Hair Extensions</a></li>
-                    <li><a href="#">Wigs</a></li>
-                    <li><a href="#">Closures</a></li>
-                    <li><a href="#">Frontals</a></li>
-                    <li><a href="#">Hair Care</a></li>
+                    <li><a href="product.html">Hair Extensions</a></li>
+                    <li><a href="product.html">Wigs</a></li>
+                    <li><a href="product.html">Closures</a></li>
+                    <li><a href="product.html">Frontals</a></li>
+                    <li><a href="product.html">Hair Care</a></li>
                 </ul>
             </div>
             
             <div class="footer-column">
                 <h3>Support</h3>
                 <ul>
-                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
                     <li><a href="#">FAQs</a></li>
                     <li><a href="#">Shipping & Returns</a></li>
                     <li><a href="#">Track Order</a></li>
@@ -792,9 +759,9 @@ body.dark-mode .logo-container {
             <div class="footer-column">
                 <h3>Newsletter</h3>
                 <p>Subscribe to get special offers, free giveaways, and new product alerts.</p>
-                <form>
-                    <input type="email" placeholder="Your email address" style="padding: 10px; width: 100%; margin-bottom: 10px; border-radius: 5px; border: none;">
-                    <button type="submit" style="padding: 10px; width: 100%; background-color: var(--white); color: var(--cream); border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">SUBSCRIBE</button>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">SUBSCRIBE</button>
                 </form>
             </div>
         </div>
@@ -805,9 +772,22 @@ body.dark-mode .logo-container {
     </footer>
 
     <script>
+        // Mobile menu functionality
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
 
-        // Same JavaScript as collections page
-         // Dark/Light Mode Toggle
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('navLinks');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            
+            if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Dark/Light Mode Toggle
         const modeToggle = document.querySelector('.mode-toggle');
         const body = document.body;
         
@@ -828,50 +808,15 @@ body.dark-mode .logo-container {
             body.classList.add('dark-mode');
         }
         
-        // Video Play Functionality
-        const playButtons = document.querySelectorAll('.play-btn');
-        
-        playButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const video = this.parentElement.querySelector('video');
-                if (video.paused) {
-                    video.play();
-                    this.style.display = 'none';
-                } else {
-                    video.pause();
-                    this.style.display = 'flex';
-                }
-            });
-        });
-        
-        // Show play button when video is paused
-        const videos = document.querySelectorAll('video');
-        
-        videos.forEach(video => {
-            video.addEventListener('pause', function() {
-                this.parentElement.querySelector('.play-btn').style.display = 'flex';
-            });
-            
-            video.addEventListener('click', function() {
-                if (this.paused) {
-                    this.play();
-                    this.parentElement.querySelector('.play-btn').style.display = 'none';
-                } else {
-                    this.pause();
-                    this.parentElement.querySelector('.play-btn').style.display = 'flex';
-                }
-            });
-        });
-        
         // Header scroll effect
         window.addEventListener('scroll', function() {
             const header = document.querySelector('header');
             if (window.scrollY > 100) {
                 header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-                header.style.padding = '15px 40px';
+                header.style.padding = '12px 20px';
             } else {
                 header.style.boxShadow = '';
-                header.style.padding = '20px 40px';
+                header.style.padding = '15px 20px';
             }
         });
     </script>

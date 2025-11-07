@@ -1918,13 +1918,13 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
           tableBody.appendChild(row);
         });
 
-        // Add event listeners with error handling
-        document.querySelectorAll(".view-order").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            const orderId = e.target.dataset.id;
-            viewOrder(orderId);
-          });
-        });
+// Update the event listeners in loadOrders() function:
+document.querySelectorAll(".view-order").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    const orderId = e.target.dataset.id;
+    viewOrder(orderId); // ✅ NOW WORKS
+  });
+});
 
         document.querySelectorAll(".update-status").forEach((btn) => {
           btn.addEventListener("click", (e) => {
@@ -2865,6 +2865,77 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
           header.style.padding = "20px 40px";
         }
       });
+      // 🎯 IMPLEMENT VIEW ORDER FUNCTIONALITY
+async function viewOrder(orderId) {
+  try {
+    showLoading(true);
+    
+    const result = await ApiClient.authenticatedRequest(
+      `${ENDPOINTS.ORDERS}/${orderId}`
+    );
+
+    if (result.ok) {
+      // Create order details modal
+      showOrderDetailsModal(result.data.order);
+    } else {
+      throw new Error(result.error);
+    }
+  } catch (error) {
+    console.error('View order error:', error);
+    showNotification('Failed to load order details', 'error');
+  } finally {
+    showLoading(false);
+  }
+}
+
+function showOrderDetailsModal(order) {
+  const modalHTML = `
+    <div class="modal-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;">
+      <div class="modal-content" style="background:var(--card-bg);padding:30px;border-radius:10px;max-width:800px;max-height:90vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h3>Order Details: ${order.orderNumber}</h3>
+          <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+        </div>
+        
+        <!-- Order Details Content -->
+        <div class="order-details">
+          <div class="customer-info">
+            <h4>Customer Information</h4>
+            <p><strong>Name:</strong> ${order.customerInfo.name}</p>
+            <p><strong>Email:</strong> ${order.customerInfo.email}</p>
+            <p><strong>Phone:</strong> ${order.customerInfo.phone}</p>
+          </div>
+          
+          <div class="order-items" style="margin:20px 0;">
+            <h4>Order Items (${order.items.length})</h4>
+            ${order.items.map(item => `
+              <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;">
+                <div>
+                  <strong>${item.name}</strong><br>
+                  <small>SKU: ${item.sku} | Qty: ${item.quantity}</small>
+                </div>
+                <div>€${(item.price * item.quantity).toFixed(2)}</div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="order-totals">
+            <p><strong>Total Amount: €${order.totalAmount.toFixed(2)}</strong></p>
+            <p><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span></p>
+            <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function closeModal() {
+  const modal = document.querySelector('.modal-overlay');
+  if (modal) modal.remove();
+}
 
       // System Diagnostics
       async function runDiagnostics() {

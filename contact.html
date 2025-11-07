@@ -1,33 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-     <head>
-    <!-- 🖼️ Favicon (shows in browser tab) -->
-<!-- 🖼️ Favicon (shows in browser tab) -->
-<link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
-<!-- Optional for Apple/Android homescreens -->
-<link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
-
-<!-- 🔍 Google Structured Data (shows logo in search results) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "url": "https://www.olyshair.com",
-  "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
-}
-</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OLYS HAIR - Contact Us</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
+    <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
+    
+    <!-- Google Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://www.olyshair.com",
+      "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
+    }
+    </script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <style>
       * {
         margin: 0;
@@ -66,10 +57,7 @@
         transition: background-color 0.3s ease, color 0.3s ease;
       }
 
-      h1,
-      h2,
-      h3,
-      h4 {
+      h1, h2, h3, h4 {
         font-family: "Playfair Display", serif;
         font-weight: 600;
         color: var(--cream);
@@ -88,18 +76,6 @@
         z-index: 1000;
         transition: all 0.3s ease;
         box-shadow: var(--shadow);
-      }
-      .logo-placeholder {
-        max-width: 31mm;
-        height: auto;
-      }
-
-      body.dark-mode .logo-container {
-        content: url("images/Artboard 1 copy.png");
-        max-width: 31mm;
-        max-height: 100mm;
-        display: flex;
-        justify-content: center;
       }
 
       .logo-container {
@@ -233,221 +209,12 @@
         font-size: 1.1rem;
       }
 
-      /* Collections Grid */
-      .collections-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 30px;
-        margin-bottom: 60px;
-      }
-
-      .collection-card {
-        background-color: var(--card-bg);
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: var(--shadow);
-        transition: transform 0.3s ease;
-      }
-
-      .collection-card:hover {
-        transform: translateY(-10px);
-      }
-
-      .collection-media {
-        height: 250px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .collection-media img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-      }
-
-      .collection-card:hover .collection-media img {
-        transform: scale(1.1);
-      }
-
-      .collection-media video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .collection-info {
-        padding: 20px;
-      }
-
-      .collection-info h3 {
-        margin-bottom: 10px;
-        color: var(--text-dark);
-      }
-
-      .collection-info p {
-        color: var(--text-dark);
-        margin-bottom: 15px;
-      }
-
-      .collection-types {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 15px;
-      }
-
-      .collection-type {
-        padding: 5px 12px;
-        background-color: var(--light-bg);
-        border-radius: 15px;
-        font-size: 12px;
-        color: var(--cream);
-      }
-
-      .view-collection {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: var(--cream);
-        color: var(--white);
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: background-color 0.3s;
-      }
-
-      .view-collection:hover {
-        background-color: var(--dark-gray);
-      }
-
-      /* Video Showcase Section */
-      .video-showcase {
-        margin-bottom: 60px;
-      }
-
-      .video-showcase h2 {
-        text-align: center;
-        margin-bottom: 40px;
-      }
-
-      .video-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-        gap: 30px;
-      }
-
-      .video-item {
-        background-color: var(--card-bg);
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: var(--shadow);
-      }
-
-      .video-player {
-        width: 100%;
-        height: 300px;
-        background-color: #000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-      }
-
-      .video-player video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .play-btn {
-        position: absolute;
-        width: 60px;
-        height: 60px;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .play-btn i {
-        color: var(--cream);
-        font-size: 20px;
-      }
-
-      .play-btn:hover {
-        transform: scale(1.1);
-        background-color: var(--white);
-      }
-
-      .video-info {
-        padding: 20px;
-      }
-
-      .video-info h3 {
-        margin-bottom: 10px;
-      }
-
-      /* About Page Styles */
-      .about-section {
-        margin-bottom: 60px;
-      }
-
-      .about-content {
-        display: flex;
-        gap: 40px;
-        align-items: center;
-        margin-bottom: 40px;
-      }
-
-      .about-text {
-        flex: 1;
-      }
-
-      .about-image {
-        flex: 1;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: var(--shadow);
-      }
-
-      .about-image img {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      .values-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 30px;
-      }
-
-      .value-card {
-        background-color: var(--card-bg);
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: var(--shadow);
-        text-align: center;
-      }
-
-      .value-card i {
-        font-size: 40px;
-        color: var(--cream);
-        margin-bottom: 20px;
-      }
-
-      .value-card h3 {
-        margin-bottom: 15px;
-      }
-
-      /* Contact Page Styles */
+      /* Contact Grid */
       .contact-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
         gap: 40px;
+        margin-bottom: 60px;
       }
 
       .contact-info {
@@ -531,6 +298,59 @@
         background-color: var(--dark-gray);
       }
 
+      /* Services Section */
+      .services-section {
+        margin-bottom: 60px;
+      }
+
+      .services-section h2 {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .service-card {
+        background-color: var(--card-bg);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .service-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .service-card i {
+        font-size: 40px;
+        color: var(--cream);
+        margin-bottom: 20px;
+      }
+
+      .service-card h3 {
+        margin-bottom: 15px;
+      }
+
+      /* Map Section */
+      .map-container {
+        margin-bottom: 60px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .map-container iframe {
+        width: 100%;
+        height: 450px;
+        border: none;
+      }
+
       /* Footer */
       footer {
         background-color: var(--cream);
@@ -605,13 +425,45 @@
         font-size: 0.9rem;
       }
 
+      /* Mobile Menu */
+      .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--cream);
+        cursor: pointer;
+      }
+
+      .mobile-nav {
+        display: none;
+        position: fixed;
+        top: 120px;
+        left: 0;
+        width: 100%;
+        background-color: var(--white);
+        box-shadow: var(--shadow);
+        z-index: 999;
+        padding: 20px;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .mobile-nav.active {
+        display: flex;
+      }
+
+      .mobile-nav a {
+        text-decoration: none;
+        color: var(--text-dark);
+        font-weight: 500;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--light-bg);
+      }
+
       /* Responsive Design */
       @media (max-width: 968px) {
-        .about-content {
-          flex-direction: column;
-        }
-
-        .video-container {
+        .contact-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -622,7 +474,11 @@
         }
 
         .nav-links {
-          display: true;
+          display: none;
+        }
+
+        .mobile-menu-btn {
+          display: block;
         }
 
         .page-content {
@@ -634,18 +490,67 @@
           font-size: 2.2rem;
         }
 
-        .collections-grid {
+        .contact-grid {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .contact-info, .contact-form {
+          padding: 20px;
+        }
+
+        .services-grid {
           grid-template-columns: 1fr;
         }
 
-        .contact-grid {
+        .map-container iframe {
+          height: 300px;
+        }
+
+        .footer-content {
           grid-template-columns: 1fr;
+          gap: 30px;
+        }
+
+        .header-icons {
+          gap: 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .page-hero h1 {
+          font-size: 1.8rem;
+        }
+
+        .page-hero p {
+          font-size: 1rem;
+        }
+
+        .contact-item {
+          flex-direction: column;
+        }
+
+        .contact-item i {
+          margin-bottom: 5px;
+        }
+
+        .service-card {
+          padding: 20px;
+        }
+
+        .logo-container {
+          width: 140px;
+          height: 60px;
+        }
+
+        .logo-img-light, .logo-img-dark {
+          max-width: 100px;
         }
       }
     </style>
   </head>
   <body>
-    <!-- Header (same as collections page) -->
+    <!-- Header -->
     <header>
       <div class="logo-container">
         <span>
@@ -661,12 +566,18 @@
           />
         </span>
       </div>
+      
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+      
       <div class="nav-links">
         <a href="index.html">Home</a>
         <a href="collection.html">Collections</a>
         <a href="about.html">About</a>
-        <!---  <a href="contact.html" class="active">Contact</a>--->
+        <a href="contact.html" class="active">Contact</a>
       </div>
+      
       <div class="header-icons">
         <i class="fas fa-search"></i>
         <i class="fas fa-shopping-bag"></i>
@@ -678,6 +589,14 @@
         </div>
       </div>
     </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+      <a href="index.html">Home</a>
+      <a href="collection.html">Collections</a>
+      <a href="about.html">About</a>
+      <a href="contact.html" class="active">Contact</a>
+    </div>
 
     <!-- Page Content -->
     <div class="page-content">
@@ -792,7 +711,7 @@
 
       <!-- Our Services Section -->
       <div class="services-section">
-        <h2 style="text-align: center; margin-bottom: 40px">Our Services</h2>
+        <h2>Our Services</h2>
         <div class="services-grid">
           <div class="service-card">
             <i class="fas fa-shopping-cart"></i>
@@ -852,14 +771,15 @@
       <!-- Map Section -->
       <div class="map-container">
         <iframe
-          src="https://www.google.com/maps/place/Paris,+France/@48.8583851,2.0174081,10z/data=!3m1!4b1!4m6!3m5!1s0x47e66e1f06e2b70f:0x40b82c3688c9460!8m2!3d48.8575475!4d2.3513765!16zL20vMDVxdGo!5m1!1e1?hl=en&entry=ttu&g_ep=EgoyMDI1MDkxNy4wIKXMDSoASAFQAw%3D%3D"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83998.947226773!2d2.277020443066031!3d48.85883773914334!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e1f06e2b70f%3A0x40b82c3688c9460!2sParis%2C%20France!5e0!3m2!1sen!2sus!4v1690000000000!5m2!1sen!2sus"
           allowfullscreen=""
           loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
     </div>
 
-    <!-- Footer (same as collections page) -->
+    <!-- Footer -->
     <footer>
       <div class="footer-content">
         <div class="footer-column">
@@ -870,19 +790,10 @@
           </p>
           <div class="social-icons">
             <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a
-              href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="
-              ><i class="fab fa-instagram"></i
-            ></a>
-            <a href="https://twitter.com/olys_hair"
-              ><i class="fab fa-twitter"></i
-            ></a>
-            <a href="https://wa.me/c/33674322387"
-              ><i class="fab fa-whatsapp"></i
-            ></a>
-            <a href="https://www.tiktok.com/@olys.har?_t=ZN-90BZpnkAMru&_r=1"
-              ><i class="fab fa-tiktok"></i
-            ></a>
+            <a href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com/olys_hair"><i class="fab fa-twitter"></i></a>
+            <a href="https://wa.me/c/33674322387"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.tiktok.com/@olys.har?_t=ZN-90BZpnkAMru&_r=1"><i class="fab fa-tiktok"></i></a>
           </div>
         </div>
 
@@ -951,7 +862,6 @@
     </footer>
 
     <script>
-      // Same JavaScript as collections page
       // Dark/Light Mode Toggle
       const modeToggle = document.querySelector(".mode-toggle");
       const body = document.body;
@@ -973,41 +883,19 @@
         body.classList.add("dark-mode");
       }
 
-      // Video Play Functionality
-      const playButtons = document.querySelectorAll(".play-btn");
+      // Mobile Menu Toggle
+      const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+      const mobileNav = document.querySelector(".mobile-nav");
 
-      playButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-          const video = this.parentElement.querySelector("video");
-          if (video.paused) {
-            video.play();
-            this.style.display = "none";
-          } else {
-            video.pause();
-            this.style.display = "flex";
-          }
-        });
+      mobileMenuBtn.addEventListener("click", () => {
+        mobileNav.classList.toggle("active");
       });
 
-      // Show play button when video is paused
-      const videos = document.querySelectorAll("video");
-
-      videos.forEach((video) => {
-        video.addEventListener("pause", function () {
-          this.parentElement.querySelector(".play-btn").style.display = "flex";
-        });
-
-        video.addEventListener("click", function () {
-          if (this.paused) {
-            this.play();
-            this.parentElement.querySelector(".play-btn").style.display =
-              "none";
-          } else {
-            this.pause();
-            this.parentElement.querySelector(".play-btn").style.display =
-              "flex";
-          }
-        });
+      // Close mobile menu when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!mobileMenuBtn.contains(e.target) && !mobileNav.contains(e.target)) {
+          mobileNav.classList.remove("active");
+        }
       });
 
       // Header scroll effect
@@ -1020,6 +908,14 @@
           header.style.boxShadow = "";
           header.style.padding = "20px 40px";
         }
+      });
+
+      // Form submission
+      const contactForm = document.querySelector("form");
+      contactForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        alert("Thank you for your message! We'll get back to you soon.");
+        this.reset();
       });
     </script>
   </body>

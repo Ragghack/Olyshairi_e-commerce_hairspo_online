@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+      <!-- 🖼️ Favicon (shows in browser tab) -->
+    <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
+    <!-- Optional for Apple/Android homescreens -->
+    <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
+
+    <!-- 🔍 Google Structured Data (shows logo in search results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://www.olyshair.com",
+      "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
+    }
+    </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OLYS HAIR - Sign In</title>
@@ -13,65 +27,7 @@
     rel="stylesheet"
   />
   <style>
-    /* Your existing CSS remains the same, with these additions/modifications: */
-    
-    /* Custom Google Sign-In Button Styling */
-    .custom-google-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--light-bg);
-      border-radius: 5px;
-      background: var(--card-bg);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: "Montserrat", sans-serif;
-      font-weight: 500;
-      color: var(--text-dark);
-    }
-    
-    .custom-google-btn:hover {
-      border-color: var(--cream);
-    }
-    
-    .custom-google-btn i {
-      font-size: 18px;
-      color: var(--cream);
-      margin-right: 10px;
-    }
-    
-    /* Center password toggle icons */
-    .password-toggle {
-      position: relative;
-    }
-    
-    .password-toggle .form-control {
-      padding-right: 45px;
-    }
-    
-    .toggle-password {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: var(--cream);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-    }
-    
-    /* Rest of your existing CSS remains unchanged */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* CSS Variables */
     :root {
       --cream: #392625;
       --white: #ffffff;
@@ -81,6 +37,8 @@
       --text-light: #ffffff;
       --card-bg: #ffffff;
       --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      --border-radius: 10px;
+      --transition: all 0.3s ease;
     }
 
     .dark-mode {
@@ -94,22 +52,26 @@
       --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
     }
 
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "Montserrat", sans-serif;
       background-color: var(--white);
       color: var(--text-dark);
       overflow-x: hidden;
       line-height: 1.6;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: var(--transition);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    h1,
-    h2,
-    h3,
-    h4 {
+    h1, h2, h3, h4 {
       font-family: "Playfair Display", serif;
       font-weight: 600;
       color: var(--cream);
@@ -120,40 +82,23 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 40px;
+      padding: 15px 20px;
       background-color: var(--white);
       box-shadow: var(--shadow);
-    }
-    .logo-container {
-      max-width: 31mm;
-      height: auto;
-    }
-
-    body.dark-mode .logo-container {
-      content: url("images/Artboard 1 copy.png");
-      max-width: 31mm;
-      max-height: 100mm;
-      display: flex;
-      justify-content: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .logo-container {
+      width: 180px;
+      height: 60px;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 180px;
-      height: 80px;
       background-color: var(--white);
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(235, 177, 177, 0.05);
-    }
-
-    .logo-placeholder {
-      font-family: "Playfair Display", serif;
-      font-size: 24px;
-      font-weight: 700;
-      color: #392625;
-      text-align: center;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
     }
 
     .logo-img-light {
@@ -183,14 +128,15 @@
 
     .nav-links {
       display: flex;
-      gap: 30px;
+      gap: 20px;
     }
 
     .nav-links a {
       text-decoration: none;
       color: var(--text-dark);
       font-weight: 500;
-      transition: color 0.3s ease;
+      transition: var(--transition);
+      font-size: 14px;
     }
 
     .nav-links a:hover {
@@ -199,12 +145,12 @@
 
     .header-icons {
       display: flex;
-      gap: 20px;
+      gap: 15px;
       align-items: center;
     }
 
     .header-icons i {
-      font-size: 20px;
+      font-size: 18px;
       color: var(--cream);
       cursor: pointer;
     }
@@ -212,33 +158,33 @@
     /* Dark/Light Mode Toggle */
     .mode-toggle {
       position: relative;
-      width: 60px;
-      height: 30px;
+      width: 50px;
+      height: 25px;
       background-color: var(--light-bg);
       border-radius: 15px;
       cursor: pointer;
       display: flex;
       align-items: center;
       padding: 0 5px;
-      transition: background-color 0.3s ease;
+      transition: var(--transition);
     }
 
     .toggle-circle {
       position: absolute;
-      width: 22px;
-      height: 22px;
+      width: 18px;
+      height: 18px;
       background-color: var(--cream);
       border-radius: 50%;
-      transition: all 0.3s ease;
+      transition: var(--transition);
       left: 4px;
     }
 
     .dark-mode .toggle-circle {
-      left: 34px;
+      left: 28px;
     }
 
     .mode-toggle i {
-      font-size: 14px;
+      font-size: 12px;
       z-index: 2;
     }
 
@@ -258,7 +204,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
+      padding: 20px;
       background: linear-gradient(
         135deg,
         rgba(57, 38, 37, 0.05) 0%,
@@ -270,8 +216,8 @@
       display: flex;
       width: 100%;
       max-width: 1000px;
-      min-height: 550px;
-      border-radius: 15px;
+      min-height: auto;
+      border-radius: var(--border-radius);
       overflow: hidden;
       box-shadow: var(--shadow);
     }
@@ -289,21 +235,15 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 40px;
+      padding: 30px 20px;
       color: var(--white);
       text-align: center;
     }
 
     .auth-image h2 {
-      font-size: 2.2rem;
-      margin-bottom: 20px;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
       color: var(--white);
-      background: linear-gradient(45deg, #ffffff 30%, #392625 70%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 15px rgba(57, 38, 37, 0.5);
-      animation: pulse 4s infinite ease-in-out;
       background: linear-gradient(
         45deg,
         #ffffff 20%,
@@ -322,14 +262,8 @@
 
     .auth-image p {
       max-width: 400px;
-      margin-bottom: 30px;
-      font-size: 1.1rem;
-      background: linear-gradient(45deg, #ffffff 30%, #392625 70%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 15px rgba(57, 38, 37, 0.5);
-      animation: pulse 4s infinite ease-in-out;
+      margin-bottom: 20px;
+      font-size: 1rem;
       background: linear-gradient(
         45deg,
         #ffffff 20%,
@@ -350,12 +284,6 @@
       list-style: none;
       text-align: left;
       max-width: 400px;
-      background: linear-gradient(45deg, #ffffff 30%, #392625 70%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 15px rgba(57, 38, 37, 0.5);
-      animation: pulse 4s infinite ease-in-out;
       background: linear-gradient(
         45deg,
         #ffffff 20%,
@@ -373,21 +301,22 @@
     }
 
     .auth-features li {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
+      font-size: 0.9rem;
     }
 
     .auth-features li i {
       color: var(--white);
       margin-right: 10px;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .auth-form-container {
       flex: 1;
       background-color: var(--card-bg);
-      padding: 40px;
+      padding: 30px 25px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -395,17 +324,18 @@
 
     .auth-tabs {
       display: flex;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       border-bottom: 1px solid var(--light-bg);
     }
 
     .auth-tab {
-      padding: 12px 25px;
+      padding: 12px 20px;
       cursor: pointer;
       font-weight: 500;
       color: var(--text-dark);
-      transition: all 0.3s ease;
+      transition: var(--transition);
       position: relative;
+      font-size: 15px;
     }
 
     .auth-tab.active {
@@ -431,20 +361,47 @@
     }
 
     .form-title {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
+      font-size: 1.6rem;
+      margin-bottom: 8px;
     }
 
     .form-subtitle {
       color: var(--text-dark);
-      margin-bottom: 30px;
-      font-size: 1rem;
+      margin-bottom: 25px;
+      font-size: 0.95rem;
+    }
+
+    /* Custom Google Sign-In Button Styling */
+    .custom-google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--light-bg);
+      border-radius: 5px;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: "Montserrat", sans-serif;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    .custom-google-btn:hover {
+      border-color: var(--cream);
+    }
+    
+    .custom-google-btn i {
+      font-size: 18px;
+      color: var(--cream);
+      margin-right: 10px;
     }
 
     .social-auth {
       display: flex;
-      gap: 15px;
-      margin-bottom: 25px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
     .social-btn {
@@ -457,7 +414,7 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: var(--transition);
     }
 
     .social-btn:hover {
@@ -472,7 +429,7 @@
     .divider {
       display: flex;
       align-items: center;
-      margin: 25px 0;
+      margin: 20px 0;
       color: var(--text-dark);
     }
 
@@ -485,19 +442,20 @@
     }
 
     .divider span {
-      padding: 0 15px;
-      font-size: 14px;
+      padding: 0 12px;
+      font-size: 13px;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 500;
       color: var(--cream);
+      font-size: 14px;
     }
 
     .form-control {
@@ -508,7 +466,8 @@
       background-color: var(--card-bg);
       color: var(--text-dark);
       font-family: "Montserrat", sans-serif;
-      transition: border-color 0.3s;
+      transition: var(--transition);
+      font-size: 15px;
     }
 
     .form-control:focus {
@@ -516,11 +475,36 @@
       border-color: var(--cream);
     }
 
+    /* Password toggle styles */
+    .password-toggle {
+      position: relative;
+    }
+    
+    .password-toggle .form-control {
+      padding-right: 45px;
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+    }
+
     .form-options {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .remember-me {
@@ -533,11 +517,16 @@
       accent-color: var(--cream);
     }
 
+    .remember-me label {
+      font-size: 14px;
+      color: var(--text-dark);
+    }
+
     .forgot-password {
       color: var(--cream);
       text-decoration: none;
       font-size: 14px;
-      transition: color 0.3s;
+      transition: var(--transition);
     }
 
     .forgot-password:hover {
@@ -554,7 +543,7 @@
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: var(--transition);
       margin-bottom: 20px;
     }
 
@@ -572,7 +561,7 @@
       color: var(--cream);
       text-decoration: none;
       font-weight: 500;
-      transition: color 0.3s;
+      transition: var(--transition);
     }
 
     .auth-redirect a:hover {
@@ -583,7 +572,7 @@
     footer {
       background-color: var(--cream);
       color: var(--text-light);
-      padding: 40px;
+      padding: 30px 20px;
       text-align: center;
     }
 
@@ -595,14 +584,16 @@
     .footer-links {
       display: flex;
       justify-content: center;
-      gap: 25px;
-      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 15px;
     }
 
     .footer-links a {
       color: rgba(255, 255, 255, 0.8);
       text-decoration: none;
-      transition: color 0.3s;
+      transition: var(--transition);
+      font-size: 14px;
     }
 
     .footer-links a:hover {
@@ -611,7 +602,73 @@
 
     .copyright {
       color: rgba(255, 255, 255, 0.8);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+    }
+
+    /* Animations */
+    @keyframes shine {
+      to {
+        background-position: 200% center;
+      }
+    }
+
+    /* Google Sign-In Button Styles */
+    .g_id_signin {
+      width: 100% !important;
+    }
+
+    .g_id_signin iframe {
+      width: 100% !important;
+    }
+
+    .fallback-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--light-bg);
+      border-radius: 5px;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: "Montserrat", sans-serif;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .fallback-btn:hover {
+      border-color: var(--cream);
+    }
+
+    .fallback-btn i {
+      font-size: 18px;
+      color: var(--cream);
+      margin-right: 10px;
+    }
+
+    /* Error state styling */
+    .auth-error {
+      border: 1px solid #ff6b6b !important;
+      background-color: rgba(255, 107, 107, 0.1) !important;
+    }
+
+    .error-message {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--cream);
+      cursor: pointer;
     }
 
     /* Responsive Design */
@@ -622,25 +679,106 @@
       }
 
       .auth-image {
-        padding: 30px 20px;
+        padding: 25px 15px;
       }
 
       .auth-image h2 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+      }
+
+      .auth-image p {
+        font-size: 0.9rem;
+      }
+
+      .auth-features li {
+        font-size: 0.85rem;
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       header {
-        padding: 15px 20px;
+        padding: 12px 15px;
+      }
+
+      .logo-container {
+        width: 150px;
+        height: 50px;
+      }
+
+      .logo-img-light, .logo-img-dark {
+        max-width: 100px;
+        max-height: 40px;
+      }
+
+      .mobile-menu-btn {
+        display: block;
       }
 
       .nav-links {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--white);
+        flex-direction: column;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        z-index: 99;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .nav-links a {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--light-bg);
+        width: 100%;
+        text-align: center;
+      }
+
+      .nav-links a:last-child {
+        border-bottom: none;
+      }
+
+      .header-icons {
+        gap: 12px;
+      }
+
+      .header-icons i {
+        font-size: 16px;
+      }
+
+      .mode-toggle {
+        width: 45px;
+        height: 22px;
+      }
+
+      .toggle-circle {
+        width: 16px;
+        height: 16px;
+      }
+
+      .dark-mode .toggle-circle {
+        left: 25px;
       }
 
       .auth-form-container {
-        padding: 30px 20px;
+        padding: 25px 20px;
+      }
+
+      .auth-tab {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+
+      .form-title {
+        font-size: 1.4rem;
+      }
+
+      .form-subtitle {
+        font-size: 0.9rem;
       }
 
       .social-auth {
@@ -655,58 +793,111 @@
 
       .footer-links {
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
       }
     }
-    /* Add these styles to your CSS */
-.g_id_signin {
-  width: 100% !important;
-}
 
-.g_id_signin iframe {
-  width: 100% !important;
-}
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 15px;
+      }
 
-.fallback-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--light-bg);
-  border-radius: 5px;
-  background: var(--card-bg);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 500;
-  color: var(--text-dark);
-}
+      .auth-container {
+        border-radius: 8px;
+      }
 
-.fallback-btn:hover {
-  border-color: var(--cream);
-}
+      .auth-image {
+        padding: 20px 15px;
+      }
 
-.fallback-btn i {
-  font-size: 18px;
-  color: var(--cream);
-  margin-right: 10px;
-}
+      .auth-image h2 {
+        font-size: 1.4rem;
+      }
 
-/* Error state styling */
-.auth-error {
-  border: 1px solid #ff6b6b !important;
-  background-color: rgba(255, 107, 107, 0.1) !important;
-}
+      .auth-image p {
+        font-size: 0.85rem;
+      }
 
-.error-message {
-  color: #ff6b6b;
-  font-size: 14px;
-  margin-top: 10px;
-  text-align: center;
-  display: none;
-}
-    
+      .auth-features li {
+        font-size: 0.8rem;
+      }
+
+      .auth-form-container {
+        padding: 20px 15px;
+      }
+
+      .auth-tabs {
+        margin-bottom: 20px;
+      }
+
+      .auth-tab {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      .form-title {
+        font-size: 1.3rem;
+      }
+
+      .form-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-control {
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      .submit-btn {
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+
+      footer {
+        padding: 20px 15px;
+      }
+
+      .copyright {
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .logo-container {
+        width: 130px;
+        height: 45px;
+      }
+
+      .logo-img-light, .logo-img-dark {
+        max-width: 90px;
+        max-height: 35px;
+      }
+
+      .header-icons {
+        gap: 10px;
+      }
+
+      .header-icons i {
+        font-size: 14px;
+      }
+
+      .auth-image h2 {
+        font-size: 1.3rem;
+      }
+
+      .auth-image p {
+        font-size: 0.8rem;
+      }
+
+      .auth-features li {
+        font-size: 0.75rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -728,37 +919,28 @@
             src="images/Logo Version Transparente-01.png"
             alt="OLYS HAIR Logo"
             class="logo-img-light"
-            style="
-              max-width: 50px;
-              max-height: auto;
-              display: block;
-              margin: 0 auto;
-              object-fit: contain;
-            "
           />
           <img
             src="images/Artboard 1 copy.png"
             alt="OLYS HAIR Logo Dark"
             class="logo-img-dark"
-            style="
-              max-width: 50px;
-              max-height: auto;
-              display: none;
-              margin: 0 auto;
-              object-fit: contain;
-              background: transparent;
-            "
           />
         </span>
       </div>
     </div>
-    <div class="nav-links">
+    
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+      <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="nav-links" id="navLinks">
       <a href="index.html">Home</a>
       <a href="shop.html">Shop</a>
       <a href="collection.html">Collections</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </div>
+    
     <div class="header-icons">
       <i class="fas fa-search"></i>
       <i class="fas fa-shopping-bag"></i>
@@ -805,28 +987,20 @@
           <h2 class="form-title">Welcome Back</h2>
           <p class="form-subtitle">Sign in to access your account</p>
 
-<!-- In your sign-in form, replace the social-auth section with: -->
-<div class="social-auth">
-  <div class="g_id_signin" 
-       data-type="standard"
-       data-theme="outline"
-       data-size="large"
-       data-width="100%"
-       style="width: 100%;">
-  </div>
-  
-  <!-- Fallback custom button (hidden by default) -->
-  <button type="button" class="custom-google-btn fallback-btn" style="display: none;">
-    <i class="fab fa-google"></i> Sign in with Google
-  </button>
-  
-  <!--<button type="button" class="social-btn">
-    <i class="fab fa-facebook-f"></i>
-  </button>
-  <button type="button" class="social-btn">
-    <i class="fab fa-apple"></i>
-  </button>-->
-</div>
+          <div class="social-auth">
+            <div class="g_id_signin" 
+                 data-type="standard"
+                 data-theme="outline"
+                 data-size="large"
+                 data-width="100%"
+                 style="width: 100%;">
+            </div>
+            
+            <!-- Fallback custom button (hidden by default) -->
+            <button type="button" class="custom-google-btn fallback-btn" style="display: none;">
+              <i class="fab fa-google"></i> Sign in with Google
+            </button>
+          </div>
 
           <div class="divider">
             <span>Or continue with email</span>
@@ -881,12 +1055,6 @@
           <div class="social-auth">
             <button type="button" class="custom-google-btn" id="custom-google-signup">
               <i class="fab fa-google"></i> Sign up with Google
-            </button>
-            <button type="button" class="social-btn">
-              <i class="fab fa-facebook-f"></i>
-            </button>
-            <button type="button" class="social-btn">
-              <i class="fab fa-apple"></i>
             </button>
           </div>
 
@@ -988,165 +1156,146 @@
 
   <!-- JavaScript -->
   <script>
+    // Mobile menu functionality
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+      document.getElementById('navLinks').classList.toggle('active');
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const navLinks = document.getElementById('navLinks');
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      
+      if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+        navLinks.classList.remove('active');
+      }
+    });
+
+    // Enhanced Google Sign-In initialization
     async function loadGoogleClientId() {
       try {
         const res = await fetch(
           "https://olyshairi-e-commerce-hairspo-online.onrender.com/api/config/google-client-id"
         );
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const data = await res.json();
+        console.log("Google Client ID loaded:", data.clientId);
 
-        // Dynamically set client_id attribute
-        document
-          .getElementById("g_id_onload")
-          .setAttribute("data-client_id", data.clientId);
-
-        // Now re-rendering Google button after clientId is injected
-        google.accounts.id.initialize({
-          client_id: data.clientId,
-          callback: handleGoogleLogin,
-        });
-        
-        // Custom Google button triggers
-        document.getElementById('custom-google-signin').addEventListener('click', () => {
-          google.accounts.id.prompt();
-        });
-        
-        document.getElementById('custom-google-signup').addEventListener('click', () => {
-          google.accounts.id.prompt();
-        });
+        // Initialize Google Identity Services
+        if (typeof google !== 'undefined') {
+          google.accounts.id.initialize({
+            client_id: data.clientId,
+            callback: handleGoogleLogin,
+            auto_select: false,
+            context: "signin"
+          });
+          
+          // Render the button
+          google.accounts.id.renderButton(
+            document.querySelector('.g_id_signin'),
+            {
+              type: "standard",
+              theme: "outline",
+              size: "large",
+              width: "100%",
+              text: "signin_with",
+              shape: "rectangular"
+            }
+          );
+          
+          console.log("Google Sign-In button rendered successfully");
+        } else {
+          console.error("Google Identity Services not loaded");
+        }
       } catch (err) {
         console.error("Failed to load Google Client ID:", err);
+        // Fallback: Use a custom button with direct prompt
+        setupFallbackGoogleAuth();
       }
     }
 
-    // Load the clientId dynamically
-    loadGoogleClientId();
-
-    // Handles Google Login
-// Updated Google Sign-In initialization
-async function loadGoogleClientId() {
-  try {
-    const res = await fetch(
-      "https://olyshairi-e-commerce-hairspo-online.onrender.com/api/config/google-client-id"
-    );
-    
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-    
-    const data = await res.json();
-    console.log("Google Client ID loaded:", data.clientId);
-
-    // Initialize Google Identity Services
-    if (typeof google !== 'undefined') {
-      google.accounts.id.initialize({
-        client_id: data.clientId,
-        callback: handleGoogleLogin,
-        auto_select: false,
-        context: "signin"
+    // Fallback authentication method
+    function setupFallbackGoogleAuth() {
+      const googleButtons = document.querySelectorAll('.custom-google-btn, .g_id_signin');
+      googleButtons.forEach(button => {
+        button.style.display = 'block';
+        button.addEventListener('click', () => {
+          alert("Google Sign-In is currently unavailable. Please try email sign-in or check your connection.");
+        });
       });
+    }
+
+    // Enhanced Google Login handler
+    async function handleGoogleLogin(response) {
+      console.log("Google login response received");
       
-      // Render the button
-      google.accounts.id.renderButton(
-        document.querySelector('.g_id_signin'),
-        {
-          type: "standard",
-          theme: "outline",
-          size: "large",
-          width: "100%",
-          text: "signin_with",
-          shape: "rectangular"
+      try {
+        const res = await fetch("https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/google", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ 
+            token: response.credential,
+            source: "web_signin"
+          }),
+        });
+
+        const data = await res.json();
+        console.log("Auth response:", data);
+
+        if (res.ok && data.token) {
+          // Save JWT token
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          
+          console.log("✅ Google login successful");
+          
+          // Show welcome message
+          alert(`Welcome ${data.user?.firstName || data.user?.name || "User"}!`);
+          
+          // Redirect to dashboard
+          setTimeout(() => {
+            window.location.href = "shop.html";
+          }, 500);
+        } else {
+          console.error("Login failed:", data.error);
+          alert(data.error || "Google login failed. Please try again.");
         }
-      );
-      
-      console.log("Google Sign-In button rendered successfully");
-    } else {
-      console.error("Google Identity Services not loaded");
+      } catch (err) {
+        console.error("Google OAuth error:", err);
+        alert("Connection error during Google login. Please check your internet connection.");
+      }
     }
-  } catch (err) {
-    console.error("Failed to load Google Client ID:", err);
-    // Fallback: Use a custom button with direct prompt
-    setupFallbackGoogleAuth();
-  }
-}
 
-// Fallback authentication method
-function setupFallbackGoogleAuth() {
-  const googleButtons = document.querySelectorAll('.custom-google-btn, .g_id_signin');
-  googleButtons.forEach(button => {
-    button.style.display = 'block';
-    button.addEventListener('click', () => {
-      alert("Google Sign-In is currently unavailable. Please try email sign-in or check your connection.");
-    });
-  });
-}
-
-// Enhanced Google Login handler
-async function handleGoogleLogin(response) {
-  console.log("Google login response received");
-  
-  try {
-    const res = await fetch("https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/google", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({ 
-        token: response.credential,
-        source: "web_signin"
-      }),
-    });
-
-    const data = await res.json();
-    console.log("Auth response:", data);
-
-    if (res.ok && data.token) {
-      // Save JWT token
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+    // Add this diagnostic function
+    function checkGoogleAuthStatus() {
+      console.log("🔍 Google Auth Status Check:");
+      console.log("- Google library loaded:", typeof google !== 'undefined');
+      console.log("- Client ID element:", document.getElementById('g_id_onload'));
+      console.log("- Network status:", navigator.onLine ? 'Online' : 'Offline');
+      console.log("- Current domain:", window.location.hostname);
       
-      console.log("✅ Google login successful");
+      // Check if we're on localhost (which might cause issues)
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.warn("⚠️ Running on localhost - Google OAuth may require proper domain configuration");
+      }
+    }
+
+    // Call this when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      checkGoogleAuthStatus();
       
-      // Show welcome message
-      alert(`Welcome ${data.user?.firstName || data.user?.name || "User"}!`);
-      
-      // Redirect to dashboard
+      // Load Google Client ID with delay to ensure library is loaded
       setTimeout(() => {
-        window.location.href = "shop.html";
-      }, 500);
-    } else {
-      console.error("Login failed:", data.error);
-      alert(data.error || "Google login failed. Please try again.");
-    }
-  } catch (err) {
-    console.error("Google OAuth error:", err);
-    alert("Connection error during Google login. Please check your internet connection.");
-  }
-}
-// Add this diagnostic function
-function checkGoogleAuthStatus() {
-  console.log("🔍 Google Auth Status Check:");
-  console.log("- Google library loaded:", typeof google !== 'undefined');
-  console.log("- Client ID element:", document.getElementById('g_id_onload'));
-  console.log("- Network status:", navigator.onLine ? 'Online' : 'Offline');
-  console.log("- Current domain:", window.location.hostname);
-  
-  // Check if we're on localhost (which might cause issues)
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    console.warn("⚠️ Running on localhost - Google OAuth may require proper domain configuration");
-  }
-}
-
-// Call this when page loads
-document.addEventListener('DOMContentLoaded', function() {
-  checkGoogleAuthStatus();
-  
-  // Load Google Client ID with delay to ensure library is loaded
-  setTimeout(() => {
-    loadGoogleClientId();
-  }, 1000);
-});
+        loadGoogleClientId();
+      }, 1000);
+    });
 
     // Dark/Light Mode Toggle
     const modeToggle = document.querySelector(".mode-toggle");

@@ -114,7 +114,61 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// 🔍 GET SINGLE ORDER DETAILS (ADMIN)
+router.get('/:id', adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    console.log('🔍 Admin fetching order:', id);
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invalid order ID format' 
+      });
+    }
+
+    const order = await Order.findById(id)
+      .populate('user', 'firstName lastName email phone address')
+      .populate('items.product', 'name images sku price category')
+      .select('-__v')
+      .lean();
+
+    if (!order) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Order not found' 
+      });
+    }
+
+    console.log('✅ Admin order details fetched:', order.orderNumber);
+    
+    return res.json({
+      success: true,
+      order: {
+        ...order,
+        customerInfo: order.user ? {
+          name: `${order.user.firstName} ${order.user.lastName}`,
+          email: order.user.email,
+          phone: order.user.phone,
+          address: order.user.address
+        } : {
+          name: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+          email: order.shippingAddress.email,
+          phone: order.shippingAddress.phone
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Admin get order error:', error);
+    return res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch order details',
+      details: error.message 
+    });
+  }
+});
 // Get admin profile
 router.get('/profile', adminAuth, async (req, res) => {
   try {
