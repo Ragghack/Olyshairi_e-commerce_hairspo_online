@@ -134,6 +134,33 @@ router.post('/', auth, async (req, res) => {
         error: `Missing required fields: ${missingFields.join(', ')}` 
       });
     }
+    // Add to your orders.js routes
+router.get('/debug/all', async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .populate('user', 'firstName lastName email')
+      .sort({ createdAt: -1 })
+      .limit(50);
+    
+    console.log('Total orders in DB:', orders.length);
+    
+    return res.json({
+      success: true,
+      count: orders.length,
+      orders: orders.map(o => ({
+        id: o._id,
+        orderNumber: o.orderNumber,
+        status: o.status,
+        customer: o.user ? o.user.email : 'Guest',
+        total: o.totalAmount,
+        createdAt: o.createdAt
+      }))
+    });
+  } catch (error) {
+    console.error('Debug error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
 
     // Validate items and check stock
     for (const item of orderData.items) {

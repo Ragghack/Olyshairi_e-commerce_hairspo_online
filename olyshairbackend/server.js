@@ -12,7 +12,7 @@ require('dotenv').config({ path: './olyshair.env' });
 
 
 const app = express();
-
+const adminOrdersRoutes = require('./routes/adminOrders');
 // ================================
 // 🧩 ENHANCED MIDDLEWARE
 // ================================
@@ -76,7 +76,7 @@ if (!fs.existsSync(uploadsDir)) {
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
-
+app.use('/api/admin/orders', adminOrdersRoutes);
 // ================================
 // 💾 ENHANCED MONGODB CONNECTION
 // ================================
