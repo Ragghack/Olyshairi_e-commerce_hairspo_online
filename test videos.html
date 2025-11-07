@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Video Auto-Play Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #392625 0%, #5a3e3c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #392625;
+        }
+
+        .instructions h3 {
+            color: #392625;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #000;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-info h3 {
+            color: #392625;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .video-info p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status.playing {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.paused {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-play {
+            background: #392625;
+            color: white;
+        }
+
+        .btn-pause {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-restart {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .file-upload {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+            border: 2px dashed #392625;
+        }
+
+        .file-upload input {
+            margin: 15px 0;
+        }
+
+        .upload-btn {
+            background: #392625;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #5a3e3c;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            color: #666;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Local Video Auto-Play Test</h1>
+            <p>Test local videos with auto-play and loop functionality</p>
+        </div>
+
+        <div class="content">
+            <div class="instructions">
+                <h3>How to Use This Test Page:</h3>
+                <ol>
+                    <li><strong>Pre-loaded Videos:</strong> The page includes 3 sample video players that will auto-play and loop</li>
+                    <li><strong>Upload Your Own:</strong> Use the file upload section to test with your local videos</li>
+                    <li><strong>Requirements:</strong> Videos must be in MP4, WebM, or OGG format</li>
+                    <li><strong>Auto-play:</strong> Videos will automatically start playing (may require user interaction first)</li>
+                    <li><strong>Loop:</strong> All videos will automatically replay when they end</li>
+                </ol>
+            </div>
+
+            <div class="video-grid">
+                <!-- Video 1 -->
+                <div class="video-card">
+                    <div class="video-container">
+                        <video id="video1" autoplay muted loop playsinline>
+                            <source src="images/video1.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div class="video-info">
+                        <h3>Sample Video 1</h3>
+                        <p>This video will auto-play and loop continuously. Upload your own video to replace this.</p>
+                        <div class="status" id="status1">Ready for video</div>
+                        <div class="controls">
+                            <button class="btn btn-play" onclick="playVideo('video1')">Play</button>
+                            <button class="btn btn-pause" onclick="pauseVideo('video1')">Pause</button>
+                            <button class="btn btn-restart" onclick="restartVideo('video1')">Restart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video 2 -->
+                <div class="video-card">
+                    <div class="video-container">
+                        <video id="video2" autoplay muted loop playsinline>
+                            <source src="images/video1.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div class="video-info">
+                        <h3>Sample Video 2</h3>
+                        <p>Another video player ready for your content. Auto-plays and loops automatically.</p>
+                        <div class="status" id="status2">Ready for video</div>
+                        <div class="controls">
+                            <button class="btn btn-play" onclick="playVideo('video2')">Play</button>
+                            <button class="btn btn-pause" onclick="pauseVideo('video2')">Pause</button>
+                            <button class="btn btn-restart" onclick="restartVideo('video2')">Restart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video 3 -->
+                <div class="video-card">
+                    <div class="video-container">
+                        <video id="video3" autoplay muted loop playsinline>
+                            <source src="" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div class="video-info">
+                        <h3>Sample Video 3</h3>
+                        <p>Third video slot with the same auto-play and loop functionality.</p>
+                        <div class="status" id="status3">Ready for video</div>
+                        <div class="controls">
+                            <button class="btn btn-play" onclick="playVideo('video3')">Play</button>
+                            <button class="btn btn-pause" onclick="pauseVideo('video3')">Pause</button>
+                            <button class="btn btn-restart" onclick="restartVideo('video3')">Restart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="file-upload">
+                <h3>Upload Your Local Video</h3>
+                <p>Select a video file from your computer to test auto-play and loop functionality</p>
+                <input type="file" id="videoUpload" accept="video/*" multiple>
+                <br>
+                <button class="upload-btn" onclick="handleVideoUpload()">Upload Videos</button>
+                <p><small>Supported formats: MP4, WebM, OGG</small></p>
+            </div>
+
+            <div class="code-block">
+                // Video attributes explanation:<br>
+                // autoplay - Video starts automatically<br>
+                // muted - Required for autoplay in most browsers<br>
+                // loop - Video restarts when it ends<br>
+                // playsinline - Prevents fullscreen on mobile devices<br>
+                <br>
+                &lt;video autoplay muted loop playsinline&gt;<br>
+                &nbsp;&nbsp;&lt;source src="your-video.mp4" type="video/mp4"&gt;<br>
+                &lt;/video&gt;
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Local Video Auto-Play Test Page | Refresh the page to reset all videos</p>
+        </div>
+    </div>
+
+    <script>
+        // Video management functions
+        function playVideo(videoId) {
+            const video = document.getElementById(videoId);
+            const status = document.getElementById('status' + videoId.slice(-1));
+            
+            if (video.src) {
+                video.play().then(() => {
+                    status.textContent = 'Playing';
+                    status.className = 'status playing';
+                }).catch(error => {
+                    status.textContent = 'Play failed: ' + error.message;
+                    status.className = 'status error';
+                });
+            } else {
+                status.textContent = 'No video loaded';
+                status.className = 'status error';
+            }
+        }
+
+        function pauseVideo(videoId) {
+            const video = document.getElementById(videoId);
+            const status = document.getElementById('status' + videoId.slice(-1));
+            
+            video.pause();
+            status.textContent = 'Paused';
+            status.className = 'status paused';
+        }
+
+        function restartVideo(videoId) {
+            const video = document.getElementById(videoId);
+            const status = document.getElementById('status' + videoId.slice(-1));
+            
+            if (video.src) {
+                video.currentTime = 0;
+                video.play().then(() => {
+                    status.textContent = 'Playing';
+                    status.className = 'status playing';
+                }).catch(error => {
+                    status.textContent = 'Restart failed: ' + error.message;
+                    status.className = 'status error';
+                });
+            } else {
+                status.textContent = 'No video loaded';
+                status.className = 'status error';
+            }
+        }
+
+        // Handle video upload
+        function handleVideoUpload() {
+            const fileInput = document.getElementById('videoUpload');
+            const files = fileInput.files;
+            
+            if (files.length === 0) {
+                alert('Please select at least one video file');
+                return;
+            }
+
+            // Assign videos to available slots
+            for (let i = 0; i < Math.min(files.length, 3); i++) {
+                const file = files[i];
+                const videoId = 'video' + (i + 1);
+                const statusId = 'status' + (i + 1);
+                
+                const video = document.getElementById(videoId);
+                const status = document.getElementById(statusId);
+                
+                // Create object URL for the video file
+                const videoURL = URL.createObjectURL(file);
+                
+                // Clear existing sources and add new one
+                video.innerHTML = '';
+                const source = document.createElement('source');
+                source.src = videoURL;
+                source.type = file.type;
+                video.appendChild(source);
+                video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+                
+                // Update status and try to play
+                status.textContent = 'Video loaded - attempting to play...';
+                status.className = 'status playing';
+                
+                // Try to play the video
+                video.play().then(() => {
+                    status.textContent = 'Playing automatically';
+                    status.className = 'status playing';
+                }).catch(error => {
+                    status.textContent = 'Loaded - click Play to start';
+                    status.className = 'status paused';
+                    console.log('Auto-play prevented:', error);
+                });
+                
+                // Add event listeners for video events
+                video.addEventListener('ended', function() {
+                    console.log('Video ' + (i + 1) + ' ended, looping...');
+                });
+                
+                video.addEventListener('play', function() {
+                    status.textContent = 'Playing';
+                    status.className = 'status playing';
+                });
+                
+                video.addEventListener('pause', function() {
+                    status.textContent = 'Paused';
+                    status.className = 'status paused';
+                });
+            }
+            
+            // Reset file input
+            fileInput.value = '';
+        }
+
+        // Initialize video status indicators
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up event listeners for all videos
+            for (let i = 1; i <= 3; i++) {
+                const video = document.getElementById('video' + i);
+                const status = document.getElementById('status' + i);
+                
+                video.addEventListener('loadstart', function() {
+                    status.textContent = 'Loading video...';
+                });
+                
+                video.addEventListener('canplay', function() {
+                    if (video.paused) {
+                        status.textContent = 'Ready to play';
+                    }
+                });
+                
+                video.addEventListener('error', function() {
+                    status.textContent = 'Error loading video';
+                    status.className = 'status error';
+                });
+            }
+            
+            // Add some demo text to show the page is ready
+            console.log('Video test page loaded successfully');
+            console.log('Upload video files to test auto-play and loop functionality');
+        });
+    </script>
+</body>
+</html>

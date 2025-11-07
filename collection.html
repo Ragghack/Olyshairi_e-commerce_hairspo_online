@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <head>
     <!-- 🖼️ Favicon (shows in browser tab) -->
-<!-- 🖼️ Favicon (shows in browser tab) -->
-<link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
-<!-- Optional for Apple/Android homescreens -->
-<link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
+    <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
+    <!-- Optional for Apple/Android homescreens -->
+    <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
 
-<!-- 🔍 Google Structured Data (shows logo in search results) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "url": "https://www.olyshair.com",
-  "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
-}
-</script>
+    <!-- 🔍 Google Structured Data (shows logo in search results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://www.olyshair.com",
+      "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
+    }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OLYS HAIR - Collections</title>
@@ -80,18 +78,19 @@
             transition: all 0.3s ease;
             box-shadow: var(--shadow);
         }
-                .logo-placeholder {
-  max-width: 31mm;
-  height: auto;
-}
+        
+        .logo-placeholder {
+            max-width: 31mm;
+            height: auto;
+        }
 
-body.dark-mode .logo-container {
-  content: url("images/Artboard 1 copy.png");
-   max-width: 31mm;
-  max-height: 100mm;
-              display: flex;
-            justify-content: center
-}
+        body.dark-mode .logo-container {
+            content: url("images/Artboard 1 copy.png");
+            max-width: 31mm;
+            max-height: 100mm;
+            display: flex;
+            justify-content: center;
+        }
         
         .logo-container {
             display: flex;
@@ -311,37 +310,54 @@ body.dark-mode .logo-container {
             background-color: var(--dark-gray);
         }
         
-        /* Video Showcase Section */
+        /* Video Carousel Styles - ENLARGED */
         .video-showcase {
-            margin-bottom: 60px;
+            margin-bottom: 80px;
         }
         
         .video-showcase h2 {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
         }
         
-        .video-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-            gap: 30px;
+        .video-carousel {
+            position: relative;
+            overflow: hidden;
+            padding: 20px 0;
+        }
+        
+        .video-carousel-container {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 40px;
         }
         
         .video-item {
+            flex: 0 0 calc(50% - 20px); /* Show 2 videos at a time with larger gap */
+            min-width: 0;
             background-color: var(--card-bg);
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
             box-shadow: var(--shadow);
+            transition: all 0.3s ease;
         }
         
+        .video-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* ENLARGED Video Player */
         .video-player {
             width: 100%;
-            height: 300px;
+            height: 500px; /* Increased from 300px to 500px */
             background-color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
+            border-radius: 15px 15px 0 0;
         }
         
         .video-player video {
@@ -350,176 +366,162 @@ body.dark-mode .logo-container {
             object-fit: cover;
         }
         
-        .play-btn {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
+        .video-info {
+            padding: 25px;
+        }
+        
+        .video-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .video-info p {
+            color: var(--text-dark);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        .carousel-controls {
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .carousel-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--cream);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .carousel-btn:hover {
+            background-color: var(--dark-gray);
+            transform: scale(1.1);
+        }
+        
+        .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--light-bg);
             cursor: pointer;
             transition: all 0.3s ease;
         }
         
-        .play-btn i {
-            color: var(--cream);
-            font-size: 20px;
-        }
-        
-        .play-btn:hover {
-            transform: scale(1.1);
-            background-color: var(--white);
-        }
-        
-        .video-info {
-            padding: 20px;
-        }
-        
-        .video-info h3 {
-            margin-bottom: 10px;
-        }
-        
-        /* About Page Styles */
-        .about-section {
-            margin-bottom: 60px;
-        }
-        
-        .about-content {
-            display: flex;
-            gap: 40px;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        
-        .about-text {
-            flex: 1;
-        }
-        
-        .about-image {
-            flex: 1;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-        
-        .about-image img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        .values-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .value-card {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-        
-        .value-card i {
-            font-size: 40px;
-            color: var(--cream);
-            margin-bottom: 20px;
-        }
-        
-        .value-card h3 {
-            margin-bottom: 15px;
-        }
-        
-        /* Contact Page Styles */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 40px;
-        }
-        
-        .contact-info {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .contact-info h2 {
-            margin-bottom: 20px;
-        }
-        
-        .contact-details {
-            margin-bottom: 30px;
-        }
-        
-        .contact-item {
-            display: flex;
-            margin-bottom: 15px;
-        }
-        
-        .contact-item i {
-            color: var(--cream);
-            font-size: 20px;
-            margin-right: 15px;
-            width: 24px;
-        }
-        
-        .contact-form {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--cream);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--light-bg);
-            border-radius: 8px;
-            background-color: var(--card-bg);
-            color: var(--text-dark);
-            font-family: 'Montserrat', sans-serif;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--cream);
-        }
-        
-        textarea.form-control {
-            min-height: 150px;
-            resize: vertical;
-        }
-        
-        .submit-btn {
-            padding: 12px 25px;
+        .dot.active {
             background-color: var(--cream);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
+            transform: scale(1.3);
         }
         
-        .submit-btn:hover {
-            background-color: var(--dark-gray);
+        /* Local Video Styles */
+        .local-video {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 500px;
+            border-radius: 15px 15px 0 0;
+            background: #000;
+        }
+        
+        /* TikTok Video Placeholder Styles */
+        .tiktok-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .tiktok-placeholder i {
+            font-size: 70px; /* Increased size */
+            margin-bottom: 25px;
+            color: #ff0050;
+        }
+        
+        .tiktok-placeholder h4 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .tiktok-placeholder p {
+            margin-top: 10px;
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        /* Enhanced Video Player */
+        .enhanced-video-player {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .video-player:hover .video-overlay {
+            opacity: 1;
+        }
+        
+        .play-indicator {
+            width: 80px; /* Increased size */
+            height: 80px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--cream);
+            font-size: 28px; /* Increased size */
+            transition: transform 0.3s ease;
+        }
+        
+        .video-player:hover .play-indicator {
+            transform: scale(1.1);
         }
         
         /* Footer */
@@ -597,13 +599,23 @@ body.dark-mode .logo-container {
         }
         
         /* Responsive Design */
+        @media (max-width: 1200px) {
+            .video-item {
+                flex: 0 0 calc(50% - 20px);
+            }
+        }
+        
         @media (max-width: 968px) {
-            .about-content {
-                flex-direction: column;
+            .video-item {
+                flex: 0 0 100%; /* Show 1 video on tablets */
             }
             
-            .video-container {
-                grid-template-columns: 1fr;
+            .video-player {
+                height: 450px; /* Slightly smaller on tablets */
+            }
+            
+            .local-video {
+                min-height: 450px;
             }
         }
         
@@ -629,8 +641,59 @@ body.dark-mode .logo-container {
                 grid-template-columns: 1fr;
             }
             
-            .contact-grid {
-                grid-template-columns: 1fr;
+            .video-item {
+                flex: 0 0 100%; /* Show 1 video on mobile */
+            }
+            
+            .video-player {
+                height: 400px; /* Smaller on mobile but still large */
+            }
+            
+            .local-video {
+                min-height: 400px;
+            }
+            
+            .carousel-controls {
+                gap: 15px;
+            }
+            
+            .carousel-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+            
+            .video-showcase h2 {
+                font-size: 2rem;
+                margin-bottom: 30px;
+            }
+            
+            .tiktok-placeholder i {
+                font-size: 50px;
+            }
+            
+            .play-indicator {
+                width: 60px;
+                height: 60px;
+                font-size: 22px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .video-player {
+                height: 350px;
+            }
+            
+            .local-video {
+                min-height: 350px;
+            }
+            
+            .video-info {
+                padding: 20px;
+            }
+            
+            .video-info h3 {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -646,13 +709,10 @@ body.dark-mode .logo-container {
         </div>
         <div class="nav-links">
             <a href="index.html">Home</a>
-           <!-- <a href="collections.html" class="active">Collections</a>-->
             <a href="about.html">About</a>
             <a href="contact.html">Contact</a>
         </div>
         <div class="header-icons">
-            <i class="fas fa-search"></i>
-            <i class="fas fa-shopping-bag"></i>
             <i class="fas fa-user"></i>
             <div class="mode-toggle">
                 <i class="fas fa-sun"></i>
@@ -763,45 +823,112 @@ body.dark-mode .logo-container {
                         <span class="collection-type">Conditioners</span>
                         <span class="collection-type">Treatments</span>
                     </div>
-                    <a href="#" class="view-collection">View Collection</a>
+                    <a href="shop.html" class="view-collection">View Collection</a>
                 </div>
             </div>
         </div>
 
-        <!-- Video Showcase Section -->
+        <!-- Video Carousel Section - ENLARGED with Local Videos -->
         <div class="video-showcase">
             <h2>Product Showcase</h2>
-            <div class="video-container">
-                <div class="video-item">
-                    <div class="video-player">
-                        <video poster="https://images.unsplash.com/photo-1596944943927-92b4a6d613ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80">
-                            <source src="#" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        <div class="play-btn">
-                            <i class="fas fa-play"></i>
+            
+            <div class="video-carousel">
+                <div class="video-carousel-container" id="videoCarousel">
+                    <!-- Video 1 - Local Video -->
+                    <div class="video-item">
+                        <div class="video-player">
+                            <div class="enhanced-video-player">
+                                <video class="local-video" autoplay muted loop playsinline>
+                                    <source src="images/video1.mp4" type="video/mp4">
+                                    <source src="images/brazilian-styling.webm" type="video/webm">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <div class="video-overlay">
+                                    <div class="play-indicator">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Brazilian Body Wave Styling</h3>
+                            <p>Watch how our Brazilian Body Wave can be transformed into various stunning styles. See the versatility and quality of our premium hair extensions in action.</p>
                         </div>
                     </div>
-                    <div class="video-info">
-                        <h3>Brazilian Body Wave Styling</h3>
-                        <p>Watch how our Brazilian Body Wave can be transformed into various stunning styles.</p>
+
+                    <!-- Video 2 - Local Video -->
+                    <div class="video-item">
+                        <div class="video-player">
+                            <div class="enhanced-video-player">
+                                <video class="local-video" autoplay muted loop playsinline>
+                                    <source src="images/video4.mp4" type="video/mp4">
+                                    <source src="images/peruvian-care.webm" type="video/webm">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <div class="video-overlay">
+                                    <div class="play-indicator">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Peruvian Hair Care Routine</h3>
+                            <p>Learn the best practices for maintaining your Peruvian hair extensions. Discover proper washing, conditioning, and styling techniques for long-lasting beauty.</p>
+                        </div>
+                    </div>
+
+                    <!-- Video 3 - TikTok Placeholder -->
+                    <div class="video-item">
+                        <div class="video-player">
+                            <div class="tiktok-placeholder">
+                                <i class="fab fa-tiktok"></i>
+                                <h4>Malaysian Collection</h4>
+                                <p>Add your TikTok video ID to showcase our Malaysian hair collection</p>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Malaysian Collection Showcase</h3>
+                            <p>See the incredible shine and silky texture of our Malaysian hair collection. Perfect for creating sleek, sophisticated styles that turn heads.</p>
+                        </div>
+                    </div>
+
+                    <!-- Video 4 - Local Video -->
+                    <div class="video-item">
+                        <div class="video-player">
+                            <div class="enhanced-video-player">
+                                <video class="local-video" autoplay muted loop playsinline>
+                                    <source src="images/video3.mp4" type="video/mp4">
+                                    <source src="images/virgin-hair-quality.webm" type="video/webm">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <div class="video-overlay">
+                                    <div class="play-indicator">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Virgin Hair Quality</h3>
+                            <p>Discover why our 100% unprocessed virgin hair stands out from the rest. Experience the natural beauty and durability of untouched hair.</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="video-item">
-                    <div class="video-player">
-                        <video poster="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80">
-                            <source src="#" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        <div class="play-btn">
-                            <i class="fas fa-play"></i>
-                        </div>
+                <!-- Carousel Controls -->
+                <div class="carousel-controls">
+                    <button class="carousel-btn prev-btn" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <div class="carousel-dots" id="carouselDots">
+                        <!-- Dots will be generated by JavaScript -->
                     </div>
-                    <div class="video-info">
-                        <h3>Peruvian Hair Care Routine</h3>
-                        <p>Learn the best practices for maintaining your Peruvian hair extensions.</p>
-                    </div>
+                    
+                    <button class="carousel-btn next-btn" id="nextBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -814,11 +941,10 @@ body.dark-mode .logo-container {
                 <h3>OLYS HAIR</h3>
                 <p>Premium quality hair products for the modern woman who values luxury and style.</p>
                 <div class="social-icons">
-                    <!-- <a href="#"><i class="fab fa-facebook-f"></i></a> -->
                     <a href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="><i class="fab fa-instagram"></i></a>
-                    <!--<a href="https://twitter.com/olys_hair"><i class="fab fa-twitter"></i></a>-->
                     <a href="https://wa.me/c/33674322387"><i class="fab fa-whatsapp"></i></a>
                     <a href="https://www.tiktok.com/@olys.har?_t=ZN-90BZpnkAMru&_r=1"><i class="fab fa-tiktok"></i></a>
+                </div>
             </div>
             
             <div class="footer-column">
@@ -859,6 +985,14 @@ body.dark-mode .logo-container {
     </footer>
 
     <script>
+        // Add TikTok embed script
+        (function() {
+            var tiktokScript = document.createElement('script');
+            tiktokScript.src = "https://www.tiktok.com/embed.js";
+            tiktokScript.id = "tiktok-script";
+            document.head.appendChild(tiktokScript);
+        })();
+
         // Dark/Light Mode Toggle
         const modeToggle = document.querySelector('.mode-toggle');
         const body = document.body;
@@ -880,39 +1014,127 @@ body.dark-mode .logo-container {
             body.classList.add('dark-mode');
         }
         
-        // Video Play Functionality
-        const playButtons = document.querySelectorAll('.play-btn');
-        
-        playButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const video = this.parentElement.querySelector('video');
-                if (video.paused) {
-                    video.play();
-                    this.style.display = 'none';
-                } else {
-                    video.pause();
-                    this.style.display = 'flex';
+        // Enhanced Video Carousel Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.getElementById('videoCarousel');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const dotsContainer = document.getElementById('carouselDots');
+            
+            const videos = carousel.querySelectorAll('.video-item');
+            const totalVideos = videos.length;
+            const videosPerView = 2;
+            const totalSlides = Math.ceil(totalVideos / videosPerView);
+            let currentSlide = 0;
+            
+            // Create dots
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            }
+            
+            function updateCarousel() {
+                const translateX = -currentSlide * 100;
+                carousel.style.transform = `translateX(${translateX}%)`;
+                
+                // Update dots
+                document.querySelectorAll('.dot').forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentSlide);
+                });
+                
+                // Update button states
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+                
+                // Handle local video optimization
+                optimizeLocalVideos();
+            }
+            
+            function optimizeLocalVideos() {
+                // Ensure local videos are properly sized and playing
+                document.querySelectorAll('.local-video').forEach(video => {
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.objectFit = 'cover';
+                    
+                    // Try to play the video (autoplay might be blocked)
+                    if (video.paused && video.readyState >= 3) {
+                        video.play().catch(error => {
+                            console.log('Auto-play prevented for local video:', error);
+                        });
+                    }
+                });
+            }
+            
+            function goToSlide(slideIndex) {
+                currentSlide = slideIndex;
+                updateCarousel();
+            }
+            
+            function nextSlide() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateCarousel();
                 }
-            });
-        });
-        
-        // Show play button when video is paused
-        const videos = document.querySelectorAll('video');
-        
-        videos.forEach(video => {
-            video.addEventListener('pause', function() {
-                this.parentElement.querySelector('.play-btn').style.display = 'flex';
+            }
+            
+            function prevSlide() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateCarousel();
+                }
+            }
+            
+            // Event listeners
+            prevBtn.addEventListener('click', prevSlide);
+            nextBtn.addEventListener('click', nextSlide);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') prevSlide();
+                if (e.key === 'ArrowRight') nextSlide();
             });
             
-            video.addEventListener('click', function() {
-                if (this.paused) {
-                    this.play();
-                    this.parentElement.querySelector('.play-btn').style.display = 'none';
-                } else {
-                    this.pause();
-                    this.parentElement.querySelector('.play-btn').style.display = 'flex';
-                }
+            // Enhanced video interaction
+            document.querySelectorAll('.video-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function() {
+                    const videoPlayer = this.closest('.video-player');
+                    const video = videoPlayer.querySelector('video');
+                    if (video) {
+                        if (video.paused) {
+                            video.play();
+                        } else {
+                            video.pause();
+                        }
+                        this.style.opacity = '0';
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 300);
+                    }
+                });
             });
+            
+            // Initialize
+            updateCarousel();
+            
+            // Re-optimize local videos after they load
+            setTimeout(optimizeLocalVideos, 1000);
+            setTimeout(optimizeLocalVideos, 3000);
+            
+            // Auto-advance carousel (optional - uncomment to enable)
+            // let autoSlide = setInterval(nextSlide, 6000);
+            
+            // Pause auto-slide on hover
+            // document.querySelector('.video-carousel').addEventListener('mouseenter', () => {
+            //     clearInterval(autoSlide);
+            // });
+            
+            // document.querySelector('.video-carousel').addEventListener('mouseleave', () => {
+            //     autoSlide = setInterval(nextSlide, 6000);
+            // });
         });
         
         // Header scroll effect
