@@ -1175,7 +1175,7 @@
     async function loadGoogleClientId() {
       try {
         const res = await fetch(
-          "https://olyshairi-e-commerce-hairspo-online.onrender.com/api/config/google-client-id"
+          "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api/config/google-client-id"
         );
         
         if (!res.ok) {
@@ -1234,7 +1234,7 @@
       console.log("Google login response received");
       
       try {
-        const res = await fetch("https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/google", {
+        const res = await fetch("https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api/auth/google", {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
@@ -1422,10 +1422,10 @@
 
         try {
           console.log(
-            "📡 Sending request to: https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/login"
+            "📡 Sending request to: https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api/auth/login"
           );
 
-          const res = await fetch("https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/login", {
+          const res = await fetch("https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
@@ -1513,7 +1513,7 @@
         const lastName = nameParts.slice(1).join(" ");
 
         try {
-          const res = await fetch("https://olyshairi-e-commerce-hairspo-online.onrender.com/api/auth/register", {
+          const res = await fetch("https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
