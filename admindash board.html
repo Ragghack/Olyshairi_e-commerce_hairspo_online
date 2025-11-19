@@ -1415,8 +1415,12 @@
 
     <script>
       // ==================== ENHANCED ADMIN DASHBOARD ====================
-      const API_BASE_URL = "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
-      //const API_BASE_URL = 'http://localhost:5001/api';
+     // Dynamic API URL configuration
+      const API_BASE_URL = window.location.hostname.includes('localhost') 
+          ? "http://localhost:5001/api" 
+          : "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
+
+      console.log("🌐 Using API Base URL:", API_BASE_URL);
       const ENDPOINTS = {
         ADMIN_LOGIN: `${API_BASE_URL}/admin/auth/login`,
         ADMIN_REGISTER: `${API_BASE_URL}/admin/auth/register`,
