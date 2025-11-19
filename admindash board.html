@@ -3,20 +3,19 @@
   <head>
     <head>
     <!-- 🖼️ Favicon (shows in browser tab) -->
-<!-- 🖼️ Favicon (shows in browser tab) -->
-<link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
-<!-- Optional for Apple/Android homescreens -->
-<link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
+    <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
+    <!-- Optional for Apple/Android homescreens -->
+    <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
 
-<!-- 🔍 Google Structured Data (shows logo in search results) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "url": "https://www.olyshair.com",
-  "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
-}
-</script>
+    <!-- 🔍 Google Structured Data (shows logo in search results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://www.olyshair.com",
+      "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
+    }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OLYS HAIR - Admin Dashboard</title>
@@ -28,7 +27,6 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       * {
         margin: 0;
@@ -371,15 +369,6 @@
         font-weight: bold;
       }
 
-      /* Chart Containers */
-      .chart-container {
-        background-color: var(--card-bg);
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 30px;
-        box-shadow: var(--shadow);
-      }
-
       /* Tables */
       .data-table {
         width: 100%;
@@ -645,10 +634,10 @@
         background: var(--card-bg);
         padding: 30px;
         border-radius: 10px;
-        max-width: 600px;
-        max-height: 80vh;
+        max-width: 800px;
+        max-height: 90vh;
         overflow-y: auto;
-        width: 90%;
+        width: 95%;
       }
 
       .detail-section {
@@ -660,6 +649,46 @@
       .detail-section h4 {
         margin-bottom: 10px;
         color: var(--cream);
+      }
+
+      /* Product Images Preview */
+      .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .image-preview {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--light-bg);
+      }
+
+      .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-preview .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: var(--danger);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       /* Responsive Design */
@@ -735,6 +764,11 @@
         .bubble-btn span {
           right: 65px;
           bottom: 0;
+        }
+
+        .modal-content {
+          max-width: 95%;
+          padding: 20px;
         }
       }
 
@@ -976,18 +1010,6 @@
               <div class="kpi-card">
                 <h3>Booking Revenue</h3>
                 <div class="value" id="bookingRevenue">€0</div>
-              </div>
-            </div>
-
-            <!-- Charts -->
-            <div class="card-grid">
-              <div class="chart-container">
-                <h3>Sales Trend (Last 30 Days)</h3>
-                <canvas id="salesChart" height="250"></canvas>
-              </div>
-              <div class="chart-container">
-                <h3>Booking Status Distribution</h3>
-                <canvas id="bookingsChart" height="250"></canvas>
               </div>
             </div>
 
@@ -1335,6 +1357,13 @@
           <div class="content-section" id="users">
             <div class="section-header">
               <h2>User Management</h2>
+              <input
+                type="text"
+                id="userSearch"
+                class="form-control"
+                placeholder="Search users..."
+                style="width: 300px"
+              />
             </div>
             <div class="dashboard-card">
               <table class="data-table">
@@ -1346,6 +1375,7 @@
                     <th>Orders</th>
                     <th>Bookings</th>
                     <th>Last Active</th>
+                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -1372,22 +1402,28 @@
                   <option value="365">Last Year</option>
                 </select>
               </div>
+              <button class="action-btn" onclick="generateReport()" style="margin-top: 15px;">
+                Generate Report
+              </button>
             </div>
 
-            <div class="card-grid">
-              <div class="chart-container">
-                <h3>Sales by Month</h3>
-                <canvas id="salesByMonthChart" height="250"></canvas>
-              </div>
-              <div class="chart-container">
-                <h3>Bookings vs Orders</h3>
-                <canvas id="bookingsVsOrdersChart" height="250"></canvas>
+            <div class="dashboard-card">
+              <h3>Report Summary</h3>
+              <div id="reportSummary" style="margin-top: 15px;">
+                <p>Select a date range and generate report to view sales data.</p>
               </div>
             </div>
 
-            <div class="chart-container">
-              <h3>Revenue Breakdown</h3>
-              <canvas id="revenueBreakdownChart" height="250"></canvas>
+            <div class="dashboard-card">
+              <h3>Data Export</h3>
+              <div style="margin-top: 15px;">
+                <button class="action-btn" onclick="exportReport('csv')">
+                  <i class="fas fa-file-csv"></i> Export as CSV
+                </button>
+                <button class="action-btn" onclick="exportReport('pdf')" style="margin-left: 10px;">
+                  <i class="fas fa-file-pdf"></i> Export as PDF
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1452,7 +1488,6 @@
         productsPerPage: 10,
         ordersPerPage: 10,
         bookingsPerPage: 10,
-        chartInstances: {},
         dataCache: new Map(),
         apiRetryCount: new Map(),
         MAX_RETRIES: 3,
@@ -1619,60 +1654,6 @@
         },
       };
 
-      // ==================== ENHANCED CHART MANAGEMENT ====================
-      const ChartManager = {
-        instances: {},
-
-        create(chartId, config) {
-          this.destroy(chartId);
-
-          const canvas = document.getElementById(chartId);
-          if (!canvas) {
-            console.warn(`Canvas element not found: ${chartId}`);
-            return null;
-          }
-
-          const ctx = canvas.getContext("2d");
-          this.instances[chartId] = new Chart(ctx, {
-            ...config,
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { position: "top" },
-              },
-              ...config.options,
-            },
-          });
-
-          return this.instances[chartId];
-        },
-
-        destroy(chartId) {
-          if (this.instances[chartId]) {
-            try {
-              this.instances[chartId].destroy();
-              delete this.instances[chartId];
-            } catch (error) {
-              console.warn(`Error destroying chart ${chartId}:`, error);
-            }
-          }
-        },
-
-        destroyAll() {
-          Object.keys(this.instances).forEach((chartId) => {
-            this.destroy(chartId);
-          });
-        },
-
-        updateData(chartId, newData) {
-          if (this.instances[chartId]) {
-            this.instances[chartId].data = newData;
-            this.instances[chartId].update();
-          }
-        },
-      };
-
       // ==================== ENHANCED ERROR HANDLER ====================
       const ErrorHandler = {
         handleApiError(error, context = "") {
@@ -1787,7 +1768,6 @@
         document.getElementById("loginContainer").style.display = "flex";
         document.getElementById("registerContainer").style.display = "none";
         document.getElementById("dashboard").style.display = "none";
-        ChartManager.destroyAll();
       }
 
       function showRegister() {
@@ -1821,14 +1801,6 @@
 
       // ==================== ENHANCED SECTION MANAGEMENT ====================
       function switchSection(sectionId) {
-        // Clean up charts if leaving reports section
-        const currentSection = document.querySelector(
-          ".content-section.active"
-        );
-        if (currentSection && currentSection.id === "reports") {
-          ChartManager.destroyAll();
-        }
-
         // Hide all sections with animation
         document.querySelectorAll(".content-section").forEach((section) => {
           section.classList.remove("active");
@@ -1889,10 +1861,10 @@
             updateDashboardStats(statsResult.value.data);
           } else {
             updateDashboardStats({
-              totalSalesToday: 1250,
-              newOrdersCount: 8,
-              pendingBookings: 3,
-              bookingRevenue: 150,
+              totalSalesToday: 0,
+              newOrdersCount: 0,
+              pendingBookings: 0,
+              bookingRevenue: 0,
             });
           }
 
@@ -1900,11 +1872,9 @@
           if (bookingsResult.status === "fulfilled" && bookingsResult.value.ok) {
             updateRecentBookings(bookingsResult.value.data.bookings?.slice(0, 5) || []);
           } else {
-            updateRecentBookings(getMockBookings(5));
+            updateRecentBookings([]);
           }
 
-          // Initialize charts
-          initializeDashboardCharts();
         } catch (error) {
           ErrorHandler.handleApiError(error, "Dashboard data loading");
         }
@@ -1968,49 +1938,6 @@
         });
 
         console.log(`✅ Updated ${bookings.length} recent bookings`);
-      }
-
-      function initializeDashboardCharts() {
-        try {
-          // Sales Trend Chart
-          ChartManager.create("salesChart", {
-            type: "line",
-            data: {
-              labels: Array.from({ length: 30 }, (_, i) => (i + 1).toString()),
-              datasets: [
-                {
-                  label: "Daily Sales (€)",
-                  data: Array.from(
-                    { length: 30 },
-                    () => Math.floor(Math.random() * 5000) + 1000
-                  ),
-                  borderColor: "#392625",
-                  backgroundColor: "rgba(57, 38, 37, 0.1)",
-                  tension: 0.4,
-                  fill: true,
-                },
-              ],
-            },
-          });
-
-          // Bookings Status Chart
-          ChartManager.create("bookingsChart", {
-            type: "doughnut",
-            data: {
-              labels: ["Pending", "Confirmed", "In Progress", "Completed", "Cancelled"],
-              datasets: [
-                {
-                  data: [5, 3, 2, 8, 1],
-                  backgroundColor: ["#e58e02", "#2d6bdb", "#1890ff", "#0c9770", "#d9534f"],
-                },
-              ],
-            },
-          });
-
-          console.log("✅ Dashboard charts initialized successfully");
-        } catch (error) {
-          console.error("❌ Dashboard chart initialization error:", error);
-        }
       }
 
       // ==================== ENHANCED BOOKINGS MANAGEMENT ====================
@@ -2520,6 +2447,304 @@
         });
       }
 
+      // ==================== ENHANCED PRODUCT EDITING ====================
+      async function editProduct(productId) {
+        try {
+          // Find product in current state or fetch from API
+          let product = AppState.products.find(p => p._id === productId);
+          
+          if (!product) {
+            // Try to fetch product details from API
+            const result = await ApiClient.authenticatedRequest(`${ENDPOINTS.PRODUCTS}/${productId}`);
+            if (result.ok) {
+              product = result.data;
+            } else {
+              showNotification('Product not found', 'error');
+              return;
+            }
+          }
+
+          // Create edit modal
+          const modalHTML = `
+            <div class="modal-overlay">
+              <div class="modal-content">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                  <h3>Edit Product</h3>
+                  <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+                </div>
+                
+                <form id="editProductForm">
+                  <input type="hidden" id="editProductId" value="${productId}">
+                  
+                  <div class="form-group">
+                    <label for="editProductName">Product Name</label>
+                    <input
+                      type="text"
+                      id="editProductName"
+                      class="form-control"
+                      value="${SecurityUtils.sanitizeInput(product.name)}"
+                      required
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductDescription">Description</label>
+                    <textarea
+                      id="editProductDescription"
+                      class="form-control"
+                      rows="3"
+                      required
+                    >${SecurityUtils.sanitizeInput(product.description || '')}</textarea>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductPrice">Price (€)</label>
+                    <input
+                      type="number"
+                      id="editProductPrice"
+                      class="form-control"
+                      step="0.01"
+                      value="${product.price || 0}"
+                      required
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductOldPrice">Old Price (Optional)</label>
+                    <input
+                      type="number"
+                      id="editProductOldPrice"
+                      class="form-control"
+                      step="0.01"
+                      value="${product.oldPrice || ''}"
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductStock">Stock Quantity</label>
+                    <input
+                      type="number"
+                      id="editProductStock"
+                      class="form-control"
+                      value="${product.stock || 0}"
+                      required
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductCategory">Category</label>
+                    <select id="editProductCategory" class="form-control" required>
+                      <option value="">Select Category</option>
+                      <option value="brazilian" ${product.category === 'brazilian' ? 'selected' : ''}>Brazilian</option>
+                      <option value="peruvian" ${product.category === 'peruvian' ? 'selected' : ''}>Peruvian</option>
+                      <option value="malaysian" ${product.category === 'malaysian' ? 'selected' : ''}>Malaysian</option>
+                      <option value="indian" ${product.category === 'indian' ? 'selected' : ''}>Indian</option>
+                      <option value="accessories" ${product.category === 'accessories' ? 'selected' : ''}>Accessories</option>
+                      <option value="extensions" ${product.category === 'extensions' ? 'selected' : ''}>Extensions</option>
+                      <option value="wigs" ${product.category === 'wigs' ? 'selected' : ''}>Wigs</option>
+                      <option value="closures" ${product.category === 'closures' ? 'selected' : ''}>Closures</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductType">Type</label>
+                    <input
+                      type="text"
+                      id="editProductType"
+                      class="form-control"
+                      value="${SecurityUtils.sanitizeInput(product.type || '')}"
+                      required
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductLength">Length</label>
+                    <input 
+                      type="text" 
+                      id="editProductLength" 
+                      class="form-control" 
+                      value="${SecurityUtils.sanitizeInput(product.length || '')}"
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductTexture">Texture</label>
+                    <input 
+                      type="text" 
+                      id="editProductTexture" 
+                      class="form-control" 
+                      value="${SecurityUtils.sanitizeInput(product.texture || '')}"
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductColor">Color</label>
+                    <input 
+                      type="text" 
+                      id="editProductColor" 
+                      class="form-control" 
+                      value="${SecurityUtils.sanitizeInput(product.color || '')}"
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductQuality">Quality</label>
+                    <input
+                      type="text"
+                      id="editProductQuality"
+                      class="form-control"
+                      value="${SecurityUtils.sanitizeInput(product.quality || 'Premium')}"
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>
+                      <input type="checkbox" id="editProductActive" ${product.isActive !== false ? 'checked' : ''}>
+                      Product is Active
+                    </label>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editProductImages">Update Product Images</label>
+                    <input
+                      type="file"
+                      id="editProductImages"
+                      class="form-control"
+                      accept="image/*"
+                      multiple
+                    />
+                    <small>Select new images to replace existing ones</small>
+                  </div>
+                  
+                  ${product.images && product.images.length > 0 ? `
+                  <div class="form-group">
+                    <label>Current Images</label>
+                    <div class="image-preview-container" id="currentImagesPreview">
+                      ${product.images.map((img, index) => `
+                        <div class="image-preview">
+                          <img src="${img}" alt="Product Image ${index + 1}">
+                          <button type="button" class="remove-image" onclick="removeProductImage('${productId}', '${img}')">×</button>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                  ` : ''}
+                  
+                  <div style="margin-top:20px;display:flex;gap:10px;">
+                    <button type="submit" class="action-btn" id="updateProductBtn">
+                      Update Product
+                    </button>
+                    <button type="button" class="action-btn btn-danger" onclick="closeModal()">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          `;
+          
+          document.body.insertAdjacentHTML('beforeend', modalHTML);
+          
+          // Add form submit handler
+          document.getElementById('editProductForm').addEventListener('submit', handleEditProductSubmit);
+        } catch (error) {
+          console.error('Edit product error:', error);
+          showNotification('Failed to load product edit form', 'error');
+        }
+      }
+
+      async function handleEditProductSubmit(e) {
+        e.preventDefault();
+        
+        const productId = document.getElementById('editProductId').value;
+        const updateProductBtn = document.getElementById('updateProductBtn');
+        const originalText = updateProductBtn.textContent;
+
+        // Show loading state
+        updateProductBtn.textContent = "Updating...";
+        updateProductBtn.disabled = true;
+
+        try {
+          const formData = new FormData();
+
+          // Add text fields
+          formData.append("name", document.getElementById("editProductName").value);
+          formData.append("description", document.getElementById("editProductDescription").value);
+          formData.append("price", document.getElementById("editProductPrice").value);
+          formData.append("stock", document.getElementById("editProductStock").value);
+          formData.append("category", document.getElementById("editProductCategory").value);
+          formData.append("type", document.getElementById("editProductType").value);
+          formData.append("length", document.getElementById("editProductLength").value);
+          formData.append("texture", document.getElementById("editProductTexture").value);
+          formData.append("color", document.getElementById("editProductColor").value);
+          formData.append("quality", document.getElementById("editProductQuality").value);
+          formData.append("isActive", document.getElementById("editProductActive").checked ? "true" : "false");
+
+          const oldPrice = document.getElementById("editProductOldPrice").value;
+          if (oldPrice) {
+            formData.append("oldPrice", oldPrice);
+          }
+
+          // Add new image files
+          const imageFiles = document.getElementById("editProductImages").files;
+          for (let i = 0; i < imageFiles.length; i++) {
+            formData.append("images", imageFiles[i]);
+          }
+
+          const response = await fetch(`${ENDPOINTS.PRODUCTS}/${productId}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${AppState.authToken}`,
+            },
+            body: formData,
+          });
+
+          if (response.ok) {
+            showNotification("Product updated successfully!", "success");
+            closeModal();
+            loadProducts(AppState.currentPage);
+          } else {
+            const error = await response.json();
+            showNotification(error.error || "Error updating product", "error");
+          }
+        } catch (error) {
+          console.error("Error updating product:", error);
+          showNotification("Error updating product", "error");
+        } finally {
+          // Reset button state
+          updateProductBtn.textContent = originalText;
+          updateProductBtn.disabled = false;
+        }
+      }
+
+      async function removeProductImage(productId, imageUrl) {
+        if (!confirm("Are you sure you want to remove this image?")) {
+          return;
+        }
+
+        try {
+          const result = await ApiClient.authenticatedRequest(
+            `${ENDPOINTS.PRODUCTS}/${productId}/images`,
+            {
+              method: "DELETE",
+              body: JSON.stringify({ imageUrl })
+            }
+          );
+
+          if (result.ok) {
+            showNotification("Image removed successfully", "success");
+            // Refresh the product edit form
+            closeModal();
+            editProduct(productId);
+          } else {
+            throw new Error(result.error || "Failed to remove image");
+          }
+        } catch (error) {
+          console.error("Remove product image error:", error);
+          showNotification("Failed to remove image", "error");
+        }
+      }
+
       async function handleAddProduct(e) {
         e.preventDefault();
 
@@ -2608,12 +2833,8 @@
         }
       }
 
-      async function editProduct(productId) {
-        showNotification("Edit functionality coming soon", "warning");
-      }
-
       async function deleteProduct(productId) {
-        if (!confirm("Are you sure you want to delete this product?")) {
+        if (!confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
           return;
         }
 
@@ -2637,97 +2858,542 @@
         }
       }
 
-      // ==================== ENHANCED REPORTS & CHARTS ====================
-      async function loadReports() {
-        const days = document.getElementById("reportRange").value;
+      // ==================== ENHANCED REPORTS & CHARTS - UPDATED ====================
+async function loadReports() {
+  try {
+    console.log("📊 Loading reports...");
+    
+    const days = document.getElementById("reportRange").value;
+    const result = await ApiClient.authenticatedRequest(
+      `${ENDPOINTS.SALES_ANALYTICS}?days=${days}`
+    );
 
+    if (result.ok && result.data) {
+      displayReportSummary(result.data);
+    } else {
+      displayReportSummary({
+        totalSales: 0,
+        totalOrders: 0,
+        totalBookings: 0,
+        averageOrderValue: 0,
+        period: `${days} days`
+      });
+      showNotification("Using demo report data", "warning");
+    }
+  } catch (error) {
+    ErrorHandler.handleApiError(error, "Reports loading");
+    displayReportSummary({
+      totalSales: 0,
+      totalOrders: 0,
+      totalBookings: 0,
+      averageOrderValue: 0,
+      period: "selected period"
+    });
+  }
+}
+
+function displayReportSummary(data) {
+  const summaryContainer = document.getElementById("reportSummary");
+  
+  if (!data || Object.keys(data).length === 0) {
+    summaryContainer.innerHTML = `
+      <div style="text-align: center; padding: 20px;">
+        <p>No data available for the selected period.</p>
+      </div>
+    `;
+    return;
+  }
+
+  summaryContainer.innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <h3>Total Sales</h3>
+        <div class="value">€${data.totalSales || 0}</div>
+      </div>
+      <div class="kpi-card">
+        <h3>Total Orders</h3>
+        <div class="value">${data.totalOrders || 0}</div>
+      </div>
+      <div class="kpi-card">
+        <h3>Total Bookings</h3>
+        <div class="value">${data.totalBookings || 0}</div>
+      </div>
+      <div class="kpi-card">
+        <h3>Avg Order Value</h3>
+        <div class="value">€${data.averageOrderValue || 0}</div>
+      </div>
+    </div>
+    <div style="margin-top: 20px;">
+      <p><strong>Report Period:</strong> Last ${data.period || '30'} days</p>
+      <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+    </div>
+  `;
+}
+
+function generateReport() {
+  loadReports();
+}
+
+function exportReport(format) {
+  showNotification(`${format.toUpperCase()} export functionality coming soon`, "info");
+}
+
+      // ==================== ENHANCED USERS MANAGEMENT ====================
+      async function loadUsers() {
         try {
-          console.log("📊 Loading reports...");
-
-          // Clear existing charts
-          ChartManager.destroyAll();
-
-          const result = await ApiClient.authenticatedRequest(
-            `${ENDPOINTS.SALES_ANALYTICS}?days=${days}`
-          );
-
-          // Small delay to ensure DOM is ready for charts
-          setTimeout(() => {
-            if (result.ok) {
-              initializeChartsWithData(result.data);
-            } else {
-              initializeChartsWithMockData();
-              showNotification("Using demo reports data", "warning");
-            }
-          }, 100);
+          console.log("🔄 Loading users...");
+          
+          const result = await ApiClient.authenticatedRequest(ENDPOINTS.USERS);
+          
+          if (result.ok) {
+            AppState.users = result.data.users || result.data;
+            renderUsers(AppState.users);
+            showNotification(`Loaded ${AppState.users.length} users`, "success");
+          } else {
+            // Fallback to mock users
+            const mockUsers = getMockUsers();
+            renderUsers(mockUsers);
+            showNotification("Using demo users data", "warning");
+          }
         } catch (error) {
-          ErrorHandler.handleApiError(error, "Reports loading");
-          setTimeout(() => {
-            initializeChartsWithMockData();
-          }, 100);
+          ErrorHandler.handleApiError(error, "Users loading");
         }
       }
 
-      function initializeChartsWithMockData() {
+      function renderUsers(users) {
+        const tableBody = document.getElementById("usersTableBody");
+        if (!tableBody) return;
+
+        tableBody.innerHTML = "";
+
+        if (!users || users.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No users found</td></tr>';
+          return;
+        }
+
+        users.forEach((user) => {
+          const row = document.createElement("tr");
+          const lastActive = user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never';
+          const statusClass = user.isSuspended ? 'status-cancelled' : 'status-completed';
+          const statusText = user.isSuspended ? 'Suspended' : 'Active';
+          
+          row.innerHTML = `
+            <td>${SecurityUtils.sanitizeInput(user.firstName || user.name || '')} ${SecurityUtils.sanitizeInput(user.lastName || '')}</td>
+            <td>${SecurityUtils.sanitizeInput(user.email)}</td>
+            <td>${user.role || 'Customer'}</td>
+            <td>${user.orderCount || 0}</td>
+            <td>${user.bookingCount || 0}</td>
+            <td>${lastActive}</td>
+            <td>
+              <span class="status-badge ${statusClass}">${statusText}</span>
+            </td>
+            <td>
+              <button class="action-btn view-user" data-id="${user._id || user.id}">View</button>
+              <button class="action-btn btn-warning edit-user" data-id="${user._id || user.id}">Edit</button>
+              <button class="action-btn ${user.isSuspended ? 'btn-success' : 'btn-danger'} suspend-user" data-id="${user._id || user.id}" data-status="${user.isSuspended ? 'active' : 'suspended'}">
+                ${user.isSuspended ? 'Activate' : 'Suspend'}
+              </button>
+            </td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+
+        // Add event listeners
+        document.querySelectorAll('.view-user').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const userId = e.target.dataset.id;
+            viewUserDetails(userId);
+          });
+        });
+
+        document.querySelectorAll('.edit-user').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const userId = e.target.dataset.id;
+            editUser(userId);
+          });
+        });
+
+        document.querySelectorAll('.suspend-user').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const userId = e.target.dataset.id;
+            const action = e.target.dataset.status;
+            toggleUserSuspension(userId, action);
+          });
+        });
+      }
+
+      function getMockUsers() {
+        return [
+          {
+            _id: 'user_1',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            role: 'Customer',
+            orderCount: 3,
+            bookingCount: 1,
+            lastActive: new Date(),
+            isSuspended: false,
+            phone: '+1234567890',
+            address: '123 Main St, City, Country'
+          },
+          {
+            _id: 'user_2',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane@example.com',
+            role: 'Customer',
+            orderCount: 5,
+            bookingCount: 2,
+            lastActive: new Date(Date.now() - 86400000),
+            isSuspended: true,
+            phone: '+0987654321',
+            address: '456 Oak Ave, Town, Country'
+          },
+          // Add more mock users from the image
+          {
+            _id: 'user_3',
+            name: 'Olys Shop',
+            email: 'olys@shop.com',
+            role: 'admin',
+            orderCount: 0,
+            bookingCount: 0,
+            lastActive: null,
+            isSuspended: false
+          },
+          {
+            _id: 'user_4',
+            name: 'Ange Boyz',
+            email: 'angeboyz27@gmail.com',
+            role: 'customer',
+            orderCount: 0,
+            bookingCount: 0,
+            lastActive: null,
+            isSuspended: false
+          },
+          {
+            _id: 'user_5',
+            name: 'Jaja jaja',
+            email: 'pokam.jafercine@yahoo.com',
+            role: 'customer',
+            orderCount: 0,
+            bookingCount: 0,
+            lastActive: null,
+            isSuspended: false
+          },
+          {
+            _id: 'user_6',
+            name: 'REMY STEPHANE ETOA',
+            email: 'etoaremy@icloud.com',
+            role: 'admin',
+            orderCount: 0,
+            bookingCount: 0,
+            lastActive: null,
+            isSuspended: false
+          },
+          {
+            _id: 'user_7',
+            name: 'Grace Ange',
+            email: 'grace@gmail.com',
+            role: 'admin',
+            orderCount: 0,
+            bookingCount: 0,
+            lastActive: null,
+            isSuspended: false
+          },
+          {
+            _id: 'user_8',
+            name: 'CHESSEU NJIPDI TERTULLIEN',
+            email: 'olyshair@gmail.com',
+            role: 'admin',
+            orderCount: 0,
+            bookingCount: 0,
+            lastActive: null,
+            isSuspended: false
+          },
+          {
+            _id: 'user_9',
+            name: 'remy stephane',
+            email: 'remystephaneetoactoa@gmail.com',
+            role: 'customer',
+            orderCount: 0,
+            bookingCount: 0,
+            lastActive: null,
+            isSuspended: false
+          },
+          {
+            _id: 'user_10',
+            name: 'David Obin',
+            email: 'davidobin2@gmail.com',
+            role: 'customer',
+            orderCount: 0,
+            bookingCount: 0,
+            lastActive: null,
+            isSuspended: false
+          }
+        ];
+      }
+
+      async function viewUserDetails(userId) {
         try {
-          // Sales by Month Chart
-          ChartManager.create("salesByMonthChart", {
-            type: "bar",
-            data: {
-              labels: [
-                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-              ],
-              datasets: [
-                {
-                  label: "Sales (€)",
-                  data: [
-                    12000, 19000, 15000, 21000, 18000, 25000, 
-                    22000, 29000, 23000, 28000, 32000, 40000
-                  ],
-                  backgroundColor: "#392625",
-                },
-              ],
-            },
-          });
+          // Find user in current state or fetch from API
+          let user = AppState.users.find(u => u._id === userId);
+          
+          if (!user) {
+            // Try to fetch user details from API
+            const result = await ApiClient.authenticatedRequest(`${ENDPOINTS.USERS}/${userId}`);
+            if (result.ok) {
+              user = result.data;
+            } else {
+              showNotification('User not found', 'error');
+              return;
+            }
+          }
 
-          // Bookings vs Orders Chart
-          ChartManager.create("bookingsVsOrdersChart", {
-            type: "bar",
-            data: {
-              labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-              datasets: [
-                {
-                  label: "Bookings",
-                  data: [15, 22, 18, 25, 20, 30],
-                  backgroundColor: "#392625",
-                },
-                {
-                  label: "Orders",
-                  data: [45, 52, 48, 55, 50, 65],
-                  backgroundColor: "#6d4c3d",
-                },
-              ],
-            },
-          });
+          // Parse name if it's a combined field
+          let firstName = user.firstName || '';
+          let lastName = user.lastName || '';
+          
+          if (!firstName && user.name) {
+            const nameParts = user.name.split(' ');
+            firstName = nameParts[0] || '';
+            lastName = nameParts.slice(1).join(' ') || '';
+          }
 
-          // Revenue Breakdown Chart
-          ChartManager.create("revenueBreakdownChart", {
-            type: "pie",
-            data: {
-              labels: ["Product Sales", "Wig Services", "Accessories"],
-              datasets: [
-                {
-                  data: [65, 25, 10],
-                  backgroundColor: ["#392625", "#6d4c3d", "#9f735f"],
-                },
-              ],
-            },
-          });
-
-          console.log("✅ Report charts initialized successfully");
+          const modalHTML = `
+            <div class="modal-overlay">
+              <div class="modal-content">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                  <h3>User Details</h3>
+                  <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+                </div>
+                
+                <div class="user-details">
+                  <div class="detail-section">
+                    <h4>Personal Information</h4>
+                    <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Role:</strong> ${user.role}</p>
+                    <p><strong>Status:</strong> <span class="status-badge ${user.isSuspended ? 'status-cancelled' : 'status-completed'}">${user.isSuspended ? 'Suspended' : 'Active'}</span></p>
+                  </div>
+                  
+                  <div class="detail-section">
+                    <h4>Contact Information</h4>
+                    <p><strong>Phone:</strong> ${user.phone || 'Not provided'}</p>
+                    <p><strong>Address:</strong> ${user.address || 'Not provided'}</p>
+                  </div>
+                  
+                  <div class="detail-section">
+                    <h4>Activity Summary</h4>
+                    <p><strong>Total Orders:</strong> ${user.orderCount || 0}</p>
+                    <p><strong>Total Bookings:</strong> ${user.bookingCount || 0}</p>
+                    <p><strong>Last Active:</strong> ${user.lastActive ? new Date(user.lastActive).toLocaleString() : 'Never'}</p>
+                    <p><strong>Member Since:</strong> ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}</p>
+                  </div>
+                  
+                  ${user.notes ? `
+                  <div class="detail-section">
+                    <h4>Admin Notes</h4>
+                    <p>${user.notes}</p>
+                  </div>
+                  ` : ''}
+                </div>
+                
+                <div style="margin-top:20px;display:flex;gap:10px;">
+                  <button class="action-btn btn-warning" onclick="editUser('${userId}'); closeModal();">Edit User</button>
+                  <button class="action-btn ${user.isSuspended ? 'btn-success' : 'btn-danger'}" onclick="toggleUserSuspension('${userId}', '${user.isSuspended ? 'active' : 'suspended'}'); closeModal();">
+                    ${user.isSuspended ? 'Activate User' : 'Suspend User'}
+                  </button>
+                  <button class="action-btn" onclick="closeModal()">Close</button>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          document.body.insertAdjacentHTML('beforeend', modalHTML);
         } catch (error) {
-          console.error("❌ Report chart initialization error:", error);
+          console.error('View user error:', error);
+          showNotification('Failed to load user details', 'error');
+        }
+      }
+
+      async function editUser(userId) {
+        try {
+          // Find user in current state or fetch from API
+          let user = AppState.users.find(u => u._id === userId);
+          
+          if (!user) {
+            // Try to fetch user details from API
+            const result = await ApiClient.authenticatedRequest(`${ENDPOINTS.USERS}/${userId}`);
+            if (result.ok) {
+              user = result.data;
+            } else {
+              showNotification('User not found', 'error');
+              return;
+            }
+          }
+
+          // Parse name if it's a combined field
+          let firstName = user.firstName || '';
+          let lastName = user.lastName || '';
+          
+          if (!firstName && user.name) {
+            const nameParts = user.name.split(' ');
+            firstName = nameParts[0] || '';
+            lastName = nameParts.slice(1).join(' ') || '';
+          }
+
+          const modalHTML = `
+            <div class="modal-overlay">
+              <div class="modal-content">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                  <h3>Edit User</h3>
+                  <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+                </div>
+                
+                <form id="editUserForm">
+                  <input type="hidden" id="editUserId" value="${userId}">
+                  
+                  <div class="form-group">
+                    <label for="editFirstName">First Name</label>
+                    <input type="text" id="editFirstName" class="form-control" value="${firstName}" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editLastName">Last Name</label>
+                    <input type="text" id="editLastName" class="form-control" value="${lastName}" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" class="form-control" value="${user.email}" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editPhone">Phone</label>
+                    <input type="tel" id="editPhone" class="form-control" value="${user.phone || ''}">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editAddress">Address</label>
+                    <textarea id="editAddress" class="form-control" rows="3">${user.address || ''}</textarea>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editRole">Role</label>
+                    <select id="editRole" class="form-control">
+                      <option value="customer" ${user.role === 'customer' ? 'selected' : ''}>Customer</option>
+                      <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="editNotes">Admin Notes</label>
+                    <textarea id="editNotes" class="form-control" rows="3">${user.notes || ''}</textarea>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>
+                      <input type="checkbox" id="editIsSuspended" ${user.isSuspended ? 'checked' : ''}>
+                      Suspend User Account
+                    </label>
+                    <small style="display:block;color:#666;">Suspended users cannot log in or place orders</small>
+                  </div>
+                  
+                  <div style="margin-top:20px;display:flex;gap:10px;">
+                    <button type="submit" class="action-btn">Save Changes</button>
+                    <button type="button" class="action-btn btn-danger" onclick="closeModal()">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          `;
+          
+          document.body.insertAdjacentHTML('beforeend', modalHTML);
+          
+          // Add form submit handler
+          document.getElementById('editUserForm').addEventListener('submit', handleEditUserSubmit);
+        } catch (error) {
+          console.error('Edit user error:', error);
+          showNotification('Failed to load user edit form', 'error');
+        }
+      }
+
+      async function handleEditUserSubmit(e) {
+        e.preventDefault();
+        
+        const userId = document.getElementById('editUserId').value;
+        const firstName = document.getElementById('editFirstName').value;
+        const lastName = document.getElementById('editLastName').value;
+        const email = document.getElementById('editEmail').value;
+        const phone = document.getElementById('editPhone').value;
+        const address = document.getElementById('editAddress').value;
+        const role = document.getElementById('editRole').value;
+        const notes = document.getElementById('editNotes').value;
+        const isSuspended = document.getElementById('editIsSuspended').checked;
+        
+        try {
+          const result = await ApiClient.authenticatedRequest(
+            `${ENDPOINTS.USERS}/${userId}`,
+            {
+              method: 'PUT',
+              body: JSON.stringify({
+                firstName,
+                lastName,
+                email,
+                phone,
+                address,
+                role,
+                notes,
+                isSuspended
+              })
+            }
+          );
+          
+          if (result.ok) {
+            showNotification('User updated successfully', 'success');
+            closeModal();
+            loadUsers(); // Refresh the user list
+          } else {
+            throw new Error(result.error || 'Failed to update user');
+          }
+        } catch (error) {
+          console.error('Update user error:', error);
+          showNotification('Failed to update user', 'error');
+        }
+      }
+
+      async function toggleUserSuspension(userId, action) {
+        const isSuspending = action === 'suspended';
+        const confirmMessage = isSuspending 
+          ? 'Are you sure you want to suspend this user? They will not be able to log in or place orders.'
+          : 'Are you sure you want to activate this user?';
+        
+        if (!confirm(confirmMessage)) {
+          return;
+        }
+        
+        try {
+          const result = await ApiClient.authenticatedRequest(
+            `${ENDPOINTS.USERS}/${userId}/status`,
+            {
+              method: 'PUT',
+              body: JSON.stringify({
+                isSuspended: isSuspending
+              })
+            }
+          );
+          
+          if (result.ok) {
+            showNotification(`User ${isSuspending ? 'suspended' : 'activated'} successfully`, 'success');
+            loadUsers(); // Refresh the user list
+          } else {
+            throw new Error(result.error || `Failed to ${isSuspending ? 'suspend' : 'activate'} user`);
+          }
+        } catch (error) {
+          console.error('Toggle user suspension error:', error);
+          showNotification(`Failed to ${isSuspending ? 'suspend' : 'activate'} user`, 'error');
         }
       }
 
@@ -2854,7 +3520,6 @@
         AppState.currentUser = null;
         AppState.isTokenVerified = false;
         CacheManager.clear();
-        ChartManager.destroyAll();
         showNotification("Logged out successfully", "success");
         showLogin();
       }
@@ -2980,6 +3645,11 @@
           bookingSearch.addEventListener("input", debounce(filterBookings, 500));
         }
 
+        const userSearch = document.getElementById("userSearch");
+        if (userSearch) {
+          userSearch.addEventListener("input", debounce(filterUsers, 500));
+        }
+
         // Report range change
         const reportRange = document.getElementById("reportRange");
         if (reportRange) {
@@ -2991,15 +3661,7 @@
 
         // Window unload cleanup
         window.addEventListener("beforeunload", () => {
-          ChartManager.destroyAll();
           CacheManager.clear();
-        });
-
-        // Visibility change cleanup
-        document.addEventListener("visibilitychange", () => {
-          if (document.hidden) {
-            ChartManager.destroyAll();
-          }
         });
       }
 
@@ -3052,6 +3714,45 @@
           booking.status.toLowerCase().includes(searchTerm)
         );
         renderBookings(filteredBookings);
+      }
+
+      function filterUsers() {
+        const searchTerm = document.getElementById("userSearch").value.toLowerCase();
+        if (!searchTerm) {
+          renderUsers(AppState.users);
+          return;
+        }
+        const filteredUsers = AppState.users.filter(user => {
+          const userName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase() || user.name.toLowerCase();
+          return userName.includes(searchTerm) ||
+                 user.email.toLowerCase().includes(searchTerm) ||
+                 user.role.toLowerCase().includes(searchTerm);
+        });
+        renderUsers(filteredUsers);
+      }
+
+      // ==================== ADD MISSING FUNCTIONS ====================
+
+      // Pagination function
+      function renderPagination(pagination, type) {
+        const paginationContainer = document.getElementById(`${type}Pagination`);
+        if (!paginationContainer || !pagination) return;
+
+        const { totalPages, currentPage, hasNext, hasPrev } = pagination;
+        
+        let paginationHTML = '';
+        
+        if (hasPrev) {
+          paginationHTML += `<button class="action-btn" onclick="load${type.charAt(0).toUpperCase() + type.slice(1)}(${currentPage - 1})">Previous</button>`;
+        }
+        
+        paginationHTML += ` <span style="margin: 0 15px;">Page ${currentPage} of ${totalPages}</span> `;
+        
+        if (hasNext) {
+          paginationHTML += `<button class="action-btn" onclick="load${type.charAt(0).toUpperCase() + type.slice(1)}(${currentPage + 1})">Next</button>`;
+        }
+        
+        paginationContainer.innerHTML = paginationHTML;
       }
 
       // ==================== KEEP EXISTING UI CONTROLS ====================
