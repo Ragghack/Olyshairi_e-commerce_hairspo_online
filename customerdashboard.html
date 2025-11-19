@@ -1472,8 +1472,12 @@
 
     <script>
       // API Configuration
-     const API_BASE_URL = "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
-      //
+     //Dynamic API URL configuration
+      const API_BASE_URL = window.location.hostname.includes('localhost') 
+          ? "http://localhost:5001/api" 
+          : "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
+
+      console.log("🌐 Using API Base URL:", API_BASE_URL);
       const ENDPOINTS = {
         AUTH_PROFILE: `${API_BASE_URL}/auth/profile`,
         ORDERS: `${API_BASE_URL}/orders`,
