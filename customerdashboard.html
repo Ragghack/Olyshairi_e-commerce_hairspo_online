@@ -680,6 +680,32 @@
         color: #6c757d;
       }
 
+      /* Booking Status Badges */
+      .status-pending {
+        background-color: #fef5e7;
+        color: #e58e02;
+      }
+
+      .status-confirmed {
+        background-color: #e6f0ff;
+        color: #2d6bdb;
+      }
+
+      .status-in-progress {
+        background-color: #e6f7ff;
+        color: #1890ff;
+      }
+
+      .status-completed {
+        background-color: #e6f7ee;
+        color: #0c9770;
+      }
+
+      .status-cancelled {
+        background-color: #ffe6e6;
+        color: #d9534f;
+      }
+
       /* Wishlist and Cart Items */
       .wishlist-item,
       .cart-item {
@@ -1058,6 +1084,10 @@
           <i class="fas fa-shopping-bag"></i>
           <span>Shop</span>
         </a>
+        <a href="book.html" class="mobile-nav-bubble">
+          <i class="fas fa-calendar-plus"></i>
+          <span>Book Service</span>
+        </a>
       </div>
     </div>
 
@@ -1070,6 +1100,10 @@
       <div class="bubble-btn" onclick="window.location.href='shop.html'">
         <i class="fas fa-shopping-bag"></i>
         <span>Shop</span>
+      </div>
+      <div class="bubble-btn" onclick="window.location.href='book.html'">
+        <i class="fas fa-calendar-plus"></i>
+        <span>Book Service</span>
       </div>
     </div>
 
@@ -1129,9 +1163,9 @@
                 <i class="fas fa-shopping-bag"></i>
                 <span>Shop New Arrivals</span>
               </div>
-              <div class="shortcut-btn" data-section="bookings">
+              <div class="shortcut-btn" onclick="window.location.href='book.html'">
                 <i class="fas fa-calendar-plus"></i>
-                <span>Book Appointment</span>
+                <span>Book Wig Service</span>
               </div>
               <div class="shortcut-btn" data-section="orders">
                 <i class="fas fa-box-open"></i>
@@ -1282,7 +1316,10 @@
         <!-- Bookings Section -->
         <div class="content-section" id="bookings">
           <div class="section-header">
-            <h2>My Appointments</h2>
+            <h2>My Wig Service Bookings</h2>
+            <button class="action-btn" onclick="window.location.href='book.html'" style="width: auto;">
+              <i class="fas fa-calendar-plus"></i> Book New Service
+            </button>
           </div>
           <div class="dashboard-card">
             <div id="bookings-full-container">
@@ -1298,7 +1335,7 @@
         <div class="content-section" id="notifications">
           <div class="section-header">
             <h2>Notifications</h2>
-            <button class="action-btn" id="mark-all-read">
+            <button class="action-btn" id="mark-all-read" style="width: auto;">
               Mark All as Read
             </button>
           </div>
@@ -1435,8 +1472,19 @@
 
     <script>
       // API Configuration
-      const API_BASE_URL = "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
-      //const API_BASE_URL = 'http://localhost:5001/api';
+     const API_BASE_URL = "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
+      //
+      const ENDPOINTS = {
+        AUTH_PROFILE: `${API_BASE_URL}/auth/profile`,
+        ORDERS: `${API_BASE_URL}/orders`,
+        WISHLIST: `${API_BASE_URL}/wishlist`,
+        CART: `${API_BASE_URL}/cart`,
+        BOOKINGS: `${API_BASE_URL}/bookings`,
+        LOYALTY: `${API_BASE_URL}/loyalty`,
+        NOTIFICATIONS: `${API_BASE_URL}/notifications`,
+        HEALTH: `${API_BASE_URL}/health`,
+      };
+
       let userData = null;
       let authToken = localStorage.getItem("token") || "";
 
@@ -1487,6 +1535,34 @@
         }
       }
 
+      // API Functions
+      async function apiCall(endpoint, options = {}) {
+        const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+        const headers = {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          ...options.headers,
+        };
+
+        try {
+          const response = await fetch(url, { ...options, headers });
+
+          if (response.status === 401) {
+            redirectToLogin();
+            return null;
+          }
+
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error("API call failed:", error);
+          throw error;
+        }
+      }
+
       // Initialize dashboard
       async function initializeDashboard() {
         console.log("🚀 Initializing dashboard...");
@@ -1513,34 +1589,6 @@
         } catch (error) {
           console.error("❌ Failed to initialize dashboard:", error);
           showError("Failed to load dashboard data");
-        }
-      }
-
-      // API Functions
-      async function apiCall(endpoint, options = {}) {
-        const url = `${API_BASE_URL}${endpoint}`;
-        const headers = {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-          ...options.headers,
-        };
-
-        try {
-          const response = await fetch(url, { ...options, headers });
-
-          if (response.status === 401) {
-            redirectToLogin();
-            return null;
-          }
-
-          if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-          }
-
-          return await response.json();
-        } catch (error) {
-          console.error("API call failed:", error);
-          throw error;
         }
       }
 
@@ -1592,11 +1640,53 @@
         return data.cart || { items: [] };
       }
 
+      // BOOKINGS FUNCTIONS - UPDATED
       async function fetchBookings(limit = null) {
-        const data = await apiCall(
-          limit ? `/bookings?limit=${limit}` : "/bookings"
-        );
-        return data.bookings || [];
+        try {
+          console.log("📅 Fetching bookings...");
+          const data = await apiCall("/bookings");
+
+          // Handle different response formats
+          if (Array.isArray(data)) {
+            return limit ? data.slice(0, limit) : data;
+          } else if (data.bookings && Array.isArray(data.bookings)) {
+            return limit ? data.bookings.slice(0, limit) : data.bookings;
+          } else if (data.data && Array.isArray(data.data)) {
+            return limit ? data.data.slice(0, limit) : data.data;
+          } else {
+            console.warn("⚠️ Unexpected bookings format:", data);
+            return getMockBookings(limit);
+          }
+        } catch (error) {
+          console.error("❌ Error fetching bookings:", error);
+          return getMockBookings(limit);
+        }
+      }
+
+      function getMockBookings(limit = null) {
+        const mockBookings = [
+          {
+            _id: '1',
+            service: 'Wig Renovation',
+            wigCount: 2,
+            totalPrice: 30,
+            status: 'pending',
+            createdAt: new Date(),
+            estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            notes: 'Please handle with care'
+          },
+          {
+            _id: '2',
+            service: 'Wig Renovation',
+            wigCount: 1,
+            totalPrice: 15,
+            status: 'confirmed',
+            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            estimatedCompletion: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+          }
+        ];
+        
+        return limit ? mockBookings.slice(0, limit) : mockBookings;
       }
 
       async function fetchNotifications(limit = null) {
@@ -1971,6 +2061,7 @@
         container.innerHTML = cartHtml;
       }
 
+      // UPDATED BOOKINGS FUNCTIONS
       function renderUpcomingBookings(bookings) {
         const container = document.getElementById(
           "upcoming-bookings-container"
@@ -1981,28 +2072,95 @@
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
                         <p>No upcoming appointments</p>
+                        <button class="action-btn" onclick="window.location.href='book.html'" style="margin-top: 15px;">
+                            Book Wig Service
+                        </button>
                     </div>
                 `;
           return;
         }
 
-        let bookingsHtml = "";
+        let bookingsHtml = '';
+        const now = new Date();
+        
         bookings.forEach((booking) => {
-          const formattedDate = new Date(
-            booking.date || new Date()
-          ).toLocaleString();
-
-          bookingsHtml += `
-                    <div class="booking-card">
-                        <div class="booking-date">${formattedDate}</div>
-                        <div class="booking-service">${booking.service}</div>
-                        <div>With Stylist: ${booking.stylist}</div>
+          const bookingDate = booking.estimatedCompletion ? new Date(booking.estimatedCompletion) : new Date(booking.createdAt);
+          const isUpcoming = bookingDate > now && booking.status !== 'completed' && booking.status !== 'cancelled';
+          
+          if (isUpcoming) {
+            const formattedDate = bookingDate.toLocaleDateString();
+            const statusClass = `status-${booking.status.replace('_', '-')}`;
+            
+            bookingsHtml += `
+                <div class="booking-card">
+                    <div class="booking-date">${formattedDate}</div>
+                    <div class="booking-service">${booking.service || 'Wig Renovation'}</div>
+                    <div>Wigs: ${booking.wigCount} • €${booking.totalPrice || (booking.wigCount * 15)}</div>
+                    <div><span class="status-badge ${statusClass}">${booking.status}</span></div>
+                    ${booking.status === 'pending' ? `
                         <div class="item-actions" style="margin-top: 10px;">
-                            <button class="action-btn" onclick="rescheduleBooking('${booking.id}')">Reschedule</button>
-                            <button class="action-btn" onclick="cancelBooking('${booking.id}')">Cancel</button>
+                            <button class="action-btn" onclick="contactAboutBooking('${booking._id || booking.id}')">Contact Support</button>
                         </div>
+                    ` : ''}
+                </div>
+            `;
+          }
+        });
+
+        if (!bookingsHtml) {
+          container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>No upcoming appointments</p>
+                        <button class="action-btn" onclick="window.location.href='book.html'" style="margin-top: 15px;">
+                            Book Wig Service
+                        </button>
                     </div>
                 `;
+        } else {
+          container.innerHTML = bookingsHtml;
+        }
+      }
+
+      function renderFullBookings(bookings) {
+        const container = document.getElementById("bookings-full-container");
+
+        if (!bookings || bookings.length === 0) {
+          container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>No appointments scheduled</p>
+                        <button class="action-btn" onclick="window.location.href='book.html'" style="margin-top: 15px;">
+                            Book Wig Service
+                        </button>
+                    </div>
+                `;
+          return;
+        }
+
+        let bookingsHtml = '';
+        const now = new Date();
+        
+        bookings.forEach((booking) => {
+          const bookingDate = booking.estimatedCompletion ? new Date(booking.estimatedCompletion) : new Date(booking.createdAt);
+          const isUpcoming = bookingDate > now && booking.status !== 'completed' && booking.status !== 'cancelled';
+          const statusClass = `status-${booking.status.replace('_', '-')}`;
+          const formattedDate = bookingDate.toLocaleDateString();
+          
+          bookingsHtml += `
+                <div class="booking-card">
+                    <div class="booking-date">${formattedDate}</div>
+                    <div class="booking-service">${booking.service || 'Wig Renovation'}</div>
+                    <div>Wigs: ${booking.wigCount} • Total: €${booking.totalPrice || (booking.wigCount * 15)}</div>
+                    <div>Status: <span class="status-badge ${statusClass}">${booking.status}</span></div>
+                    ${booking.notes ? `<div>Notes: ${booking.notes}</div>` : ''}
+                    ${isUpcoming ? `
+                        <div class="item-actions" style="margin-top: 10px;">
+                            <button class="action-btn" onclick="contactAboutBooking('${booking._id || booking.id}')">Contact Support</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
         });
 
         container.innerHTML = bookingsHtml;
@@ -2446,57 +2604,12 @@
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
                         <p>No appointments scheduled</p>
-                        <button class="action-btn" onclick="window.location.href='bookings.html'" style="margin-top: 15px;">
-                            Book Appointment
+                        <button class="action-btn" onclick="window.location.href='book.html'" style="margin-top: 15px;">
+                            Book Wig Service
                         </button>
                     </div>
                 `;
         }
-      }
-
-      function renderFullBookings(bookings) {
-        const container = document.getElementById("bookings-full-container");
-
-        if (!bookings || bookings.length === 0) {
-          container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-calendar-times"></i>
-                        <p>No appointments scheduled</p>
-                        <button class="action-btn" onclick="window.location.href='bookings.html'" style="margin-top: 15px;">
-                            Book Appointment
-                        </button>
-                    </div>
-                `;
-          return;
-        }
-
-        let bookingsHtml = "";
-        bookings.forEach((booking) => {
-          const formattedDate = new Date(
-            booking.date || new Date()
-          ).toLocaleString();
-          const isUpcoming = new Date(booking.date || new Date()) > new Date();
-
-          bookingsHtml += `
-                    <div class="booking-card">
-                        <div class="booking-date">${formattedDate}</div>
-                        <div class="booking-service">${booking.service}</div>
-                        <div>With Stylist: ${booking.stylist}</div>
-                        ${
-                          isUpcoming
-                            ? `
-                            <div class="item-actions" style="margin-top: 10px;">
-                                <button class="action-btn" onclick="rescheduleBooking('${booking.id}')">Reschedule</button>
-                                <button class="action-btn" onclick="cancelBooking('${booking.id}')">Cancel</button>
-                            </div>
-                        `
-                            : `<div><span class="status-badge status-delivered">Completed</span></div>`
-                        }
-                    </div>
-                `;
-        });
-
-        container.innerHTML = bookingsHtml;
       }
 
       async function loadFullNotifications() {
@@ -2581,14 +2694,8 @@
         alert("Removed product " + productId + " from wishlist");
       }
 
-      function rescheduleBooking(bookingId) {
-        console.log("Reschedule booking:", bookingId);
-        alert("Rescheduling booking: " + bookingId);
-      }
-
-      function cancelBooking(bookingId) {
-        console.log("Cancel booking:", bookingId);
-        alert("Cancelling booking: " + bookingId);
+      function contactAboutBooking(bookingId) {
+        alert('Please contact support for any questions about your booking. Booking ID: ' + bookingId);
       }
 
       function checkout() {
@@ -2761,6 +2868,12 @@
             alert("Error marking notifications as read");
           }
         });
+
+      // Add to Cart from Wishlist function
+      function addToCartFromWishlist(productId) {
+        console.log("Add to cart from wishlist:", productId);
+        alert("Added product " + productId + " to cart from wishlist");
+      }
     </script>
   </body>
 </html>

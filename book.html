@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLYS HAIR - Wig Renovation Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #392625;
+            --white: #ffffff;
+            --dark-gray: #1e1e1e;
+            --light-bg: #f8f5f2;
+            --text-dark: #1e1e1e;
+            --text-light: #ffffff;
+            --card-bg: #ffffff;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            --success: #4caf50;
+            --error: #f44336;
+        }
+
+        .dark-mode {
+            --cream: #c8b4a8;
+            --white: #1e1e1e;
+            --dark-gray: #f8f5f2;
+            --light-bg: #2d2d2d;
+            --text-dark: #f8f5f2;
+            --text-light: #1e1e1e;
+            --card-bg: #181212;
+            --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
+        }
+
+        body {
+            font-family: "Montserrat", sans-serif;
+            background-color: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: "Playfair Display", serif;
+            font-weight: 600;
+            color: var(--cream);
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: var(--white);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 180px;
+            height: 80px;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .logo-img-light {
+            max-width: 120px;
+            max-height: 50px;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        .logo-img-dark {
+            max-width: 120px;
+            max-height: 50px;
+            display: none;
+            margin: 0 auto;
+            object-fit: contain;
+            background: transparent;
+        }
+
+        .dark-mode .logo-img-light {
+            display: none;
+        }
+
+        .dark-mode .logo-img-dark {
+            display: block;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--cream);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-icons i {
+            font-size: 20px;
+            color: var(--cream);
+            cursor: pointer;
+        }
+
+        /* Dark/Light Mode Toggle */
+        .mode-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background-color: var(--light-bg);
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-circle {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background-color: var(--cream);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            left: 4px;
+        }
+
+        .dark-mode .toggle-circle {
+            left: 34px;
+        }
+
+        .mode-toggle i {
+            font-size: 14px;
+            z-index: 2;
+        }
+
+        .fa-sun {
+            color: var(--cream);
+            margin-right: auto;
+        }
+
+        .fa-moon {
+            color: var(--cream);
+            margin-left: auto;
+        }
+
+        /* Hero Section */
+        .booking-hero {
+            height: 60vh;
+            background: linear-gradient(
+                135deg,
+                rgba(57, 38, 37, 0.85) 0%,
+                rgba(57, 38, 37, 0.7) 60%,
+                rgba(245, 245, 220, 0.5) 100%
+            ),
+            url("images/Artboard 1 copy.png") no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 20px;
+            margin-top: 120px;
+        }
+
+        .booking-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            max-width: 800px;
+            line-height: 1.2;
+            color: var(--white);
+            background: linear-gradient(
+                45deg,
+                #ffffff 20%,
+                #392625 40%,
+                #ffffff 60%,
+                #392625 80%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s infinite linear;
+            text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
+            font-weight: 600;
+        }
+
+        .booking-hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 600px;
+            font-weight: 300;
+            color: var(--white);
+        }
+
+        /* Process Section */
+        .process-section {
+            padding: 60px 40px;
+            background-color: var(--light-bg);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .process-step {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .process-step:hover {
+            transform: translateY(-10px);
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--cream);
+            color: var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--cream);
+            color: var(--white);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .price-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: var(--shadow);
+        }
+
+        .price-amount {
+            font-size: 3rem;
+            color: var(--cream);
+            margin: 20px 0;
+        }
+
+        .price-note {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Booking Form Section */
+        .booking-form-section {
+            padding: 60px 40px;
+            background-color: var(--light-bg);
+        }
+
+        .booking-form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--cream);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-bg);
+            border-radius: 8px;
+            background-color: var(--white);
+            color: var(--text-dark);
+            font-family: "Montserrat", sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cream);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--cream);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--dark-gray);
+        }
+
+        /* Floating Bubbles */
+        .floating-bubbles {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1200;
+        }
+
+        .bubble-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--cream);
+            color: var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bubble-btn span {
+            display: none;
+            position: absolute;
+            right: 70px;
+            background: var(--dark-gray);
+            color: var(--white);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .bubble-btn:hover {
+            background-color: var(--dark-gray);
+            transform: scale(1.1);
+        }
+
+        .bubble-btn:hover span {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .booking-hero {
+                margin-top: 100px;
+                height: 50vh;
+            }
+
+            .booking-hero h1 {
+                font-size: 2rem;
+            }
+
+            .process-section,
+            .pricing-section,
+            .booking-form-section {
+                padding: 40px 20px;
+            }
+
+            .booking-form-container {
+                padding: 25px;
+            }
+
+            .floating-bubbles {
+                bottom: 80px;
+            }
+
+            .bubble-btn span {
+                right: 65px;
+                bottom: 0;
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                background-position: 0% center;
+            }
+            100% {
+                background-position: 200% center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <span>
+                <img
+                    src="images/Logo Version Transparente-01.png"
+                    alt="OLYS HAIR Logo"
+                    class="logo-img-light"
+                />
+                <img
+                    src="images/Artboard 1 copy.png"
+                    alt="OLYS HAIR Logo Bright"
+                    class="logo-img-dark"
+                />
+            </span>
+        </div>
+        <div class="nav-links">
+            <a href="shop.html">Shop</a>
+            <a href="book.html" class="active">Book</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="header-icons">
+            <div class="cart-bubble">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="cart-count">0</span>
+            </div>
+            <div class="order-tracking-bubble" onclick="viewOrders()">
+                <i class="fas fa-box"></i>
+                <span class="order-count">0</span>
+            </div>
+            <i class="fas fa-user" id="userIcon" onclick="window.location.href='customerdashboard.html'"></i>
+            <div class="mode-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+                <div class="toggle-circle"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="booking-hero">
+        <h1>Wig Renovation Service</h1>
+        <p style="
+            color: #666;
+            background: linear-gradient(
+                45deg,
+                #ffffff 20%,
+                #392625 40%,
+                #ffffff 60%,
+                #392625 80%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s infinite linear;
+            text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
+            font-weight: 600;
+        ">
+            Send me your wig, I'll pamper it... and send it back to you like new.
+        </p>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="section-title">
+            <h2>How It Works</h2>
+        </div>
+        <div class="process-steps">
+            <div class="process-step">
+                <div class="step-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="step-number">1</div>
+                <h3>Book Your Service Online</h3>
+                <p>Fill out the form below with the number of wigs, your name, and contact information.</p>
+            </div>
+            <div class="process-step">
+                <div class="step-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div class="step-number">2</div>
+                <h3>I Contact You</h3>
+                <p>Once I receive your request, I'll contact you with my address and ask for your return address.</p>
+            </div>
+            <div class="process-step">
+                <div class="step-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <div class="step-number">3</div>
+                <h3>You Send Your Wig</h3>
+                <p>Send your wig to the address I provide. I'll start the treatment as soon as I receive it.</p>
+            </div>
+            <div class="process-step">
+                <div class="step-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <div class="step-number">4</div>
+                <h3>I Treat Your Wig</h3>
+                <p>I'll wash, detangle, treat, style, and restore shape and shine to your wig.</p>
+            </div>
+            <div class="process-step">
+                <div class="step-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="step-number">5</div>
+                <h3>I Send It Back</h3>
+                <p>Once the service is complete, I'll return your wig to the address you provided.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section">
+        <div class="section-title">
+            <h2>Pricing</h2>
+        </div>
+        <div class="price-card">
+            <h3>Wig Renovation Service</h3>
+            <div class="price-amount">€15</div>
+            <p>per wig (excluding shipping costs)</p>
+            <p class="price-note">Shipping costs to and from are at your expense</p>
+        </div>
+    </section>
+
+    <!-- Booking Form Section -->
+    <section class="booking-form-section">
+        <div class="section-title">
+            <h2>Book a Service</h2>
+            <p>Fill out the form below to book your wig renovation service</p>
+        </div>
+        <div class="booking-form-container">
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="wigCount">Number of Wigs to Treat *</label>
+                    <select id="wigCount" class="form-control" required>
+                        <option value="">Select number of wigs</option>
+                        <option value="1">1 Wig</option>
+                        <option value="2">2 Wigs</option>
+                        <option value="3">3 Wigs</option>
+                        <option value="4">4 Wigs</option>
+                        <option value="5">5 Wigs</option>
+                        <option value="more">More than 5</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comments">Comments / Special Requests (Optional)</label>
+                    <textarea id="comments" class="form-control" placeholder="Any specific requirements or notes about your wigs..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Book Service</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Floating Bubbles -->
+    <div class="floating-bubbles">
+        <div class="bubble-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="bubble-btn" onclick="window.location.href='shop.html'">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Shop</span>
+        </div>
+        <div class="bubble-btn" onclick="window.location.href='customerdashboard.html'">
+            <i class="fas fa-user"></i>
+            <span>Account</span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
+       // const API_BASE_URL = 'http://localhost:5001/api';
+        // Dark/Light Mode Toggle
+        const modeToggle = document.querySelector('.mode-toggle');
+        const body = document.body;
+
+        modeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+        }
+
+       // Form submission
+document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Get form data
+    const formData = {
+        customerName: document.getElementById('fullName').value,
+        customerEmail: document.getElementById('email').value,
+        customerPhone: document.getElementById('phone').value,
+        wigCount: document.getElementById('wigCount').value,
+        notes: document.getElementById('comments').value
+    };
+
+    const submitBtn = this.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+
+    try {
+        // Show loading state
+        submitBtn.textContent = 'Booking...';
+        submitBtn.disabled = true;
+
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            throw new Error('Please login to book a service');
+        }
+
+        const response = await fetch(`${API_BASE_URL}/bookings`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showNotification('Booking request submitted successfully! I will contact you shortly.', 'success');
+            document.getElementById('bookingForm').reset();
+            
+            // Redirect to dashboard after a delay
+            setTimeout(() => {
+                window.location.href = 'customerdashboard.html?section=bookings';
+            }, 2000);
+        } else {
+            throw new Error(result.error || 'Failed to submit booking');
+        }
+    } catch (error) {
+        console.error('Booking error:', error);
+        showNotification(error.message, 'error');
+    } finally {
+        // Reset button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+// Show notification function
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    document.querySelectorAll('.booking-notification').forEach(notification => {
+        notification.remove();
+    });
+
+    const notification = document.createElement('div');
+    notification.className = `booking-notification ${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 120px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        z-index: 2000;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        background-color: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#392625'};
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
+    `;
+
+    document.body.appendChild(notification);
+
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(120%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 5000);
+}
+
+        // Function to view orders (from shop page)
+        function viewOrders() {
+            window.location.href = 'customerdashboard.html?section=orders';
+        }
+    </script>
+</body>
+</html>

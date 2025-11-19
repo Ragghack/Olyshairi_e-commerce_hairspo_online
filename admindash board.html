@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-     <head>
+    <head>
     <!-- 🖼️ Favicon (shows in browser tab) -->
 <!-- 🖼️ Favicon (shows in browser tab) -->
 <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
@@ -425,6 +425,32 @@
         color: #d9534f;
       }
 
+      /* Booking Status Badges */
+      .status-pending {
+        background-color: #fef5e7;
+        color: #e58e02;
+      }
+
+      .status-confirmed {
+        background-color: #e6f0ff;
+        color: #2d6bdb;
+      }
+
+      .status-in-progress {
+        background-color: #e6f7ff;
+        color: #1890ff;
+      }
+
+      .status-completed {
+        background-color: #e6f7ee;
+        color: #0c9770;
+      }
+
+      .status-cancelled {
+        background-color: #ffe6e6;
+        color: #d9534f;
+      }
+
       .action-btn {
         padding: 6px 12px;
         background-color: var(--cream);
@@ -599,6 +625,41 @@
 
       .bubble-btn:hover span {
         display: block;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .modal-content {
+        background: var(--card-bg);
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        width: 90%;
+      }
+
+      .detail-section {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--light-bg);
+      }
+
+      .detail-section h4 {
+        margin-bottom: 10px;
+        color: var(--cream);
       }
 
       /* Responsive Design */
@@ -859,13 +920,13 @@
             <i class="fas fa-shopping-cart"></i>
             <span>Orders</span>
           </div>
-          <div class="sidebar-bubble" data-section="users">
-            <i class="fas fa-users"></i>
-            <span>Users</span>
-          </div>
           <div class="sidebar-bubble" data-section="bookings">
             <i class="fas fa-calendar-alt"></i>
             <span>Bookings</span>
+          </div>
+          <div class="sidebar-bubble" data-section="users">
+            <i class="fas fa-users"></i>
+            <span>Users</span>
           </div>
           <div class="sidebar-bubble" data-section="inventory">
             <i class="fas fa-warehouse"></i>
@@ -902,19 +963,19 @@
             <div class="kpi-grid">
               <div class="kpi-card">
                 <h3>Total Sales Today</h3>
-                <div class="value" id="totalSales">$0</div>
+                <div class="value" id="totalSales">€0</div>
               </div>
               <div class="kpi-card">
                 <h3>New Orders</h3>
                 <div class="value" id="newOrders">0</div>
               </div>
               <div class="kpi-card">
-                <h3>Low Stock Products</h3>
-                <div class="value" id="lowStock">0</div>
+                <h3>Pending Bookings</h3>
+                <div class="value" id="pendingBookings">0</div>
               </div>
               <div class="kpi-card">
-                <h3>New Customers</h3>
-                <div class="value" id="newCustomers">0</div>
+                <h3>Booking Revenue</h3>
+                <div class="value" id="bookingRevenue">€0</div>
               </div>
             </div>
 
@@ -925,27 +986,31 @@
                 <canvas id="salesChart" height="250"></canvas>
               </div>
               <div class="chart-container">
-                <h3>Top Selling Products</h3>
-                <canvas id="productsChart" height="250"></canvas>
+                <h3>Booking Status Distribution</h3>
+                <canvas id="bookingsChart" height="250"></canvas>
               </div>
             </div>
 
             <!-- Recent Activity -->
             <div class="dashboard-section">
               <div class="section-header">
-                <h2>Recent Activity</h2>
+                <h2>Recent Bookings</h2>
+                <a href="#" class="view-all" data-section="bookings">View All</a>
               </div>
               <div class="dashboard-card">
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>User</th>
-                      <th>Activity</th>
-                      <th>Time</th>
+                      <th>Customer</th>
+                      <th>Service</th>
+                      <th>Wigs</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody id="recentActivities">
-                    <!-- Activities will be loaded here -->
+                  <tbody id="recentBookings">
+                    <!-- Bookings will be loaded here -->
                   </tbody>
                 </table>
               </div>
@@ -1038,7 +1103,7 @@
                     <option value="brazilian">Brazilian</option>
                     <option value="peruvian">Peruvian</option>
                     <option value="malaysian">Malaysian</option>
-                    <option value="malaysian">Indian</option>
+                    <option value="indian">Indian</option>
                     <option value="accessories">Accessories</option>
                     <option value="extensions">Extensions</option>
                     <option value="wigs">Wigs</option>
@@ -1201,6 +1266,71 @@
             </div>
           </div>
 
+          <!-- Bookings Section -->
+          <div class="content-section" id="bookings">
+            <div class="section-header">
+              <h2>Booking Management</h2>
+              <button class="action-btn" onclick="loadBookings()">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+
+            <!-- Booking Stats -->
+            <div class="kpi-grid" id="bookings-stats">
+              <div class="kpi-card">
+                <h3>Total Bookings</h3>
+                <div class="value" id="totalBookings">0</div>
+              </div>
+              <div class="kpi-card">
+                <h3>Pending</h3>
+                <div class="value" id="pendingBookingsCount">0</div>
+              </div>
+              <div class="kpi-card">
+                <h3>In Progress</h3>
+                <div class="value" id="inProgressBookings">0</div>
+              </div>
+              <div class="kpi-card">
+                <h3>Completed</h3>
+                <div class="value" id="completedBookings">0</div>
+              </div>
+            </div>
+
+            <!-- Bookings Table -->
+            <div class="dashboard-card">
+              <div class="section-header">
+                <h3>All Bookings</h3>
+                <input
+                  type="text"
+                  id="bookingSearch"
+                  class="form-control"
+                  placeholder="Search bookings..."
+                  style="width: 300px"
+                />
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Booking ID</th>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Wigs</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bookingsTableBody">
+                  <!-- Bookings will be loaded here -->
+                </tbody>
+              </table>
+              <div
+                id="bookingsPagination"
+                style="margin-top: 20px; text-align: center"
+              ></div>
+            </div>
+          </div>
+
           <!-- Users Section -->
           <div class="content-section" id="users">
             <div class="section-header">
@@ -1214,6 +1344,7 @@
                     <th>Email</th>
                     <th>Role</th>
                     <th>Orders</th>
+                    <th>Bookings</th>
                     <th>Last Active</th>
                     <th>Actions</th>
                   </tr>
@@ -1249,23 +1380,18 @@
                 <canvas id="salesByMonthChart" height="250"></canvas>
               </div>
               <div class="chart-container">
-                <h3>Orders by Category</h3>
-                <canvas id="ordersByCategoryChart" height="250"></canvas>
+                <h3>Bookings vs Orders</h3>
+                <canvas id="bookingsVsOrdersChart" height="250"></canvas>
               </div>
             </div>
 
             <div class="chart-container">
-              <h3>Customer Growth</h3>
-              <canvas id="customerGrowthChart" height="250"></canvas>
+              <h3>Revenue Breakdown</h3>
+              <canvas id="revenueBreakdownChart" height="250"></canvas>
             </div>
           </div>
 
           <!-- Other sections would be implemented similarly -->
-          <div class="content-section" id="bookings">
-            <h2>Booking Management</h2>
-            <!-- Booking management content -->
-          </div>
-
           <div class="content-section" id="inventory">
             <h2>Inventory Management</h2>
             <!-- Inventory management content -->
@@ -1286,14 +1412,11 @@
 
     <!-- Notification Container -->
     <div id="notificationContainer"></div>
+
     <script>
       // ==================== ENHANCED ADMIN DASHBOARD ====================
-     // Use this at the top of your JavaScript in each file
-const API_BASE_URL = window.location.hostname.includes('localhost') 
-    ? "http://localhost:5001/api" 
-    : "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
-
-console.log("🌐 Using API Base URL:", API_BASE_URL);
+      const API_BASE_URL = "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
+      //const API_BASE_URL = 'http://localhost:5001/api';
       const ENDPOINTS = {
         ADMIN_LOGIN: `${API_BASE_URL}/admin/auth/login`,
         ADMIN_REGISTER: `${API_BASE_URL}/admin/auth/register`,
@@ -1301,6 +1424,9 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
         PRODUCTS: `${API_BASE_URL}/admin/products`,
         PUBLIC_PRODUCTS: `${API_BASE_URL}/products`,
         ORDERS: `${API_BASE_URL}/admin/orders`,
+        BOOKINGS: `${API_BASE_URL}/bookings/all`,
+        UPDATE_BOOKING_STATUS: `${API_BASE_URL}/bookings`,
+        BOOKINGS_STATS: `${API_BASE_URL}/bookings/stats`,
         USERS: `${API_BASE_URL}/admin/users`,
         ACTIVITIES: `${API_BASE_URL}/admin/activities/dashboard-stats`,
         RECENT_ACTIVITIES: `${API_BASE_URL}/admin/activities/recent-activities`,
@@ -1316,10 +1442,12 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
         isTokenVerified: false,
         products: [],
         orders: [],
+        bookings: [],
         users: [],
         currentPage: 1,
         productsPerPage: 10,
         ordersPerPage: 10,
+        bookingsPerPage: 10,
         chartInstances: {},
         dataCache: new Map(),
         apiRetryCount: new Map(),
@@ -1732,6 +1860,9 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
           case "orders":
             await loadOrders();
             break;
+          case "bookings":
+            await loadBookings();
+            break;
           case "users":
             await loadUsers();
             break;
@@ -1744,9 +1875,9 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
       // ==================== ENHANCED DATA LOADING ====================
       async function loadDashboardData() {
         try {
-          const [statsResult, activitiesResult] = await Promise.allSettled([
+          const [statsResult, bookingsResult] = await Promise.allSettled([
             ApiClient.authenticatedRequest(ENDPOINTS.ACTIVITIES),
-            ApiClient.authenticatedRequest(ENDPOINTS.RECENT_ACTIVITIES),
+            ApiClient.authenticatedRequest(ENDPOINTS.BOOKINGS),
           ]);
 
           // Update dashboard stats
@@ -1756,69 +1887,24 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
             updateDashboardStats({
               totalSalesToday: 1250,
               newOrdersCount: 8,
-              lowStockProducts: 3,
-              newCustomersCount: 5,
+              pendingBookings: 3,
+              bookingRevenue: 150,
             });
           }
 
-          // Update recent activities
-          if (
-            activitiesResult.status === "fulfilled" &&
-            activitiesResult.value.ok
-          ) {
-            updateRecentActivities(activitiesResult.value.data.activities);
+          // Update recent bookings
+          if (bookingsResult.status === "fulfilled" && bookingsResult.value.ok) {
+            updateRecentBookings(bookingsResult.value.data.bookings?.slice(0, 5) || []);
           } else {
-            updateRecentActivities([
-              {
-                user: { firstName: "John", lastName: "Doe" },
-                description: "Placed a new order",
-                createdAt: new Date(Date.now() - 300000),
-              },
-            ]);
+            updateRecentBookings(getMockBookings(5));
           }
+
+          // Initialize charts
+          initializeDashboardCharts();
         } catch (error) {
           ErrorHandler.handleApiError(error, "Dashboard data loading");
         }
       }
-
-      // ==================== MISSING FUNCTION - ADD THIS ====================
-      function updateRecentActivities(activities) {
-        const activitiesContainer = document.getElementById("recentActivities");
-        if (!activitiesContainer) {
-          console.warn("❌ Recent activities container not found");
-          return;
-        }
-
-        activitiesContainer.innerHTML = "";
-
-        if (!activities || activities.length === 0) {
-          activitiesContainer.innerHTML =
-            '<tr><td colspan="3" style="text-align: center;">No recent activities</td></tr>';
-          return;
-        }
-
-        activities.forEach((activity) => {
-          const row = document.createElement("tr");
-          const userName = activity.user
-            ? `${SecurityUtils.sanitizeInput(
-                activity.user.firstName
-              )} ${SecurityUtils.sanitizeInput(activity.user.lastName)}`
-            : "Anonymous";
-          const timeAgo = getTimeAgo(new Date(activity.createdAt));
-
-          row.innerHTML = `
-                <td>${userName}</td>
-                <td>${SecurityUtils.sanitizeInput(activity.description)}</td>
-                <td>${timeAgo}</td>
-            `;
-
-          activitiesContainer.appendChild(row);
-        });
-
-        console.log(`✅ Updated ${activities.length} recent activities`);
-      }
-
-      // ==================== ENHANCED UTILITY FUNCTIONS ====================
 
       function updateDashboardStats(stats) {
         document.getElementById("totalSales").textContent = `€${
@@ -1826,25 +1912,376 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
         }`;
         document.getElementById("newOrders").textContent =
           stats.newOrdersCount || 0;
-        document.getElementById("lowStock").textContent =
-          stats.lowStockProducts || 0;
-        document.getElementById("newCustomers").textContent =
-          stats.newCustomersCount || 0;
+        document.getElementById("pendingBookings").textContent =
+          stats.pendingBookings || 0;
+        document.getElementById("bookingRevenue").textContent = `€${
+          stats.bookingRevenue || 0
+        }`;
       }
 
-      function getTimeAgo(date) {
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
+      function updateRecentBookings(bookings) {
+        const container = document.getElementById("recentBookings");
+        if (!container) {
+          console.warn("❌ Recent bookings container not found");
+          return;
+        }
 
-        if (diffMins < 1) return "Just now";
-        if (diffMins < 60) return `${diffMins} minutes ago`;
-        if (diffHours < 24) return `${diffHours} hours ago`;
-        if (diffDays < 7) return `${diffDays} days ago`;
+        container.innerHTML = "";
 
-        return date.toLocaleDateString();
+        if (!bookings || bookings.length === 0) {
+          container.innerHTML =
+            '<tr><td colspan="6" style="text-align: center;">No recent bookings</td></tr>';
+          return;
+        }
+
+        bookings.forEach((booking) => {
+          const row = document.createElement("tr");
+          const customerName = booking.customerName || 
+                             (booking.userId ? `${booking.userId.firstName} ${booking.userId.lastName}` : 'Unknown');
+          const statusClass = `status-${booking.status.replace('_', '-')}`;
+          const createdDate = new Date(booking.createdAt).toLocaleDateString();
+
+          row.innerHTML = `
+                <td>${SecurityUtils.sanitizeInput(customerName)}</td>
+                <td>${booking.service || 'Wig Renovation'}</td>
+                <td>${booking.wigCount}</td>
+                <td><span class="status-badge ${statusClass}">${booking.status}</span></td>
+                <td>${createdDate}</td>
+                <td>
+                    <button class="action-btn view-booking" data-id="${booking._id}">View</button>
+                </td>
+            `;
+
+          container.appendChild(row);
+        });
+
+        // Add event listeners
+        document.querySelectorAll('.view-booking').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const bookingId = e.target.dataset.id;
+            viewBookingDetails(bookingId);
+          });
+        });
+
+        console.log(`✅ Updated ${bookings.length} recent bookings`);
+      }
+
+      function initializeDashboardCharts() {
+        try {
+          // Sales Trend Chart
+          ChartManager.create("salesChart", {
+            type: "line",
+            data: {
+              labels: Array.from({ length: 30 }, (_, i) => (i + 1).toString()),
+              datasets: [
+                {
+                  label: "Daily Sales (€)",
+                  data: Array.from(
+                    { length: 30 },
+                    () => Math.floor(Math.random() * 5000) + 1000
+                  ),
+                  borderColor: "#392625",
+                  backgroundColor: "rgba(57, 38, 37, 0.1)",
+                  tension: 0.4,
+                  fill: true,
+                },
+              ],
+            },
+          });
+
+          // Bookings Status Chart
+          ChartManager.create("bookingsChart", {
+            type: "doughnut",
+            data: {
+              labels: ["Pending", "Confirmed", "In Progress", "Completed", "Cancelled"],
+              datasets: [
+                {
+                  data: [5, 3, 2, 8, 1],
+                  backgroundColor: ["#e58e02", "#2d6bdb", "#1890ff", "#0c9770", "#d9534f"],
+                },
+              ],
+            },
+          });
+
+          console.log("✅ Dashboard charts initialized successfully");
+        } catch (error) {
+          console.error("❌ Dashboard chart initialization error:", error);
+        }
+      }
+
+      // ==================== ENHANCED BOOKINGS MANAGEMENT ====================
+      async function loadBookings() {
+        try {
+          console.log('🔄 Loading bookings...');
+          
+          const [bookingsResult, statsResult] = await Promise.all([
+            ApiClient.authenticatedRequest(ENDPOINTS.BOOKINGS),
+            ApiClient.authenticatedRequest(ENDPOINTS.BOOKINGS_STATS)
+          ]);
+
+          if (bookingsResult.ok) {
+            AppState.bookings = bookingsResult.data.bookings || [];
+            renderBookings(AppState.bookings);
+          } else {
+            // Fallback to mock data
+            const mockBookings = getMockBookings();
+            AppState.bookings = mockBookings;
+            renderBookings(mockBookings);
+            showNotification('Using demo bookings data', 'warning');
+          }
+
+          if (statsResult.ok) {
+            updateBookingStats(statsResult.data.stats);
+          } else {
+            updateBookingStatsFromBookings(AppState.bookings);
+          }
+        } catch (error) {
+          ErrorHandler.handleApiError(error, 'Bookings loading');
+        }
+      }
+
+      function renderBookings(bookings) {
+        const tableBody = document.getElementById('bookingsTableBody');
+        if (!tableBody) return;
+
+        tableBody.innerHTML = '';
+
+        if (!bookings || bookings.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center;">No bookings found</td>
+            </tr>
+          `;
+          return;
+        }
+
+        bookings.forEach((booking) => {
+          const row = document.createElement('tr');
+          const customerName = booking.customerName || 
+                             (booking.userId ? `${booking.userId.firstName} ${booking.userId.lastName}` : 'Unknown');
+          const customerEmail = booking.customerEmail || 
+                              (booking.userId ? booking.userId.email : 'N/A');
+          const statusClass = `status-${booking.status.replace('_', '-')}`;
+          const createdDate = new Date(booking.createdAt).toLocaleDateString();
+
+          row.innerHTML = `
+            <td>#${booking._id.substring(0, 8)}...</td>
+            <td>
+              <div><strong>${SecurityUtils.sanitizeInput(customerName)}</strong></div>
+              <small>${SecurityUtils.sanitizeInput(customerEmail)}</small>
+            </td>
+            <td>${booking.service || 'Wig Renovation'}</td>
+            <td>${booking.wigCount}</td>
+            <td>€${booking.totalPrice || (booking.wigCount * 15)}</td>
+            <td><span class="status-badge ${statusClass}">${booking.status}</span></td>
+            <td>${createdDate}</td>
+            <td>
+              <button class="action-btn view-booking" data-id="${booking._id}">View</button>
+              <button class="action-btn btn-warning update-booking-status" data-id="${booking._id}">Update</button>
+            </td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+
+        // Add event listeners
+        document.querySelectorAll('.view-booking').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const bookingId = e.target.dataset.id;
+            viewBookingDetails(bookingId);
+          });
+        });
+
+        document.querySelectorAll('.update-booking-status').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const bookingId = e.target.dataset.id;
+            updateBookingStatus(bookingId);
+          });
+        });
+      }
+
+      function updateBookingStats(stats) {
+        document.getElementById('totalBookings').textContent = stats.totalBookings || 0;
+        document.getElementById('pendingBookingsCount').textContent = stats.pendingBookings || 0;
+        document.getElementById('inProgressBookings').textContent = stats.inProgressBookings || 0;
+        document.getElementById('completedBookings').textContent = stats.completedBookings || 0;
+      }
+
+      function updateBookingStatsFromBookings(bookings) {
+        const totalBookings = bookings.length;
+        const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+        const inProgressBookings = bookings.filter(b => b.status === 'in_progress').length;
+        const completedBookings = bookings.filter(b => b.status === 'completed').length;
+
+        document.getElementById('totalBookings').textContent = totalBookings;
+        document.getElementById('pendingBookingsCount').textContent = pendingBookings;
+        document.getElementById('inProgressBookings').textContent = inProgressBookings;
+        document.getElementById('completedBookings').textContent = completedBookings;
+      }
+
+      function getMockBookings(limit = null) {
+        const mockBookings = [
+          {
+            _id: 'booking_1',
+            customerName: 'Sarah Johnson',
+            customerEmail: 'sarah@example.com',
+            service: 'Wig Renovation',
+            wigCount: 2,
+            totalPrice: 30,
+            status: 'pending',
+            createdAt: new Date(),
+            estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            notes: 'Please handle with care, sentimental value'
+          },
+          {
+            _id: 'booking_2',
+            customerName: 'Maria Rodriguez',
+            customerEmail: 'maria@example.com',
+            service: 'Wig Renovation',
+            wigCount: 1,
+            totalPrice: 15,
+            status: 'confirmed',
+            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            estimatedCompletion: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+          },
+          {
+            _id: 'booking_3',
+            customerName: 'David Smith',
+            customerEmail: 'david@example.com',
+            service: 'Wig Renovation',
+            wigCount: 3,
+            totalPrice: 45,
+            status: 'in_progress',
+            createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+            estimatedCompletion: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+            notes: 'Urgent - needed for event'
+          },
+          {
+            _id: 'booking_4',
+            customerName: 'Lisa Chen',
+            customerEmail: 'lisa@example.com',
+            service: 'Wig Renovation',
+            wigCount: 1,
+            totalPrice: 15,
+            status: 'completed',
+            createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+            estimatedCompletion: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+          }
+        ];
+        
+        return limit ? mockBookings.slice(0, limit) : mockBookings;
+      }
+
+      async function viewBookingDetails(bookingId) {
+        try {
+          const booking = AppState.bookings.find(b => b._id === bookingId);
+          if (!booking) {
+            showNotification('Booking not found', 'error');
+            return;
+          }
+
+          const customerName = booking.customerName || 
+                             (booking.userId ? `${booking.userId.firstName} ${booking.userId.lastName}` : 'Unknown');
+          
+          const modalHTML = `
+            <div class="modal-overlay">
+              <div class="modal-content">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                  <h3>Booking Details</h3>
+                  <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+                </div>
+                
+                <div class="booking-details">
+                  <div class="detail-section">
+                    <h4>Customer Information</h4>
+                    <p><strong>Name:</strong> ${customerName}</p>
+                    <p><strong>Email:</strong> ${booking.customerEmail || (booking.userId?.email || 'N/A')}</p>
+                    <p><strong>Phone:</strong> ${booking.customerPhone || 'N/A'}</p>
+                  </div>
+                  
+                  <div class="detail-section">
+                    <h4>Service Details</h4>
+                    <p><strong>Service:</strong> ${booking.service || 'Wig Renovation'}</p>
+                    <p><strong>Number of Wigs:</strong> ${booking.wigCount}</p>
+                    <p><strong>Total Price:</strong> €${booking.totalPrice || (booking.wigCount * 15)}</p>
+                    <p><strong>Status:</strong> <span class="status-badge status-${booking.status.replace('_', '-')}">${booking.status}</span></p>
+                  </div>
+                  
+                  ${booking.notes ? `
+                  <div class="detail-section">
+                    <h4>Customer Notes</h4>
+                    <p>${booking.notes}</p>
+                  </div>
+                  ` : ''}
+                  
+                  <div class="detail-section">
+                    <h4>Timeline</h4>
+                    <p><strong>Created:</strong> ${new Date(booking.createdAt).toLocaleString()}</p>
+                    ${booking.estimatedCompletion ? `
+                    <p><strong>Estimated Completion:</strong> ${new Date(booking.estimatedCompletion).toLocaleString()}</p>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          document.body.insertAdjacentHTML('beforeend', modalHTML);
+        } catch (error) {
+          console.error('View booking error:', error);
+          showNotification('Failed to load booking details', 'error');
+        }
+      }
+
+      async function updateBookingStatus(bookingId) {
+        try {
+          const booking = AppState.bookings.find(b => b._id === bookingId);
+          if (!booking) {
+            showNotification('Booking not found', 'error');
+            return;
+          }
+
+          const newStatus = prompt('Enter new status (pending, confirmed, in_progress, completed, cancelled):', booking.status);
+          
+          if (!newStatus || !['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'].includes(newStatus)) {
+            showNotification('Invalid status', 'error');
+            return;
+          }
+
+          let estimatedCompletion = booking.estimatedCompletion;
+          if (newStatus === 'confirmed' && !estimatedCompletion) {
+            const completionDate = prompt('Enter estimated completion date (YYYY-MM-DD):');
+            if (completionDate) {
+              estimatedCompletion = new Date(completionDate);
+            }
+          }
+
+          const result = await ApiClient.authenticatedRequest(
+            `${ENDPOINTS.UPDATE_BOOKING_STATUS}/${bookingId}/status`,
+            {
+              method: 'PUT',
+              body: JSON.stringify({
+                status: newStatus,
+                estimatedCompletion: estimatedCompletion || undefined
+              })
+            }
+          );
+
+          if (result.ok) {
+            showNotification('Booking status updated successfully', 'success');
+            loadBookings(); // Refresh the list
+          } else {
+            throw new Error(result.error);
+          }
+        } catch (error) {
+          console.error('Update booking status error:', error);
+          showNotification('Failed to update booking status', 'error');
+        }
+      }
+
+      function closeModal() {
+        const modal = document.querySelector('.modal-overlay');
+        if (modal) modal.remove();
       }
 
       // ==================== ENHANCED ORDERS MANAGEMENT ====================
@@ -1918,13 +2355,12 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
           tableBody.appendChild(row);
         });
 
-// Update the event listeners in loadOrders() function:
-document.querySelectorAll(".view-order").forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    const orderId = e.target.dataset.id;
-    viewOrder(orderId); // ✅ NOW WORKS
-  });
-});
+        document.querySelectorAll(".view-order").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const orderId = e.target.dataset.id;
+            viewOrder(orderId);
+          });
+        });
 
         document.querySelectorAll(".update-status").forEach((btn) => {
           btn.addEventListener("click", (e) => {
@@ -1974,36 +2410,7 @@ document.querySelectorAll(".view-order").forEach((btn) => {
             itemCount: 3,
             paymentStatus: "paid",
           },
-          {
-            orderNumber: "OL-" + (Date.now() - 2000000),
-            customerName: "Another Customer",
-            status: "pending",
-            totalAmount: 199.99,
-            orderDate: new Date(Date.now() - 172800000),
-            itemCount: 1,
-            paymentStatus: "pending",
-          },
         ];
-      }
-
-      function filterOrders() {
-        const searchTerm = document
-          .getElementById("orderSearch")
-          .value.toLowerCase();
-
-        if (!searchTerm) {
-          renderOrders(AppState.orders);
-          return;
-        }
-
-        const filteredOrders = AppState.orders.filter(
-          (order) =>
-            order.orderNumber.toLowerCase().includes(searchTerm) ||
-            order.customerName.toLowerCase().includes(searchTerm) ||
-            order.status.toLowerCase().includes(searchTerm)
-        );
-
-        renderOrders(filteredOrders);
       }
 
       function viewOrder(orderId) {
@@ -2015,6 +2422,11 @@ document.querySelectorAll(".view-order").forEach((btn) => {
           "Update order status functionality coming soon",
           "info"
         );
+      }
+
+      function refreshOrders() {
+        CacheManager.clear("orders");
+        loadOrders();
       }
 
       // ==================== ENHANCED PRODUCTS MANAGEMENT ====================
@@ -2102,27 +2514,6 @@ document.querySelectorAll(".view-order").forEach((btn) => {
             deleteProduct(productId);
           });
         });
-      }
-
-      function filterProducts() {
-        const searchTerm = document
-          .getElementById("productSearch")
-          .value.toLowerCase();
-
-        if (!searchTerm) {
-          renderProducts(AppState.products);
-          return;
-        }
-
-        const filteredProducts = AppState.products.filter(
-          (product) =>
-            product.name.toLowerCase().includes(searchTerm) ||
-            (product.category &&
-              product.category.toLowerCase().includes(searchTerm)) ||
-            (product.type && product.type.toLowerCase().includes(searchTerm))
-        );
-
-        renderProducts(filteredProducts);
       }
 
       async function handleAddProduct(e) {
@@ -2242,69 +2633,6 @@ document.querySelectorAll(".view-order").forEach((btn) => {
         }
       }
 
-      // ==================== ENHANCED USERS MANAGEMENT ====================
-      async function loadUsers() {
-        try {
-          const result = await ApiClient.authenticatedRequest(ENDPOINTS.USERS);
-
-          if (result.ok) {
-            AppState.users = result.data.users || [];
-            renderUsers(AppState.users);
-          } else {
-            // Mock users data for demo
-            renderUsers([
-              {
-                firstName: "John",
-                lastName: "Doe",
-                email: "john@example.com",
-                role: "Customer",
-                orderCount: 3,
-                lastLogin: new Date(Date.now() - 86400000),
-              },
-            ]);
-            showNotification("Using demo users data", "warning");
-          }
-        } catch (error) {
-          ErrorHandler.handleApiError(error, "Users loading");
-        }
-      }
-
-      function renderUsers(users) {
-        const tableBody = document.getElementById("usersTableBody");
-        if (!tableBody) return;
-
-        tableBody.innerHTML = "";
-
-        if (!users || users.length === 0) {
-          tableBody.innerHTML =
-            '<tr><td colspan="6" style="text-align: center;">No users found</td></tr>';
-          return;
-        }
-
-        users.forEach((user) => {
-          const row = document.createElement("tr");
-          const lastActive = user.lastLogin
-            ? getTimeAgo(new Date(user.lastLogin))
-            : "Never";
-
-          row.innerHTML = `
-                <td>${SecurityUtils.sanitizeInput(
-                  user.firstName
-                )} ${SecurityUtils.sanitizeInput(user.lastName)}</td>
-                <td>${SecurityUtils.sanitizeInput(user.email)}</td>
-                <td>${SecurityUtils.sanitizeInput(user.role)}</td>
-                <td>${user.orderCount || 0}</td>
-                <td>${lastActive}</td>
-                <td>
-                    <button class="action-btn">Edit</button>
-                    <button class="action-btn btn-danger">Suspend</button>
-                </td>
-            `;
-
-          tableBody.appendChild(row);
-        });
-      }
-
       // ==================== ENHANCED REPORTS & CHARTS ====================
       async function loadReports() {
         const days = document.getElementById("reportRange").value;
@@ -2336,72 +2664,22 @@ document.querySelectorAll(".view-order").forEach((btn) => {
         }
       }
 
-      function initializeChartsWithData(data) {
-        // Implement chart initialization with real data
-        initializeChartsWithMockData(); // Fallback for now
-      }
-
       function initializeChartsWithMockData() {
         try {
-          // Sales Trend Chart
-          ChartManager.create("salesChart", {
-            type: "line",
-            data: {
-              labels: Array.from({ length: 30 }, (_, i) => (i + 1).toString()),
-              datasets: [
-                {
-                  label: "Daily Sales ($)",
-                  data: Array.from(
-                    { length: 30 },
-                    () => Math.floor(Math.random() * 5000) + 1000
-                  ),
-                  borderColor: "#392625",
-                  backgroundColor: "rgba(57, 38, 37, 0.1)",
-                  tension: 0.4,
-                  fill: true,
-                },
-              ],
-            },
-          });
-
-          // Products Chart
-          ChartManager.create("productsChart", {
-            type: "doughnut",
-            data: {
-              labels: ["Brazilian", "Peruvian", "Malaysian", "Accessories","Indian"],
-              datasets: [
-                {
-                  data: [45, 25, 20, 10],
-                  backgroundColor: ["#392625", "#6d4c3d", "#9f735f", "#d1b9a8"],
-                },
-              ],
-            },
-          });
-
           // Sales by Month Chart
           ChartManager.create("salesByMonthChart", {
             type: "bar",
             data: {
               labels: [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec",
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
               ],
               datasets: [
                 {
-                  label: "Sales ($)",
+                  label: "Sales (€)",
                   data: [
-                    12000, 19000, 15000, 21000, 18000, 25000, 22000, 29000,
-                    23000, 28000, 32000, 40000,
+                    12000, 19000, 15000, 21000, 18000, 25000, 
+                    22000, 29000, 23000, 28000, 32000, 40000
                   ],
                   backgroundColor: "#392625",
                 },
@@ -2409,64 +2687,43 @@ document.querySelectorAll(".view-order").forEach((btn) => {
             },
           });
 
-          // Orders by Category Chart
-          ChartManager.create("ordersByCategoryChart", {
+          // Bookings vs Orders Chart
+          ChartManager.create("bookingsVsOrdersChart", {
+            type: "bar",
+            data: {
+              labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+              datasets: [
+                {
+                  label: "Bookings",
+                  data: [15, 22, 18, 25, 20, 30],
+                  backgroundColor: "#392625",
+                },
+                {
+                  label: "Orders",
+                  data: [45, 52, 48, 55, 50, 65],
+                  backgroundColor: "#6d4c3d",
+                },
+              ],
+            },
+          });
+
+          // Revenue Breakdown Chart
+          ChartManager.create("revenueBreakdownChart", {
             type: "pie",
             data: {
-              labels: ["Brazilian", "Peruvian", "Malaysian", "Indian", "Accessories"],
+              labels: ["Product Sales", "Wig Services", "Accessories"],
               datasets: [
                 {
-                  data: [120, 80, 60, 40],
-                  backgroundColor: ["#392625", "#6d4c3d", "#9f735f", "#d1b9a8"],
+                  data: [65, 25, 10],
+                  backgroundColor: ["#392625", "#6d4c3d", "#9f735f"],
                 },
               ],
             },
           });
 
-          // Customer Growth Chart
-          ChartManager.create("customerGrowthChart", {
-            type: "line",
-            data: {
-              labels: [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec",
-              ],
-              datasets: [
-                {
-                  label: "New Customers",
-                  data: [45, 52, 38, 60, 55, 68, 62, 75, 80, 92, 88, 105],
-                  borderColor: "#392625",
-                  backgroundColor: "rgba(57, 38, 37, 0.1)",
-                  tension: 0.4,
-                  fill: true,
-                },
-                {
-                  label: "Returning Customers",
-                  data: [
-                    120, 125, 118, 130, 135, 142, 138, 150, 155, 165, 170, 185,
-                  ],
-                  borderColor: "#6d4c3d",
-                  backgroundColor: "rgba(109, 76, 61, 0.1)",
-                  tension: 0.4,
-                  fill: true,
-                },
-              ],
-            },
-          });
-
-          console.log("✅ Charts initialized successfully");
+          console.log("✅ Report charts initialized successfully");
         } catch (error) {
-          console.error("❌ Chart initialization error:", error);
+          console.error("❌ Report chart initialization error:", error);
         }
       }
 
@@ -2598,11 +2855,6 @@ document.querySelectorAll(".view-order").forEach((btn) => {
         showLogin();
       }
 
-      function refreshOrders() {
-        CacheManager.clear("orders");
-        loadOrders();
-      }
-
       // ==================== ENHANCED PERFORMANCE MONITORING ====================
       function setupPerformanceMonitoring() {
         // Monitor memory usage
@@ -2621,24 +2873,6 @@ document.querySelectorAll(".view-order").forEach((btn) => {
             }
           }, 30000);
         }
-
-        // Monitor API response times
-        const originalFetch = window.fetch;
-        window.fetch = async function (...args) {
-          const start = performance.now();
-          const response = await originalFetch.apply(this, args);
-          const end = performance.now();
-
-          if (end - start > 5000) {
-            // 5 seconds threshold
-            console.warn(
-              `🐌 Slow API response: ${(end - start).toFixed(2)}ms for`,
-              args[0]
-            );
-          }
-
-          return response;
-        };
       }
 
       // ==================== ENHANCED UTILITY FUNCTIONS ====================
@@ -2680,56 +2914,6 @@ document.querySelectorAll(".view-order").forEach((btn) => {
           timeout = setTimeout(later, wait);
           if (callNow) func(...args);
         };
-      }
-
-      function renderPagination(paginationData, type) {
-        const paginationContainer = document.getElementById(
-          `${type}Pagination`
-        );
-        if (!paginationContainer || !paginationData) return;
-
-        paginationContainer.innerHTML = "";
-
-        const { totalPages, currentPage, total, hasNext, hasPrev } =
-          paginationData;
-
-        if (!totalPages || totalPages <= 1) return;
-
-        // Previous button
-        if (hasPrev) {
-          const prevBtn = document.createElement("button");
-          prevBtn.className = "action-btn";
-          prevBtn.textContent = "Previous";
-          prevBtn.addEventListener("click", () => {
-            if (type === "products") loadProducts(currentPage - 1);
-          });
-          paginationContainer.appendChild(prevBtn);
-        }
-
-        // Page numbers
-        for (let i = 1; i <= totalPages; i++) {
-          const pageBtn = document.createElement("button");
-          pageBtn.className = `action-btn ${
-            i === currentPage ? "btn-success" : ""
-          }`;
-          pageBtn.textContent = i;
-          pageBtn.style.margin = "0 5px";
-          pageBtn.addEventListener("click", () => {
-            if (type === "products") loadProducts(i);
-          });
-          paginationContainer.appendChild(pageBtn);
-        }
-
-        // Next button
-        if (hasNext) {
-          const nextBtn = document.createElement("button");
-          nextBtn.className = "action-btn";
-          nextBtn.textContent = "Next";
-          nextBtn.addEventListener("click", () => {
-            if (type === "products") loadProducts(currentPage + 1);
-          });
-          paginationContainer.appendChild(nextBtn);
-        }
       }
 
       // ==================== ENHANCED EVENT LISTENER SETUP ====================
@@ -2787,6 +2971,11 @@ document.querySelectorAll(".view-order").forEach((btn) => {
           orderSearch.addEventListener("input", debounce(filterOrders, 500));
         }
 
+        const bookingSearch = document.getElementById("bookingSearch");
+        if (bookingSearch) {
+          bookingSearch.addEventListener("input", debounce(filterBookings, 500));
+        }
+
         // Report range change
         const reportRange = document.getElementById("reportRange");
         if (reportRange) {
@@ -2819,6 +3008,46 @@ document.querySelectorAll(".view-order").forEach((btn) => {
             switchSection(sectionId);
           });
         });
+      }
+
+      // Search and filter functions
+      function filterProducts() {
+        const searchTerm = document.getElementById("productSearch").value.toLowerCase();
+        if (!searchTerm) {
+          renderProducts(AppState.products);
+          return;
+        }
+        const filteredProducts = AppState.products.filter(product =>
+          product.name.toLowerCase().includes(searchTerm) ||
+          product.category.toLowerCase().includes(searchTerm)
+        );
+        renderProducts(filteredProducts);
+      }
+
+      function filterOrders() {
+        const searchTerm = document.getElementById("orderSearch").value.toLowerCase();
+        if (!searchTerm) {
+          renderOrders(AppState.orders);
+          return;
+        }
+        const filteredOrders = AppState.orders.filter(order =>
+          order.orderNumber.toLowerCase().includes(searchTerm) ||
+          order.customerName.toLowerCase().includes(searchTerm)
+        );
+        renderOrders(filteredOrders);
+      }
+
+      function filterBookings() {
+        const searchTerm = document.getElementById("bookingSearch").value.toLowerCase();
+        if (!searchTerm) {
+          renderBookings(AppState.bookings);
+          return;
+        }
+        const filteredBookings = AppState.bookings.filter(booking =>
+          booking.customerName.toLowerCase().includes(searchTerm) ||
+          booking.status.toLowerCase().includes(searchTerm)
+        );
+        renderBookings(filteredBookings);
       }
 
       // ==================== KEEP EXISTING UI CONTROLS ====================
@@ -2865,77 +3094,6 @@ document.querySelectorAll(".view-order").forEach((btn) => {
           header.style.padding = "20px 40px";
         }
       });
-      // 🎯 IMPLEMENT VIEW ORDER FUNCTIONALITY
-async function viewOrder(orderId) {
-  try {
-    showLoading(true);
-    
-    const result = await ApiClient.authenticatedRequest(
-      `${ENDPOINTS.ORDERS}/${orderId}`
-    );
-
-    if (result.ok) {
-      // Create order details modal
-      showOrderDetailsModal(result.data.order);
-    } else {
-      throw new Error(result.error);
-    }
-  } catch (error) {
-    console.error('View order error:', error);
-    showNotification('Failed to load order details', 'error');
-  } finally {
-    showLoading(false);
-  }
-}
-
-function showOrderDetailsModal(order) {
-  const modalHTML = `
-    <div class="modal-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;">
-      <div class="modal-content" style="background:var(--card-bg);padding:30px;border-radius:10px;max-width:800px;max-height:90vh;overflow-y:auto;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-          <h3>Order Details: ${order.orderNumber}</h3>
-          <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
-        </div>
-        
-        <!-- Order Details Content -->
-        <div class="order-details">
-          <div class="customer-info">
-            <h4>Customer Information</h4>
-            <p><strong>Name:</strong> ${order.customerInfo.name}</p>
-            <p><strong>Email:</strong> ${order.customerInfo.email}</p>
-            <p><strong>Phone:</strong> ${order.customerInfo.phone}</p>
-          </div>
-          
-          <div class="order-items" style="margin:20px 0;">
-            <h4>Order Items (${order.items.length})</h4>
-            ${order.items.map(item => `
-              <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;">
-                <div>
-                  <strong>${item.name}</strong><br>
-                  <small>SKU: ${item.sku} | Qty: ${item.quantity}</small>
-                </div>
-                <div>€${(item.price * item.quantity).toFixed(2)}</div>
-              </div>
-            `).join('')}
-          </div>
-          
-          <div class="order-totals">
-            <p><strong>Total Amount: €${order.totalAmount.toFixed(2)}</strong></p>
-            <p><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span></p>
-            <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
-
-function closeModal() {
-  const modal = document.querySelector('.modal-overlay');
-  if (modal) modal.remove();
-}
 
       // System Diagnostics
       async function runDiagnostics() {
@@ -2954,41 +3112,19 @@ function closeModal() {
             diagnosticLog += "❌ FAILED\n";
           }
 
-          // Test 2: Public products API
-          diagnosticLog += "2. Testing public products API... ";
-          const publicResult = await ApiClient.request(
-            ENDPOINTS.PUBLIC_PRODUCTS
+          // Test 2: Bookings API
+          diagnosticLog += "2. Testing bookings API... ";
+          const bookingsResult = await ApiClient.authenticatedRequest(
+            ENDPOINTS.BOOKINGS
           );
-          if (publicResult.ok) {
-            diagnosticLog += `✅ SUCCESS (${publicResult.data.length} products)\n`;
+          if (bookingsResult.ok) {
+            diagnosticLog += `✅ SUCCESS (${bookingsResult.data.bookings?.length || 0} bookings)\n`;
           } else {
             diagnosticLog += "❌ FAILED\n";
           }
 
-          // Test 3: Admin products API
-          diagnosticLog += "3. Testing admin products API... ";
-          const adminProductsResponse = await ApiClient.authenticatedRequest(
-            ENDPOINTS.PRODUCTS
-          );
-          if (adminProductsResponse.ok) {
-            diagnosticLog += "✅ SUCCESS\n";
-          } else {
-            diagnosticLog += "❌ FAILED\n";
-          }
-
-          // Test 4: Admin orders API
-          diagnosticLog += "4. Testing admin orders API... ";
-          const adminOrdersResponse = await ApiClient.authenticatedRequest(
-            ENDPOINTS.ORDERS
-          );
-          if (adminOrdersResponse.ok) {
-            diagnosticLog += "✅ SUCCESS\n";
-          } else {
-            diagnosticLog += "❌ FAILED\n";
-          }
-
-          // Test 5: Check localStorage
-          diagnosticLog += "5. Checking authentication... ";
+          // Test 3: Check authentication
+          diagnosticLog += "3. Checking authentication... ";
           const token = localStorage.getItem("adminToken");
           if (token) {
             diagnosticLog += "✅ Token exists\n";
@@ -2996,8 +3132,8 @@ function closeModal() {
             diagnosticLog += "❌ No token found\n";
           }
 
-          // Test 6: Check current user
-          diagnosticLog += "6. Current user state... ";
+          // Test 4: Check current user
+          diagnosticLog += "4. Current user state... ";
           if (AppState.currentUser) {
             diagnosticLog += `✅ ${AppState.currentUser.firstName} ${AppState.currentUser.lastName}\n`;
           } else {
