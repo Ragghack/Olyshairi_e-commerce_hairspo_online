@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <!-- 🖼️ Favicon (shows in browser tab) -->
+    <!-- 🖼️ Favicon (s'affiche dans l'onglet du navigateur) -->
     <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
-    <!-- Optional for Apple/Android homescreens -->
+    <!-- Optionnel pour les écrans d'accueil Apple/Android -->
     <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
 
-    <!-- 🔍 Google Structured Data (shows logo in search results) -->
+    <!-- 🔍 Données Structurées Google (affiche le logo dans les résultats de recherche) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -64,7 +64,7 @@
             color: var(--cream);
         }
         
-        /* Header Styles */
+        /* Styles de l'en-tête */
         header {
             display: flex;
             justify-content: space-between;
@@ -117,7 +117,7 @@
             display: block;
         }
         
-        /* Mobile Navigation */
+        /* Navigation mobile */
         .mobile-menu-toggle {
             display: none;
             flex-direction: column;
@@ -177,7 +177,7 @@
             cursor: pointer;
         }
         
-        /* Dark/Light Mode Toggle */
+        /* Bouton Mode Sombre/Clair */
         .mode-toggle {
             position: relative;
             width: 50px;
@@ -220,7 +220,7 @@
             margin-left: auto;
         }
         
-        /* Page Content */
+        /* Contenu de la page */
         .page-content {
             margin-top: 100px;
             padding: 20px;
@@ -242,7 +242,7 @@
             font-size: 1rem;
         }
         
-        /* Collections Grid */
+        /* Grille des collections */
         .collections-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -333,7 +333,7 @@
             background-color: var(--dark-gray);
         }
         
-        /* Video Carousel Styles - Mobile Optimized */
+        /* Styles du carrousel vidéo - Optimisé pour mobile */
         .video-showcase {
             margin-bottom: 60px;
         }
@@ -357,7 +357,7 @@
         }
         
         .video-item {
-            flex: 0 0 100%; /* Show 1 video at a time on mobile */
+            flex: 0 0 100%; /* Afficher 1 vidéo à la fois sur mobile */
             min-width: 0;
             background-color: var(--card-bg);
             border-radius: 12px;
@@ -371,10 +371,10 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         
-        /* Mobile Optimized Video Player */
+        /* Lecteur vidéo optimisé pour mobile */
         .video-player {
             width: 100%;
-            height: 300px; /* Reduced height for mobile */
+            height: 300px; /* Hauteur réduite pour mobile */
             background-color: #000;
             display: flex;
             justify-content: center;
@@ -459,7 +459,7 @@
             transform: scale(1.2);
         }
         
-        /* Local Video Styles */
+        /* Styles des vidéos locales */
         .local-video {
             width: 100% !important;
             height: 100% !important;
@@ -468,7 +468,7 @@
             background: #000;
         }
         
-        /* TikTok Video Placeholder Styles */
+        /* Styles des placeholders TikTok */
         .tiktok-placeholder {
             width: 100%;
             height: 100%;
@@ -484,7 +484,7 @@
         }
         
         .tiktok-placeholder i {
-            font-size: 50px; /* Adjusted for mobile */
+            font-size: 50px; /* Ajusté pour mobile */
             margin-bottom: 20px;
             color: #ff0050;
         }
@@ -501,7 +501,7 @@
             opacity: 0.8;
         }
         
-        /* Enhanced Video Player */
+        /* Lecteur vidéo amélioré */
         .enhanced-video-player {
             width: 100%;
             height: 100%;
@@ -531,7 +531,7 @@
         }
         
         .play-indicator {
-            width: 60px; /* Adjusted for mobile */
+            width: 60px; /* Ajusté pour mobile */
             height: 60px;
             background: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
@@ -539,7 +539,7 @@
             justify-content: center;
             align-items: center;
             color: var(--cream);
-            font-size: 22px; /* Adjusted for mobile */
+            font-size: 22px; /* Ajusté pour mobile */
             transition: transform 0.3s ease;
         }
         
@@ -547,7 +547,7 @@
             transform: scale(1.05);
         }
         
-        /* Mobile Menu */
+        /* Menu mobile */
         .mobile-nav {
             position: fixed;
             top: 0;
@@ -596,7 +596,7 @@
             cursor: pointer;
         }
         
-        /* Footer */
+        /* Pied de page */
         footer {
             background-color: var(--cream);
             color: var(--text-light);
@@ -672,7 +672,7 @@
             font-size: 0.8rem;
         }
         
-        /* Newsletter Form Styles */
+        /* Styles du formulaire de newsletter */
         .newsletter-form {
             margin-top: 15px;
         }
@@ -720,7 +720,7 @@
             transform: translateY(-2px);
         }
         
-        /* Dark mode support */
+        /* Support du mode sombre */
         .dark-mode .newsletter-input {
             background: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.2);
@@ -730,7 +730,7 @@
             background: rgba(255, 255, 255, 0.1);
         }
         
-        /* Responsive Design */
+        /* Design Responsive */
         @media (max-width: 768px) {
             .mobile-menu-toggle {
                 display: flex;
@@ -803,7 +803,7 @@
         
         @media (min-width: 769px) and (max-width: 968px) {
             .video-item {
-                flex: 0 0 calc(50% - 10px); /* Show 2 videos on tablets */
+                flex: 0 0 calc(50% - 10px); /* Afficher 2 vidéos sur tablettes */
             }
             
             .video-player {
@@ -825,7 +825,7 @@
         
         @media (min-width: 969px) {
             .video-item {
-                flex: 0 0 calc(50% - 20px); /* Show 2 videos on desktop */
+                flex: 0 0 calc(50% - 20px); /* Afficher 2 vidéos sur desktop */
             }
             
             .video-player {
@@ -839,16 +839,16 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- En-tête -->
     <header>
         <div class="logo-container">
             <span>
-                <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" />
-                <img src="images/logo-bright.png" alt="OLYS HAIR Logo Bright" class="logo-img-dark" />
+                <img src="images/Logo Version Transparente-01.png" alt="Logo OLYS HAIR" class="logo-img-light" />
+                <img src="images/logo-bright.png" alt="Logo OLYS HAIR Clair" class="logo-img-dark" />
             </span>
         </div>
         
-        <!-- Mobile Menu Toggle -->
+        <!-- Bouton Menu Mobile -->
         <div class="mobile-menu-toggle" id="mobileMenuToggle">
             <span></span>
             <span></span>
@@ -856,8 +856,8 @@
         </div>
         
         <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
+            <a href="index.html">Accueil</a>
+            <a href="about.html">À propos</a>
             <a href="contact.html">Contact</a>
         </div>
         <div class="header-icons">
@@ -870,140 +870,140 @@
         </div>
     </header>
 
-    <!-- Mobile Navigation Menu -->
+    <!-- Menu de Navigation Mobile -->
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-close" id="mobileNavClose">
             <i class="fas fa-times"></i>
         </div>
         <div class="mobile-nav-links">
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
+            <a href="index.html">Accueil</a>
+            <a href="about.html">À propos</a>
             <a href="contact.html">Contact</a>
-            <a href="shop.html">Shop</a>
-            <a href="sign-in.html" id="mobileSignIn">Sign In</a>
+            <a href="shop.html">Boutique</a>
+            <a href="sign-in.html" id="mobileSignIn">Se Connecter</a>
         </div>
     </div>
 
-    <!-- Page Content -->
+    <!-- Contenu de la page -->
     <div class="page-content">
         <div class="page-hero">
-            <h1>Our Collections</h1>
-            <p>Discover our exclusive range of premium hair extensions, carefully curated to meet your unique style and needs.</p>
+            <h1>Nos Collections</h1>
+            <p>Découvrez notre gamme exclusive d'extensions capillaires premium, soigneusement sélectionnées pour répondre à votre style unique et à vos besoins.</p>
         </div>
 
-        <!-- Collections Grid -->
+        <!-- Grille des collections -->
         <div class="collections-grid">
             <div class="collection-card">
                 <div class="collection-media">
-                    <img src="images/79b8b886e06bde347a54ea672b338e63.jpg" alt="Brazilian Collection">
+                    <img src="images/79b8b886e06bde347a54ea672b338e63.jpg" alt="Collection Brésilienne">
                 </div>
                 <div class="collection-info">
-                    <h3>Brazilian Collection</h3>
-                    <p>Our premium Brazilian hair is known for its thickness, durability, and luxurious texture.</p>
+                    <h3>Collection Brésilienne</h3>
+                    <p>Nos cheveux brésiliens premium sont réputés pour leur épaisseur, leur durabilité et leur texture luxueuse.</p>
                     <div class="collection-types">
                         <span class="collection-type">Body Wave</span>
-                        <span class="collection-type">Straight</span>
-                        <span class="collection-type">Curly</span>
+                        <span class="collection-type">Lisse</span>
+                        <span class="collection-type">Bouclé</span>
                     </div>
-                    <a href="shop.html" class="view-collection">View Collection</a>
+                    <a href="shop.html" class="view-collection">Voir la Collection</a>
                 </div>
             </div>
 
             <div class="collection-card">
                 <div class="collection-media">
-                    <img src="images/2697a61f0760e3a4ab62312662cc6d45.jpg" alt="Peruvian Collection">
+                    <img src="images/2697a61f0760e3a4ab62312662cc6d45.jpg" alt="Collection Péruvienne">
                 </div>
                 <div class="collection-info">
-                    <h3>Peruvian Collection</h3>
-                    <p>Silky, soft and lightweight hair that blends seamlessly with most hair textures.</p>
+                    <h3>Collection Péruvienne</h3>
+                    <p>Cheveux soyeux, doux et légers qui se fondent parfaitement avec la plupart des textures de cheveux.</p>
                     <div class="collection-types">
                         <span class="collection-type">Loose Wave</span>
                         <span class="collection-type">Deep Wave</span>
-                        <span class="collection-type">Straight</span>
+                        <span class="collection-type">Lisse</span>
                     </div>
-                    <a href="shop.html" class="view-collection">View Collection</a>
+                    <a href="shop.html" class="view-collection">Voir la Collection</a>
                 </div>
             </div>
 
             <div class="collection-card">
                 <div class="collection-media">
-                    <img src="images/WhatsApp Image 2025-10-24 at 13.18.16_72627f7c.jpg" alt="Malaysian Collection">
+                    <img src="images/WhatsApp Image 2025-10-24 at 13.18.16_72627f7c.jpg" alt="Collection Malaisienne">
                 </div>
                 <div class="collection-info">
-                    <h3>Malaysian Collection</h3>
-                    <p>Known for its incredible shine and silky texture, perfect for sleek styles.</p>
+                    <h3>Collection Malaisienne</h3>
+                    <p>Connue pour son éclat incroyable et sa texture soyeuse, parfaite pour des styles lisses et élégants.</p>
                     <div class="collection-types">
-                        <span class="collection-type">Silky Straight</span>
+                        <span class="collection-type">Soie Lisse</span>
                         <span class="collection-type">Body Wave</span>
-                        <span class="collection-type">Curly</span>
+                        <span class="collection-type">Bouclé</span>
                     </div>
-                    <a href="shop.html" class="view-collection">View Collection</a>
+                    <a href="shop.html" class="view-collection">Voir la Collection</a>
                 </div>
             </div>
 
             <div class="collection-card">
                 <div class="collection-media">
-                    <img src="images/ca798e25474ab44728ac58491b22bb04.jpg" alt="Mongolian Collection">
+                    <img src="images/ca798e25474ab44728ac58491b22bb04.jpg" alt="Collection Mongole">
                 </div>
                 <div class="collection-info">
-                    <h3>Mongolian Collection</h3>
-                    <p>Fine texture with natural volume, perfect for creating fullness and body.</p>
+                    <h3>Collection Mongole</h3>
+                    <p>Texture fine avec volume naturel, parfaite pour créer de la plénitude et du corps.</p>
                     <div class="collection-types">
                         <span class="collection-type">Deep Wave</span>
                         <span class="collection-type">Kinky Curly</span>
-                        <span class="collection-type">Straight</span>
+                        <span class="collection-type">Lisse</span>
                     </div>
-                    <a href="shop.html" class="view-collection">View Collection</a>
+                    <a href="shop.html" class="view-collection">Voir la Collection</a>
                 </div>
             </div>
 
             <div class="collection-card">
                 <div class="collection-media">
-                    <img src="images/85a54d19d6192818e17a31e55013011e.jpg" alt="Virgin Hair Collection">
+                    <img src="images/85a54d19d6192818e17a31e55013011e.jpg" alt="Collection Cheveux Vierges">
                 </div>
                 <div class="collection-info">
-                    <h3>Virgin Hair Collection</h3>
-                    <p>100% unprocessed hair that has never been chemically treated, colored, or dyed.</p>
+                    <h3>Collection Cheveux Vierges</h3>
+                    <p>100% cheveux non traités qui n'ont jamais été traités chimiquement, colorés ou teints.</p>
                     <div class="collection-types">
-                        <span class="collection-type">All Textures</span>
-                        <span class="collection-type">Remy Quality</span>
-                        <span class="collection-type">Multi-length</span>
+                        <span class="collection-type">Toutes Textures</span>
+                        <span class="collection-type">Qualité Remy</span>
+                        <span class="collection-type">Multi-longueurs</span>
                     </div>
-                    <a href="shop.html" class="view-collection">View Collection</a>
+                    <a href="shop.html" class="view-collection">Voir la Collection</a>
                 </div>
             </div>
 
             <div class="collection-card">
                 <div class="collection-media">
-                    <img src="images/Hair Care.jpg" alt="Hair Care Collection">
+                    <img src="images/Hair Care.jpg" alt="Collection Soins Capillaires">
                 </div>
                 <div class="collection-info">
-                    <h3>Hair Care Collection</h3>
-                    <p>Premium products designed to maintain and enhance the beauty of your hair extensions.</p>
+                    <h3>Collection Soins Capillaires</h3>
+                    <p>Produits premium conçus pour maintenir et améliorer la beauté de vos extensions capillaires.</p>
                     <div class="collection-types">
-                        <span class="collection-type">Shampoos</span>
-                        <span class="collection-type">Conditioners</span>
-                        <span class="collection-type">Treatments</span>
+                        <span class="collection-type">Shampoings</span>
+                        <span class="collection-type">Après-shampoings</span>
+                        <span class="collection-type">Traitements</span>
                     </div>
-                    <a href="shop.html" class="view-collection">View Collection</a>
+                    <a href="shop.html" class="view-collection">Voir la Collection</a>
                 </div>
             </div>
         </div>
 
-        <!-- Video Carousel Section - Mobile Optimized -->
+        <!-- Section Carrousel Vidéo - Optimisé pour mobile -->
         <div class="video-showcase">
-            <h2>Product Showcase</h2>
+            <h2>Présentation des Produits</h2>
             
             <div class="video-carousel">
                 <div class="video-carousel-container" id="videoCarousel">
-                    <!-- Video 1 - Local Video -->
+                    <!-- Vidéo 1 - Vidéo locale -->
                     <div class="video-item">
                         <div class="video-player">
                             <div class="enhanced-video-player">
                                 <video class="local-video" autoplay muted loop playsinline>
                                     <source src="images/video1.mp4" type="video/mp4">
                                     <source src="images/brazilian-styling.webm" type="video/webm">
-                                    Your browser does not support the video tag.
+                                    Votre navigateur ne supporte pas la balise vidéo.
                                 </video>
                                 <div class="video-overlay">
                                     <div class="play-indicator">
@@ -1013,19 +1013,19 @@
                             </div>
                         </div>
                         <div class="video-info">
-                            <h3>Brazilian Body Wave Styling</h3>
-                            <p>Watch how our Brazilian Body Wave can be transformed into various stunning styles. See the versatility and quality of our premium hair extensions in action.</p>
+                            <h3>Stylisme Body Wave Brésilien</h3>
+                            <p>Découvrez comment notre Body Wave Brésilien peut être transformé en différents styles magnifiques. Voyez la versatilité et la qualité de nos extensions capillaires premium en action.</p>
                         </div>
                     </div>
 
-                    <!-- Video 2 - Local Video -->
+                    <!-- Vidéo 2 - Vidéo locale -->
                     <div class="video-item">
                         <div class="video-player">
                             <div class="enhanced-video-player">
                                 <video class="local-video" autoplay muted loop playsinline>
                                     <source src="images/video4.mp4" type="video/mp4">
                                     <source src="images/peruvian-care.webm" type="video/webm">
-                                    Your browser does not support the video tag.
+                                    Votre navigateur ne supporte pas la balise vidéo.
                                 </video>
                                 <div class="video-overlay">
                                     <div class="play-indicator">
@@ -1035,34 +1035,34 @@
                             </div>
                         </div>
                         <div class="video-info">
-                            <h3>Peruvian Hair Care Routine</h3>
-                            <p>Learn the best practices for maintaining your Peruvian hair extensions. Discover proper washing, conditioning, and styling techniques for long-lasting beauty.</p>
+                            <h3>Routine de Soins Cheveux Péruviens</h3>
+                            <p>Apprenez les meilleures pratiques pour entretenir vos extensions capillaires péruviennes. Découvrez les techniques de lavage, d'après-shampooing et de coiffage pour une beauté durable.</p>
                         </div>
                     </div>
 
-                    <!-- Video 3 - TikTok Placeholder -->
+                    <!-- Vidéo 3 - Placeholder TikTok -->
                     <div class="video-item">
                         <div class="video-player">
                             <div class="tiktok-placeholder">
                                 <i class="fab fa-tiktok"></i>
-                                <h4>Malaysian Collection</h4>
-                                <p>Add your TikTok video ID to showcase our Malaysian hair collection</p>
+                                <h4>Collection Malaisienne</h4>
+                                <p>Ajoutez votre ID vidéo TikTok pour présenter notre collection malaisienne</p>
                             </div>
                         </div>
                         <div class="video-info">
-                            <h3>Malaysian Collection Showcase</h3>
-                            <p>See the incredible shine and silky texture of our Malaysian hair collection. Perfect for creating sleek, sophisticated styles that turn heads.</p>
+                            <h3>Présentation Collection Malaisienne</h3>
+                            <p>Découvrez l'éclat incroyable et la texture soyeuse de notre collection malaisienne. Parfait pour créer des styles lisses et sophistiqués qui attirent tous les regards.</p>
                         </div>
                     </div>
 
-                    <!-- Video 4 - Local Video -->
+                    <!-- Vidéo 4 - Vidéo locale -->
                     <div class="video-item">
                         <div class="video-player">
                             <div class="enhanced-video-player">
                                 <video class="local-video" autoplay muted loop playsinline>
                                     <source src="images/video3.mp4" type="video/mp4">
                                     <source src="images/virgin-hair-quality.webm" type="video/webm">
-                                    Your browser does not support the video tag.
+                                    Votre navigateur ne supporte pas la balise vidéo.
                                 </video>
                                 <div class="video-overlay">
                                     <div class="play-indicator">
@@ -1072,20 +1072,20 @@
                             </div>
                         </div>
                         <div class="video-info">
-                            <h3>Virgin Hair Quality</h3>
-                            <p>Discover why our 100% unprocessed virgin hair stands out from the rest. Experience the natural beauty and durability of untouched hair.</p>
+                            <h3>Qualité Cheveux Vierges</h3>
+                            <p>Découvrez pourquoi nos cheveux vierges 100% non traités se distinguent des autres. Expérimentez la beauté naturelle et la durabilité des cheveux intacts.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Carousel Controls -->
+                <!-- Contrôles du carrousel -->
                 <div class="carousel-controls">
                     <button class="carousel-btn prev-btn" id="prevBtn">
                         <i class="fas fa-chevron-left"></i>
                     </button>
                     
                     <div class="carousel-dots" id="carouselDots">
-                        <!-- Dots will be generated by JavaScript -->
+                        <!-- Les points seront générés par JavaScript -->
                     </div>
                     
                     <button class="carousel-btn next-btn" id="nextBtn">
@@ -1096,12 +1096,12 @@
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Pied de page -->
     <footer>
         <div class="footer-content">
             <div class="footer-column">
                 <h3>OLYS HAIR</h3>
-                <p>Premium quality hair products for the modern woman who values luxury and style.</p>
+                <p>Produits capillaires de qualité premium pour la femme moderne qui valorise le luxe et le style.</p>
                 <div class="social-icons">
                     <a href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="><i class="fab fa-instagram"></i></a>
                     <a href="https://wa.me/c/33674322387"><i class="fab fa-whatsapp"></i></a>
@@ -1110,49 +1110,41 @@
             </div>
             
             <div class="footer-column">
-                <h3>Shop</h3>
+                <h3>Boutique</h3>
                 <ul>
-                    <li><a href="shop.html">Hair Extensions</a></li>
-                    <li><a href="shop.html">Wigs</a></li>
-                    <li><a href="shop.html">Closures</a></li>
-                    <li><a href="shop.html">Frontals</a></li>
-                    <li><a href="shop.html">Hair Care</a></li>
+                  
+                    <li><a href="shop.html">Perruques</a></li>
+                    <li><a href="shop.html">Accessoires</a></li>
+
+                    
                 </ul>
             </div>
             
-            <div class="footer-column">
-                <h3>Support</h3>
-                <ul>
-                    <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="faqs.html">FAQs</a></li>
-                    <li><a href="shipping-returns.html">Shipping & Returns</a></li>
-                    <li><a href="track-order.html">Track Order</a></li>
-                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
-                </ul>
-            </div>
+    
+              
             
             <div class="footer-column">
                 <h3>Newsletter</h3>
-                <p>Subscribe to get special offers, free giveaways, and new product alerts.</p>
+                <p>Abonnez-vous pour recevoir des offres spéciales, des cadeaux gratuits et des alertes nouveaux produits.</p>
                 <form class="newsletter-form">
-                    <input type="email" placeholder="Your email address" class="newsletter-input">
-                    <button type="submit" class="newsletter-btn">SUBSCRIBE</button>
+                    <input type="email" placeholder="Votre adresse email" class="newsletter-input">
+                    <button type="submit" class="newsletter-btn">S'ABONNER</button>
                 </form>
             </div>
         </div>
         
         <div class="copyright">
-            <p>© 2023 OLYS HAIR. All rights reserved. | www.olyshair.com</p>
+            <p>© 2023 OLYS HAIR. Tous droits réservés. | www.olyshair.com</p>
         </div>
     </footer>
 
     <script>
-        // Authentication utility functions
+        // Fonctions utilitaires d'authentification
         const API_BASE_URL = window.location.hostname.includes('localhost') 
             ? "http://localhost:5001/api" 
             : "https://olyshairi-e-commerce-hairspo-online.onrender.com/api";
 
-        // Enhanced authentication check
+        // Vérification améliorée du statut d'authentification
         async function checkAuthStatus() {
             const token = localStorage.getItem('token');
             const userData = localStorage.getItem('user');
@@ -1161,7 +1153,7 @@
                 return { isAuthenticated: false, user: null };
             }
 
-            // Check if it's a demo token
+            // Vérifier s'il s'agit d'un token de démonstration
             if (token.startsWith('demo-token-')) {
                 try {
                     const user = userData ? JSON.parse(userData) : null;
@@ -1171,7 +1163,7 @@
                 }
             }
 
-            // Regular JWT token verification
+            // Vérification du token JWT régulier
             try {
                 const response = await fetch(`${API_BASE_URL}/auth`, {
                     method: 'GET',
@@ -1196,7 +1188,7 @@
             }
         }
 
-        // Fallback authentication check
+        // Vérification d'authentification de secours
         async function checkAuthFallback(token) {
             try {
                 const healthResponse = await fetch(`${API_BASE_URL}/health`);
@@ -1214,7 +1206,7 @@
             }
         }
 
-        // Handle user icon click
+        // Gérer le clic sur l'icône utilisateur
         async function handleUserIconClick() {
             try {
                 const { isAuthenticated } = await checkAuthStatus();
@@ -1229,7 +1221,7 @@
             }
         }
 
-        // Mobile menu functionality
+        // Fonctionnalité du menu mobile
         function initializeMobileMenu() {
             const mobileMenuToggle = document.getElementById('mobileMenuToggle');
             const mobileNav = document.getElementById('mobileNav');
@@ -1249,7 +1241,7 @@
                     document.body.style.overflow = '';
                 });
 
-                // Close mobile menu when clicking on a link
+                // Fermer le menu mobile en cliquant sur un lien
                 const mobileNavLinks = mobileNav.querySelectorAll('a');
                 mobileNavLinks.forEach(link => {
                     link.addEventListener('click', function() {
@@ -1259,14 +1251,14 @@
                     });
                 });
 
-                // Update mobile sign in link based on auth status
+                // Mettre à jour le lien de connexion mobile en fonction du statut d'authentification
                 checkAuthStatus().then(({ isAuthenticated }) => {
                     if (mobileSignIn) {
                         if (isAuthenticated) {
-                            mobileSignIn.textContent = 'My Account';
+                            mobileSignIn.textContent = 'Mon Compte';
                             mobileSignIn.href = 'customerdashboard.html';
                         } else {
-                            mobileSignIn.textContent = 'Sign In';
+                            mobileSignIn.textContent = 'Se Connecter';
                             mobileSignIn.href = 'sign-in.html';
                         }
                     }
@@ -1274,7 +1266,7 @@
             }
         }
 
-        // Update UI based on auth status on page load
+        // Mettre à jour l'interface utilisateur en fonction du statut d'authentification au chargement de la page
         document.addEventListener('DOMContentLoaded', async function() {
             try {
                 const { isAuthenticated, user } = await checkAuthStatus();
@@ -1282,13 +1274,13 @@
                 
                 if (isAuthenticated) {
                     userIcon.style.color = '#4CAF50';
-                    userIcon.title = 'My Account';
+                    userIcon.title = 'Mon Compte';
                 } else {
                     userIcon.style.color = 'var(--cream)';
-                    userIcon.title = 'Sign In';
+                    userIcon.title = 'Se Connecter';
                 }
 
-                // Initialize page functionality
+                // Initialiser les fonctionnalités de la page
                 initializePage();
                 
             } catch (error) {
@@ -1296,19 +1288,19 @@
             }
         });
 
-        // Initialize page functionality
+        // Initialiser les fonctionnalités de la page
         function initializePage() {
-            // Initialize mobile menu
+            // Initialiser le menu mobile
             initializeMobileMenu();
             
-            // Dark/Light Mode Toggle
+            // Bouton Mode Sombre/Clair
             const modeToggle = document.querySelector('.mode-toggle');
             const body = document.body;
             
             modeToggle.addEventListener('click', () => {
                 body.classList.toggle('dark-mode');
                 
-                // Save user preference in localStorage
+                // Sauvegarder la préférence de l'utilisateur dans le localStorage
                 if (body.classList.contains('dark-mode')) {
                     localStorage.setItem('theme', 'dark');
                 } else {
@@ -1316,13 +1308,13 @@
                 }
             });
             
-            // Check for saved user preference
+            // Vérifier la préférence utilisateur sauvegardée
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
                 body.classList.add('dark-mode');
             }
             
-            // Enhanced Video Carousel Functionality
+            // Fonctionnalité améliorée du carrousel vidéo
             const carousel = document.getElementById('videoCarousel');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
@@ -1334,7 +1326,7 @@
             const totalSlides = Math.ceil(totalVideos / videosPerView);
             let currentSlide = 0;
             
-            // Create dots
+            // Créer les points
             for (let i = 0; i < totalSlides; i++) {
                 const dot = document.createElement('div');
                 dot.classList.add('dot');
@@ -1347,30 +1339,30 @@
                 const translateX = -currentSlide * 100;
                 carousel.style.transform = `translateX(${translateX}%)`;
                 
-                // Update dots
+                // Mettre à jour les points
                 document.querySelectorAll('.dot').forEach((dot, index) => {
                     dot.classList.toggle('active', index === currentSlide);
                 });
                 
-                // Update button states
+                // Mettre à jour les états des boutons
                 prevBtn.disabled = currentSlide === 0;
                 nextBtn.disabled = currentSlide === totalSlides - 1;
                 
-                // Handle local video optimization
+                // Gérer l'optimisation des vidéos locales
                 optimizeLocalVideos();
             }
             
             function optimizeLocalVideos() {
-                // Ensure local videos are properly sized and playing
+                // S'assurer que les vidéos locales sont correctement dimensionnées et en lecture
                 document.querySelectorAll('.local-video').forEach(video => {
                     video.style.width = '100%';
                     video.style.height = '100%';
                     video.style.objectFit = 'cover';
                     
-                    // Try to play the video (autoplay might be blocked)
+                    // Essayer de lire la vidéo (l'autoplay peut être bloqué)
                     if (video.paused && video.readyState >= 3) {
                         video.play().catch(error => {
-                            console.log('Auto-play prevented for local video:', error);
+                            console.log('Auto-play empêché pour la vidéo locale:', error);
                         });
                     }
                 });
@@ -1395,17 +1387,17 @@
                 }
             }
             
-            // Event listeners
+            // Écouteurs d'événements
             prevBtn.addEventListener('click', prevSlide);
             nextBtn.addEventListener('click', nextSlide);
             
-            // Keyboard navigation
+            // Navigation au clavier
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowLeft') prevSlide();
                 if (e.key === 'ArrowRight') nextSlide();
             });
             
-            // Enhanced video interaction
+            // Interaction vidéo améliorée
             document.querySelectorAll('.video-overlay').forEach(overlay => {
                 overlay.addEventListener('click', function() {
                     const videoPlayer = this.closest('.video-player');
@@ -1424,26 +1416,26 @@
                 });
             });
             
-            // Initialize
+            // Initialiser
             updateCarousel();
             
-            // Re-optimize local videos after they load
+            // Ré-optimiser les vidéos locales après leur chargement
             setTimeout(optimizeLocalVideos, 1000);
             setTimeout(optimizeLocalVideos, 3000);
             
-            // Handle window resize
+            // Gérer le redimensionnement de la fenêtre
             window.addEventListener('resize', function() {
-                // Recalculate slides based on new viewport
+                // Recalculer les diapositives en fonction de la nouvelle fenêtre
                 const newVideosPerView = window.innerWidth < 769 ? 1 : 2;
                 if (newVideosPerView !== videosPerView) {
-                    // Reset to first slide on view change
+                    // Réinitialiser à la première diapositive lors du changement de vue
                     currentSlide = 0;
                     updateCarousel();
                 }
             });
         }
         
-        // Header scroll effect
+        // Effet de défilement de l'en-tête
         window.addEventListener('scroll', function() {
             const header = document.querySelector('header');
             if (window.scrollY > 100) {

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <!-- 🖼️ Favicon (shows in browser tab) -->
+    <!-- 🖼️ Favicon (s'affiche dans l'onglet du navigateur) -->
 <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
-<!-- Optional for Apple/Android homescreens -->
+<!-- Optionnel pour les écrans d'accueil Apple/Android -->
 <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
 
-<!-- 🔍 Google Structured Data (shows logo in search results) -->
+<!-- 🔍 Données Structurées Google (affiche le logo dans les résultats de recherche) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -17,7 +17,7 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OLYS HAIR - Wig Renovation Service</title>
+    <title>OLYS HAIR - Service de Rénovation de Perruques</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -66,7 +66,7 @@
             color: var(--cream);
         }
 
-        /* Header Styles */
+        /* Styles de l'en-tête */
         header {
             display: flex;
             justify-content: space-between;
@@ -146,7 +146,7 @@
             cursor: pointer;
         }
 
-        /* Dark/Light Mode Toggle */
+        /* Bouton Mode Sombre/Clair */
         .mode-toggle {
             position: relative;
             width: 60px;
@@ -189,7 +189,7 @@
             margin-left: auto;
         }
 
-        /* Hero Section */
+        /* Section Hero */
         .booking-hero {
             height: 60vh;
             background: linear-gradient(
@@ -239,7 +239,7 @@
             color: var(--white);
         }
 
-        /* Process Section */
+        /* Section Processus */
         .process-section {
             padding: 60px 40px;
             background-color: var(--light-bg);
@@ -294,7 +294,7 @@
             margin-bottom: 15px;
         }
 
-        /* Pricing Section */
+        /* Section Tarification */
         .pricing-section {
             padding: 60px 40px;
             text-align: center;
@@ -321,7 +321,7 @@
             margin-top: 10px;
         }
 
-        /* Booking Form Section */
+        /* Section Formulaire de Réservation */
         .booking-form-section {
             padding: 60px 40px;
             background-color: var(--light-bg);
@@ -385,7 +385,7 @@
             background-color: var(--dark-gray);
         }
 
-        /* Floating Bubbles */
+        /* Bulles Flottantes */
         .floating-bubbles {
             position: fixed;
             right: 30px;
@@ -433,7 +433,7 @@
             display: block;
         }
 
-        /* Responsive Design */
+        /* Design Responsive */
         @media (max-width: 768px) {
             header {
                 padding: 15px 20px;
@@ -483,37 +483,37 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- En-tête -->
     <header>
         <div class="logo-container">
             <span>
                 <img
                     src="images/Logo Version Transparente-01.png"
-                    alt="OLYS HAIR Logo"
+                    alt="Logo OLYS HAIR"
                     class="logo-img-light"
                 />
                 <img
                     src="images/Artboard 1 copy.png"
-                    alt="OLYS HAIR Logo Bright"
+                    alt="Logo OLYS HAIR Clair"
                     class="logo-img-dark"
                 />
             </span>
         </div>
         <div class="nav-links">
-            <a href="shop.html" data-translate="shop">Shop</a>
-            <a href="book.html" class="active" data-translate="book">Book</a>
-            <a href="contact.html" data-translate="contact">Contact</a>
+            <a href="shop.html">Boutique</a>
+            <a href="book.html" class="active">Réservation</a>
+            <a href="contact.html">Contact</a>
         </div>
         <div class="header-icons">
             <div class="cart-bubble">
-                <i class="fas fa-shopping-bag"  title="Cart"></i>
+                <i class="fas fa-shopping-bag"  title="Panier"></i>
                 <span class="cart-count">0</span>
             </div>
             <div class="order-tracking-bubble" onclick="viewOrders()">
-                <i class="fas fa-box"  title="Orders"></i>
+                <i class="fas fa-box"  title="Commandes"></i>
                 <span class="order-count">0</span>
             </div>
-            <i class="fas fa-user" id="userIcon" onclick="window.location.href='customerdashboard.html'"  title="Account"></i>
+            <i class="fas fa-user" id="userIcon" onclick="window.location.href='customerdashboard.html'"  title="Compte"></i>
             <div class="mode-toggle">
                 <i class="fas fa-sun"></i>
                 <i class="fas fa-moon"></i>
@@ -522,9 +522,9 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Section Hero -->
     <section class="booking-hero">
-        <h1 data-translate="wigRenovationService">Wig Renovation Service</h1>
+        <h1>Service de Rénovation de Perruques</h1>
         <p style="
             color: #666;
             background: linear-gradient(
@@ -541,15 +541,15 @@
             animation: shine 5s infinite linear;
             text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
             font-weight: 600;
-        " data-translate="wigServiceDescription">
-            Send me your wig, I'll pamper it... and send it back to you like new.
+        ">
+            Envoyez-moi votre perruque, je la chouchoute... et je vous la renvoie comme neuve.
         </p>
     </section>
 
-    <!-- Process Section -->
+    <!-- Section Processus -->
     <section class="process-section">
         <div class="section-title">
-            <h2 data-translate="howItWorks">How It Works</h2>
+            <h2>Comment Ça Marche</h2>
         </div>
         <div class="process-steps">
             <div class="process-step">
@@ -557,122 +557,122 @@
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <div class="step-number">1</div>
-                <h3 data-translate="bookServiceOnline">Book Your Service Online</h3>
-                <p data-translate="bookServiceDescription">Fill out the form below with the number of wigs, your name, and contact information.</p>
+                <h3>Réservez Votre Service en Ligne</h3>
+                <p>Remplissez le formulaire ci-dessous avec le nombre de perruques, votre nom et vos coordonnées.</p>
             </div>
             <div class="process-step">
                 <div class="step-icon">
                     <i class="fas fa-phone-alt"></i>
                 </div>
                 <div class="step-number">2</div>
-                <h3 data-translate="iContactYou">I Contact You</h3>
-                <p data-translate="contactDescription">Once I receive your request, I'll contact you with my address and ask for your return address.</p>
+                <h3>Je Vous Contacte</h3>
+                <p>Une fois votre demande reçue, je vous contacte avec mon adresse et vous demande votre adresse de retour.</p>
             </div>
             <div class="process-step">
                 <div class="step-icon">
                     <i class="fas fa-shipping-fast"></i>
                 </div>
                 <div class="step-number">3</div>
-                <h3 data-translate="youSendWig">You Send Your Wig</h3>
-                <p data-translate="sendWigDescription">Send your wig to the address I provide. I'll start the treatment as soon as I receive it.</p>
+                <h3>Vous Envoyez Votre Perruque</h3>
+                <p>Envoyez votre perruque à l'adresse que je fournis. Je commence le traitement dès réception.</p>
             </div>
             <div class="process-step">
                 <div class="step-icon">
                     <i class="fas fa-spa"></i>
                 </div>
                 <div class="step-number">4</div>
-                <h3 data-translate="iTreatWig">I Treat Your Wig</h3>
-                <p data-translate="treatWigDescription">I'll wash, detangle, treat, style, and restore shape and shine to your wig.</p>
+                <h3>Je Traite Votre Perruque</h3>
+                <p>Je lave, démêle, traite, coiffe et redonne forme et éclat à votre perruque.</p>
             </div>
             <div class="process-step">
                 <div class="step-icon">
                     <i class="fas fa-truck"></i>
                 </div>
                 <div class="step-number">5</div>
-                <h3 data-translate="iSendBack">I Send It Back</h3>
-                <p data-translate="sendBackDescription">Once the service is complete, I'll return your wig to the address you provided.</p>
+                <h3>Je Vous la Renvoie</h3>
+                <p>Une fois le service terminé, je retourne votre perruque à l'adresse que vous avez fournie.</p>
             </div>
         </div>
     </section>
 
-    <!-- Pricing Section -->
+    <!-- Section Tarification -->
     <section class="pricing-section">
         <div class="section-title">
-            <h2 data-translate="pricing">Pricing</h2>
+            <h2>Tarifs</h2>
         </div>
         <div class="price-card">
-            <h3 data-translate="wigRenovationService">Wig Renovation Service</h3>
-            <div class="price-amount">€15</div>
-            <p data-translate="perWigExcludingShipping">per wig (excluding shipping costs)</p>
-            <p class="price-note" data-translate="shippingAtYourExpense">Shipping costs to and from are at your expense</p>
+            <h3>Service de Rénovation de Perruques</h3>
+            <div class="price-amount">15€</div>
+            <p>par perruque (frais de livraison non inclus)</p>
+            <p class="price-note">Les frais d'expédition aller-retour sont à votre charge</p>
         </div>
     </section>
 
-    <!-- Booking Form Section -->
+    <!-- Section Formulaire de Réservation -->
     <section class="booking-form-section">
         <div class="section-title">
-            <h2 data-translate="bookService">Book a Service</h2>
-            <p data-translate="fillFormDescription">Fill out the form below to book your wig renovation service</p>
+            <h2>Réserver un Service</h2>
+            <p>Remplissez le formulaire ci-dessous pour réserver votre service de rénovation de perruques</p>
         </div>
         <div class="booking-form-container">
             <form id="bookingForm">
                 <div class="form-group">
-                    <label for="fullName" data-translate="fullName">Full Name *</label>
-                    <input type="text" id="fullName" class="form-control" data-translate="enterFullName" placeholder="Enter your full name" required>
+                    <label for="fullName">Nom Complet *</label>
+                    <input type="text" id="fullName" class="form-control" placeholder="Entrez votre nom complet" required>
                 </div>
                 <div class="form-group">
-                    <label for="email" data-translate="emailAddress">Email Address *</label>
-                    <input type="email" id="email" class="form-control" data-translate="enterEmail" placeholder="Enter your email" required>
+                    <label for="email">Adresse Email *</label>
+                    <input type="email" id="email" class="form-control" placeholder="Entrez votre email" required>
                 </div>
                 <div class="form-group">
-                    <label for="phone" data-translate="phoneNumber">Phone Number *</label>
-                    <input type="tel" id="phone" class="form-control" data-translate="enterPhone" placeholder="Enter your phone number" required>
+                    <label for="phone">Numéro de Téléphone *</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="Entrez votre numéro de téléphone" required>
                 </div>
                 <div class="form-group">
-                    <label for="wigCount" data-translate="numberOfWigs">Number of Wigs to Treat *</label>
+                    <label for="wigCount">Nombre de Perruques à Traiter *</label>
                     <select id="wigCount" class="form-control" required>
-                        <option value="" data-translate="selectNumberOfWigs">Select number of wigs</option>
-                        <option value="1" data-translate="oneWig">1 Wig</option>
-                        <option value="2" data-translate="twoWigs">2 Wigs</option>
-                        <option value="3" data-translate="threeWigs">3 Wigs</option>
-                        <option value="4" data-translate="fourWigs">4 Wigs</option>
-                        <option value="5" data-translate="fiveWigs">5 Wigs</option>
-                        <option value="more" data-translate="moreThanFive">More than 5</option>
+                        <option value="">Sélectionnez le nombre de perruques</option>
+                        <option value="1">1 Perruque</option>
+                        <option value="2">2 Perruques</option>
+                        <option value="3">3 Perruques</option>
+                        <option value="4">4 Perruques</option>
+                        <option value="5">5 Perruques</option>
+                        <option value="more">Plus de 5</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="comments" data-translate="commentsSpecialRequests">Comments / Special Requests (Optional)</label>
-                    <textarea id="comments" class="form-control" data-translate="commentsPlaceholder" placeholder="Any specific requirements or notes about your wigs..."></textarea>
+                    <label for="comments">Commentaires / Demandes Spéciales (Optionnel)</label>
+                    <textarea id="comments" class="form-control" placeholder="Toute exigence spécifique ou note concernant vos perruques..."></textarea>
                 </div>
-                <button type="submit" class="submit-btn" data-translate="bookServiceButton">Book Service</button>
+                <button type="submit" class="submit-btn">Réserver le Service</button>
             </form>
         </div>
     </section>
 
-    <!-- Floating Bubbles -->
+    <!-- Bulles Flottantes -->
     <div class="floating-bubbles">
         <div class="bubble-btn" onclick="window.location.href='index.html'">
             <i class="fas fa-home"></i>
-            <span data-translate="home">Home</span>
+            <span>Accueil</span>
         </div>
         <div class="bubble-btn" onclick="window.location.href='shop.html'">
             <i class="fas fa-shopping-bag"></i>
-            <span data-translate="shop">Shop</span>
+            <span>Boutique</span>
         </div>
         <div class="bubble-btn" onclick="window.location.href='customerdashboard.html'">
             <i class="fas fa-user"></i>
-            <span data-translate="account">Account</span>
+            <span>Compte</span>
         </div>
     </div>
 
     <script>
-       // Dynamic API URL configuration
+       // Configuration dynamique de l'URL de l'API
       const API_BASE_URL = window.location.hostname.includes('localhost') 
           ? "http://localhost:5001/api" 
           : "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
 
-      console.log("🌐 Using API Base URL:", API_BASE_URL);
-        // Dark/Light Mode Toggle
+      console.log("🌐 Utilisation de l'URL de base de l'API:", API_BASE_URL);
+        // Bouton Mode Sombre/Clair
         const modeToggle = document.querySelector('.mode-toggle');
         const body = document.body;
 
@@ -685,16 +685,16 @@
             }
         });
 
-        // Check for saved theme preference
+        // Vérifier la préférence de thème sauvegardée
         if (localStorage.getItem('theme') === 'dark') {
             body.classList.add('dark-mode');
         }
 
-       // Form submission
+       // Soumission du formulaire
 document.getElementById('bookingForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // Get form data
+    // Obtenir les données du formulaire
     const formData = {
         customerName: document.getElementById('fullName').value,
         customerEmail: document.getElementById('email').value,
@@ -707,14 +707,14 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     const originalText = submitBtn.textContent;
 
     try {
-        // Show loading state
-        submitBtn.textContent = 'Booking...';
+        // Afficher l'état de chargement
+        submitBtn.textContent = 'Réservation en cours...';
         submitBtn.disabled = true;
 
         const token = localStorage.getItem('token');
         
         if (!token) {
-            throw new Error('Please login to book a service');
+            throw new Error('Veuillez vous connecter pour réserver un service');
         }
 
         const response = await fetch(`${API_BASE_URL}/bookings`, {
@@ -729,29 +729,29 @@ document.getElementById('bookingForm').addEventListener('submit', async function
         const result = await response.json();
 
         if (response.ok) {
-            showNotification('Booking request submitted successfully! I will contact you shortly.', 'success');
+            showNotification('Demande de réservation soumise avec succès ! Je vous contacterai sous peu.', 'success');
             document.getElementById('bookingForm').reset();
             
-            // Redirect to dashboard after a delay
+            // Rediriger vers le tableau de bord après un délai
             setTimeout(() => {
                 window.location.href = 'customerdashboard.html?section=bookings';
             }, 2000);
         } else {
-            throw new Error(result.error || 'Failed to submit booking');
+            throw new Error(result.error || 'Échec de la soumission de la réservation');
         }
     } catch (error) {
-        console.error('Booking error:', error);
+        console.error('Erreur de réservation:', error);
         showNotification(error.message, 'error');
     } finally {
-        // Reset button state
+        // Réinitialiser l'état du bouton
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }
 });
 
-// Show notification function
+// Fonction d'affichage des notifications
 function showNotification(message, type = 'info') {
-    // Remove existing notifications
+    // Supprimer les notifications existantes
     document.querySelectorAll('.booking-notification').forEach(notification => {
         notification.remove();
     });
@@ -775,12 +775,12 @@ function showNotification(message, type = 'info') {
 
     document.body.appendChild(notification);
 
-    // Animate in
+    // Animation d'entrée
     setTimeout(() => {
         notification.style.transform = 'translateX(0)';
     }, 100);
 
-    // Auto-remove after 5 seconds
+    // Suppression automatique après 5 secondes
     setTimeout(() => {
         notification.style.transform = 'translateX(120%)';
         setTimeout(() => {
@@ -791,7 +791,7 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-        // Function to view orders (from shop page)
+        // Fonction pour voir les commandes (depuis la page boutique)
         function viewOrders() {
             window.location.href = 'customerdashboard.html?section=orders';
         }
