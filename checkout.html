@@ -858,7 +858,7 @@
       }
     </style>
   </head>
-  <body>
+<body>
     <!-- Header -->
     <header>
       <div class="logo-container">
@@ -876,16 +876,16 @@
         </span>
       </div>
       <div class="nav-links">
-        <a href="shop.html">Shop</a>
-        <a href="contact.html">Contact</a>
+        <a href="shop.html" data-translate="shop">Shop</a>
+        <a href="contact.html" data-translate="contact">Contact</a>
       </div>
       <div class="header-icons">
-        <i class="fas fa-search"></i>
+        <i class="fas fa-search"  title="Search"></i>
         <div class="cart-bubble">
-          <i class="fas fa-shopping-bag"></i>
+          <i class="fas fa-shopping-bag" title="Cart"></i>
           <span class="cart-count"></span>
         </div>
-        <i class="fas fa-user"></i>
+        <i class="fas fa-user"  title="Account"></i>
         <div class="mode-toggle">
           <i class="fas fa-sun"></i>
           <i class="fas fa-moon"></i>
@@ -902,28 +902,29 @@
         <div class="checkout-steps">
           <div class="step active">
             <div class="step-circle">1</div>
-            <div class="step-label">Shipping</div>
+            <div class="step-label" data-translate="shipping">Shipping</div>
           </div>
           <div class="step">
             <div class="step-circle">2</div>
-            <div class="step-label">Payment</div>
+            <div class="step-label" data-translate="payment">Payment</div>
           </div>
           <div class="step">
             <div class="step-circle">3</div>
-            <div class="step-label">Confirmation</div>
+            <div class="step-label" data-translate="confirmation">Confirmation</div>
           </div>
         </div>
 
         <!-- Shipping Information -->
         <div class="checkout-section">
-          <h2 class="section-title">Shipping Information</h2>
+          <h2 class="section-title" data-translate="shippingInformation">Shipping Information</h2>
 
           <div class="form-group">
-            <label for="email">Email Address</label>
+            <label for="email" data-translate="emailAddress">Email Address</label>
             <input
               type="email"
               id="email"
               class="form-control"
+              data-translate="enterEmail"
               placeholder="your@email.com"
               required
             />
@@ -932,22 +933,24 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="firstName">First Name</label>
+              <label for="firstName" data-translate="firstName">First Name</label>
               <input
                 type="text"
                 id="firstName"
                 class="form-control"
+                data-translate="enterFirstName"
                 placeholder="First Name"
                 required
               />
               <div class="field-error" id="firstName-error"></div>
             </div>
             <div class="form-group">
-              <label for="lastName">Last Name</label>
+              <label for="lastName" data-translate="lastName">Last Name</label>
               <input
                 type="text"
                 id="lastName"
                 class="form-control"
+                data-translate="enterLastName"
                 placeholder="Last Name"
                 required
               />
@@ -956,11 +959,12 @@
           </div>
 
           <div class="form-group">
-            <label for="address">Address</label>
+            <label for="address" data-translate="address">Address</label>
             <input
               type="text"
               id="address"
               class="form-control"
+              data-translate="enterAddress"
               placeholder="Street Address"
               required
             />
@@ -969,22 +973,24 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="city">City</label>
+              <label for="city" data-translate="city">City</label>
               <input
                 type="text"
                 id="city"
                 class="form-control"
+                data-translate="enterCity"
                 placeholder="City"
                 required
               />
               <div class="field-error" id="city-error"></div>
             </div>
             <div class="form-group">
-              <label for="zipCode">ZIP/Postal Code</label>
+              <label for="zipCode" data-translate="zipCode">ZIP/Postal Code</label>
               <input
                 type="text"
                 id="zipCode"
                 class="form-control"
+                data-translate="enterZipCode"
                 placeholder="ZIP Code"
                 required
               />
@@ -994,23 +1000,24 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="country">Country</label>
+              <label for="country" data-translate="country">Country</label>
               <select id="country" class="form-control" required>
-                <option value="">Select Country</option>
-                <option value="us">United States</option>
-                <option value="uk">United Kingdom</option>
-                <option value="fr">France</option>
-                <option value="de">Germany</option>
-                <option value="ch">Switzerland</option>
+                <option value="" data-translate="selectCountry">Select Country</option>
+                <option value="us" data-translate="unitedStates">United States</option>
+                <option value="uk" data-translate="unitedKingdom">United Kingdom</option>
+                <option value="fr" data-translate="france">France</option>
+                <option value="de" data-translate="germany">Germany</option>
+                <option value="ch" data-translate="switzerland">Switzerland</option>
               </select>
               <div class="field-error" id="country-error"></div>
             </div>
             <div class="form-group">
-              <label for="phone">Phone Number</label>
+              <label for="phone" data-translate="phoneNumber">Phone Number</label>
               <input
                 type="tel"
                 id="phone"
                 class="form-control"
+                data-translate="enterPhone"
                 placeholder="Phone Number"
                 required
               />
@@ -1021,68 +1028,69 @@
           <div class="form-group">
             <label>
               <input type="checkbox" id="saveAddress" />
-              Save this address for future orders
+              <span data-translate="saveAddress">Save this address for future orders</span>
             </label>
           </div>
         </div>
 
         <!-- Shipping Method -->
         <div class="checkout-section">
-          <h2 class="section-title">Shipping Method</h2>
+          <h2 class="section-title" data-translate="shippingMethod">Shipping Method</h2>
 
           <div class="form-group">
             <label>
               <input type="radio" name="shipping" value="standard" checked />
-              Standard Shipping (5-7 business days) - €9.99
+              <span data-translate="standardShipping">Standard Shipping (5-7 business days) - €9.99</span>
             </label>
           </div>
 
           <div class="form-group">
             <label>
               <input type="radio" name="shipping" value="express" />
-              Express Shipping (2-3 business days) - €19.99
+              <span data-translate="expressShipping">Express Shipping (2-3 business days) - €19.99</span>
             </label>
           </div>
 
           <div class="form-group">
             <label>
               <input type="radio" name="shipping" value="overnight" />
-              Overnight Shipping (1 business day) - €29.99
+              <span data-translate="overnightShipping">Overnight Shipping (1 business day) - €29.99</span>
             </label>
           </div>
         </div>
 
         <!-- Payment Method -->
         <div class="checkout-section">
-          <h2 class="section-title">Payment Method</h2>
+          <h2 class="section-title" data-translate="paymentMethod">Payment Method</h2>
 
           <div class="payment-methods">
             <div class="payment-method active" data-method="credit-card">
               <i class="fab fa-cc-visa"></i>
-              <div>Credit Card</div>
+              <div data-translate="creditCard">Credit Card</div>
             </div>
             <div class="payment-method" data-method="paypal">
               <i class="fab fa-paypal"></i>
-              <div>PayPal</div>
+              <div data-translate="paypal">PayPal</div>
             </div>
-            <div class="payment-method" data-method="apple-pay">
+           <!---- <div class="payment-method" data-method="apple-pay">
               <i class="fab fa-apple-pay"></i>
-              <div>Apple Pay</div>
-            </div>
-            <div class="payment-method" data-method="klarna">
+              <div data-translate="applePay">Apple Pay</div>
+            </div>-->
+            <!----<div class="payment-method" data-method="klarna">
               <i class="fas fa-credit-card"></i>
-              <div>Klarna</div>
-            </div>
+              <div data-translate="klarna">Klarna</div>
+            </div>-->
           </div>
 
           <!-- Credit Card Form (Stripe) -->
           <div class="payment-form-container" id="credit-card-form">
             <div class="form-group">
-              <label for="cardName">Name on Card</label>
+              <label for="cardName" data-translate="nameOnCard">Name on Card</label>
               <input
                 type="text"
                 id="cardName"
                 class="form-control"
+                data-translate="enterCardName"
                 placeholder="Full Name"
                 required
               />
@@ -1090,7 +1098,7 @@
             </div>
 
             <div class="form-group">
-              <label for="card-element">Card Details</label>
+              <label for="card-element" data-translate="cardDetails">Card Details</label>
               <div id="card-element" class="form-control">
                 <!-- Stripe Elements will be inserted here -->
               </div>
@@ -1118,83 +1126,88 @@
             id="klarna-payment-form"
             style="display: none"
           >
-            <p>You will be redirected to Klarna to complete your payment.</p>
+            <p data-translate="klarnaRedirect">You will be redirected to Klarna to complete your payment.</p>
           </div>
         </div>
 
         <!-- Billing Address -->
         <div class="checkout-section">
-          <h2 class="section-title">Billing Address</h2>
+          <h2 class="section-title" data-translate="billingAddress">Billing Address</h2>
 
           <div class="form-group">
             <label>
               <input type="checkbox" id="sameAsShipping" checked />
-              Same as shipping address
+              <span data-translate="sameAsShipping">Same as shipping address</span>
             </label>
           </div>
 
           <div id="billingAddress" style="display: none">
             <div class="form-row">
               <div class="form-group">
-                <label for="billingFirstName">First Name</label>
+                <label for="billingFirstName" data-translate="firstName">First Name</label>
                 <input
                   type="text"
                   id="billingFirstName"
                   class="form-control"
+                  data-translate="enterFirstName"
                   placeholder="First Name"
                 />
               </div>
               <div class="form-group">
-                <label for="billingLastName">Last Name</label>
+                <label for="billingLastName" data-translate="lastName">Last Name</label>
                 <input
                   type="text"
                   id="billingLastName"
                   class="form-control"
+                  data-translate="enterLastName"
                   placeholder="Last Name"
                 />
               </div>
             </div>
 
             <div class="form-group">
-              <label for="billingAddress">Address</label>
+              <label for="billingAddress" data-translate="address">Address</label>
               <input
                 type="text"
                 id="billingAddress"
                 class="form-control"
+                data-translate="enterAddress"
                 placeholder="Street Address"
               />
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label for="billingCity">City</label>
+                <label for="billingCity" data-translate="city">City</label>
                 <input
                   type="text"
                   id="billingCity"
                   class="form-control"
+                  data-translate="enterCity"
                   placeholder="City"
                 />
               </div>
               <div class="form-group">
-                <label for="billingZipCode">ZIP/Postal Code</label>
+                <label for="billingZipCode" data-translate="zipCode">ZIP/Postal Code</label>
                 <input
                   type="text"
                   id="billingZipCode"
                   class="form-control"
+                  data-translate="enterZipCode"
                   placeholder="ZIP Code"
                 />
               </div>
             </div>
 
             <div class="form-group">
-              <label for="billingCountry">Country</label>
+              <label for="billingCountry" data-translate="country">Country</label>
               <select id="billingCountry" class="form-control">
-                <option value="">Select Country</option>
-                <option value="us">United States</option>
-                <option value="uk">United Kingdom</option>
-                <option value="fr">France</option>
-                <option value="de">Germany</option>
-                <option value="ch">Switzerland</option>
+                <option value="" data-translate="selectCountry">Select Country</option>
+                <option value="us" data-translate="unitedStates">United States</option>
+                <option value="uk" data-translate="unitedKingdom">United Kingdom</option>
+                <option value="fr" data-translate="france">France</option>
+                <option value="de" data-translate="germany">Germany</option>
+                <option value="ch" data-translate="switzerland">Switzerland</option>
               </select>
             </div>
           </div>
@@ -1203,7 +1216,7 @@
 
       <!-- Order Summary -->
       <div class="order-summary">
-        <h2 class="section-title">Order Summary</h2>
+        <h2 class="section-title" data-translate="orderSummary">Order Summary</h2>
 
         <div class="order-items">
           <!-- Order items will be populated by JavaScript -->
@@ -1213,42 +1226,43 @@
           <input
             type="text"
             class="form-control promo-input"
+            data-translate="promoCode"
             placeholder="Promo Code"
             id="promoCode"
           />
-          <button class="promo-btn" id="applyPromo">Apply</button>
+          <button class="promo-btn" id="applyPromo" data-translate="apply">Apply</button>
         </div>
         <div id="promo-message"></div>
 
         <div class="order-totals">
           <div class="total-row">
-            <span>Subtotal</span>
+            <span data-translate="subtotal">Subtotal</span>
             <span id="subtotal">€0.00</span>
           </div>
           <div class="total-row">
-            <span>Shipping</span>
+            <span data-translate="shipping">Shipping</span>
             <span id="shipping">€0.00</span>
           </div>
           <div class="total-row">
-            <span>Tax</span>
+            <span data-translate="tax">Tax</span>
             <span id="tax">€0.00</span>
           </div>
           <div class="total-row total-final">
-            <span>Total</span>
+            <span data-translate="total">Total</span>
             <span id="total">€0.00</span>
           </div>
         </div>
 
         <button class="checkout-btn" id="placeOrder">
-          <i class="fas fa-lock"></i> Place Order
+          <i class="fas fa-lock"></i> <span data-translate="placeOrder">Place Order</span>
         </button>
 
         <div class="security-badges">
           <div class="security-badge">
-            <i class="fas fa-lock"></i> Secure Checkout
+            <i class="fas fa-lock"></i> <span data-translate="secureCheckout">Secure Checkout</span>
           </div>
           <div class="security-badge">
-            <i class="fas fa-shield-alt"></i> SSL Encrypted
+            <i class="fas fa-shield-alt"></i> <span data-translate="sslEncrypted">SSL Encrypted</span>
           </div>
         </div>
       </div>
@@ -1258,18 +1272,15 @@
     <div class="floating-bubbles">
       <div class="bubble-btn" onclick="window.location.href='index.html'">
         <i class="fas fa-home"></i>
-        <span>Home</span>
+        <span data-translate="home">Home</span>
       </div>
       <div class="bubble-btn" onclick="window.location.href='shop.html'">
         <i class="fas fa-shopping-bag"></i>
-        <span>Shop</span>
+        <span data-translate="shop">Shop</span>
       </div>
-      <div
-        class="bubble-btn"
-        onclick="window.location.href='customerdashboard.html'"
-      >
+      <div class="bubble-btn" onclick="window.location.href='customerdashboard.html'">
         <i class="fas fa-user"></i>
-        <span>Account</span>
+        <span data-translate="account">Account</span>
       </div>
     </div>
 
@@ -1281,52 +1292,52 @@
         </div>
 
         <div class="receipt-header">
-          <h2>Order Confirmation</h2>
-          <p>Thank you for your purchase!</p>
+          <h2 data-translate="orderConfirmation">Order Confirmation</h2>
+          <p data-translate="thankYouPurchase">Thank you for your purchase!</p>
           <p id="orderNumber">Order #OL-123456</p>
         </div>
 
         <div class="receipt-details">
-          <h3>Order Details</h3>
+          <h3 data-translate="orderDetails">Order Details</h3>
           <div id="receipt-items">
             <!-- Receipt items will be populated by JavaScript -->
           </div>
           <div class="receipt-row">
-            <span>Subtotal</span>
+            <span data-translate="subtotal">Subtotal</span>
             <span id="receipt-subtotal">€0.00</span>
           </div>
           <div class="receipt-row">
-            <span>Shipping</span>
+            <span data-translate="shipping">Shipping</span>
             <span id="receipt-shipping">€0.00</span>
           </div>
           <div class="receipt-row">
-            <span>Tax</span>
+            <span data-translate="tax">Tax</span>
             <span id="receipt-tax">€0.00</span>
           </div>
           <div class="receipt-row receipt-total">
-            <span>Total</span>
+            <span data-translate="total">Total</span>
             <span id="receipt-total">€0.00</span>
           </div>
         </div>
 
         <div class="receipt-details">
-          <h3>Shipping Information</h3>
+          <h3 data-translate="shippingInformation">Shipping Information</h3>
           <div id="receipt-shipping-info">
             <!-- Shipping info will be populated by JavaScript -->
           </div>
         </div>
 
         <div class="receipt-details">
-          <h3>Estimated Delivery</h3>
+          <h3 data-translate="estimatedDelivery">Estimated Delivery</h3>
           <p id="receipt-delivery">5-7 business days</p>
         </div>
 
         <div class="receipt-actions">
           <button class="receipt-btn receipt-print">
-            <i class="fas fa-print"></i> Print Receipt
+            <i class="fas fa-print"></i> <span data-translate="printReceipt">Print Receipt</span>
           </button>
           <button class="receipt-btn receipt-close-btn">
-            <i class="fas fa-times"></i> Close
+            <i class="fas fa-times"></i> <span data-translate="close">Close</span>
           </button>
         </div>
       </div>
@@ -1340,17 +1351,20 @@
       <div class="loading-spinner"></div>
     </div>
 
+    <!-- ADD THIS SCRIPT TAG AT THE END -->
+    <script src="language-config.js"></script>
+
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
     <!-- PayPal SDK -->
-    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=EUR"></script>
 
    <script>
     // ==================== ENHANCED CONFIGURATION ====================
     const CONFIG = {
         STRIPE_PUBLISHABLE_KEY: "pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0",
         PAYPAL_CLIENT_ID: "YOUR_PAYPAL_CLIENT_ID",
-        API_BASE_URL: "https://olyshairi-e-commerce-hairspo-online.onrender.com/api",
+        API_BASE_URL: "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api",
         //API_BASE_URL: 'http://localhost:5001/api',
         CURRENCY: "EUR",
         TAX_RATE: 0.08, // 8%

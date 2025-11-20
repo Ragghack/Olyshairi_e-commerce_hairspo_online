@@ -996,7 +996,7 @@
       }
     </style>
   </head>
-  <body>
+<body>
     <!-- Header -->
     <header>
       <div class="logo-container">
@@ -1017,21 +1017,21 @@
       </div>
       
       <div class="header-icons">
-        <i class="fas fa-search"></i>
-        <i class="fas fa-shopping-bag"></i>
+        <!--<i class="fas fa-search"  title="Search"></i>-->
+        <i class="fas fa-shopping-bag"  title="Cart"></i>
         <div class="user-profile">
           <div class="user-avatar" id="user-avatar">U</div>
-          <span class="username" id="username">User</span>
+          <span class="username" id="username" data-translate="">User</span>
           <div class="dropdown-menu">
-            <a href="#" data-section="profile"
-              ><i class="fas fa-user"></i> My Profile</a
-            >
-            <a href="#" data-section="settings"
-              ><i class="fas fa-cog"></i> Settings</a
-            >
-            <a href="#" id="logout-btn"
-              ><i class="fas fa-sign-out-alt"></i> Logout</a
-            >
+            <a href="#" data-section="profile">
+              <i class="fas fa-user"></i> <span data-translate="myProfile">My Profile</span>
+            </a>
+            <a href="#" data-section="settings">
+              <i class="fas fa-cog"></i> <span data-translate="settings">Settings</span>
+            </a>
+            <a href="#" id="logout-btn">
+              <i class="fas fa-sign-out-alt"></i> <span data-translate="logout">Logout</span>
+            </a>
           </div>
         </div>
         <div class="mode-toggle">
@@ -1050,43 +1050,43 @@
       <div class="mobile-nav-links">
         <a href="#" class="mobile-nav-bubble active" data-section="dashboard">
           <i class="fas fa-home"></i>
-          <span>Dashboard</span>
+          <span data-translate="dashboard">Dashboard</span>
         </a>
         <a href="#" class="mobile-nav-bubble" data-section="cart">
           <i class="fas fa-shopping-cart"></i>
-          <span>My Cart</span>
+          <span data-translate="myCart">My Cart</span>
         </a>
         <a href="#" class="mobile-nav-bubble" data-section="wishlist">
           <i class="fas fa-heart"></i>
-          <span>Wishlist</span>
+          <span data-translate="wishlist">Wishlist</span>
         </a>
         <a href="#" class="mobile-nav-bubble" data-section="orders">
           <i class="fas fa-box"></i>
-          <span>My Orders</span>
+          <span data-translate="myOrders">My Orders</span>
         </a>
         <a href="#" class="mobile-nav-bubble" data-section="bookings">
           <i class="fas fa-calendar-alt"></i>
-          <span>Bookings</span>
+          <span data-translate="bookings">Bookings</span>
         </a>
         <a href="#" class="mobile-nav-bubble" data-section="notifications">
           <i class="fas fa-bell"></i>
-          <span>Notifications</span>
+          <span data-translate="notifications">Notifications</span>
         </a>
         <a href="#" class="mobile-nav-bubble" data-section="settings">
           <i class="fas fa-cog"></i>
-          <span>Settings</span>
+          <span data-translate="settings">Settings</span>
         </a>
         <a href="index.html" class="mobile-nav-bubble">
           <i class="fas fa-home"></i>
-          <span>Home</span>
+          <span data-translate="home">Home</span>
         </a>
         <a href="shop.html" class="mobile-nav-bubble">
           <i class="fas fa-shopping-bag"></i>
-          <span>Shop</span>
+          <span data-translate="shop">Shop</span>
         </a>
         <a href="book.html" class="mobile-nav-bubble">
           <i class="fas fa-calendar-plus"></i>
-          <span>Book Service</span>
+          <span data-translate="bookService">Book Service</span>
         </a>
       </div>
     </div>
@@ -1095,15 +1095,15 @@
     <div class="floating-bubbles">
       <div class="bubble-btn" onclick="window.location.href='index.html'">
         <i class="fas fa-home"></i>
-        <span>Home</span>
+        <span data-translate="home">Home</span>
       </div>
       <div class="bubble-btn" onclick="window.location.href='shop.html'">
         <i class="fas fa-shopping-bag"></i>
-        <span>Shop</span>
+        <span data-translate="shop">Shop</span>
       </div>
       <div class="bubble-btn" onclick="window.location.href='book.html'">
         <i class="fas fa-calendar-plus"></i>
-        <span>Book Service</span>
+        <span data-translate="bookService">Book Service</span>
       </div>
     </div>
 
@@ -1113,63 +1113,62 @@
       <div class="sidebar">
         <div class="sidebar-bubble active" data-section="dashboard">
           <i class="fas fa-home"></i>
-          <span>Dashboard</span>
+          <span data-translate="dashboard">Dashboard</span>
         </div>
         <div class="sidebar-bubble" data-section="cart">
           <i class="fas fa-shopping-cart"></i>
-          <span>My Cart</span>
+          <span data-translate="myCart">My Cart</span>
         </div>
         <div class="sidebar-bubble" data-section="wishlist">
           <i class="fas fa-heart"></i>
-          <span>Wishlist</span>
+          <span data-translate="wishlist">Wishlist</span>
         </div>
         <div class="sidebar-bubble" data-section="orders">
           <i class="fas fa-box"></i>
-          <span>My Orders</span>
+          <span data-translate="myOrders">My Orders</span>
         </div>
         <div class="sidebar-bubble" data-section="bookings">
           <i class="fas fa-calendar-alt"></i>
-          <span>Bookings</span>
+          <span data-translate="bookings">Bookings</span>
         </div>
         <div class="sidebar-bubble" data-section="notifications">
           <i class="fas fa-bell"></i>
-          <span>Notifications</span>
+          <span data-translate="notifications">Notifications</span>
         </div>
         <div class="sidebar-bubble" data-section="settings">
           <i class="fas fa-cog"></i>
-          <span>Settings</span>
+          <span data-translate="settings">Settings</span>
         </div>
       </div>
 
       <!-- Main Content Area -->
       <div class="dashboard-content">
+        
         <!-- Dashboard Section -->
         <div class="content-section active" id="dashboard">
+          
           <!-- Welcome Banner -->
           <div class="welcome-banner">
-            <h1 id="welcome-message">Welcome back!</h1>
-            <p id="welcome-subtitle">
+            <h1 id="welcome-message" data-translate="welcomeBack">Welcome back!</h1>
+            <p id="welcome-subtitle" data-translate="readyToDiscover">
               Ready to discover your next favorite hair product?
             </p>
             <div class="points-display">
               <i class="fas fa-gem"></i>
-              <span id="loyalty-points">0</span> Loyalty Points
+              <span id="loyalty-points">0</span> <span data-translate="loyaltyPoints">Loyalty Points</span>
             </div>
             <div class="quick-shortcuts">
-              <div
-                class="shortcut-btn"
-                onclick="window.location.href='shop.html'"
-              >
+              <div class="shortcut-btn" onclick="window.location.href='shop.html'">
                 <i class="fas fa-shopping-bag"></i>
-                <span>Shop New Arrivals</span>
+                <span data-translate="shopNewArrivals">Shop New Arrivals</span>
               </div>
               <div class="shortcut-btn" onclick="window.location.href='book.html'">
                 <i class="fas fa-calendar-plus"></i>
-                <span>Book Wig Service</span>
+                <span data-translate="bookWigService">Book Wig Service</span>
               </div>
               <div class="shortcut-btn" data-section="orders">
                 <i class="fas fa-box-open"></i>
-                <span>Track Orders</span>
+                <span data-translate="trackOrders">Track Orders</span>
               </div>
             </div>
           </div>
@@ -1178,21 +1177,21 @@
           <div class="stats-container" id="stats-container">
             <div class="loading">
               <div class="loading-spinner"></div>
-              <span>Loading statistics...</span>
+              <span data-translate="loadingStatistics">Loading statistics...</span>
             </div>
           </div>
 
           <!-- Recent Orders Section -->
           <div class="dashboard-section">
             <div class="section-header">
-              <h2>Recent Orders</h2>
-              <a href="#" class="view-all" data-section="orders">View All</a>
+              <h2 data-translate="recentOrders">Recent Orders</h2>
+              <a href="#" class="view-all" data-section="orders" data-translate="viewAll">View All</a>
             </div>
             <div class="dashboard-card">
               <div id="recent-orders-container">
                 <div class="loading">
                   <div class="loading-spinner"></div>
-                  <span>Loading recent orders...</span>
+                  <span data-translate="loadingRecentOrders">Loading recent orders...</span>
                 </div>
               </div>
             </div>
@@ -1200,19 +1199,18 @@
 
           <!-- Wishlist and Cart Section -->
           <div class="card-grid">
+            
             <!-- Wishlist -->
             <div class="dashboard-section">
               <div class="section-header">
-                <h2>Wishlist</h2>
-                <a href="#" class="view-all" data-section="wishlist"
-                  >View All</a
-                >
+                <h2 data-translate="wishlist">Wishlist</h2>
+                <a href="#" class="view-all" data-section="wishlist" data-translate="viewAll">View All</a>
               </div>
               <div class="dashboard-card">
                 <div id="wishlist-preview-container">
                   <div class="loading">
                     <div class="loading-spinner"></div>
-                    <span>Loading wishlist...</span>
+                    <span data-translate="loadingWishlist">Loading wishlist...</span>
                   </div>
                 </div>
               </div>
@@ -1221,14 +1219,14 @@
             <!-- Cart -->
             <div class="dashboard-section">
               <div class="section-header">
-                <h2>Cart</h2>
-                <a href="#" class="view-all" data-section="cart">View Cart</a>
+                <h2 data-translate="cart">Cart</h2>
+                <a href="#" class="view-all" data-section="cart" data-translate="viewCart">View Cart</a>
               </div>
               <div class="dashboard-card">
                 <div id="cart-preview-container">
                   <div class="loading">
                     <div class="loading-spinner"></div>
-                    <span>Loading cart...</span>
+                    <span data-translate="loadingCart">Loading cart...</span>
                   </div>
                 </div>
               </div>
@@ -1238,14 +1236,14 @@
           <!-- Upcoming Bookings -->
           <div class="dashboard-section">
             <div class="section-header">
-              <h2>Upcoming Bookings</h2>
-              <a href="#" class="view-all" data-section="bookings">View All</a>
+              <h2 data-translate="upcomingBookings">Upcoming Bookings</h2>
+              <a href="#" class="view-all" data-section="bookings" data-translate="viewAll">View All</a>
             </div>
             <div class="dashboard-card">
               <div id="upcoming-bookings-container">
                 <div class="loading">
                   <div class="loading-spinner"></div>
-                  <span>Loading upcoming bookings...</span>
+                  <span data-translate="loadingBookings">Loading upcoming bookings...</span>
                 </div>
               </div>
             </div>
@@ -1254,16 +1252,14 @@
           <!-- Notifications -->
           <div class="dashboard-section">
             <div class="section-header">
-              <h2>Notifications</h2>
-              <a href="#" class="view-all" data-section="notifications"
-                >View All</a
-              >
+              <h2 data-translate="notifications">Notifications</h2>
+              <a href="#" class="view-all" data-section="notifications" data-translate="viewAll">View All</a>
             </div>
             <div class="dashboard-card">
               <div id="notifications-preview-container">
                 <div class="loading">
                   <div class="loading-spinner"></div>
-                  <span>Loading notifications...</span>
+                  <span data-translate="loadingNotifications">Loading notifications...</span>
                 </div>
               </div>
             </div>
@@ -1273,13 +1269,13 @@
         <!-- Cart Section -->
         <div class="content-section" id="cart">
           <div class="section-header">
-            <h2>My Cart</h2>
+            <h2 data-translate="myCart">My Cart</h2>
           </div>
           <div class="dashboard-card">
             <div id="cart-full-container">
               <div class="loading">
                 <div class="loading-spinner"></div>
-                <span>Loading cart...</span>
+                <span data-translate="loadingCart">Loading cart...</span>
               </div>
             </div>
           </div>
@@ -1288,12 +1284,12 @@
         <!-- Wishlist Section -->
         <div class="content-section" id="wishlist">
           <div class="section-header">
-            <h2>My Wishlist</h2>
+            <h2 data-translate="myWishlist">My Wishlist</h2>
           </div>
           <div class="card-grid" id="wishlist-full-container">
             <div class="loading">
               <div class="loading-spinner"></div>
-              <span>Loading wishlist...</span>
+              <span data-translate="loadingWishlist">Loading wishlist...</span>
             </div>
           </div>
         </div>
@@ -1301,13 +1297,13 @@
         <!-- Orders Section -->
         <div class="content-section" id="orders">
           <div class="section-header">
-            <h2>Order History</h2>
+            <h2 data-translate="orderHistory">Order History</h2>
           </div>
           <div class="dashboard-card">
             <div id="orders-full-container">
               <div class="loading">
                 <div class="loading-spinner"></div>
-                <span>Loading order history...</span>
+                <span data-translate="loadingOrderHistory">Loading order history...</span>
               </div>
             </div>
           </div>
@@ -1316,16 +1312,16 @@
         <!-- Bookings Section -->
         <div class="content-section" id="bookings">
           <div class="section-header">
-            <h2>My Wig Service Bookings</h2>
+            <h2 data-translate="myWigServiceBookings">My Wig Service Bookings</h2>
             <button class="action-btn" onclick="window.location.href='book.html'" style="width: auto;">
-              <i class="fas fa-calendar-plus"></i> Book New Service
+              <i class="fas fa-calendar-plus"></i> <span data-translate="bookNewService">Book New Service</span>
             </button>
           </div>
           <div class="dashboard-card">
             <div id="bookings-full-container">
               <div class="loading">
                 <div class="loading-spinner"></div>
-                <span>Loading appointments...</span>
+                <span data-translate="loadingAppointments">Loading appointments...</span>
               </div>
             </div>
           </div>
@@ -1334,16 +1330,16 @@
         <!-- Notifications Section -->
         <div class="content-section" id="notifications">
           <div class="section-header">
-            <h2>Notifications</h2>
+            <h2 data-translate="notifications">Notifications</h2>
             <button class="action-btn" id="mark-all-read" style="width: auto;">
-              Mark All as Read
+              <span data-translate="markAllAsRead">Mark All as Read</span>
             </button>
           </div>
           <div class="dashboard-card">
             <div id="notifications-full-container">
               <div class="loading">
                 <div class="loading-spinner"></div>
-                <span>Loading notifications...</span>
+                <span data-translate="loadingNotifications">Loading notifications...</span>
               </div>
             </div>
           </div>
@@ -1352,117 +1348,86 @@
         <!-- Settings Section -->
         <div class="content-section" id="settings">
           <div class="section-header">
-            <h2>Account Settings</h2>
+            <h2 data-translate="accountSettings">Account Settings</h2>
           </div>
+          
+          <!-- Profile Information -->
           <div class="dashboard-card">
             <div class="profile-header">
               <div class="profile-avatar" id="settings-avatar">U</div>
               <div class="profile-info">
                 <h2 id="settings-name">User</h2>
-                <p id="settings-membership">Member since ...</p>
+                <p id="settings-membership" data-translate="memberSince">Member since ...</p>
               </div>
             </div>
 
             <div class="form-group">
-              <label for="name">Full Name</label>
-              <input type="text" id="name" class="form-control" />
+              <label for="name" data-translate="fullName">Full Name</label>
+              <input type="text" id="name" class="form-control" data-translate="enterFullName" placeholder="Enter your full name" />
             </div>
 
             <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" id="email" class="form-control" />
+              <label for="email" data-translate="emailAddress">Email Address</label>
+              <input type="email" id="email" class="form-control" data-translate="enterEmail" placeholder="Enter your email" />
             </div>
 
             <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" class="form-control" />
+              <label for="phone" data-translate="phoneNumber">Phone Number</label>
+              <input type="tel" id="phone" class="form-control" data-translate="enterPhone" placeholder="Enter your phone number" />
             </div>
 
             <div class="form-group">
-              <label for="address">Address</label>
-              <textarea id="address" class="form-control" rows="3"></textarea>
+              <label for="address" data-translate="address">Address</label>
+              <textarea id="address" class="form-control" rows="3" data-translate="enterAddress" placeholder="Enter your address"></textarea>
             </div>
 
-            <button class="action-btn" id="save-profile">Save Changes</button>
+            <button class="action-btn" id="save-profile" data-translate="saveChanges">Save Changes</button>
           </div>
 
+          <!-- Security Settings -->
           <div class="dashboard-card" style="margin-top: 20px">
-            <h3 style="margin-bottom: 15px">Security Settings</h3>
+            <h3 style="margin-bottom: 15px" data-translate="securitySettings">Security Settings</h3>
 
             <div class="form-group">
-              <label for="current-password">Current Password</label>
-              <input
-                type="password"
-                id="current-password"
-                class="form-control"
-              />
+              <label for="current-password" data-translate="currentPassword">Current Password</label>
+              <input type="password" id="current-password" class="form-control" data-translate="enterCurrentPassword" placeholder="Enter current password" />
             </div>
 
             <div class="form-group">
-              <label for="new-password">New Password</label>
-              <input type="password" id="new-password" class="form-control" />
+              <label for="new-password" data-translate="newPassword">New Password</label>
+              <input type="password" id="new-password" class="form-control" data-translate="enterNewPassword" placeholder="Enter new password" />
             </div>
 
             <div class="form-group">
-              <label for="confirm-password">Confirm New Password</label>
-              <input
-                type="password"
-                id="confirm-password"
-                class="form-control"
-              />
+              <label for="confirm-password" data-translate="confirmPassword">Confirm New Password</label>
+              <input type="password" id="confirm-password" class="form-control" data-translate="confirmNewPassword" placeholder="Confirm new password" />
             </div>
 
-            <button class="action-btn" id="update-password">
+            <button class="action-btn" id="update-password" data-translate="updatePassword">
               Update Password
             </button>
           </div>
 
+          <!-- Notification Preferences -->
           <div class="dashboard-card" style="margin-top: 20px">
-            <h3 style="margin-bottom: 15px">Notification Preferences</h3>
+            <h3 style="margin-bottom: 15px" data-translate="notificationPreferences">Notification Preferences</h3>
 
-            <div
-              class="form-group"
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <label for="email-notifications" style="margin-bottom: 0"
-                >Email Notifications</label
-              >
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+              <label for="email-notifications" style="margin-bottom: 0" data-translate="emailNotifications">Email Notifications</label>
               <input type="checkbox" id="email-notifications" />
             </div>
 
-            <div
-              class="form-group"
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <label for="sms-notifications" style="margin-bottom: 0"
-                >SMS Notifications</label
-              >
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+              <label for="sms-notifications" style="margin-bottom: 0" data-translate="smsNotifications">SMS Notifications</label>
               <input type="checkbox" id="sms-notifications" />
             </div>
 
-            <div
-              class="form-group"
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <label for="promotional-emails" style="margin-bottom: 0"
-                >Promotional Emails</label
-              >
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+              <label for="promotional-emails" style="margin-bottom: 0" data-translate="promotionalEmails">Promotional Emails</label>
               <input type="checkbox" id="promotional-emails" />
             </div>
 
-            <button class="action-btn" id="save-preferences">
+            <button class="action-btn" id="save-preferences" data-translate="savePreferences">
               Save Preferences
             </button>
           </div>
@@ -1470,6 +1435,8 @@
       </div>
     </div>
 
+    <!-- ADD THIS SCRIPT TAG AT THE END -->
+  <script src="language-config.js"></script>
     <script>
       // API Configuration
      //Dynamic API URL configuration

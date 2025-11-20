@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 🖼️ Favicon (shows in browser tab) -->
+<link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
+<!-- Optional for Apple/Android homescreens -->
+<link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
+
+<!-- 🔍 Google Structured Data (shows logo in search results) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "url": "https://www.olyshair.com",
+  "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
+}
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OLYS HAIR - Wig Renovation Service</title>
@@ -486,20 +500,20 @@
             </span>
         </div>
         <div class="nav-links">
-            <a href="shop.html">Shop</a>
-            <a href="book.html" class="active">Book</a>
-            <a href="contact.html">Contact</a>
+            <a href="shop.html" data-translate="shop">Shop</a>
+            <a href="book.html" class="active" data-translate="book">Book</a>
+            <a href="contact.html" data-translate="contact">Contact</a>
         </div>
         <div class="header-icons">
             <div class="cart-bubble">
-                <i class="fas fa-shopping-bag"></i>
+                <i class="fas fa-shopping-bag"  title="Cart"></i>
                 <span class="cart-count">0</span>
             </div>
             <div class="order-tracking-bubble" onclick="viewOrders()">
-                <i class="fas fa-box"></i>
+                <i class="fas fa-box"  title="Orders"></i>
                 <span class="order-count">0</span>
             </div>
-            <i class="fas fa-user" id="userIcon" onclick="window.location.href='customerdashboard.html'"></i>
+            <i class="fas fa-user" id="userIcon" onclick="window.location.href='customerdashboard.html'"  title="Account"></i>
             <div class="mode-toggle">
                 <i class="fas fa-sun"></i>
                 <i class="fas fa-moon"></i>
@@ -510,7 +524,7 @@
 
     <!-- Hero Section -->
     <section class="booking-hero">
-        <h1>Wig Renovation Service</h1>
+        <h1 data-translate="wigRenovationService">Wig Renovation Service</h1>
         <p style="
             color: #666;
             background: linear-gradient(
@@ -527,7 +541,7 @@
             animation: shine 5s infinite linear;
             text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
             font-weight: 600;
-        ">
+        " data-translate="wigServiceDescription">
             Send me your wig, I'll pamper it... and send it back to you like new.
         </p>
     </section>
@@ -535,7 +549,7 @@
     <!-- Process Section -->
     <section class="process-section">
         <div class="section-title">
-            <h2>How It Works</h2>
+            <h2 data-translate="howItWorks">How It Works</h2>
         </div>
         <div class="process-steps">
             <div class="process-step">
@@ -543,40 +557,40 @@
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <div class="step-number">1</div>
-                <h3>Book Your Service Online</h3>
-                <p>Fill out the form below with the number of wigs, your name, and contact information.</p>
+                <h3 data-translate="bookServiceOnline">Book Your Service Online</h3>
+                <p data-translate="bookServiceDescription">Fill out the form below with the number of wigs, your name, and contact information.</p>
             </div>
             <div class="process-step">
                 <div class="step-icon">
                     <i class="fas fa-phone-alt"></i>
                 </div>
                 <div class="step-number">2</div>
-                <h3>I Contact You</h3>
-                <p>Once I receive your request, I'll contact you with my address and ask for your return address.</p>
+                <h3 data-translate="iContactYou">I Contact You</h3>
+                <p data-translate="contactDescription">Once I receive your request, I'll contact you with my address and ask for your return address.</p>
             </div>
             <div class="process-step">
                 <div class="step-icon">
                     <i class="fas fa-shipping-fast"></i>
                 </div>
                 <div class="step-number">3</div>
-                <h3>You Send Your Wig</h3>
-                <p>Send your wig to the address I provide. I'll start the treatment as soon as I receive it.</p>
+                <h3 data-translate="youSendWig">You Send Your Wig</h3>
+                <p data-translate="sendWigDescription">Send your wig to the address I provide. I'll start the treatment as soon as I receive it.</p>
             </div>
             <div class="process-step">
                 <div class="step-icon">
                     <i class="fas fa-spa"></i>
                 </div>
                 <div class="step-number">4</div>
-                <h3>I Treat Your Wig</h3>
-                <p>I'll wash, detangle, treat, style, and restore shape and shine to your wig.</p>
+                <h3 data-translate="iTreatWig">I Treat Your Wig</h3>
+                <p data-translate="treatWigDescription">I'll wash, detangle, treat, style, and restore shape and shine to your wig.</p>
             </div>
             <div class="process-step">
                 <div class="step-icon">
                     <i class="fas fa-truck"></i>
                 </div>
                 <div class="step-number">5</div>
-                <h3>I Send It Back</h3>
-                <p>Once the service is complete, I'll return your wig to the address you provided.</p>
+                <h3 data-translate="iSendBack">I Send It Back</h3>
+                <p data-translate="sendBackDescription">Once the service is complete, I'll return your wig to the address you provided.</p>
             </div>
         </div>
     </section>
@@ -584,53 +598,53 @@
     <!-- Pricing Section -->
     <section class="pricing-section">
         <div class="section-title">
-            <h2>Pricing</h2>
+            <h2 data-translate="pricing">Pricing</h2>
         </div>
         <div class="price-card">
-            <h3>Wig Renovation Service</h3>
+            <h3 data-translate="wigRenovationService">Wig Renovation Service</h3>
             <div class="price-amount">€15</div>
-            <p>per wig (excluding shipping costs)</p>
-            <p class="price-note">Shipping costs to and from are at your expense</p>
+            <p data-translate="perWigExcludingShipping">per wig (excluding shipping costs)</p>
+            <p class="price-note" data-translate="shippingAtYourExpense">Shipping costs to and from are at your expense</p>
         </div>
     </section>
 
     <!-- Booking Form Section -->
     <section class="booking-form-section">
         <div class="section-title">
-            <h2>Book a Service</h2>
-            <p>Fill out the form below to book your wig renovation service</p>
+            <h2 data-translate="bookService">Book a Service</h2>
+            <p data-translate="fillFormDescription">Fill out the form below to book your wig renovation service</p>
         </div>
         <div class="booking-form-container">
             <form id="bookingForm">
                 <div class="form-group">
-                    <label for="fullName">Full Name *</label>
-                    <input type="text" id="fullName" class="form-control" required>
+                    <label for="fullName" data-translate="fullName">Full Name *</label>
+                    <input type="text" id="fullName" class="form-control" data-translate="enterFullName" placeholder="Enter your full name" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" class="form-control" required>
+                    <label for="email" data-translate="emailAddress">Email Address *</label>
+                    <input type="email" id="email" class="form-control" data-translate="enterEmail" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" id="phone" class="form-control" required>
+                    <label for="phone" data-translate="phoneNumber">Phone Number *</label>
+                    <input type="tel" id="phone" class="form-control" data-translate="enterPhone" placeholder="Enter your phone number" required>
                 </div>
                 <div class="form-group">
-                    <label for="wigCount">Number of Wigs to Treat *</label>
+                    <label for="wigCount" data-translate="numberOfWigs">Number of Wigs to Treat *</label>
                     <select id="wigCount" class="form-control" required>
-                        <option value="">Select number of wigs</option>
-                        <option value="1">1 Wig</option>
-                        <option value="2">2 Wigs</option>
-                        <option value="3">3 Wigs</option>
-                        <option value="4">4 Wigs</option>
-                        <option value="5">5 Wigs</option>
-                        <option value="more">More than 5</option>
+                        <option value="" data-translate="selectNumberOfWigs">Select number of wigs</option>
+                        <option value="1" data-translate="oneWig">1 Wig</option>
+                        <option value="2" data-translate="twoWigs">2 Wigs</option>
+                        <option value="3" data-translate="threeWigs">3 Wigs</option>
+                        <option value="4" data-translate="fourWigs">4 Wigs</option>
+                        <option value="5" data-translate="fiveWigs">5 Wigs</option>
+                        <option value="more" data-translate="moreThanFive">More than 5</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="comments">Comments / Special Requests (Optional)</label>
-                    <textarea id="comments" class="form-control" placeholder="Any specific requirements or notes about your wigs..."></textarea>
+                    <label for="comments" data-translate="commentsSpecialRequests">Comments / Special Requests (Optional)</label>
+                    <textarea id="comments" class="form-control" data-translate="commentsPlaceholder" placeholder="Any specific requirements or notes about your wigs..."></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Book Service</button>
+                <button type="submit" class="submit-btn" data-translate="bookServiceButton">Book Service</button>
             </form>
         </div>
     </section>
@@ -639,15 +653,15 @@
     <div class="floating-bubbles">
         <div class="bubble-btn" onclick="window.location.href='index.html'">
             <i class="fas fa-home"></i>
-            <span>Home</span>
+            <span data-translate="home">Home</span>
         </div>
         <div class="bubble-btn" onclick="window.location.href='shop.html'">
             <i class="fas fa-shopping-bag"></i>
-            <span>Shop</span>
+            <span data-translate="shop">Shop</span>
         </div>
         <div class="bubble-btn" onclick="window.location.href='customerdashboard.html'">
             <i class="fas fa-user"></i>
-            <span>Account</span>
+            <span data-translate="account">Account</span>
         </div>
     </div>
 
@@ -782,5 +796,6 @@ function showNotification(message, type = 'info') {
             window.location.href = 'customerdashboard.html?section=orders';
         }
     </script>
+     <script src="language-config.js"></script>
 </body>
 </html>

@@ -931,7 +931,7 @@
       }
     </style>
   </head>
-  <body>
+<body>
     <!-- Header -->
     <header>
       <div class="logo-container">
@@ -959,11 +959,11 @@
       </div>
       
       <div class="nav-links">
-        <a href="shop.html">Shop</a>
-        <a href="book.html">book</a>
-        <a href="collection.html">Collections</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
+        <a href="shop.html" data-translate="shop">Shop</a>
+        <a href="book.html" data-translate="book">book</a>
+        <a href="collection.html" data-translate="collections">Collections</a>
+        <a href="about.html" data-translate="about">About</a>
+        <a href="contact.html" data-translate="contact">Contact</a>
       </div>
       
       <div class="header-icons">
@@ -982,12 +982,12 @@
         <i class="fas fa-times"></i>
       </div>
       <div class="mobile-nav-links">
-        <a href="shop.html">Shop</a>
-        <a href="book.html">book</a>
-        <a href="collection.html">Collections</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-        <a href="sign-in.html" id="mobileSignIn">Sign In</a>
+        <a href="shop.html" data-translate="shop">Shop</a>
+        <a href="book.html" data-translate="book">book</a>
+        <a href="collection.html" data-translate="collections">Collections</a>
+        <a href="about.html" data-translate="about">About</a>
+        <a href="contact.html" data-translate="contact">Contact</a>
+        <a href="sign-in.html" id="mobileSignIn" data-translate="signIn">Sign In</a>
       </div>
     </div>
 
@@ -1029,21 +1029,20 @@
     </div>
 
     <!-- Hero Banner -->
-    <section class="hero-banner">
-      <h1>Premium Quality Hair Extensions</h1>
-      <p>
-        Discover our exclusive collection of luxury hair extensions and care
-        products crafted for perfection
-      </p>
-      <button class="cta-button" onclick="handleShopCollection()">
+   <section class="hero-banner">
+    <h1 data-translate="premiumQualityHair">Premium Quality Hair Extensions</h1>
+    <p data-translate="discoverCollection">
+        Discover our exclusive collection of luxury hair extensions and care products crafted for perfection
+    </p>
+    <button class="cta-button" onclick="handleShopCollection()" data-translate="shopCollection">
         SHOP THE COLLECTION
-      </button>
-    </section>
+    </button>
+</section>
 
     <!-- Premium Quality Section -->
     <section class="premium-quality">
-      <h2>Experience The OLYS HAIR Difference</h2>
-      <p>
+      <h2 data-translate="experienceDifference">Experience The OLYS HAIR Difference</h2>
+      <p data-translate="commitmentText">
         At OLYS HAIR, we are committed to providing the highest quality hair
         products sourced ethically and crafted with precision. Our products are
         designed to enhance your natural beauty and boost your confidence.
@@ -1052,8 +1051,8 @@
       <div class="quality-features">
         <div class="feature">
           <i class="fas fa-gem"></i>
-          <h3>Premium Quality</h3>
-          <p>
+          <h3 data-translate="premiumQuality">Premium Quality</h3>
+          <p data-translate="premiumQualityDesc">
             100% human hair, carefully selected for its durability and natural
             appearance.
           </p>
@@ -1061,8 +1060,8 @@
 
         <div class="feature">
           <i class="fas fa-certificate"></i>
-          <h3>Ethically Sourced</h3>
-          <p>
+          <h3 data-translate="ethicallySourced">Ethically Sourced</h3>
+          <p data-translate="ethicallySourcedDesc">
             We ensure all our hair is sourced responsibly and ethically from
             trusted suppliers.
           </p>
@@ -1070,16 +1069,16 @@
 
         <div class="feature">
           <i class="fas fa-tshirt"></i>
-          <h3>Silky & Smooth</h3>
-          <p>
+          <h3 data-translate="silkySmooth">Silky & Smooth</h3>
+          <p data-translate="silkySmoothDesc">
             Experience the luxurious feel of our silky smooth hair extensions.
           </p>
         </div>
 
         <div class="feature">
           <i class="fas fa-heart"></i>
-          <h3>Long Lasting</h3>
-          <p>
+          <h3 data-translate="longLasting">Long Lasting</h3>
+          <p data-translate="longLastingDesc">
             Our hair extensions maintain their quality and appearance through
             multiple uses.
           </p>
@@ -1089,7 +1088,7 @@
 
     <!-- Best Sellers -->
     <section class="products">
-      <h2 class="section-title">Best Sellers</h2>
+      <h2 class="section-title" data-translate="bestSellers">Best Sellers</h2>
       <div class="product-grid">
         <div class="product-card">
           <div class="product-image">
@@ -1097,7 +1096,7 @@
           </div>
           <div class="product-info">
             <h3>Bob bordeau by Oly's Hair</h3>
-            <button onclick="window.location.href='sign-in.html'">shop now</button>
+            <button onclick="window.location.href='sign-in.html'" data-translate="shopNow">shop now</button>
           </div>
         </div>
         
@@ -1107,7 +1106,7 @@
           </div>
           <div class="product-info">
             <h3>Birmanien Wavy</h3>
-            <button onclick="window.location.href='sign-in.html'">shop now</button>
+            <button onclick="window.location.href='sign-in.html'" data-translate="shopNow">shop now</button>
           </div>
         </div>
         
@@ -1117,7 +1116,7 @@
           </div>
           <div class="product-info">
             <h3>Kinky Curly</h3>
-            <button onclick="window.location.href='sign-in.html'">shop now</button>
+            <button onclick="window.location.href='sign-in.html'" data-translate="shopNow">shop now</button>
           </div>
         </div>
         
@@ -1127,7 +1126,7 @@
           </div>
           <div class="product-info">
             <h3>Pixie by olys hair</h3>
-            <button onclick="window.location.href='sign-in.html'">shop now</button>
+            <button onclick="window.location.href='sign-in.html'" data-translate="shopNow">shop now</button>
           </div>
         </div>
       </div>
@@ -1137,8 +1136,8 @@
     <section class="hair-types">
       <div class="hair-types-container">
         <div class="hair-types-content">
-          <h2>Find Your Perfect Hair Type</h2>
-          <p>
+          <h2 data-translate="findPerfectHair">Find Your Perfect Hair Type</h2>
+          <p data-translate="hairTypeDesc">
             We offer a wide variety of premium hair types to match your unique
             style and texture preferences. Each hair type is carefully selected
             and processed to maintain its natural beauty and integrity.
@@ -1146,24 +1145,19 @@
 
           <ul class="hair-type-list">
             <li>
-              <i class="fas fa-check-circle"></i> Brazilian - Known for its
-              thickness and durability
+              <i class="fas fa-check-circle"></i> <span data-translate="brazilianHair">Brazilian - Known for its thickness and durability</span>
             </li>
             <li>
-              <i class="fas fa-check-circle"></i> Peruvian - Soft, lightweight
-              and versatile
+              <i class="fas fa-check-circle"></i> <span data-translate="peruvianHair">Peruvian - Soft, lightweight and versatile</span>
             </li>
             <li>
-              <i class="fas fa-check-circle"></i> Malaysian - Silky straight
-              with natural shine
+              <i class="fas fa-check-circle"></i> <span data-translate="malaysianHair">Malaysian - Silky straight with natural shine</span>
             </li>
             <li>
-              <i class="fas fa-check-circle"></i> Mongolian - Fine texture with
-              natural volume
+              <i class="fas fa-check-circle"></i> <span data-translate="mongolianHair">Mongolian - Fine texture with natural volume</span>
             </li>
             <li>
-              <i class="fas fa-check-circle"></i> Indian - Thick with natural
-              wavy pattern
+              <i class="fas fa-check-circle"></i> <span data-translate="indianHair">Indian - Thick with natural wavy pattern</span>
             </li>
           </ul>
         </div>
@@ -1199,7 +1193,7 @@
 
     <!-- New Arrivals -->
     <section class="products">
-      <h2 class="section-title">New Arrivals</h2>
+      <h2 class="section-title" data-translate="newArrivals">New Arrivals</h2>
       <div class="product-grid">
         <div class="product-card">
           <div class="product-image">
@@ -1211,7 +1205,7 @@
           <div class="product-info">
             <h3>Birmanien Wavy</h3>
             <p></p>
-            <button onclick="window.location.href='sign-in.html'">shop now</button>
+            <button onclick="window.location.href='sign-in.html'" data-translate="shopNow">shop now</button>
           </div>
         </div>
 
@@ -1225,7 +1219,7 @@
           <div class="product-info">
             <h3>Kinky Curly</h3>
             <p></p>
-            <button onclick="window.location.href='sign-in.html'">shop now</button>
+            <button onclick="window.location.href='sign-in.html'" data-translate="shopNow">shop now</button>
           </div>
         </div>
 
@@ -1239,7 +1233,7 @@
           <div class="product-info">
             <h3>Pixie by olys hair</h3>
             <p></p>
-            <button onclick="window.location.href='sign-in.html'">shop now</button>
+            <button onclick="window.location.href='sign-in.html'" data-translate="shopNow">shop now</button>
           </div>
         </div>
 
@@ -1253,7 +1247,7 @@
           <div class="product-info">
             <h3>Pixie by olys hair</h3>
             <p></p>
-            <button onclick="window.location.href='sign-in.html'">shop now</button>
+            <button onclick="window.location.href='sign-in.html'" data-translate="shopNow">shop now</button>
           </div>
         </div>
       </div>
@@ -1264,7 +1258,7 @@
       <div class="footer-content">
         <div class="footer-column">
           <h3>OLYS HAIR</h3>
-          <p>
+          <p data-translate="premiumQualityProducts">
             Premium quality hair products for the modern woman who values luxury
             and style.
           </p>
@@ -1283,30 +1277,23 @@
         </div>
 
         <div class="footer-column">
-          <h3>Shop</h3>
+          <h3 data-translate="shop">Shop</h3>
           <ul>
-            <!--<li><a href="shop.html">Hair Extensions</a></li>-->
-            <li><a href="shop.html">Wigs</a></li>
-            <!--<li><a href="shop.html">Closures</a></li>-->
-            <!--<li><a href="shop.html">Frontals</a></li>-->
-            <li><a href="shop.html">Accessories</a></li>
+            <li><a href="shop.html" data-translate="wigs">Wigs</a></li>
+            <li><a href="shop.html" data-translate="accessories">Accessories</a></li>
           </ul>
         </div>
 
         <div class="footer-column">
-          <h3>Support</h3>
+          <h3 data-translate="support">Support</h3>
           <ul>
-            <!--<li><a href="contact.html">Contact Us</a></li>
-            <li><a href="faqs.html">FAQs</a></li>
-            <li><a href="shipping-returns.html">Shipping & Returns</a></li>
-            <li><a href="track-order.html">Track Order</a></li>
-            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            <!-- You can add support links here later -->
           </ul>
-        </div>-->
+        </div>
 
         <div class="footer-column">
-          <h3>Newsletter</h3>
-          <p>
+          <h3 data-translate="newsletter">Newsletter</h3>
+          <p data-translate="subscribeNewsletter">
             Subscribe to get special offers, free giveaways, and new product alerts.
           </p>
           
@@ -1317,13 +1304,14 @@
                 id="newsletterEmail"
                 placeholder="Your email address"
                 class="newsletter-input"
+                data-translate="yourEmail"
                 required
               />
               <div class="error-message" id="emailError"></div>
             </div>
             
             <button type="submit" class="newsletter-btn" id="subscribeBtn">
-              <span class="btn-text">SUBSCRIBE</span>
+              <span class="btn-text" data-translate="subscribe">SUBSCRIBE</span>
               <div class="loading-spinner" style="display: none;">
                 <i class="fas fa-spinner fa-spin"></i>
               </div>
@@ -1331,16 +1319,17 @@
             
             <div class="success-message" id="successMessage" style="display: none;">
               <i class="fas fa-check-circle"></i>
-              Thank you for subscribing!
+              <span data-translate="thankYouSubscribe">Thank you for subscribing!</span>
             </div>
           </form>
         </div>
       </div>
 
       <div class="copyright">
-        <p>© 2025 OLYS HAIR. All rights reserved. | www.olyshair.com</p>
+        <p>© 2025 OLYS HAIR. <span data-translate="allRightsReserved">All rights reserved</span> | www.olyshair.com</p>
       </div>
     </footer>
+
 
     <script>
       // Authentication utility functions
@@ -1849,6 +1838,7 @@
       // Uncomment the line below for debugging
       // checkLoginStatus();
     </script>
+    <script src="language-config.js"></script>
   </body>
 </html>
 <!--- design by Ragghack -->

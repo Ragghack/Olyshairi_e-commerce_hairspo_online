@@ -958,7 +958,7 @@
       }
     </style>
   </head>
-  <body>
+ <body>
     <!-- Header -->
     <header>
       <div class="logo-container">
@@ -976,22 +976,22 @@
         </span>
       </div>
       <div class="nav-links">
-        <a href="shop.html" class="active">Shop</a>
-        <a href="contact.html">Contact</a>
-        <a href="book.html">Book</a>
+        <a href="shop.html" class="active" data-translate="shop">Shop</a>
+        <a href="contact.html" data-translate="contact">Contact</a>
+        <a href="book.html" data-translate="book">Book</a>
       </div>
       <div class="header-icons">
         <!--<i class="fas fa-search"></i>-->
         <div class="cart-bubble">
-          <i class="fas fa-shopping-bag"></i>
+          <i class="fas fa-shopping-bag"  title="Cart"></i>
           <span class="cart-count">0</span>
         </div>
         <!-- Order Tracking Button -->
         <div class="order-tracking-bubble" onclick="viewOrders()">
-          <i class="fas fa-box"></i>
+          <i class="fas fa-box"  title="Orders"></i>
           <span class="order-count">0</span>
         </div>
-        <i class="fas fa-user" id="userIcon"  onclick="window.location.href='customerdashboard.html'"></i>
+        <i class="fas fa-user" id="userIcon" onclick="window.location.href='customerdashboard.html'"  title="Account"></i>
         <div class="mode-toggle">
           <i class="fas fa-sun"></i>
           <i class="fas fa-moon"></i>
@@ -1002,7 +1002,7 @@
 
     <!-- Shop Hero -->
     <section class="shop-hero">
-      <h1>Discover Your Perfect Look</h1>
+      <h1 data-translate="discoverPerfectLook">Discover Your Perfect Look</h1>
       <p
         style="
           color: #666;
@@ -1021,6 +1021,7 @@
           text-shadow: 0 0 10px rgba(57, 38, 37, 0.5);
           font-weight: 600;
         "
+        data-translate="premiumCollection"
       >
         Explore our premium collection of hair extensions and find your perfect
         match
@@ -1030,25 +1031,25 @@
     <!-- Filter Section -->
     <section class="shop-filters">
       <div class="filter-group">
-        <div class="filter-btn active" data-category="all">All Products</div>
+        <div class="filter-btn active" data-category="all" data-translate="allProducts">All Products</div>
         <!--<div class="filter-btn" data-category="extensions">Extensions</div>-->
-        <div class="filter-btn" data-category="wigs">Wigs</div>
+        <div class="filter-btn" data-category="wigs" data-translate="wigs">Wigs</div>
         <!--<div class="filter-btn" data-category="closures">Closures</div>-->
-        <div class="filter-btn" data-category="accessories">Accessories</div>
+        <div class="filter-btn" data-category="accessories" data-translate="accessories">Accessories</div>
       </div>
       <div class="filter-group">
         <select class="filter-select" id="sortSelect">
-          <option value="popularity">Sort by: Popularity</option>
-          <option value="price-low">Sort by: Price Low to High</option>
-          <option value="price-high">Sort by: Price High to Low</option>
-          <option value="newest">Sort by: Newest</option>
+          <option value="popularity" data-translate="sortByPopularity">Sort by: Popularity</option>
+          <option value="price-low" data-translate="sortByPriceLow">Sort by: Price Low to High</option>
+          <option value="price-high" data-translate="sortByPriceHigh">Sort by: Price High to Low</option>
+          <option value="newest" data-translate="sortByNewest">Sort by: Newest</option>
         </select>
         <select class="filter-select" id="lengthFilter">
-          <option value="all">Filter by: Length</option>
-          <option value="14-16">14-16 inches</option>
-          <option value="18-20">18-20 inches</option>
-          <option value="22-24">22-24 inches</option>
-          <option value="26+">26+ inches</option>
+          <option value="all" data-translate="filterByLength">Filter by: Length</option>
+          <option value="14-16" data-translate="length14-16">14-16 inches</option>
+          <option value="18-20" data-translate="length18-20">18-20 inches</option>
+          <option value="22-24" data-translate="length22-24">22-24 inches</option>
+          <option value="26+" data-translate="length26Plus">26+ inches</option>
         </select>
       </div>
     </section>
@@ -1057,7 +1058,7 @@
     <section class="products-grid" id="productsGrid">
       <div class="loading-spinner" id="loadingSpinner">
         <div class="spinner"></div>
-        <p>Loading products...</p>
+        <p data-translate="loadingProducts">Loading products...</p>
       </div>
       <!-- Products will be dynamically loaded here -->
     </section>
@@ -1080,27 +1081,27 @@
 
           <div class="modal-details">
             <div class="detail-item">
-              <span class="detail-label">Type:</span>
+              <span class="detail-label" data-translate="type">Type:</span>
               <span id="modalType"></span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Length:</span>
+              <span class="detail-label" data-translate="length">Length:</span>
               <span id="modalLength"></span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Texture:</span>
+              <span class="detail-label" data-translate="texture">Texture:</span>
               <span id="modalTexture"></span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Color:</span>
+              <span class="detail-label" data-translate="color">Color:</span>
               <span id="modalColor"></span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Quality:</span>
+              <span class="detail-label" data-translate="quality">Quality:</span>
               <span id="modalQuality"></span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Stock:</span>
+              <span class="detail-label" data-translate="stock">Stock:</span>
               <span id="modalStock"></span>
             </div>
           </div>
@@ -1109,10 +1110,10 @@
 
           <div class="modal-actions">
             <button class="add-to-cart" id="modalAddToCart">
-              <i class="fas fa-cart-plus"></i> Add to Cart
+              <i class="fas fa-cart-plus"></i> <span data-translate="addToCart">Ajouter au panier</span>
             </button>
             <button class="modal-pay-now" id="modalPayNow">
-              <i class="fas fa-bolt"></i> Pay Now
+              <i class="fas fa-bolt"></i> <span data-translate="payNow">Payer Maintenant</span>
             </button>
             <button class="wishlist-btn" id="modalWishlistBtn">
               <i class="fas fa-heart"></i>
@@ -1125,7 +1126,7 @@
     <!-- Cart Panel -->
     <div class="cart-panel">
       <div class="cart-header">
-        <h3>Your Cart</h3>
+        <h3 data-translate="yourCart">Your Cart</h3>
         <div class="close-cart">
           <i class="fas fa-times"></i>
         </div>
@@ -1137,19 +1138,19 @@
 
       <div class="cart-summary">
         <div class="summary-row">
-          <span>Subtotal</span>
+          <span data-translate="subtotal">Subtotal</span>
           <span id="cartSubtotal">€0.00</span>
         </div>
         <div class="summary-row">
-          <span>Shipping</span>
+          <span data-translate="shipping">Shipping</span>
           <span id="cartShipping">€0.00</span>
         </div>
         <div class="summary-row cart-total">
-          <span>Total</span>
+          <span data-translate="total">Total</span>
           <span id="cartTotal">€0.00</span>
         </div>
 
-        <button class="checkout-btn" id="checkoutBtn">
+        <button class="checkout-btn" id="checkoutBtn" data-translate="proceedToPayment">
           Proceed to payment
         </button>
       </div>
@@ -1159,20 +1160,21 @@
     <div class="floating-bubbles">
       <div class="bubble-btn" id="cartBubble">
         <i class="fas fa-shopping-cart"></i>
-        <span>View Cart</span>
+        <span data-translate="viewCart">View Cart</span>
       </div>
       <div class="bubble-btn" onclick="window.location.href='index.html'">
         <i class="fas fa-home"></i>
-        <span>Home</span>
+        <span data-translate="home">Home</span>
       </div>
-      <div
-        class="bubble-btn"
-        onclick="window.location.href='customerdashboard.html'"
-      >
+      <div class="bubble-btn" onclick="window.location.href='customerdashboard.html'">
         <i class="fas fa-user"></i>
-        <span>Account</span>
+        <span data-translate="account">Account</span>
       </div>
     </div>
+
+    <!-- ADD THIS SCRIPT TAG AT THE END -->
+    <script src="language-config.js"></script>
+</body>
 
     <script>
       // API Configuration
@@ -1447,7 +1449,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
                             <i class="fas fa-cart-plus"></i> ${
                               productStock === 0
                                 ? "Out of Stock"
-                                : "Add to Cart"
+                                : "Ajouter au panier"
                             }
                         </button>
                         <button class="pay-now-btn" data-product="${productId}" ${
@@ -1456,7 +1458,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
             : ""
         }>
                             <i class="fas fa-bolt"></i> ${
-                              productStock === 0 ? "Out of Stock" : "Pay Now"
+                              productStock === 0 ? "Out of Stock" : "Payer maintenant"
                             }
                         </button>
                         <button class="wishlist-btn ${
@@ -2262,6 +2264,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
           }
         }, 3000);
       }
+      
     </script>
   </body>
 </html>

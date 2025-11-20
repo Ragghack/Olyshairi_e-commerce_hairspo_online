@@ -977,15 +977,15 @@
         </ul>
       </div>
       <div class="auth-form-container">
-        <div class="auth-tabs">
-          <div class="auth-tab active" data-tab="signin">Sign In</div>
-          <div class="auth-tab" data-tab="signup">Create Account</div>
-        </div>
+<div class="auth-tabs">
+    <div class="auth-tab active" data-tab="signin" data-translate="signIn">Sign In</div>
+    <div class="auth-tab" data-tab="signup" data-translate="register">Create Account</div>
+</div>
 
         <!-- Sign In Form -->
         <form class="auth-form active" id="signin-form">
-          <h2 class="form-title">Welcome Back</h2>
-          <p class="form-subtitle">Sign in to access your account</p>
+         <h2 class="form-title" data-translate="welcomeBack">Welcome Back</h2>
+<p class="form-subtitle" data-translate="signInToAccount">Sign in to access your account</p>
 
           <div class="social-auth">
             <div class="g_id_signin" 
@@ -1007,25 +1007,13 @@
           </div>
 
           <div class="form-group">
-            <label for="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              class="form-control"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+            <label for="email" data-translate="emailAddress">Email Address</label>
+    <input type="email" id="email" class="form-control" data-translate="emailAddress" placeholder="Enter your email" required />
+</div>
 
-          <div class="form-group password-toggle">
-            <label for="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              class="form-control"
-              placeholder="Enter your password"
-              required
-            />
+<div class="form-group password-toggle">
+    <label for="password" data-translate="password">Password</label>
+    <input type="password" id="password" class="form-control" data-translate="password" placeholder="Enter your password" required />
             <span class="toggle-password" id="togglePassword">
               <i class="fas fa-eye"></i>
             </span>
@@ -1108,7 +1096,13 @@
               required
             />
             <span class="toggle-password" id="toggleConfirmPassword">
-              <i class="fas fa-eye"></i>
+              <i class="fas fa-eye"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content:center;
+                position:relative;"
+                ></i>
             </span>
           </div>
 
@@ -1549,5 +1543,6 @@
         }
       });
   </script>
+  <script src="language-config.js"></script>
 </body>
 </html>
