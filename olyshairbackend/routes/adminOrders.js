@@ -169,4 +169,106 @@ router.get('/stats', adminAuth, async (req, res) => {
   }
 });
 
+// ADD TO YOUR adminOrders.js
+router.put('/:id/status', adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, notes } = req.body;
+
+    const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+    
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+      });
+    }
+
+    const order = await Order.findOne({ _id: id, isDeleted: false });
+    
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Update order status
+    order.status = status;
+    
+    // Add status history
+    order.statusHistory = order.statusHistory || [];
+    order.statusHistory.push({
+      status: status,
+      changedAt: new Date(),
+      changedBy: req.user.id,
+      notes: notes
+    });
+
+    await order.save();
+
+    // Populate the updated order for response
+    const updatedOrder = await Order.findById(id)
+      .populate('user', 'firstName lastName email')
+      .lean();
+
+    return res.json({
+      success: true,
+      message: `Order status updated to ${status}`,
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ Update order status error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to update order status',
+      details: error.message
+    });
+  }
+});
+// ADD TO YOUR adminOrders.js
+router.get('/:id', adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findOne({ _id: id, isDeleted: false })
+      .populate('user', 'firstName lastName email phone')
+      .populate('items.product', 'name images sku price category')
+      .select('-__v')
+      .lean();
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Format for admin display
+    const orderDetails = {
+      ...order,
+      customerName: order.user 
+        ? `${order.user.firstName} ${order.user.lastName}`
+        : `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+      customerEmail: order.user ? order.user.email : order.shippingAddress.email,
+      customerPhone: order.user ? order.user.phone : order.shippingAddress.phone,
+      totalItems: order.items.reduce((sum, item) => sum + item.quantity, 0)
+    };
+
+    return res.json({
+      success: true,
+      order: orderDetails
+    });
+
+  } catch (error) {
+    console.error('❌ Get order details error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch order details',
+      details: error.message
+    });
+  }
+});
+
 module.exports = router;
