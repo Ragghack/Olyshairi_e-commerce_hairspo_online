@@ -1387,6 +1387,13 @@
     <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=EUR"></script>
 
     <script>
+      // Dynamic API URL configuration
+      const API_BASE_URL = window.location.hostname.includes('localhost') 
+          ? "http://localhost:5001/api" 
+          : "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
+          console.log("🌐 Utilisation de l'URL de base de l'API:", API_BASE_URL);
+      console.log("📍 Nom d'hôte actuel:", window.location.hostname);
+
       // ==================== ENHANCED CONFIGURATION ====================
       const CONFIG = {
         STRIPE_PUBLISHABLE_KEY: "pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0",
