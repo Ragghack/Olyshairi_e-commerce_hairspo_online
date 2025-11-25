@@ -46,7 +46,7 @@ async function getAccessToken() {
   }
 }
 
-// ✅ FIXED: Create Order Endpoint
+// ✅ FIXED: Create Order Endpoint with proper breakdown
 router.post('/create-order', validatePaymentRequest, async (req, res) => {
   try {
     const { amount, items, currency = 'EUR' } = req.body;
@@ -54,12 +54,7 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
     console.log('🔄 Creating PayPal order with:', { 
       amount, 
       currency, 
-      itemsCount: items?.length,
-      items: items.map(item => ({
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity
-      }))
+      itemsCount: items?.length
     });
 
     // Validate input
@@ -79,13 +74,31 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
 
     const token = await getAccessToken();
 
-    // ✅ SIMPLIFIED PayPal payload - This is the key fix
+    // ✅ Calculate item total properly
+    const itemTotal = items.reduce((total, item) => {
+      const price = parseFloat(item.price) || 0;
+      const quantity = parseInt(item.quantity) || 1;
+      return total + (price * quantity);
+    }, 0);
+
+    console.log('💰 Amount calculations:', {
+      providedAmount: amount,
+      calculatedItemTotal: itemTotal.toFixed(2)
+    });
+
+    // ✅ CORRECT PayPal payload with proper breakdown
     const orderPayload = {
       intent: 'CAPTURE',
       purchase_units: [{
         amount: {
           currency_code: currency,
-          value: parseFloat(amount).toFixed(2)
+          value: parseFloat(amount).toFixed(2),
+          breakdown: {
+            item_total: {
+              currency_code: currency,
+              value: itemTotal.toFixed(2) // ✅ REQUIRED when items are specified
+            }
+          }
         },
         items: items.map((item, index) => ({
           name: (item.name || `Product ${index + 1}`).substring(0, 126),
@@ -95,7 +108,8 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
             value: parseFloat(item.price || 0).toFixed(2)
           },
           quantity: (item.quantity || 1).toString(),
-          category: 'PHYSICAL_GOODS'
+          category: 'PHYSICAL_GOODS',
+          sku: item.sku || `SKU${index + 1}`
         }))
       }],
       application_context: {
@@ -127,7 +141,7 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
 
     if (!response.ok) {
       const errorMsg = data.details?.[0]?.description || data.message || 'PayPal API error';
-      console.error('❌ PayPal API error details:', data);
+      console.error('❌ PayPal API error details:', JSON.stringify(data, null, 2));
       throw new Error(errorMsg);
     }
 
@@ -155,15 +169,85 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
 
     console.log('✅ PayPal order created successfully:', data.id);
 
-    // ✅ CRITICAL: Return EXACT format that PayPal SDK expects
+    // ✅ Return format that PayPal SDK expects
     res.json({
       id: data.id,  // PayPal expects 'id' not 'orderId'
-      status: data.status,
-      links: data.links
+      status: data.status
     });
 
   } catch (error) {
     console.error('❌ Create order error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// ✅ ALTERNATIVE: Simple version without items (if you still have issues)
+router.post('/create-order-simple', validatePaymentRequest, async (req, res) => {
+  try {
+    const { amount, currency = 'EUR' } = req.body;
+    
+    console.log('🔄 Creating simple PayPal order:', { amount, currency });
+
+    const token = await getAccessToken();
+
+    // ✅ SIMPLEST PayPal payload - no items, just amount
+    const orderPayload = {
+      intent: 'CAPTURE',
+      purchase_units: [{
+        amount: {
+          currency_code: currency,
+          value: parseFloat(amount).toFixed(2)
+        }
+      }],
+      application_context: {
+        shipping_preference: 'NO_SHIPPING',
+        user_action: 'PAY_NOW',
+        return_url: `${process.env.FRONTEND_URL || 'https://www.olyshair.com'}/order-success`,
+        cancel_url: `${process.env.FRONTEND_URL || 'https://www.olyshair.com'}/checkout`
+      }
+    };
+
+    console.log('📦 Simple PayPal payload:', JSON.stringify(orderPayload, null, 2));
+
+    const response = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(orderPayload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorMsg = data.details?.[0]?.description || data.message || 'PayPal API error';
+      throw new Error(errorMsg);
+    }
+
+    // Create order in database
+    const order = await Order.create({
+      user: req.user?.id,
+      totalAmount: amount,
+      currency: currency,
+      paymentProvider: 'paypal',
+      paymentStatus: 'pending',
+      paypalOrderId: data.id,
+      status: 'created'
+    });
+
+    console.log('✅ Simple PayPal order created:', data.id);
+
+    res.json({
+      id: data.id,
+      status: data.status
+    });
+
+  } catch (error) {
+    console.error('❌ Simple create order error:', error.message);
     res.status(500).json({
       success: false,
       error: error.message
@@ -236,28 +320,6 @@ router.get('/health', async (req, res) => {
     res.status(503).json({ 
       status: 'ERROR', 
       error: error.message 
-    });
-  }
-});
-// Debug endpoint to test PayPal configuration
-router.get('/debug/config', async (req, res) => {
-  try {
-    const token = await getAccessToken();
-    
-    res.json({
-      success: true,
-      config: {
-        baseUrl: PAYPAL_BASE,
-        environment: process.env.PAYPAL_ENVIRONMENT || 'sandbox',
-        hasClientId: !!process.env.PAYPAL_CLIENT_ID,
-        hasClientSecret: !!process.env.PAYPAL_CLIENT_SECRET,
-        tokenReceived: !!token
-      }
-    });
-  } catch (error) {
-    res.json({
-      success: false,
-      error: error.message
     });
   }
 });
