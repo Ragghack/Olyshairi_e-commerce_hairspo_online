@@ -188,26 +188,49 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
     }
 
     // Create order in database
-    const order = await Order.create({
-      user: req.user?.id,
-      items: items,
-      totalAmount: paypalTotal, // Use the PayPal-calculated total
-      currency: currency,
-      paymentProvider: 'paypal',
-      paymentStatus: 'pending',
-      paypalOrderId: data.id,
-      status: 'created',
-      metadata: {
-        originalAmount: amount,
-        calculatedAmount: paypalTotal,
-        breakdown: {
-          item_total: itemTotal,
-          shipping: shippingAmount,
-          tax: taxAmount,
-          discount: discountAmount
-        }
-      }
-    });
+// ✅ Create order in database with full schema compatibility
+const order = await Order.create({
+  user: req.user?.id || null,
+
+  guestEmail: req.body.email,
+
+  items: items.map(i => ({
+    product: i.productId,
+    name: i.name,
+    price: i.price,
+    quantity: i.quantity,
+    image: i.image,
+    sku: i.sku
+  })),
+
+  subtotal: itemTotal,
+  shippingCost: shippingAmount,
+  taxAmount: taxAmount,
+  discountAmount: discountAmount,
+  totalAmount: paypalTotal,
+
+  paymentMethod: 'paypal',
+  paymentStatus: 'pending',
+
+  status: 'pending', // FIXED ENUM
+
+  paypalOrderId: data.id,
+
+  shippingAddress: req.body.shippingAddress,
+  billingAddress: req.body.billingAddress,
+
+  metadata: {
+    originalAmount: amount,
+    calculatedAmount: paypalTotal,
+    breakdown: {
+      item_total: itemTotal,
+      shipping: shippingAmount,
+      tax: taxAmount,
+      discount: discountAmount
+    }
+  }
+});
+
 
     console.log('✅ PayPal order created successfully:', data.id);
 
