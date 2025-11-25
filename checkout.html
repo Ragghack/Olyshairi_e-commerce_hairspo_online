@@ -1386,9 +1386,9 @@
     <!-- PayPal SDK -->
     <script src="https://www.paypal.com/sdk/js?client-id=Afdo7xRdDvUKhixkahcnYo27-SmAYrZQgvuZSPATxitvw__sm4A5ZWHtresK_n-UrywV8pCBmuqpRGqg&currency=EUR"></script>
 
-    <script>
-      // Dynamic API URL configuration
-      // ==================== ENHANCED CONFIGURATION ====================
+  <script>
+// Dynamic API URL configuration
+// ==================== ENHANCED CONFIGURATION ====================
 /* checkout.js - rewritten frontend checkout logic (replace the large inline script) */
 
 /* CONFIG (keep your existing values or adjust) */
@@ -1412,6 +1412,7 @@ let appliedPromoCode = null;
 function getAuthToken() {
   return localStorage.getItem('authToken') || document.cookie.match(/authToken=([^;]+)/)?.[1] || null;
 }
+
 function showNotification(message, type = "info", duration = 5000) {
   const n = document.getElementById("notification");
   if (!n) return;
@@ -1423,13 +1424,20 @@ function showNotification(message, type = "info", duration = 5000) {
   n.className = `notification ${type} show`;
   setTimeout(()=> n.classList.remove("show"), duration);
 }
+
 function showLoading(show) {
   const overlay = document.getElementById("loadingOverlay");
   if (!overlay) return;
   overlay.classList.toggle("active", !!show);
 }
+
 function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+
 function isValidPhone(phone) { return /^[\+]?[1-9][\d]{0,15}$/.test(phone.replace(/[\s\-\(\)]/g, "")); }
+
+function generateOrderNumber() {
+  return 'OL-' + Date.now();
+}
 
 /* ------------------------ Form helpers ------------------------ */
 function getFormData() {
@@ -1547,8 +1555,9 @@ function buildOrderPayload(formData) {
   return {
     email: formData.email,
     guestEmail: formData.email,       // explicit for backend guestEmail requirement
+    orderNumber: generateOrderNumber(),
     items: itemsForBackend.map(it => ({
-      product: it.product,           // server expects `product` ObjectId in schema
+      product: it.productId,   // REQUIRED FOR MONGODB
       name: it.name,
       price: it.price,
       quantity: it.quantity,
@@ -1837,6 +1846,7 @@ async function handlePaymentSuccess(paymentResult, formData, orderId) {
     console.error("handlePaymentSuccess error:", err);
   }
 }
+
 function updateReceiptModal(paymentResult, formData) {
   const orderNumberElement = document.getElementById("orderNumber");
   if (orderNumberElement) orderNumberElement.textContent = `Order #${paymentResult.orderId || ''}`;
@@ -1942,7 +1952,6 @@ document.addEventListener("DOMContentLoaded", async function() {
   // we don't auto-render here — it's called by togglePaymentForms when PayPal method chosen
   console.log('Checkout initialized');
 });
-
-    </script>
+</script>
   </body>
 </html>
