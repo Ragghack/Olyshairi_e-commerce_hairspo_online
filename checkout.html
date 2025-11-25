@@ -1388,12 +1388,6 @@
 
     <script>
       // Dynamic API URL configuration
-      const API_BASE_URL = window.location.hostname.includes('localhost') 
-          ? "http://localhost:5001/api" 
-          : "https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com/api";
-          console.log("🌐 Utilisation de l'URL de base de l'API:", API_BASE_URL);
-      console.log("📍 Nom d'hôte actuel:", window.location.hostname);
-
       // ==================== ENHANCED CONFIGURATION ====================
       const CONFIG = {
         STRIPE_PUBLISHABLE_KEY: "pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0",
@@ -1867,72 +1861,109 @@
         });
       }
 
-      function loadPayPalButton() {
-        if (typeof paypal === 'undefined') {
-          console.error('PayPal SDK not loaded');
-          return;
-        }
+function loadPayPalButton() {
+  if (typeof paypal === 'undefined') {
+    console.error('PayPal SDK not loaded');
+    return;
+  }
 
-        paypal.Buttons({
-          createOrder: async () => {
-            try {
-              const response = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/create-order`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  amount: currentOrderData.total,
-                  items: currentOrderData.items,
-                  currency: CONFIG.CURRENCY
-                }),
-              });
-              
-              const data = await response.json();
-              if (!response.ok) throw new Error(data.error);
-              
-              return data.orderId;
-            } catch (error) {
-              console.error('PayPal order creation failed:', error);
-              showNotification('Failed to create PayPal order', 'error');
-              throw error;
-            }
+  // Clear any existing buttons
+  const container = document.getElementById('paypal-button-container');
+  if (container) {
+    container.innerHTML = '';
+  }
+
+  paypal.Buttons({
+    createOrder: async () => {
+      try {
+        console.log('🔄 Creating PayPal order...', {
+          amount: currentOrderData.total,
+          items: currentOrderData.items
+        });
+
+        const response = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/create-order`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getAuthToken()}`
           },
-          onApprove: async (data) => {
-            try {
-              const response = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/capture/${data.orderID}`, {
-                method: 'POST',
-              });
-              
-              const capture = await response.json();
-              if (!response.ok) throw new Error(capture.error);
-              
-              if (capture.success) {
-                handlePaymentSuccess(
-                  {
-                    transactionId: capture.transactionId,
-                    method: "paypal",
-                    amount: currentOrderData.total,
-                    orderId: data.orderID,
-                  },
-                  getFormData(),
-                  data.orderID
-                );
-              } else {
-                throw new Error('Payment capture failed');
-              }
-            } catch (error) {
-              console.error('PayPal payment capture failed:', error);
-              showNotification('PayPal payment failed.', 'error');
-            }
-          },
-          onError: (err) => {
-            console.error('PayPal error:', err);
-            showNotification('PayPal payment failed.', 'error');
-          },
-          onCancel: () => {
-            showNotification('PayPal payment cancelled', 'warning');
-          }
-        }).render('#paypal-button-container');
+          body: JSON.stringify({
+            amount: currentOrderData.total,
+            items: currentOrderData.items,
+            currency: CONFIG.CURRENCY
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          console.error('PayPal API error:', data);
+          throw new Error(data.error || 'Failed to create order');
+        }
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Order creation failed');
+        }
+        
+        console.log('✅ PayPal order created:', data.orderId);
+        return data.orderId;
+        
+      } catch (error) {
+        console.error('❌ PayPal order creation failed:', error);
+        showNotification('Failed to create PayPal order: ' + error.message, 'error');
+        throw error;
       }
+    },
+
+    onApprove: async (data) => {
+      try {
+        console.log('🔄 Capturing PayPal payment:', data.orderID);
+        
+        const response = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/capture/${data.orderID}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${getAuthToken()}`
+          }
+        });
+        
+        const captureData = await response.json();
+        
+        if (!response.ok || !captureData.success) {
+          throw new Error(captureData.error || 'Payment capture failed');
+        }
+        
+        console.log('✅ PayPal payment captured:', captureData.transactionId);
+        
+        // Handle successful payment
+        await handlePaymentSuccess(
+          {
+            transactionId: captureData.transactionId,
+            method: "paypal",
+            amount: currentOrderData.total,
+            orderId: data.orderID,
+          },
+          getFormData(),
+          data.orderID
+        );
+        
+      } catch (error) {
+        console.error('❌ PayPal payment capture failed:', error);
+        showNotification('Payment failed: ' + error.message, 'error');
+      }
+    },
+
+    onError: (err) => {
+      console.error('❌ PayPal button error:', err);
+      showNotification('PayPal payment failed. Please try again.', 'error');
+    },
+
+    onCancel: (data) => {
+      console.log('⚠️ PayPal payment cancelled:', data);
+      showNotification('PayPal payment was cancelled', 'warning');
+    }
+
+  }).render('#paypal-button-container');
+}
 
       async function initializeApplePay() {
         // Apple Pay implementation would go here
