@@ -145,7 +145,7 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
         }))
       }],
       application_context: {
-        shipping_preference: 'SET_PROVIDED_ADDRESS',
+        shipping_preference: 'NO_SHIPPING',
         user_action: 'PAY_NOW',
         return_url: `${process.env.FRONTEND_URL || 'https://www.olyshair.com'}/order-success`,
         cancel_url: `${process.env.FRONTEND_URL || 'https://www.olyshair.com'}/checkout`
