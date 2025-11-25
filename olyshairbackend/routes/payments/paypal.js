@@ -1,9 +1,11 @@
 const express = require('express');
-const fetch = require('node-fetch');
 const Order = require('../../models/Order');
 const { validatePaymentRequest } = require('../../middleware/validation');
 
 const router = express.Router();
+
+// Import node-fetch properly for CommonJS
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 // Determine PayPal environment
 const getPayPalBaseURL = () => {
@@ -15,7 +17,7 @@ const getPayPalBaseURL = () => {
 
 const PAYPAL_BASE = getPayPalBaseURL();
 
-// Centralized error handler for PayPal API
+// Enhanced error handler for PayPal API
 const handlePayPalError = (error, res) => {
   console.error('PayPal API Error:', error);
   
@@ -26,75 +28,113 @@ const handlePayPalError = (error, res) => {
     });
   }
   
+  if (error.message) {
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+  
   res.status(500).json({
     success: false,
     error: 'Payment service unavailable'
   });
 };
 
-// Get access token with retry logic
+// Enhanced access token function with better error handling
 async function getAccessToken(retries = 3) {
-  try {
-    const basic = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64');
-    
-    const response = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
-      method: 'POST',
-      headers: { 
-        'Authorization': `Basic ${basic}`, 
-        'Content-Type': 'application/x-www-form-urlencoded' 
-      },
-      body: 'grant_type=client_credentials'
-    });
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      // Validate environment variables
+      if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
+        throw new Error('PayPal credentials not configured');
+      }
 
-    if (!response.ok) {
-      throw new Error(`PayPal auth failed: ${response.status}`);
-    }
+      const basic = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64');
+      
+      const response = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Basic ${basic}`, 
+          'Content-Type': 'application/x-www-form-urlencoded' 
+        },
+        body: 'grant_type=client_credentials'
+      });
 
-    const data = await response.json();
-    return data.access_token;
-  } catch (error) {
-    if (retries > 0) {
-      console.log(`Retrying PayPal auth... ${retries} attempts left`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return getAccessToken(retries - 1);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`PayPal auth failed: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.access_token) {
+        throw new Error('No access token received from PayPal');
+      }
+      
+      return data.access_token;
+    } catch (error) {
+      console.error(`PayPal auth attempt ${attempt} failed:`, error.message);
+      
+      if (attempt < retries) {
+        console.log(`Retrying PayPal auth... ${retries - attempt} attempts left`);
+        await delay(1000 * attempt); // Exponential backoff
+      } else {
+        throw new Error(`PayPal authentication failed after ${retries} attempts: ${error.message}`);
+      }
     }
-    throw error;
   }
 }
 
+// Enhanced create order endpoint
 router.post('/create-order', validatePaymentRequest, async (req, res) => {
   try {
-    const { amount, items, currency = 'USD' } = req.body;
+    const { amount, items, currency = 'EUR' } = req.body;
     
-    // Validate amount
-    if (!amount || amount <= 0) {
+    // Enhanced validation
+    if (!amount || amount <= 0 || isNaN(amount)) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid amount'
+        error: 'Valid amount is required'
+      });
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Order items are required'
       });
     }
 
     const token = await getAccessToken();
     
+    // Enhanced order payload
     const orderPayload = {
       intent: 'CAPTURE',
       purchase_units: [{
         amount: { 
           currency_code: currency, 
-          value: String(amount) 
+          value: parseFloat(amount).toFixed(2)
         },
-        items: items?.map(item => ({
-          name: item.name,
-          unit_amount: { currency_code: currency, value: String(item.price) },
+        items: items.map(item => ({
+          name: item.name.substring(0, 127), // PayPal limit
+          unit_amount: { 
+            currency_code: currency, 
+            value: parseFloat(item.price).toFixed(2)
+          },
           quantity: String(item.quantity),
-          sku: item.sku || item.id
-        }))
+          sku: item.sku ? item.sku.substring(0, 127) : item.id ? item.id.substring(0, 127) : 'SKU001'
+        })),
+        description: `Order from OLYS HAIR - ${items.length} item(s)`
       }],
       application_context: {
         shipping_preference: 'NO_SHIPPING',
         user_action: 'PAY_NOW',
-        return_url: `${process.env.FRONTEND_URL}/order-confirmation`,
-        cancel_url: `${process.env.FRONTEND_URL}/checkout`
+        return_url: `${process.env.FRONTEND_URL || 'https://www.olyshair.com'}/order-confirmation`,
+        cancel_url: `${process.env.FRONTEND_URL || 'https://www.olyshair.com'}/checkout`,
+        brand_name: 'OLYS HAIR'
       }
     };
 
@@ -102,7 +142,8 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
       method: 'POST',
       headers: { 
         'Authorization': `Bearer ${token}`, 
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
       },
       body: JSON.stringify(orderPayload)
     });
@@ -110,7 +151,18 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to create PayPal order');
+      console.error('PayPal order creation failed:', data);
+      throw new Error(data.message || `Failed to create PayPal order: ${response.status}`);
+    }
+
+    // Validate PayPal response
+    if (!data.id || !data.links) {
+      throw new Error('Invalid response from PayPal');
+    }
+
+    const approvalLink = data.links.find(link => link.rel === 'approve');
+    if (!approvalLink) {
+      throw new Error('No approval link found in PayPal response');
     }
 
     // Create order record
@@ -128,15 +180,17 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
     res.json({
       success: true,
       orderId: data.id,
-      approvalUrl: data.links.find(link => link.rel === 'approve').href,
+      approvalUrl: approvalLink.href,
       internalOrderId: order._id
     });
 
   } catch (error) {
+    console.error('Create order error:', error);
     handlePayPalError(error, res);
   }
 });
 
+// Enhanced capture endpoint
 router.post('/capture/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -154,14 +208,21 @@ router.post('/capture/:orderId', async (req, res) => {
       method: 'POST',
       headers: { 
         'Authorization': `Bearer ${token}`, 
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
       }
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to capture payment');
+      console.error('PayPal capture failed:', data);
+      throw new Error(data.message || `Failed to capture payment: ${response.status}`);
+    }
+
+    // Validate capture response
+    if (data.status !== 'COMPLETED') {
+      throw new Error(`Payment not completed. Status: ${data.status}`);
     }
 
     // Update order status
@@ -169,17 +230,20 @@ router.post('/capture/:orderId', async (req, res) => {
       { paypalOrderId: orderId },
       { 
         paymentStatus: 'completed',
-        'metadata.capture': data
+        'metadata.capture': data,
+        paidAt: new Date()
       }
     );
 
     res.json({
       success: true,
       status: data.status,
-      transactionId: data.purchase_units[0].payments.captures[0].id
+      transactionId: data.purchase_units[0].payments.captures[0].id,
+      orderId: data.id
     });
 
   } catch (error) {
+    console.error('Capture order error:', error);
     handlePayPalError(error, res);
   }
 });
@@ -192,17 +256,29 @@ router.post('/webhook', express.json({ type: 'application/json' }), async (req, 
     // Verify webhook signature (important for production)
     // Implement PayPal webhook verification here
     
+    console.log('Received PayPal webhook:', webhookEvent.event_type);
+    
     switch (webhookEvent.event_type) {
       case 'PAYMENT.CAPTURE.COMPLETED':
         await Order.findOneAndUpdate(
           { paypalOrderId: webhookEvent.resource.id },
-          { paymentStatus: 'completed' }
+          { 
+            paymentStatus: 'completed',
+            paidAt: new Date()
+          }
         );
         break;
       case 'PAYMENT.CAPTURE.DENIED':
+      case 'PAYMENT.CAPTURE.FAILED':
         await Order.findOneAndUpdate(
           { paypalOrderId: webhookEvent.resource.id },
           { paymentStatus: 'failed' }
+        );
+        break;
+      case 'CHECKOUT.ORDER.APPROVED':
+        await Order.findOneAndUpdate(
+          { paypalOrderId: webhookEvent.resource.id },
+          { paymentStatus: 'approved' }
         );
         break;
     }
@@ -211,6 +287,24 @@ router.post('/webhook', express.json({ type: 'application/json' }), async (req, 
   } catch (error) {
     console.error('Webhook error:', error);
     res.status(500).json({ error: 'Webhook processing failed' });
+  }
+});
+
+// Add health check endpoint for PayPal
+router.get('/health', async (req, res) => {
+  try {
+    const token = await getAccessToken(1); // Quick test with 1 retry
+    res.json({ 
+      status: 'OK', 
+      paypal: 'connected',
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    res.status(503).json({ 
+      status: 'ERROR', 
+      paypal: 'disconnected',
+      error: error.message 
+    });
   }
 });
 
