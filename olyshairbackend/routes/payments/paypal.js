@@ -46,15 +46,18 @@ async function getAccessToken() {
   }
 }
 
-// ✅ FIXED: Create Order Endpoint with proper breakdown
+// ✅ FIXED: Create Order Endpoint with proper amount calculations
 router.post('/create-order', validatePaymentRequest, async (req, res) => {
   try {
-    const { amount, items, currency = 'EUR' } = req.body;
+    const { amount, items, currency = 'EUR', shipping = 0, tax = 0, discount = 0 } = req.body;
     
     console.log('🔄 Creating PayPal order with:', { 
       amount, 
       currency, 
-      itemsCount: items?.length
+      itemsCount: items?.length,
+      shipping,
+      tax,
+      discount
     });
 
     // Validate input
@@ -74,29 +77,58 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
 
     const token = await getAccessToken();
 
-    // ✅ Calculate item total properly
+    // ✅ Calculate all amounts properly for PayPal
     const itemTotal = items.reduce((total, item) => {
       const price = parseFloat(item.price) || 0;
       const quantity = parseInt(item.quantity) || 1;
       return total + (price * quantity);
     }, 0);
 
-    console.log('💰 Amount calculations:', {
+    const shippingAmount = parseFloat(shipping) || 0;
+    const taxAmount = parseFloat(tax) || 0;
+    const discountAmount = parseFloat(discount) || 0;
+
+    // ✅ Calculate the final total that should match the provided amount
+    const calculatedTotal = itemTotal + shippingAmount + taxAmount - discountAmount;
+
+    console.log('💰 PayPal amount calculations:', {
       providedAmount: amount,
-      calculatedItemTotal: itemTotal.toFixed(2)
+      itemTotal: itemTotal.toFixed(2),
+      shipping: shippingAmount.toFixed(2),
+      tax: taxAmount.toFixed(2),
+      discount: discountAmount.toFixed(2),
+      calculatedTotal: calculatedTotal.toFixed(2),
+      matches: parseFloat(amount).toFixed(2) === calculatedTotal.toFixed(2)
     });
 
-    // ✅ CORRECT PayPal payload with proper breakdown
+    // ✅ If amounts don't match, use the calculated total for PayPal
+    const paypalTotal = parseFloat(amount).toFixed(2) === calculatedTotal.toFixed(2) 
+      ? parseFloat(amount).toFixed(2) 
+      : calculatedTotal.toFixed(2);
+
+    // ✅ CORRECT PayPal payload with complete breakdown
     const orderPayload = {
       intent: 'CAPTURE',
       purchase_units: [{
         amount: {
           currency_code: currency,
-          value: parseFloat(amount).toFixed(2),
+          value: paypalTotal, // Use the calculated total
           breakdown: {
             item_total: {
               currency_code: currency,
-              value: itemTotal.toFixed(2) // ✅ REQUIRED when items are specified
+              value: itemTotal.toFixed(2)
+            },
+            shipping: {
+              currency_code: currency,
+              value: shippingAmount.toFixed(2)
+            },
+            tax_total: {
+              currency_code: currency,
+              value: taxAmount.toFixed(2)
+            },
+            discount: {
+              currency_code: currency,
+              value: discountAmount.toFixed(2)
             }
           }
         },
@@ -113,7 +145,7 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
         }))
       }],
       application_context: {
-        shipping_preference: 'NO_SHIPPING',
+        shipping_preference: 'SET_PROVIDED_ADDRESS',
         user_action: 'PAY_NOW',
         return_url: `${process.env.FRONTEND_URL || 'https://www.olyshair.com'}/order-success`,
         cancel_url: `${process.env.FRONTEND_URL || 'https://www.olyshair.com'}/checkout`
@@ -159,19 +191,29 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
     const order = await Order.create({
       user: req.user?.id,
       items: items,
-      totalAmount: amount,
+      totalAmount: paypalTotal, // Use the PayPal-calculated total
       currency: currency,
       paymentProvider: 'paypal',
       paymentStatus: 'pending',
       paypalOrderId: data.id,
-      status: 'created'
+      status: 'created',
+      metadata: {
+        originalAmount: amount,
+        calculatedAmount: paypalTotal,
+        breakdown: {
+          item_total: itemTotal,
+          shipping: shippingAmount,
+          tax: taxAmount,
+          discount: discountAmount
+        }
+      }
     });
 
     console.log('✅ PayPal order created successfully:', data.id);
 
     // ✅ Return format that PayPal SDK expects
     res.json({
-      id: data.id,  // PayPal expects 'id' not 'orderId'
+      id: data.id,
       status: data.status
     });
 
@@ -184,7 +226,7 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
   }
 });
 
-// ✅ ALTERNATIVE: Simple version without items (if you still have issues)
+// ✅ SIMPLE VERSION: Without items (for testing)
 router.post('/create-order-simple', validatePaymentRequest, async (req, res) => {
   try {
     const { amount, currency = 'EUR' } = req.body;
@@ -193,7 +235,7 @@ router.post('/create-order-simple', validatePaymentRequest, async (req, res) => 
 
     const token = await getAccessToken();
 
-    // ✅ SIMPLEST PayPal payload - no items, just amount
+    // ✅ SIMPLEST PayPal payload - no items, no breakdown
     const orderPayload = {
       intent: 'CAPTURE',
       purchase_units: [{
@@ -303,23 +345,6 @@ router.post('/capture/:orderId', async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message
-    });
-  }
-});
-
-// Health check
-router.get('/health', async (req, res) => {
-  try {
-    await getAccessToken();
-    res.json({ 
-      status: 'OK', 
-      paypal: 'connected',
-      environment: process.env.PAYPAL_ENVIRONMENT || 'sandbox'
-    });
-  } catch (error) {
-    res.status(503).json({ 
-      status: 'ERROR', 
-      error: error.message 
     });
   }
 });

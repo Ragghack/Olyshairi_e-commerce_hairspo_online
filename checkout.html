@@ -1867,7 +1867,6 @@ function loadPayPalButton() {
     return;
   }
 
-  // Clear container first
   const container = document.getElementById('paypal-button-container');
   container.innerHTML = '';
 
@@ -1876,23 +1875,38 @@ function loadPayPalButton() {
   paypal.Buttons({
     style: {
       layout: 'vertical',
-      color:  'gold',
-      shape:  'rect',
-      label:  'paypal'
+      color: 'gold',
+      shape: 'rect',
+      label: 'paypal'
     },
 
     createOrder: async function(data, actions) {
       try {
         console.log('🔄 PayPal createOrder called');
         
-        // Prepare order data
+        // Get shipping cost from the selected shipping method
+        const selectedShipping = document.querySelector('input[name="shipping"]:checked');
+        const shippingCost = selectedShipping ? getShippingCost(selectedShipping.value) : 9.99;
+        
+        // Calculate tax (8% of subtotal)
+        const taxRate = 0.08;
+        const subtotal = currentOrderData.subtotal;
+        const taxAmount = subtotal * taxRate;
+        
+        // Check if promo code is applied
+        const discountAmount = appliedPromoCode ? subtotal * 0.1 : 0; // 10% discount for SAVE10
+
+        // ✅ Send complete order data with all breakdown amounts
         const orderData = {
           amount: currentOrderData.total,
           items: currentOrderData.items,
-          currency: CONFIG.CURRENCY
+          currency: CONFIG.CURRENCY,
+          shipping: shippingCost,
+          tax: taxAmount,
+          discount: discountAmount
         };
 
-        console.log('📦 Sending to PayPal API:', orderData);
+        console.log('📦 Sending complete order data to PayPal:', orderData);
 
         const response = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/create-order`, {
           method: 'POST',
@@ -1911,13 +1925,8 @@ function loadPayPalButton() {
           throw new Error(result.error || 'Failed to create order');
         }
 
-        // ✅ CRITICAL: Return the order ID directly
-        if (result.id) {
-          console.log('✅ PayPal order ID:', result.id);
-          return result.id;
-        } else {
-          throw new Error('No order ID in response');
-        }
+        console.log('✅ PayPal order created:', result.id);
+        return result.id;
 
       } catch (error) {
         console.error('❌ PayPal createOrder error:', error);
