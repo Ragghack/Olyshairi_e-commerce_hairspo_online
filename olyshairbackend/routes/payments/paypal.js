@@ -603,7 +603,8 @@ router.use((req, res, next) => {
     process.env.FRONTEND_URL, 
     'https://www.olyshair.com',
     'https://olyshair.com',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://olyshairi-e-commerce-hairspo-online.vercel.app'
   ].filter(Boolean);
   
   const origin = req.headers.origin;
@@ -623,7 +624,8 @@ router.options('*', (req, res) => {
     process.env.FRONTEND_URL, 
     'https://www.olyshair.com',
     'https://olyshair.com',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://olyshairi-e-commerce-hairspo-online.vercel.app'
   ].filter(Boolean);
   
   const origin = req.headers.origin;
