@@ -21,7 +21,7 @@ app.use(cors({
 'https://www.olyshair.com',
   'https://olyshair.com',
   'https://olyshairi-e-commerce-hairspo-online.vercel.app',
-  'https://olyshairi-e-commerce-hairspo-online-kvip.onrender.com',
+  'https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com',
   'http://localhost:3000',
   'http://localhost:5000',
   'http://127.0.0.1:5500'
