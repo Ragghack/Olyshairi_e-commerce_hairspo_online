@@ -21,13 +21,6 @@ const PAYPAL_BASE = getPayPalBaseURL();
 const handlePayPalError = (error, res) => {
   console.error('PayPal API Error:', error);
   
-  if (error.response?.data) {
-    return res.status(error.response.status).json({
-      success: false,
-      error: error.response.data.message || 'PayPal API error'
-    });
-  }
-  
   if (error.message) {
     return res.status(500).json({
       success: false,
@@ -88,10 +81,12 @@ async function getAccessToken(retries = 3) {
   }
 }
 
-// Enhanced create order endpoint
+// Enhanced create order endpoint - FIXED FOR FRONTEND
 router.post('/create-order', validatePaymentRequest, async (req, res) => {
   try {
     const { amount, items, currency = 'EUR' } = req.body;
+    
+    console.log('🔄 Creating PayPal order with:', { amount, items, currency });
     
     // Enhanced validation
     if (!amount || amount <= 0 || isNaN(amount)) {
@@ -119,12 +114,12 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
           value: parseFloat(amount).toFixed(2)
         },
         items: items.map(item => ({
-          name: item.name.substring(0, 127), // PayPal limit
+          name: item.name?.substring(0, 127) || 'Product', // PayPal limit
           unit_amount: { 
             currency_code: currency, 
-            value: parseFloat(item.price).toFixed(2)
+            value: parseFloat(item.price || 0).toFixed(2)
           },
-          quantity: String(item.quantity),
+          quantity: String(item.quantity || 1),
           sku: item.sku ? item.sku.substring(0, 127) : item.id ? item.id.substring(0, 127) : 'SKU001'
         })),
         description: `Order from OLYS HAIR - ${items.length} item(s)`
@@ -137,6 +132,8 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
         brand_name: 'OLYS HAIR'
       }
     };
+
+    console.log('📦 PayPal order payload:', JSON.stringify(orderPayload, null, 2));
 
     const response = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
       method: 'POST',
@@ -151,7 +148,7 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('PayPal order creation failed:', data);
+      console.error('❌ PayPal order creation failed:', data);
       throw new Error(data.message || `Failed to create PayPal order: ${response.status}`);
     }
 
@@ -177,23 +174,30 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
       metadata: data
     });
 
-    res.json({
+    console.log('✅ PayPal order created successfully:', data.id);
+
+    // FIXED: Return the exact structure frontend expects
+    const responseData = {
       success: true,
-      orderId: data.id,
+      orderId: data.id, // This is what frontend expects to return
       approvalUrl: approvalLink.href,
       internalOrderId: order._id
-    });
+    };
+
+    res.json(responseData);
 
   } catch (error) {
-    console.error('Create order error:', error);
+    console.error('❌ Create order error:', error);
     handlePayPalError(error, res);
   }
 });
 
-// Enhanced capture endpoint
+// Enhanced capture endpoint - FIXED FOR FRONTEND
 router.post('/capture/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
+    
+    console.log('🔄 Capturing PayPal order:', orderId);
     
     if (!orderId) {
       return res.status(400).json({
@@ -216,13 +220,21 @@ router.post('/capture/:orderId', async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('PayPal capture failed:', data);
+      console.error('❌ PayPal capture failed:', data);
       throw new Error(data.message || `Failed to capture payment: ${response.status}`);
     }
 
     // Validate capture response
     if (data.status !== 'COMPLETED') {
       throw new Error(`Payment not completed. Status: ${data.status}`);
+    }
+
+    // Get transaction ID safely
+    let transactionId = null;
+    try {
+      transactionId = data.purchase_units[0]?.payments?.captures[0]?.id;
+    } catch (e) {
+      console.warn('Could not extract transaction ID from PayPal response:', e);
     }
 
     // Update order status
@@ -235,15 +247,20 @@ router.post('/capture/:orderId', async (req, res) => {
       }
     );
 
-    res.json({
+    console.log('✅ PayPal payment captured successfully:', orderId);
+
+    // FIXED: Return the exact structure frontend expects
+    const responseData = {
       success: true,
       status: data.status,
-      transactionId: data.purchase_units[0].payments.captures[0].id,
+      transactionId: transactionId, // This is what frontend expects
       orderId: data.id
-    });
+    };
+
+    res.json(responseData);
 
   } catch (error) {
-    console.error('Capture order error:', error);
+    console.error('❌ Capture order error:', error);
     handlePayPalError(error, res);
   }
 });
@@ -297,15 +314,34 @@ router.get('/health', async (req, res) => {
     res.json({ 
       status: 'OK', 
       paypal: 'connected',
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
+      baseUrl: PAYPAL_BASE
     });
   } catch (error) {
+    console.error('PayPal health check failed:', error.message);
     res.status(503).json({ 
       status: 'ERROR', 
       paypal: 'disconnected',
-      error: error.message 
+      error: error.message,
+      baseUrl: PAYPAL_BASE
     });
   }
+});
+
+// Add CORS headers to all responses
+router.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'https://www.olyshair.com');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  next();
+});
+
+// Handle preflight requests
+router.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'https://www.olyshair.com');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.sendStatus(200);
 });
 
 module.exports = router;
