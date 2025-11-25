@@ -189,13 +189,14 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
 
     // Create order in database
 // ✅ Create order in database with full schema compatibility
+// ✅ FIXED: Create order in database with proper schema validation
 const order = await Order.create({
   user: req.user?.id || null,
-
   guestEmail: req.body.email,
+  orderNumber: `OL-${Date.now()}`, // ✅ ADD THIS - Required field
 
   items: items.map(i => ({
-    product: i.productId,
+    product: i.productId, // ✅ Use productId as the ObjectId
     name: i.name,
     price: i.price,
     quantity: i.quantity,
@@ -212,7 +213,7 @@ const order = await Order.create({
   paymentMethod: 'paypal',
   paymentStatus: 'pending',
 
-  status: 'pending', // FIXED ENUM
+  status: 'pending',
 
   paypalOrderId: data.id,
 

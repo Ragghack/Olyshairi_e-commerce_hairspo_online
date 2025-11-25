@@ -1498,16 +1498,15 @@ function updateTotals(subtotal, shipping, taxRate) {
 
 /* Build items array for backend - enforce productId presence */
 function buildItemsForBackend(cart) {
-  // Expect cart items to have productId or id field - validate
+  // Validate that cart items have productId
   const missingIds = cart.filter(i => !(i.productId || i.id));
   if (missingIds.length > 0) {
     console.error("Cart items missing productId:", missingIds);
-    throw new Error("One or more cart items are missing product IDs. Ensure each cart item includes productId before checkout.");
+    throw new Error("One or more cart items are missing product IDs.");
   }
 
   return cart.map(i => ({
-    productId: i.productId || i.id, // keep both names handled server-side if necessary
-    product: i.productId || i.id,   // some APIs expect product/ _id; backend uses product field (ObjectId)
+    productId: i.productId || i.id, // This will be used as the 'product' ObjectId
     name: i.name,
     price: Number(i.price || 0),
     quantity: Number(i.quantity || 1),
