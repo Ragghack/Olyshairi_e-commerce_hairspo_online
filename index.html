@@ -3372,21 +3372,57 @@
         indicator.classList.toggle('active', index === this.currentIndex);
       });
     }
-
-    next() {
-      const maxIndex = Math.ceil(this.totalSlides / this.slidesToShow) - 1;
-      if (this.currentIndex < maxIndex) {
+next() {
+    const maxIndex = Math.ceil(this.totalSlides / this.slidesToShow) - 1;
+    
+    if (this.currentIndex < maxIndex) {
         this.currentIndex++;
+    } else {
+        // If we're at the last slide, go back to the first one
+        this.currentIndex = 0;
+        // Jump to the beginning without animation
+        this.track.style.transition = 'none';
         this.updateCarousel();
-      }
+        
+        // Force reflow
+        void this.track.offsetWidth;
+        
+        // Re-enable transition
+        setTimeout(() => {
+            this.track.style.transition = 'transform 0.5s ease-in-out';
+        }, 50);
+        
+        return;
     }
+    
+    this.updateCarousel();
+}
 
-    prev() {
-      if (this.currentIndex > 0) {
+prev() {
+    if (this.currentIndex > 0) {
         this.currentIndex--;
+    } else {
+        // If we're at the first slide, go to the last one
+        const maxIndex = Math.ceil(this.totalSlides / this.slidesToShow) - 1;
+        this.currentIndex = maxIndex;
+        
+        // Jump to the end without animation
+        this.track.style.transition = 'none';
         this.updateCarousel();
-      }
+        
+        // Force reflow
+        void this.track.offsetWidth;
+        
+        // Re-enable transition
+        setTimeout(() => {
+            this.track.style.transition = 'transform 0.5s ease-in-out';
+        }, 50);
+        
+        return;
     }
+    
+    this.updateCarousel();
+}
 
     goToSlide(index) {
       this.currentIndex = index;
@@ -3990,10 +4026,21 @@ class VideoShowcase {
     this.init();
   }
 
-  init() {
-    this.loadVideosFromStorage();
+init() {
+    this.loadRecentProducts();
     this.setupEventListeners();
-  }
+    this.updateResponsiveSlides();
+    
+    // Reset transition after carousel update
+    this.track.addEventListener('transitionend', () => {
+        this.track.style.transition = 'transform 0.5s ease-in-out';
+    });
+    
+    window.addEventListener('resize', () => {
+        this.updateResponsiveSlides();
+        this.updateCarousel();
+    });
+}
 
   loadVideosFromStorage() {
     try {
