@@ -502,6 +502,190 @@
     position: relative;
     cursor: pointer;
 }
+   /* Pied de page */
+      footer {
+        background-color: var(--cream);
+        color: var(--text-light);
+        padding: 50px 20px 20px;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .footer-column h3 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        color: var(--white);
+      }
+
+      .footer-column p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+      }
+
+      .footer-column ul {
+        list-style: none;
+      }
+
+      .footer-column ul li {
+        margin-bottom: 8px;
+      }
+
+      .footer-column ul li a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .footer-column ul li a:hover {
+        color: var(--white);
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .social-icons a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 35px;
+        height: 35px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        color: var(--white);
+        transition: all 0.3s ease;
+      }
+
+      .social-icons a:hover {
+        background-color: var(--white);
+        color: var(--cream);
+      }
+
+      .copyright {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.8rem;
+      }
+
+      /* Images du Logo */
+      .logo-img-light {
+        max-width: 100px;
+        max-height: 40px;
+        display: block;
+        margin: 0 auto;
+        object-fit: contain;
+      }
+      .logo-img-dark {
+        max-width: 100px;
+        max-height: 40px;
+        width: auto;
+        height: auto;
+        display: none;
+        margin: 0 auto;
+        object-fit: contain;
+        background: transparent;
+      }
+      .dark-mode .logo-img-light {
+        display: none;
+      }
+      .dark-mode .logo-img-dark {
+        display: block;
+      }
+
+      /* Styles de la Newsletter */
+      .newsletter-form {
+        margin-top: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      .newsletter-input {
+        padding: 10px 12px;
+        width: 100%;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+        font-family: "Montserrat", sans-serif;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .newsletter-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .newsletter-input:focus {
+        outline: none;
+        border-color: var(--white);
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .newsletter-btn {
+        padding: 10px;
+        width: 100%;
+        background-color: var(--white);
+        color: var(--cream);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        font-family: "Montserrat", sans-serif;
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 0.9rem;
+      }
+
+      .newsletter-btn:hover:not(:disabled) {
+        background-color: var(--dark-gray);
+        color: var(--white);
+        transform: translateY(-2px);
+      }
+
+      .newsletter-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .error-message {
+        color: #ff6b6b;
+        font-size: 11px;
+        margin-top: 5px;
+        display: none;
+      }
+
+      .success-message {
+        color: #4CAF50;
+        font-size: 13px;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .loading-spinner {
+        display: none;
+      }
+
     </style>
 </head>
 <body>
@@ -670,7 +854,73 @@
             </form>
         </div>
     </section>
+    <!-- Pied de page -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>OLYS HAIR</h3>
+          <p>
+            Produits capillaires de qualité premium pour la femme moderne qui valorise le luxe et le style.
+          </p>
+          <div class="social-icons">
+            <a
+              href="https://www.instagram.com/olys_hair_?igsh=MXBrcmxreGI0dTA4Yw=="
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href=" https://wa.me/c/33674322387"
+              ><i class="fab fa-whatsapp"></i
+            ></a>
+            <a href="https://www.tiktok.com/@olys.har?_t=ZN-90BZpnkAMru&_r=1"
+              ><i class="fab fa-tiktok"></i
+            ></a>
+          </div>
+        </div>
 
+        <div class="footer-column">
+          <h3>Boutique</h3>
+          <ul>
+            <li><a href="shop.html">Perruques</a></li>
+            <li><a href="shop.html">Accessoires</a></li>
+          </ul>
+        </div>
+
+       <!-- <div class="footer-column">
+          <h3>Newsletter</h3>
+          <p>
+            Abonnez-vous pour recevoir des offres spéciales, des cadeaux gratuits et des alertes nouveaux produits.
+          </p>
+          
+          <form id="newsletterForm" class="newsletter-form">
+            <div class="form-group">
+              <input
+                type="email"
+                id="newsletterEmail"
+                placeholder="Votre adresse email"
+                class="newsletter-input"
+                required
+              />
+              <div class="error-message" id="emailError"></div>
+            </div>
+            
+            <button type="submit" class="newsletter-btn" id="subscribeBtn">
+              <span class="btn-text">S'ABONNER</span>
+              <div class="loading-spinner" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+              </div>
+            </button>
+            
+            <div class="success-message" id="successMessage" style="display: none;">
+              <i class="fas fa-check-circle"></i>
+              <span>Merci de vous être abonné !</span>
+            </div>
+          </form>
+        </div>-->
+      </div>
+
+      <div class="copyright">
+        <p>© 2025 OLYS HAIR. Tous droits réservés | www.olyshair.com</p>
+      </div>
+    </footer>
     <!-- Bulles Flottantes -->
     <div class="floating-bubbles">
         <div class="bubble-btn" onclick="window.location.href='index.html'">
