@@ -780,6 +780,232 @@
           background-position: 200% center;
         }
       }
+      /* Add to admindashboard.html CSS */
+.image-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.image-preview-item {
+  position: relative;
+}
+
+.image-preview {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--light-bg);
+  transition: border-color 0.3s ease;
+}
+
+.image-preview:hover {
+  border-color: var(--cream);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-preview-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.main-image-badge {
+  background: var(--success);
+  color: white;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+.remove-preview {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-preview:hover {
+  background: #c82333;
+}
+/* Add to existing CSS */
+.btn-danger {
+  background-color: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  color: white;
+}
+
+/* Make sure action buttons have proper spacing */
+.action-btn {
+  margin: 2px;
+}
+
+/* Style for delete confirmation */
+.delete-confirmation {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.delete-confirmation p {
+  color: #856404;
+  margin: 0;
+}
+/* Add to existing CSS */
+.order-details {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.order-details::-webkit-scrollbar {
+  width: 6px;
+}
+
+.order-details::-webkit-scrollbar-track {
+  background: var(--light-bg);
+  border-radius: 3px;
+}
+
+.order-details::-webkit-scrollbar-thumb {
+  background: var(--cream);
+  border-radius: 3px;
+}
+
+.status-badge.status-delivered {
+  background-color: #e6f7ee;
+  color: #0c9770;
+}
+
+.status-badge.status-shipped {
+  background-color: #e6f0ff;
+  color: #2d6bdb;
+}
+
+.status-badge.status-confirmed {
+  background-color: #f0f7ff;
+  color: #1a73e8;
+}
+
+.status-badge.status-pending {
+  background-color: #fef5e7;
+  color: #e58e02;
+}
+
+.status-badge.status-processing {
+  background-color: #f0e6ff;
+  color: #8a2be2;
+}
+
+.status-badge.status-cancelled {
+  background-color: #ffe6e6;
+  color: #d9534f;
+}
+
+/* Timeline styles */
+.timeline-item {
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 15px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--cream);
+}
+
+.timeline-item.completed::before {
+  background-color: var(--success);
+}
+
+.timeline-item.pending::before {
+  background-color: var(--warning);
+}
+
+.timeline-item.cancelled::before {
+  background-color: var(--danger);
+}
+
+/* Table styles in modals */
+.modal-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.modal-content th {
+  background-color: var(--light-bg);
+  font-weight: 600;
+  color: var(--cream);
+  text-align: left;
+  padding: 10px;
+}
+
+.modal-content td {
+  padding: 10px;
+  border-bottom: 1px solid var(--light-bg);
+}
+
+.modal-content tfoot td {
+  font-weight: bold;
+  border-top: 2px solid var(--cream);
+}
+
+/* Print styles */
+@media print {
+  .modal-overlay {
+    position: static;
+    background: white;
+  }
+  
+  .modal-content {
+    max-height: none;
+    max-width: none;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .action-btn {
+    display: none;
+  }
+}
     </style>
   </head>
   <body>
@@ -1162,16 +1388,25 @@
                     value="Premium"
                   />
                 </div>
-                <div class="form-group">
-                  <label for="productImages">Product Images</label>
-                  <input
-                    type="file"
-                    id="productImages"
-                    class="form-control"
-                    accept="image/*"
-                    multiple
-                  />
-                </div>
+<div class="form-group">
+  <label for="productImages">Product Images (Multiple)</label>
+  <input
+    type="file"
+    id="productImages"
+    class="form-control"
+    accept="image/*"
+    multiple
+    onchange="previewMultipleImages(this)"
+  />
+  <small>You can select multiple images. First image will be the main display image.</small>
+</div>
+<!-- Add image preview container -->
+<div class="form-group" id="imagePreviewContainer" style="display: none;">
+  <label>Image Previews</label>
+  <div class="image-preview-grid" id="imagePreviews">
+    <!-- Image previews will be added here -->
+  </div>
+</div>
                 <button type="submit" class="action-btn" id="saveProductBtn">
                   Save Product
                 </button>
@@ -1414,17 +1649,30 @@
               </div>
             </div>
 
-            <div class="dashboard-card">
-              <h3>Data Export</h3>
-              <div style="margin-top: 15px;">
-                <button class="action-btn" onclick="exportReport('csv')">
-                  <i class="fas fa-file-csv"></i> Export as CSV
-                </button>
-                <button class="action-btn" onclick="exportReport('pdf')" style="margin-left: 10px;">
-                  <i class="fas fa-file-pdf"></i> Export as PDF
-                </button>
-              </div>
-            </div>
+           <div class="dashboard-card">
+  <h3>Data Export</h3>
+  <div style="margin-top: 15px;">
+    <div class="form-group">
+      <label for="exportType">Export Type</label>
+      <select id="exportType" class="form-control" style="width: 200px; display: inline-block; margin-right: 10px;">
+        <option value="summary">Summary Report</option>
+        <option value="sales">Sales Details</option>
+        <option value="bookings">Bookings Details</option>
+        <option value="customers">Customers List</option>
+      </select>
+    </div>
+    
+    <button class="action-btn" onclick="exportReportWithType('csv')">
+      <i class="fas fa-file-csv"></i> Export as CSV
+    </button>
+    <button class="action-btn" onclick="exportReportWithType('pdf')" style="margin-left: 10px;">
+      <i class="fas fa-file-pdf"></i> Export Summary PDF
+    </button>
+    <button class="action-btn" onclick="exportReportWithType('detailed-pdf')" style="margin-left: 10px;">
+      <i class="fas fa-file-pdf"></i> Export Detailed PDF
+    </button>
+  </div>
+</div>
           </div>
 
           <!-- Other sections would be implemented similarly -->
@@ -1452,9 +1700,9 @@
     <script>
       // ==================== ENHANCED ADMIN DASHBOARD ====================
      // Dynamic API URL configuration
-      const API_BASE_URL = window.location.hostname.includes('localhost') 
-          ? "http://localhost:5001/api" 
-          : "https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api";
+      const API_BASE_URL = 
+           "http://localhost:5001/api";
+          // "https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api";
 
       console.log("🌐 Using API Base URL:", API_BASE_URL);
       const ENDPOINTS = {
@@ -1468,11 +1716,27 @@
         UPDATE_BOOKING_STATUS: `${API_BASE_URL}/bookings`,
         BOOKINGS_STATS: `${API_BASE_URL}/bookings/stats`,
         USERS: `${API_BASE_URL}/admin/users`,
+        USER_DETAILS: `${API_BASE_URL}/admin/users`,
+        USER_STATUS: `${API_BASE_URL}/admin/users`,
         ACTIVITIES: `${API_BASE_URL}/admin/activities/dashboard-stats`,
         RECENT_ACTIVITIES: `${API_BASE_URL}/admin/activities/recent-activities`,
         SALES_ANALYTICS: `${API_BASE_URL}/admin/activities/sales-analytics`,
         HEALTH: `${API_BASE_URL}/health`,
         ADMIN_HEALTH: `${API_BASE_URL}/admin/health`,
+        DELETE_BOOKING: `${API_BASE_URL}/bookings`,
+        DELETE_ORDER: `${API_BASE_URL}/admin/orders`,
+        ORDER_DETAILS: `${API_BASE_URL}/admin/orders`,
+        UPDATE_ORDER: `${API_BASE_URL}/admin/orders`,
+        RESTORE_BOOKING: `${API_BASE_URL}/bookings`,
+        BOOKING_TRASH: `${API_BASE_URL}/bookings/trash`,
+        BULK_DELETE_BOOKINGS: `${API_BASE_URL}/bookings/bulk-delete`,
+        BULK_DELETE_ORDERS: `${API_BASE_URL}/admin/orders/bulk-delete`,
+        ORDER_TRASH: `${API_BASE_URL}/admin/orders/trash`,
+        RESTORE_ORDER: `${API_BASE_URL}/admin/orders`,
+        SALES_REPORT: `${API_BASE_URL}/admin/reports/sales`,
+        EXPORT_CSV: `${API_BASE_URL}/admin/reports/export/csv`,
+        EXPORT_PDF: `${API_BASE_URL}/admin/reports/export/pdf`,
+        EXPORT_DETAILED_PDF: `${API_BASE_URL}/admin/reports/export/detailed-pdf`,
       };
 
       // ==================== ENHANCED STATE MANAGEMENT ====================
@@ -2858,6 +3122,60 @@
         }
       }
 
+      // Add to admindashboard.html in the script section
+function previewMultipleImages(input) {
+  const previewContainer = document.getElementById('imagePreviewContainer');
+  const previewGrid = document.getElementById('imagePreviews');
+  
+  // Clear previous previews
+  previewGrid.innerHTML = '';
+  
+  if (input.files && input.files.length > 0) {
+    previewContainer.style.display = 'block';
+    
+    for (let i = 0; i < input.files.length; i++) {
+      const file = input.files[i];
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const previewDiv = document.createElement('div');
+        previewDiv.className = 'image-preview-item';
+        previewDiv.innerHTML = `
+          <div class="image-preview">
+            <img src="${e.target.result}" alt="Preview ${i + 1}">
+            <div class="image-preview-info">
+              <span>Image ${i + 1}</span>
+              ${i === 0 ? '<span class="main-image-badge">Main</span>' : ''}
+            </div>
+            <button type="button" class="remove-preview" onclick="removeImagePreview(${i})">×</button>
+          </div>
+        `;
+        previewGrid.appendChild(previewDiv);
+      };
+      
+      reader.readAsDataURL(file);
+    }
+  } else {
+    previewContainer.style.display = 'none';
+  }
+}
+
+function removeImagePreview(index) {
+  const input = document.getElementById('productImages');
+  const dt = new DataTransfer();
+  const files = Array.from(input.files);
+  
+  // Remove file from files array
+  files.splice(index, 1);
+  
+  // Update file input
+  files.forEach(file => dt.items.add(file));
+  input.files = dt.files;
+  
+  // Refresh preview
+  previewMultipleImages(input);
+}
+
       // ==================== ENHANCED REPORTS & CHARTS - UPDATED ====================
 async function loadReports() {
   try {
@@ -2904,29 +3222,75 @@ function displayReportSummary(data) {
     return;
   }
 
+  // Calculate additional metrics
+  const totalRevenue = (data.sales?.totalSales || 0) + (data.bookings?.bookingRevenue || 0);
+  const orderPercentage = totalRevenue > 0 ? ((data.sales?.totalSales || 0) / totalRevenue * 100).toFixed(1) : 0;
+  const bookingPercentage = totalRevenue > 0 ? ((data.bookings?.bookingRevenue || 0) / totalRevenue * 100).toFixed(1) : 0;
+  
   summaryContainer.innerHTML = `
     <div class="kpi-grid">
       <div class="kpi-card">
-        <h3>Total Sales</h3>
-        <div class="value">€${data.totalSales || 0}</div>
+        <h3>Total Revenue</h3>
+        <div class="value">€${totalRevenue.toFixed(2)}</div>
       </div>
       <div class="kpi-card">
         <h3>Total Orders</h3>
-        <div class="value">${data.totalOrders || 0}</div>
+        <div class="value">${data.sales?.totalOrders || 0}</div>
       </div>
       <div class="kpi-card">
         <h3>Total Bookings</h3>
-        <div class="value">${data.totalBookings || 0}</div>
+        <div class="value">${data.bookings?.totalBookings || 0}</div>
       </div>
       <div class="kpi-card">
-        <h3>Avg Order Value</h3>
-        <div class="value">€${data.averageOrderValue || 0}</div>
+        <h3>New Customers</h3>
+        <div class="value">${data.customers?.newCustomers || 0}</div>
       </div>
     </div>
-    <div style="margin-top: 20px;">
-      <p><strong>Report Period:</strong> Last ${data.period || '30'} days</p>
-      <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+    
+    <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="dashboard-card">
+        <h4>Revenue Breakdown</h4>
+        <div style="margin-top: 15px;">
+          <p><strong>Product Sales:</strong> €${data.sales?.totalSales?.toFixed(2) || 0} (${orderPercentage}%)</p>
+          <div style="height: 10px; background: #f0f0f0; border-radius: 5px; margin: 5px 0 15px 0;">
+            <div style="height: 100%; width: ${orderPercentage}%; background: var(--cream); border-radius: 5px;"></div>
+          </div>
+          
+          <p><strong>Booking Revenue:</strong> €${data.bookings?.bookingRevenue?.toFixed(2) || 0} (${bookingPercentage}%)</p>
+          <div style="height: 10px; background: #f0f0f0; border-radius: 5px; margin: 5px 0 15px 0;">
+            <div style="height: 100%; width: ${bookingPercentage}%; background: #c8b4a8; border-radius: 5px;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dashboard-card">
+        <h4>Performance Metrics</h4>
+        <div style="margin-top: 15px;">
+          <p><strong>Avg Order Value:</strong> €${data.sales?.averageOrderValue?.toFixed(2) || 0}</p>
+          <p><strong>Avg Booking Value:</strong> €${data.bookings?.averageBookingValue?.toFixed(2) || 0}</p>
+          <p><strong>Report Period:</strong> Last ${data.period || '30'} days</p>
+          <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+      </div>
     </div>
+    
+    ${data.sales?.dailyData && data.sales.dailyData.length > 0 ? `
+    <div class="dashboard-card" style="margin-top: 20px;">
+      <h4>Daily Sales Trend</h4>
+      <div style="height: 200px; margin-top: 15px; display: flex; align-items: flex-end; gap: 10px; padding: 10px; border: 1px solid var(--light-bg); border-radius: 8px;">
+        ${data.sales.dailyData.map(day => {
+          const maxAmount = Math.max(...data.sales.dailyData.map(d => d.amount));
+          const height = maxAmount > 0 ? (day.amount / maxAmount * 150) : 0;
+          return `
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="width: 30px; height: ${height}px; background: var(--cream); border-radius: 4px 4px 0 0;"></div>
+              <div style="font-size: 10px; margin-top: 5px; transform: rotate(-45deg);">${day.date.split('-')[2]}/${day.date.split('-')[1]}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+    ` : ''}
   `;
 }
 
@@ -2934,8 +3298,69 @@ function generateReport() {
   loadReports();
 }
 
-function exportReport(format) {
-  showNotification(`${format.toUpperCase()} export functionality coming soon`, "info");
+async function exportReport(format) {
+  try {
+    const days = document.getElementById("reportRange").value;
+    let url;
+    let filename;
+    
+    switch(format) {
+      case 'csv':
+        // You can modify this to include different report types
+        url = `${ENDPOINTS.EXPORT_CSV}?days=${days}&type=summary`;
+        filename = `sales_report_${days}_days_${new Date().toISOString().split('T')[0]}.csv`;
+        break;
+        
+      case 'pdf':
+        url = `${ENDPOINTS.EXPORT_PDF}?days=${days}`;
+        filename = `sales_report_${days}_days_${new Date().toISOString().split('T')[0]}.pdf`;
+        break;
+        
+      case 'detailed-pdf':
+        url = `${ENDPOINTS.EXPORT_DETAILED_PDF}?days=${days}`;
+        filename = `detailed_report_${days}_days_${new Date().toISOString().split('T')[0]}.pdf`;
+        break;
+        
+      default:
+        showNotification('Invalid export format', 'error');
+        return;
+    }
+    
+    // Show loading notification
+    const loadingNotification = showNotification(`Generating ${format.toUpperCase()} report...`, 'info');
+    
+    // Make the API request
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${AppState.authToken}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Export failed: ${response.statusText}`);
+    }
+    
+    // Get the blob data
+    const blob = await response.blob();
+    
+    // Create download link
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up
+    window.URL.revokeObjectURL(downloadUrl);
+    
+    showNotification(`${format.toUpperCase()} report downloaded successfully!`, 'success');
+    
+  } catch (error) {
+    console.error('Export error:', error);
+    showNotification(`Failed to export ${format.toUpperCase()}: ${error.message}`, 'error');
+  }
 }
 
       // ==================== ENHANCED USERS MANAGEMENT ====================
@@ -3320,83 +3745,83 @@ function exportReport(format) {
         }
       }
 
-      async function handleEditUserSubmit(e) {
-        e.preventDefault();
-        
-        const userId = document.getElementById('editUserId').value;
-        const firstName = document.getElementById('editFirstName').value;
-        const lastName = document.getElementById('editLastName').value;
-        const email = document.getElementById('editEmail').value;
-        const phone = document.getElementById('editPhone').value;
-        const address = document.getElementById('editAddress').value;
-        const role = document.getElementById('editRole').value;
-        const notes = document.getElementById('editNotes').value;
-        const isSuspended = document.getElementById('editIsSuspended').checked;
-        
-        try {
-          const result = await ApiClient.authenticatedRequest(
-            `${ENDPOINTS.USERS}/${userId}`,
-            {
-              method: 'PUT',
-              body: JSON.stringify({
-                firstName,
-                lastName,
-                email,
-                phone,
-                address,
-                role,
-                notes,
-                isSuspended
-              })
-            }
-          );
-          
-          if (result.ok) {
-            showNotification('User updated successfully', 'success');
-            closeModal();
-            loadUsers(); // Refresh the user list
-          } else {
-            throw new Error(result.error || 'Failed to update user');
-          }
-        } catch (error) {
-          console.error('Update user error:', error);
-          showNotification('Failed to update user', 'error');
-        }
+     async function handleEditUserSubmit(e) {
+  e.preventDefault();
+  
+  const userId = document.getElementById('editUserId').value;
+  const firstName = document.getElementById('editFirstName').value;
+  const lastName = document.getElementById('editLastName').value;
+  const email = document.getElementById('editEmail').value;
+  const phone = document.getElementById('editPhone').value;
+  const address = document.getElementById('editAddress').value;
+  const role = document.getElementById('editRole').value;
+  const notes = document.getElementById('editNotes').value;
+  const isSuspended = document.getElementById('editIsSuspended').checked;
+  
+  try {
+    const result = await ApiClient.authenticatedRequest(
+      `${ENDPOINTS.USER_DETAILS}/${userId}`,  // Use correct endpoint
+      {
+        method: 'PUT',
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phone,
+          address,
+          role,
+          notes,
+          isSuspended
+        })
       }
+    );
+    
+    if (result.ok) {
+      showNotification('User updated successfully', 'success');
+      closeModal();
+      loadUsers(); // Refresh the user list
+    } else {
+      throw new Error(result.error || 'Failed to update user');
+    }
+  } catch (error) {
+    console.error('Update user error:', error);
+    showNotification('Failed to update user', 'error');
+  }
+}
 
-      async function toggleUserSuspension(userId, action) {
-        const isSuspending = action === 'suspended';
-        const confirmMessage = isSuspending 
-          ? 'Are you sure you want to suspend this user? They will not be able to log in or place orders.'
-          : 'Are you sure you want to activate this user?';
-        
-        if (!confirm(confirmMessage)) {
-          return;
-        }
-        
-        try {
-          const result = await ApiClient.authenticatedRequest(
-            `${ENDPOINTS.USERS}/${userId}/status`,
-            {
-              method: 'PUT',
-              body: JSON.stringify({
-                isSuspended: isSuspending
-              })
-            }
-          );
-          
-          if (result.ok) {
-            showNotification(`User ${isSuspending ? 'suspended' : 'activated'} successfully`, 'success');
-            loadUsers(); // Refresh the user list
-          } else {
-            throw new Error(result.error || `Failed to ${isSuspending ? 'suspend' : 'activate'} user`);
-          }
-        } catch (error) {
-          console.error('Toggle user suspension error:', error);
-          showNotification(`Failed to ${isSuspending ? 'suspend' : 'activate'} user`, 'error');
-        }
+async function toggleUserSuspension(userId, action) {
+  const isSuspending = action === 'suspended';
+  const confirmMessage = isSuspending 
+    ? 'Are you sure you want to suspend this user? They will not be able to log in or place orders.'
+    : 'Are you sure you want to activate this user?';
+  
+  if (!confirm(confirmMessage)) {
+    return;
+  }
+  
+  try {
+    const result = await ApiClient.authenticatedRequest(
+      `${ENDPOINTS.USER_STATUS}/${userId}/status`,  // Correct endpoint
+      {
+        method: 'PUT',
+        body: JSON.stringify({
+          isSuspended: isSuspending,
+          reason: isSuspending ? 'Suspended by admin' : null
+        })
       }
-
+    );
+    
+    if (result.ok) {
+      showNotification(`User ${isSuspending ? 'suspended' : 'activated'} successfully`, 'success');
+      loadUsers(); // Refresh the user list
+    } else {
+      throw new Error(result.error || `Failed to ${isSuspending ? 'suspend' : 'activate'} user`);
+    }
+  } catch (error) {
+    console.error('Toggle user suspension error:', error);
+    showNotification(`Failed to ${isSuspending ? 'suspend' : 'activate'} user`, 'error');
+  }
+}
       // ==================== ENHANCED EVENT HANDLERS ====================
       async function handleLogin(e) {
         e.preventDefault();
@@ -3850,6 +4275,1019 @@ function exportReport(format) {
 
         results.innerHTML = `<pre>${diagnosticLog}</pre>`;
       }
+      // ==================== ENHANCED BOOKINGS MANAGEMENT ====================
+async function deleteBooking(bookingId) {
+  if (!confirm("Are you sure you want to delete this booking? This action cannot be undone.")) {
+    return;
+  }
+
+  try {
+    const result = await ApiClient.authenticatedRequest(
+      `${ENDPOINTS.DELETE_BOOKING}/${bookingId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (result.ok) {
+      showNotification("Booking deleted successfully!", "success");
+      // Remove from local state
+      AppState.bookings = AppState.bookings.filter(b => b._id !== bookingId);
+      // Refresh the display
+      loadBookings();
+    } else {
+      throw new Error(result.error || "Failed to delete booking");
+    }
+  } catch (error) {
+    console.error("Delete booking error:", error);
+    showNotification("Failed to delete booking", "error");
+  }
+}
+
+// ==================== ENHANCED ORDERS MANAGEMENT ====================
+async function deleteOrder(orderId) {
+  if (!confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
+    return;
+  }
+
+  try {
+    const result = await ApiClient.authenticatedRequest(
+      `${ENDPOINTS.DELETE_ORDER}/${orderId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (result.ok) {
+      showNotification("Order deleted successfully!", "success");
+      // Remove from local state
+      AppState.orders = AppState.orders.filter(o => o._id !== orderId);
+      // Refresh the display
+      loadOrders();
+    } else {
+      throw new Error(result.error || "Failed to delete order");
+    }
+  } catch (error) {
+    console.error("Delete order error:", error);
+    showNotification("Failed to delete order", "error");
+  }
+}
+
+// Update the renderBookings function to add delete button for cancelled bookings
+function renderBookings(bookings) {
+  const tableBody = document.getElementById('bookingsTableBody');
+  if (!tableBody) return;
+
+  tableBody.innerHTML = '';
+
+  if (!bookings || bookings.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="9" style="text-align: center;">No bookings found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  bookings.forEach((booking) => {
+    const row = document.createElement('tr');
+    const customerName = booking.customerName || 
+                       (booking.userId ? `${booking.userId.firstName} ${booking.userId.lastName}` : 'Unknown');
+    const customerEmail = booking.customerEmail || 
+                        (booking.userId ? booking.userId.email : 'N/A');
+    const statusClass = `status-${booking.status.replace('_', '-')}`;
+    const createdDate = new Date(booking.createdAt).toLocaleDateString();
+    
+    // Add delete button only for cancelled bookings
+    const deleteButton = booking.status === 'cancelled' ? 
+      `<button class="action-btn btn-danger delete-booking" data-id="${booking._id}">Delete</button>` : 
+      '';
+
+    row.innerHTML = `
+      <td>#${booking._id.substring(0, 8)}...</td>
+      <td>
+        <div><strong>${SecurityUtils.sanitizeInput(customerName)}</strong></div>
+        <small>${SecurityUtils.sanitizeInput(customerEmail)}</small>
+      </td>
+      <td>${booking.service || 'Wig Renovation'}</td>
+      <td>${booking.wigCount}</td>
+      <td>€${booking.totalPrice || (booking.wigCount * 15)}</td>
+      <td><span class="status-badge ${statusClass}">${booking.status}</span></td>
+      <td>${createdDate}</td>
+      <td>
+        <button class="action-btn view-booking" data-id="${booking._id}">View</button>
+        <button class="action-btn btn-warning update-booking-status" data-id="${booking._id}">Update</button>
+        ${deleteButton}
+      </td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+
+  // Add event listeners
+  document.querySelectorAll('.view-booking').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const bookingId = e.target.dataset.id;
+      viewBookingDetails(bookingId);
+    });
+  });
+
+  document.querySelectorAll('.update-booking-status').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const bookingId = e.target.dataset.id;
+      updateBookingStatus(bookingId);
+    });
+  });
+
+  // Add delete event listeners for cancelled bookings
+  document.querySelectorAll('.delete-booking').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const bookingId = e.target.dataset.id;
+      deleteBooking(bookingId);
+    });
+  });
+}
+
+// Update the renderOrders function to add delete button for cancelled orders
+function renderOrders(ordersToRender) {
+  const tableBody = document.getElementById("ordersTableBody");
+  if (!tableBody) return;
+
+  tableBody.innerHTML = "";
+
+  if (!ordersToRender || ordersToRender.length === 0) {
+    tableBody.innerHTML =
+      '<tr><td colspan="8" style="text-align: center;">No orders found</td></tr>';
+    return;
+  }
+
+  ordersToRender.forEach((order) => {
+    const row = document.createElement("tr");
+    const statusClass = `status-${order.status?.toLowerCase() || "pending"}`;
+    const orderDate = order.orderDate
+      ? new Date(order.orderDate).toLocaleDateString()
+      : "N/A";
+    
+    // Add delete button only for cancelled orders
+    const deleteButton = order.status === 'cancelled' ? 
+      `<button class="action-btn btn-danger delete-order" data-id="${order._id || order.id}">Delete</button>` : 
+      '';
+
+    row.innerHTML = `
+      <td>#${SecurityUtils.sanitizeInput(
+        order.orderNumber || "N/A"
+      )}</td>
+      <td>${SecurityUtils.sanitizeInput(
+        order.customerName || "Unknown"
+      )}</td>
+      <td><span class="status-badge ${statusClass}">${SecurityUtils.sanitizeInput(
+        order.status || "pending"
+      )}</span></td>
+      <td>€${(order.totalAmount || 0).toFixed(2)}</td>
+      <td>${orderDate}</td>
+      <td>${order.itemCount || 0}</td>
+      <td>
+        <button class="action-btn view-order" data-id="${
+          order._id || order.id
+        }">View</button>
+        <button class="action-btn btn-warning update-status" data-id="${
+          order._id || order.id
+        }">Update</button>
+        ${deleteButton}
+      </td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+
+  // Event listeners
+  document.querySelectorAll(".view-order").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const orderId = e.target.dataset.id;
+      viewOrder(orderId);
+    });
+  });
+
+  document.querySelectorAll(".update-status").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const orderId = e.target.dataset.id;
+      updateOrderStatus(orderId);
+    });
+  });
+
+  // Add delete event listeners for cancelled orders
+  document.querySelectorAll('.delete-order').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const orderId = e.target.dataset.id;
+      deleteOrder(orderId);
+    });
+  });
+}
+
+// Update the updateBookingStatus function to include cancellation option
+async function updateBookingStatus(bookingId) {
+  try {
+    const booking = AppState.bookings.find(b => b._id === bookingId);
+    if (!booking) {
+      showNotification('Booking not found', 'error');
+      return;
+    }
+
+    const statusOptions = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'];
+    const currentStatusIndex = statusOptions.indexOf(booking.status);
+    
+    let statusOptionsHTML = '';
+    statusOptions.forEach((status, index) => {
+      const isCurrent = status === booking.status;
+      const statusLabel = status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+      statusOptionsHTML += `<option value="${status}" ${isCurrent ? 'selected' : ''}>${statusLabel}</option>`;
+    });
+
+    const modalHTML = `
+      <div class="modal-overlay">
+        <div class="modal-content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3>Update Booking Status</h3>
+            <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+          </div>
+          
+          <form id="updateStatusForm">
+            <div class="form-group">
+              <label for="newStatus">Status</label>
+              <select id="newStatus" class="form-control" required>
+                ${statusOptionsHTML}
+              </select>
+            </div>
+            
+            <div id="completionDateField" style="display: none;">
+              <div class="form-group">
+                <label for="estimatedCompletion">Estimated Completion Date</label>
+                <input type="date" id="estimatedCompletion" class="form-control">
+              </div>
+            </div>
+            
+            <div id="cancellationReasonField" style="display: none;">
+              <div class="form-group">
+                <label for="cancellationReason">Cancellation Reason (Optional)</label>
+                <textarea id="cancellationReason" class="form-control" rows="3" placeholder="Enter reason for cancellation..."></textarea>
+              </div>
+            </div>
+            
+            <div style="margin-top:20px;display:flex;gap:10px;">
+              <button type="submit" class="action-btn">Update Status</button>
+              <button type="button" class="action-btn btn-danger" onclick="closeModal()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show/hide fields based on selected status
+    const statusSelect = document.getElementById('newStatus');
+    const completionDateField = document.getElementById('completionDateField');
+    const cancellationReasonField = document.getElementById('cancellationReasonField');
+    
+    statusSelect.addEventListener('change', function() {
+      const selectedStatus = this.value;
+      completionDateField.style.display = selectedStatus === 'confirmed' ? 'block' : 'none';
+      cancellationReasonField.style.display = selectedStatus === 'cancelled' ? 'block' : 'none';
+    });
+    
+    // Trigger change to set initial visibility
+    statusSelect.dispatchEvent(new Event('change'));
+    
+    // Form submission
+    document.getElementById('updateStatusForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const newStatus = statusSelect.value;
+      const estimatedCompletion = document.getElementById('estimatedCompletion').value;
+      const cancellationReason = document.getElementById('cancellationReason').value;
+      
+      const updateData = {
+        status: newStatus
+      };
+      
+      if (newStatus === 'confirmed' && estimatedCompletion) {
+        updateData.estimatedCompletion = new Date(estimatedCompletion);
+      }
+      
+      if (newStatus === 'cancelled' && cancellationReason) {
+        updateData.cancellationReason = cancellationReason;
+      }
+      
+      try {
+        const result = await ApiClient.authenticatedRequest(
+          `${ENDPOINTS.UPDATE_BOOKING_STATUS}/${bookingId}/status`,
+          {
+            method: 'PUT',
+            body: JSON.stringify(updateData)
+          }
+        );
+
+        if (result.ok) {
+          showNotification('Booking status updated successfully', 'success');
+          closeModal();
+          loadBookings(); // Refresh the list
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (error) {
+        console.error('Update booking status error:', error);
+        showNotification('Failed to update booking status', 'error');
+      }
+    });
+    
+  } catch (error) {
+    console.error('Update booking status error:', error);
+    showNotification('Failed to load booking update form', 'error');
+  }
+}
+
+// Update the viewBookingDetails function to show cancellation reason if exists
+async function viewBookingDetails(bookingId) {
+  try {
+    const booking = AppState.bookings.find(b => b._id === bookingId);
+    if (!booking) {
+      showNotification('Booking not found', 'error');
+      return;
+    }
+
+    const customerName = booking.customerName || 
+                       (booking.userId ? `${booking.userId.firstName} ${booking.userId.lastName}` : 'Unknown');
+    
+    const modalHTML = `
+      <div class="modal-overlay">
+        <div class="modal-content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3>Booking Details</h3>
+            <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+          </div>
+          
+          <div class="booking-details">
+            <div class="detail-section">
+              <h4>Customer Information</h4>
+              <p><strong>Name:</strong> ${customerName}</p>
+              <p><strong>Email:</strong> ${booking.customerEmail || (booking.userId?.email || 'N/A')}</p>
+              <p><strong>Phone:</strong> ${booking.customerPhone || 'N/A'}</p>
+            </div>
+            
+            <div class="detail-section">
+              <h4>Service Details</h4>
+              <p><strong>Service:</strong> ${booking.service || 'Wig Renovation'}</p>
+              <p><strong>Number of Wigs:</strong> ${booking.wigCount}</p>
+              <p><strong>Total Price:</strong> €${booking.totalPrice || (booking.wigCount * 15)}</p>
+              <p><strong>Status:</strong> <span class="status-badge status-${booking.status.replace('_', '-')}">${booking.status}</span></p>
+            </div>
+            
+            ${booking.notes ? `
+            <div class="detail-section">
+              <h4>Customer Notes</h4>
+              <p>${booking.notes}</p>
+            </div>
+            ` : ''}
+            
+            ${booking.cancellationReason ? `
+            <div class="detail-section">
+              <h4>Cancellation Reason</h4>
+              <p>${booking.cancellationReason}</p>
+            </div>
+            ` : ''}
+            
+            <div class="detail-section">
+              <h4>Timeline</h4>
+              <p><strong>Created:</strong> ${new Date(booking.createdAt).toLocaleString()}</p>
+              ${booking.estimatedCompletion ? `
+              <p><strong>Estimated Completion:</strong> ${new Date(booking.estimatedCompletion).toLocaleString()}</p>
+              ` : ''}
+            </div>
+          </div>
+          
+          ${booking.status === 'cancelled' ? `
+          <div style="margin-top:20px;display:flex;gap:10px;">
+            <button class="action-btn btn-danger" onclick="deleteBooking('${bookingId}'); closeModal();">Delete Booking</button>
+          </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  } catch (error) {
+    console.error('View booking error:', error);
+    showNotification('Failed to load booking details', 'error');
+  }
+}
+// ==================== ENHANCED ORDER VIEWING ====================
+async function viewOrder(orderId) {
+  try {
+    // Try to fetch order details from API
+    const result = await ApiClient.authenticatedRequest(
+      `${ENDPOINTS.ORDER_DETAILS}/${orderId}`
+    );
+
+    let order = null;
+    let orderItems = [];
+
+    if (result.ok) {
+      order = result.data.order || result.data;
+      // If API returns items, use them
+      if (order.items && Array.isArray(order.items)) {
+        orderItems = order.items;
+      }
+    } else {
+      // Fallback to mock data
+      order = AppState.orders.find(o => o._id === orderId || o.id === orderId);
+      if (!order) {
+        order = getMockOrderDetails(orderId);
+      }
+      orderItems = getMockOrderItems();
+    }
+
+    if (!order) {
+      showNotification('Order not found', 'error');
+      return;
+    }
+
+    // Create detailed order view modal
+    const modalHTML = `
+      <div class="modal-overlay">
+        <div class="modal-content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3>Order Details</h3>
+            <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+          </div>
+          
+          <div class="order-details">
+            <!-- Order Header -->
+            <div class="detail-section">
+              <h4>Order Information</h4>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:15px;">
+                <div>
+                  <p><strong>Order #:</strong> ${order.orderNumber || order._id || 'N/A'}</p>
+                  <p><strong>Date:</strong> ${order.orderDate ? new Date(order.orderDate).toLocaleString() : new Date().toLocaleString()}</p>
+                  <p><strong>Status:</strong> <span class="status-badge status-${order.status?.toLowerCase() || 'pending'}">${order.status || 'Pending'}</span></p>
+                </div>
+                <div>
+                  <p><strong>Total:</strong> €${(order.totalAmount || 0).toFixed(2)}</p>
+                  <p><strong>Payment:</strong> <span class="status-badge ${order.paymentStatus === 'paid' ? 'status-completed' : 'status-pending'}">${order.paymentStatus || 'Pending'}</span></p>
+                  <p><strong>Items:</strong> ${order.itemCount || orderItems.length || 0}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Customer Information -->
+            <div class="detail-section">
+              <h4>Customer Information</h4>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:15px;">
+                <div>
+                  <p><strong>Name:</strong> ${SecurityUtils.sanitizeInput(order.customerName || 'Unknown')}</p>
+                  <p><strong>Email:</strong> ${SecurityUtils.sanitizeInput(order.customerEmail || 'N/A')}</p>
+                </div>
+                <div>
+                  <p><strong>Phone:</strong> ${order.customerPhone || 'N/A'}</p>
+                  <p><strong>Customer ID:</strong> ${order.customerId || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Shipping Information -->
+            <div class="detail-section">
+              <h4>Shipping Information</h4>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:15px;">
+                <div>
+                  <p><strong>Address:</strong> ${order.shippingAddress?.street || 'N/A'}</p>
+                  <p><strong>City:</strong> ${order.shippingAddress?.city || 'N/A'}</p>
+                </div>
+                <div>
+                  <p><strong>Zip Code:</strong> ${order.shippingAddress?.zipCode || 'N/A'}</p>
+                  <p><strong>Country:</strong> ${order.shippingAddress?.country || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="detail-section">
+              <h4>Order Items</h4>
+              <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;">
+                  <thead>
+                    <tr style="background-color:var(--light-bg);">
+                      <th style="padding:10px;text-align:left;">Product</th>
+                      <th style="padding:10px;text-align:center;">Quantity</th>
+                      <th style="padding:10px;text-align:right;">Price</th>
+                      <th style="padding:10px;text-align:right;">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${orderItems.map(item => `
+                      <tr style="border-bottom:1px solid var(--light-bg);">
+                        <td style="padding:10px;">
+                          <div>
+                            <strong>${SecurityUtils.sanitizeInput(item.name || 'Product')}</strong>
+                            ${item.productId ? `<br><small>SKU: ${item.productId}</small>` : ''}
+                          </div>
+                        </td>
+                        <td style="padding:10px;text-align:center;">${item.quantity || 1}</td>
+                        <td style="padding:10px;text-align:right;">€${(item.price || 0).toFixed(2)}</td>
+                        <td style="padding:10px;text-align:right;">€${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                  <tfoot>
+                    <tr style="border-top:2px solid var(--cream);">
+                      <td colspan="3" style="padding:10px;text-align:right;"><strong>Total:</strong></td>
+                      <td style="padding:10px;text-align:right;"><strong>€${(order.totalAmount || 0).toFixed(2)}</strong></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            
+            <!-- Payment Information -->
+            <div class="detail-section">
+              <h4>Payment Information</h4>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:15px;">
+                <div>
+                  <p><strong>Method:</strong> ${order.paymentMethod || 'Credit Card'}</p>
+                  <p><strong>Transaction ID:</strong> ${order.transactionId || 'N/A'}</p>
+                </div>
+                <div>
+                  <p><strong>Payment Date:</strong> ${order.paymentDate ? new Date(order.paymentDate).toLocaleString() : 'N/A'}</p>
+                  <p><strong>Payment Status:</strong> ${order.paymentStatus || 'Pending'}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Shipping/Tracking Information -->
+            ${order.trackingNumber ? `
+            <div class="detail-section">
+              <h4>Shipping Information</h4>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:15px;">
+                <div>
+                  <p><strong>Tracking #:</strong> ${order.trackingNumber}</p>
+                  <p><strong>Carrier:</strong> ${order.shippingCarrier || 'Standard Shipping'}</p>
+                </div>
+                <div>
+                  <p><strong>Shipping Date:</strong> ${order.shippingDate ? new Date(order.shippingDate).toLocaleString() : 'Not shipped'}</p>
+                  <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString() : 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+            ` : ''}
+            
+            <!-- Notes -->
+            ${order.notes ? `
+            <div class="detail-section">
+              <h4>Order Notes</h4>
+              <p>${order.notes}</p>
+            </div>
+            ` : ''}
+            
+            <!-- Timeline -->
+            <div class="detail-section">
+              <h4>Order Timeline</h4>
+              <div style="padding:15px;background-color:var(--light-bg);border-radius:8px;">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:10px;height:10px;background-color:var(--success);border-radius:50%;"></div>
+                    <span>Order created: ${new Date(order.orderDate || order.createdAt || Date.now()).toLocaleString()}</span>
+                  </div>
+                  ${order.shippingDate ? `
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:10px;height:10px;background-color:var(--info);border-radius:50%;"></div>
+                    <span>Shipped: ${new Date(order.shippingDate).toLocaleString()}</span>
+                  </div>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="action-btn btn-warning" onclick="updateOrderStatus('${orderId}'); closeModal();">Update Status</button>
+            <button class="action-btn" onclick="printOrderDetails()">Print</button>
+            ${order.status === 'cancelled' ? `
+            <button class="action-btn btn-danger" onclick="deleteOrder('${orderId}'); closeModal();">Delete Order</button>
+            ` : ''}
+            <button class="action-btn" onclick="closeModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  } catch (error) {
+    console.error('View order error:', error);
+    showNotification('Failed to load order details', 'error');
+  }
+}
+
+// ==================== ENHANCED ORDER STATUS UPDATE ====================
+async function updateOrderStatus(orderId) {
+  try {
+    // Get current order
+    let order = AppState.orders.find(o => o._id === orderId || o.id === orderId);
+    
+    if (!order) {
+      // Try to fetch order details
+      const result = await ApiClient.authenticatedRequest(
+        `${ENDPOINTS.ORDER_DETAILS}/${orderId}`
+      );
+      if (result.ok) {
+        order = result.data.order || result.data;
+      } else {
+        showNotification('Order not found', 'error');
+        return;
+      }
+    }
+
+    // Define available statuses
+    const statusOptions = [
+      { value: 'pending', label: 'Pending', color: 'status-pending' },
+      { value: 'confirmed', label: 'Confirmed', color: 'status-confirmed' },
+      { value: 'processing', label: 'Processing', color: 'status-processing' },
+      { value: 'shipped', label: 'Shipped', color: 'status-shipped' },
+      { value: 'delivered', label: 'Delivered', color: 'status-delivered' },
+      { value: 'cancelled', label: 'Cancelled', color: 'status-cancelled' }
+    ];
+
+    // Create status update modal
+    const modalHTML = `
+      <div class="modal-overlay">
+        <div class="modal-content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3>Update Order Status</h3>
+            <button onclick="closeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">×</button>
+          </div>
+          
+          <form id="updateOrderStatusForm">
+            <input type="hidden" id="orderId" value="${orderId}">
+            
+            <div class="form-group">
+              <label for="orderNumber">Order #</label>
+              <input type="text" id="orderNumber" class="form-control" value="${order.orderNumber || order._id}" readonly>
+            </div>
+            
+            <div class="form-group">
+              <label for="currentStatus">Current Status</label>
+              <input type="text" id="currentStatus" class="form-control" value="${order.status}" readonly>
+            </div>
+            
+            <div class="form-group">
+              <label for="newStatus">New Status *</label>
+              <select id="newStatus" class="form-control" required>
+                <option value="">Select new status</option>
+                ${statusOptions.map(opt => `
+                  <option value="${opt.value}" ${opt.value === order.status ? 'selected' : ''}>
+                    ${opt.label}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+            
+            <!-- Conditional Fields -->
+            <div id="shippingFields" style="display: none;">
+              <div class="form-group">
+                <label for="trackingNumber">Tracking Number</label>
+                <input type="text" id="trackingNumber" class="form-control" placeholder="Enter tracking number">
+              </div>
+              
+              <div class="form-group">
+                <label for="shippingCarrier">Shipping Carrier</label>
+                <select id="shippingCarrier" class="form-control">
+                  <option value="">Select carrier</option>
+                  <option value="ups">UPS</option>
+                  <option value="fedex">FedEx</option>
+                  <option value="dhl">DHL</option>
+                  <option value="usps">USPS</option>
+                  <option value="standard">Standard Shipping</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="estimatedDelivery">Estimated Delivery Date</label>
+                <input type="date" id="estimatedDelivery" class="form-control">
+              </div>
+            </div>
+            
+            <div id="cancellationFields" style="display: none;">
+              <div class="form-group">
+                <label for="cancellationReason">Cancellation Reason</label>
+                <textarea id="cancellationReason" class="form-control" rows="3" placeholder="Enter reason for cancellation..."></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="refundCustomer">
+                  Issue refund to customer
+                </label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="statusNotes">Admin Notes (Optional)</label>
+              <textarea id="statusNotes" class="form-control" rows="3" placeholder="Add any notes about this status change..."></textarea>
+            </div>
+            
+            <div style="margin-top:20px;display:flex;gap:10px;">
+              <button type="submit" class="action-btn">Update Status</button>
+              <button type="button" class="action-btn btn-danger" onclick="closeModal()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add event listeners for conditional fields
+    const newStatusSelect = document.getElementById('newStatus');
+    const shippingFields = document.getElementById('shippingFields');
+    const cancellationFields = document.getElementById('cancellationFields');
+    
+    newStatusSelect.addEventListener('change', function() {
+      const selectedStatus = this.value;
+      
+      // Show/hide shipping fields
+      if (selectedStatus === 'shipped') {
+        shippingFields.style.display = 'block';
+      } else {
+        shippingFields.style.display = 'none';
+      }
+      
+      // Show/hide cancellation fields
+      if (selectedStatus === 'cancelled') {
+        cancellationFields.style.display = 'block';
+      } else {
+        cancellationFields.style.display = 'none';
+      }
+    });
+    
+    // Trigger initial state
+    newStatusSelect.dispatchEvent(new Event('change'));
+    
+    // Handle form submission
+    document.getElementById('updateOrderStatusForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      
+      // Show loading state
+      submitBtn.textContent = 'Updating...';
+      submitBtn.disabled = true;
+      
+      try {
+        const newStatus = document.getElementById('newStatus').value;
+        const statusNotes = document.getElementById('statusNotes').value;
+        
+        const updateData = {
+          status: newStatus,
+          statusNotes: statusNotes || undefined
+        };
+        
+        // Add shipping info if status is shipped
+        if (newStatus === 'shipped') {
+          updateData.trackingNumber = document.getElementById('trackingNumber').value || undefined;
+          updateData.shippingCarrier = document.getElementById('shippingCarrier').value || undefined;
+          updateData.estimatedDelivery = document.getElementById('estimatedDelivery').value || undefined;
+          updateData.shippingDate = new Date().toISOString();
+        }
+        
+        // Add cancellation info if status is cancelled
+        if (newStatus === 'cancelled') {
+          updateData.cancellationReason = document.getElementById('cancellationReason').value || undefined;
+          updateData.refundCustomer = document.getElementById('refundCustomer').checked;
+        }
+        
+        const result = await ApiClient.authenticatedRequest(
+          `${ENDPOINTS.UPDATE_ORDER}/${orderId}/status`,
+          {
+            method: 'PUT',
+            body: JSON.stringify(updateData)
+          }
+        );
+        
+        if (result.ok) {
+          showNotification('Order status updated successfully', 'success');
+          closeModal();
+          loadOrders(); // Refresh the orders list
+        } else {
+          throw new Error(result.error || 'Failed to update order status');
+        }
+      } catch (error) {
+        console.error('Update order status error:', error);
+        showNotification('Failed to update order status', 'error');
+      } finally {
+        // Reset button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+    
+  } catch (error) {
+    console.error('Update order status form error:', error);
+    showNotification('Failed to load order status update form', 'error');
+  }
+}
+
+// ==================== HELPER FUNCTIONS ====================
+function getMockOrderDetails(orderId) {
+  return {
+    _id: orderId,
+    orderNumber: `OL-${Date.now().toString().slice(-8)}`,
+    customerName: 'Demo Customer',
+    customerEmail: 'demo@example.com',
+    customerPhone: '+1234567890',
+    status: 'processing',
+    totalAmount: 89.99,
+    orderDate: new Date(),
+    itemCount: 2,
+    paymentStatus: 'paid',
+    paymentMethod: 'Credit Card',
+    paymentDate: new Date(),
+    transactionId: 'TXN_' + Date.now(),
+    shippingAddress: {
+      street: '123 Main Street',
+      city: 'New York',
+      zipCode: '10001',
+      country: 'USA'
+    },
+    notes: 'Customer requested gift wrapping'
+  };
+}
+
+function getMockOrderItems() {
+  return [
+    {
+      name: 'Brazilian Hair Bundle',
+      productId: 'PROD001',
+      quantity: 1,
+      price: 49.99,
+      image: '/images/products/brazilian-bundle.jpg'
+    },
+    {
+      name: 'Hair Conditioner',
+      productId: 'PROD002',
+      quantity: 2,
+      price: 19.99,
+      image: '/images/products/conditioner.jpg'
+    }
+  ];
+}
+
+function printOrderDetails() {
+  window.print();
+}
+
+// ==================== UPDATE MOCK DATA ====================
+function getMockOrders() {
+  return [
+    {
+      _id: 'order_1',
+      orderNumber: 'OL-' + Date.now().toString().slice(-8),
+      customerName: 'Demo Customer',
+      customerEmail: 'demo@example.com',
+      status: 'processing',
+      totalAmount: 89.99,
+      orderDate: new Date(),
+      itemCount: 2,
+      paymentStatus: 'paid',
+      shippingAddress: '123 Main St, New York, NY 10001'
+    },
+    {
+      _id: 'order_2',
+      orderNumber: 'OL-' + (Date.now() - 1000000).toString().slice(-8),
+      customerName: 'Test User',
+      customerEmail: 'test@example.com',
+      status: 'shipped',
+      totalAmount: 149.99,
+      orderDate: new Date(Date.now() - 86400000),
+      itemCount: 3,
+      paymentStatus: 'paid',
+      shippingAddress: '456 Oak Ave, Los Angeles, CA 90001',
+      trackingNumber: 'TRK123456789',
+      shippingCarrier: 'UPS'
+    },
+    {
+      _id: 'order_3',
+      orderNumber: 'OL-' + (Date.now() - 2000000).toString().slice(-8),
+      customerName: 'Cancelled Customer',
+      customerEmail: 'cancelled@example.com',
+      status: 'cancelled',
+      totalAmount: 29.99,
+      orderDate: new Date(Date.now() - 172800000),
+      itemCount: 1,
+      paymentStatus: 'refunded',
+      shippingAddress: '789 Pine Rd, Chicago, IL 60601',
+      cancellationReason: 'Customer requested cancellation'
+    },
+    {
+      _id: 'order_4',
+      orderNumber: 'OL-' + (Date.now() - 3000000).toString().slice(-8),
+      customerName: 'Pending Customer',
+      customerEmail: 'pending@example.com',
+      status: 'pending',
+      totalAmount: 199.99,
+      orderDate: new Date(Date.now() - 259200000),
+      itemCount: 4,
+      paymentStatus: 'pending',
+      shippingAddress: '321 Elm St, Houston, TX 77001'
+    },
+    {
+      _id: 'order_5',
+      orderNumber: 'OL-' + (Date.now() - 4000000).toString().slice(-8),
+      customerName: 'Delivered Customer',
+      customerEmail: 'delivered@example.com',
+      status: 'delivered',
+      totalAmount: 79.99,
+      orderDate: new Date(Date.now() - 345600000),
+      itemCount: 1,
+      paymentStatus: 'paid',
+      shippingAddress: '654 Maple Ave, Phoenix, AZ 85001',
+      trackingNumber: 'TRK987654321',
+      shippingCarrier: 'FedEx',
+      shippingDate: new Date(Date.now() - 259200000),
+      estimatedDelivery: new Date(Date.now() - 172800000)
+    }
+  ];
+}
+async function exportReportWithType(format) {
+  const days = document.getElementById("reportRange").value;
+  const exportType = document.getElementById("exportType").value;
+  
+  await exportReport(format, exportType, days);
+}
+
+async function exportReport(format, type = 'summary', days = 30) {
+  try {
+    let url;
+    let filename;
+    const date = new Date().toISOString().split('T')[0];
+    
+    switch(format) {
+      case 'csv':
+        url = `${ENDPOINTS.EXPORT_CSV}?days=${days}&type=${type}`;
+        filename = `${type}_report_${days}_days_${date}.csv`;
+        break;
+        
+      case 'pdf':
+        url = `${ENDPOINTS.EXPORT_PDF}?days=${days}&type=${type}`;
+        filename = `${type}_summary_${days}_days_${date}.pdf`;
+        break;
+        
+      case 'detailed-pdf':
+        url = `${ENDPOINTS.EXPORT_DETAILED_PDF}?days=${days}`;
+        filename = `detailed_report_${days}_days_${date}.pdf`;
+        break;
+        
+      default:
+        showNotification('Invalid export format', 'error');
+        return;
+    }
+    
+    // Show loading notification
+    showNotification(`Generating ${type} ${format.toUpperCase()} report...`, 'info');
+    
+    // Make the API request
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${AppState.authToken}`
+      }
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Export failed: ${response.statusText}`);
+    }
+    
+    // Get the blob data
+    const blob = await response.blob();
+    
+    // Create download link
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up
+    window.URL.revokeObjectURL(downloadUrl);
+    
+    showNotification(`${format.toUpperCase()} report downloaded successfully!`, 'success');
+    
+  } catch (error) {
+    console.error('Export error:', error);
+    showNotification(`Failed to export ${format.toUpperCase()}: ${error.message}`, 'error');
+  }
+}
+
     </script>
     <script src="language-config.js"></script>
   </body>

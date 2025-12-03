@@ -41,6 +41,23 @@ const bookingSchema = new mongoose.Schema({
   },
   estimatedCompletion: {
     type: Date
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  deletedAt: {
+    type: Date,
+    default: null
+  },
+  deletedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  deletionReason: {
+    type: String,
+    default: null
   }
 }, {
   timestamps: true

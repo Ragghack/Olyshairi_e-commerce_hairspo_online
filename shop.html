@@ -1,33 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-     <head>
-    <!-- 🖼️ Favicon (shows in browser tab) -->
-<!-- 🖼️ Favicon (shows in browser tab) -->
-<link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
-<!-- Optional for Apple/Android homescreens -->
-<link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
+     <!-- 🖼️ Favicon (shows in browser tab) -->
+    <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
+    <!-- Optional for Apple/Android homescreens -->
+    <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
 
-<!-- 🔍 Google Structured Data (shows logo in search results) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "url": "https://www.olyshair.com",
-  "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
-}
-</script>
+    <!-- 🔍 Google Structured Data (shows logo in search results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://www.olyshair.com",
+      "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
+    }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OLYS HAIR - Shop</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <title>OLYS HAIR - Enhanced Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
       * {
         margin: 0;
@@ -350,6 +342,8 @@
         box-shadow: var(--shadow);
         transition: transform 0.3s ease;
         position: relative;
+        display: flex;
+        flex-direction: column;
       }
 
       .product-card:hover {
@@ -373,6 +367,38 @@
         transform: scale(1.1);
       }
 
+      /* ENHANCEMENT: Image navigation dots */
+      .image-navigation {
+        position: absolute;
+        bottom: 15px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        z-index: 3;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .product-card:hover .image-navigation {
+        opacity: 1;
+      }
+
+      .nav-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .nav-dot.active {
+        background-color: var(--white);
+        transform: scale(1.2);
+      }
+
       .quality-badge {
         position: absolute;
         top: 15px;
@@ -382,7 +408,22 @@
         padding: 5px 10px;
         border-radius: 15px;
         font-size: 12px;
-        font-weight: 500;
+        font-weight: 600;
+        z-index: 3;
+      }
+
+      .multi-image-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: var(--cream);
+        padding: 5px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+        z-index: 3;
       }
 
       .quick-view-btn {
@@ -400,25 +441,34 @@
         cursor: pointer;
         opacity: 0;
         transition: opacity 0.3s ease;
+        z-index: 3;
       }
 
       .product-card:hover .quick-view-btn {
         opacity: 1;
       }
 
+      /* ENHANCEMENT: Product info below image */
       .product-info {
         padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
       }
 
+      /* ENHANCEMENT: Bolder product names */
       .product-info h3 {
         margin-bottom: 8px;
         color: var(--text-dark);
+        font-weight: 700;
+        font-size: 1.8rem;
       }
 
       .product-detail {
         font-size: 14px;
         color: var(--cream);
         margin-bottom: 10px;
+        font-weight: 500;
       }
 
       .price-container {
@@ -429,8 +479,9 @@
       }
 
       .price {
-        font-weight: 600;
+        font-weight: 700;
         color: var(--cream);
+        font-size: 1.1rem;
       }
 
       .old-price {
@@ -445,6 +496,7 @@
         grid-template-columns: 1fr 1fr auto;
         gap: 10px;
         align-items: center;
+        margin-top: auto;
       }
 
       .add-to-cart {
@@ -455,7 +507,7 @@
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s ease;
-        font-weight: 500;
+        font-weight: 600;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -474,13 +526,13 @@
       /* Pay Now Button Styles */
       .pay-now-btn {
         padding: 12px;
-        background-color: #10b981;
+        background-color: #ae8686;
         color: var(--white);
         border: none;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s ease;
-        font-weight: 500;
+        font-weight: 600;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -488,11 +540,11 @@
       }
 
       .pay-now-btn:hover {
-        background-color: #059669;
+        background-color: #ffdedeec;
       }
 
       .pay-now-btn:disabled {
-        background-color: #cccccc;
+        background-color: #895252;
         cursor: not-allowed;
       }
 
@@ -572,6 +624,7 @@
       .modal-image {
         flex: 1;
         min-height: 400px;
+        position: relative;
       }
 
       .modal-image img {
@@ -587,23 +640,35 @@
         position: relative;
       }
 
+      /* ENHANCEMENT: Bolder modal title */
       .modal-content h2 {
         margin-bottom: 10px;
+        font-weight: 800;
+        font-size: 1.8rem;
       }
 
       .modal-details {
         margin: 20px 0;
       }
 
+      /* ENHANCEMENT: Better detail layout for mobile */
       .detail-item {
         display: flex;
         margin-bottom: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
       }
 
       .detail-label {
-        font-weight: 600;
+        font-weight: 700;
         width: 100px;
         color: var(--cream);
+        flex-shrink: 0;
+      }
+
+      .detail-value {
+        flex: 1;
+        font-weight: 500;
       }
 
       /* Quick View Modal Actions */
@@ -615,7 +680,7 @@
       }
 
       .modal-pay-now {
-        background-color: #10b981;
+        background-color: #cccccc;
         color: var(--white);
         border: none;
         border-radius: 5px;
@@ -630,12 +695,51 @@
       }
 
       .modal-pay-now:hover {
-        background-color: #059669;
+        background-color: #291616c3;
       }
 
       .modal-pay-now:disabled {
         background-color: #cccccc;
         cursor: not-allowed;
+      }
+
+      /* Enhanced Modal Gallery */
+      .modal-image-gallery {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--light-bg);
+      }
+
+      .gallery-thumbnails {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 5px 0;
+      }
+
+      .thumbnail {
+        width: 60px;
+        height: 60px;
+        border-radius: 6px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.3s ease;
+        flex-shrink: 0;
+      }
+
+      .thumbnail.active {
+        border-color: var(--cream);
+      }
+
+      .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .thumbnail:hover {
+        border-color: var(--cream);
       }
 
       /* Floating Bubbles */
@@ -868,7 +972,7 @@
         transition: opacity 0.3s ease;
       }
 
-      /* Responsive Design */
+      /* ENHANCEMENT: Mobile Experience Improvements */
       @media (max-width: 1024px) {
         .product-modal {
           flex-direction: column;
@@ -940,6 +1044,70 @@
           right: 65px;
           bottom: 0;
         }
+
+        /* ENHANCEMENT: Better mobile modal layout */
+        .product-modal {
+          flex-direction: column;
+          max-width: 95%;
+          margin: 20px;
+        }
+
+        .modal-image {
+          min-height: 300px;
+          border-radius: 10px 10px 0 0;
+        }
+
+        .modal-image img {
+          border-radius: 10px 10px 0 0;
+        }
+
+        .modal-content {
+          padding: 20px;
+        }
+
+        .modal-content h2 {
+          font-size: 1.5rem;
+        }
+
+        .detail-item {
+          flex-direction: column;
+          margin-bottom: 15px;
+        }
+
+        .detail-label {
+          width: 100%;
+          margin-bottom: 5px;
+        }
+
+        .modal-actions {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .product-actions {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .image-navigation {
+          opacity: 1; /* Always show on mobile for better UX */
+          bottom: 10px;
+        }
+
+        .nav-dot {
+          width: 12px;
+          height: 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .modal-content {
+          padding: 15px;
+        }
+
+        .modal-content h2 {
+          font-size: 1.3rem;
+        }
       }
 
       @keyframes shine {
@@ -956,9 +1124,181 @@
           transform: rotate(360deg);
         }
       }
+      /* Add to your existing CSS */
+.cart-bubble {
+  position: relative;
+  cursor: pointer; /* Make it clear it's clickable */
+  transition: transform 0.2s ease; /* Add smooth hover effect */
+}
+
+.cart-bubble:hover {
+  transform: scale(1.1); /* Slight scale effect on hover */
+}
+
+.cart-bubble:hover .cart-count {
+  background-color: #ff5252; /* Change color on hover for visual feedback */
+}
+/* Enhanced Modal Details - Same format as image */
+.modal-details {
+  margin: 20px 0;
+  background: var(--light-bg);
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 4px solid var(--cream);
+}
+
+.detail-item {
+  display: flex;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  align-items: flex-start;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-weight: 700;
+  width: 100px;
+  color: var(--cream);
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.detail-value {
+  flex: 1;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-dark);
+}
+
+/* Product Description Styling */
+.product-description {
+  background: var(--light-bg);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  line-height: 1.6;
+  border-left: 4px solid var(--cream);
+}
+
+.product-description .detail-label {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: var(--cream);
+}
+
+.product-description .detail-value {
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+/* Stock Status Styling */
+.stock-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.stock-status.in-stock {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.stock-status.out-of-stock {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+/* Price Styling */
+.modal-price-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 15px 0;
+  padding: 15px;
+  background: var(--light-bg);
+  border-radius: 8px;
+}
+
+.modal-current-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cream);
+}
+
+.modal-old-price {
+  font-size: 1.1rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+/* Category Badge */
+.modal-category-badge {
+  display: inline-block;
+  background: var(--cream);
+  color: var(--white);
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+@media (max-width: 768px) {
+  .modal-details {
+    padding: 15px;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .detail-label {
+    width: 100%;
+    margin-bottom: 2px;
+  }
+  
+  .product-description {
+    padding: 15px;
+  }
+  
+  .modal-price-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+/* Add to existing CSS in shop.html */
+.checkout-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.auth-required-badge {
+    background-color: var(--cream);
+    color: var(--white);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-left: 10px;
+    display: inline-block;
+}
     </style>
   </head>
- <body>
+  <body>
     <!-- Header -->
     <header>
       <div class="logo-container">
@@ -980,24 +1320,23 @@
         <a href="contact.html" data-translate="contact">Contact</a>
         <a href="book.html" data-translate="book">Book</a>
       </div>
-      <div class="header-icons">
-        <!--<i class="fas fa-search"></i>-->
-        <div class="cart-bubble">
-          <i class="fas fa-shopping-bag"  title="Cart"></i>
-          <span class="cart-count">0</span>
-        </div>
-        <!-- Order Tracking Button -->
-        <div class="order-tracking-bubble" onclick="viewOrders()">
-          <i class="fas fa-box"  title="Orders"></i>
-          <span class="order-count">0</span>
-        </div>
-        <i class="fas fa-user" id="userIcon" onclick="window.location.href='customerdashboard.html'"  title="Account"></i>
-        <div class="mode-toggle">
-          <i class="fas fa-sun"></i>
-          <i class="fas fa-moon"></i>
-          <div class="toggle-circle"></div>
-        </div>
-      </div>
+     <div class="header-icons">
+  <div class="cart-bubble" id="headerCartBubble">
+    <i class="fas fa-shopping-bag" title="Cart"></i>
+    <span class="cart-count">0</span>
+  </div>
+  <!-- Order Tracking Button -->
+  <div class="order-tracking-bubble" onclick="viewOrders()">
+    <i class="fas fa-box" title="Orders"></i>
+    <span class="order-count">0</span>
+  </div>
+  <i class="fas fa-user" id="userIcon" onclick="window.location.href='customerdashboard.html'" title="Account"></i>
+  <div class="mode-toggle">
+    <i class="fas fa-sun"></i>
+    <i class="fas fa-moon"></i>
+    <div class="toggle-circle"></div>
+  </div>
+</div>
     </header>
 
     <!-- Shop Hero -->
@@ -1032,9 +1371,7 @@
     <section class="shop-filters">
       <div class="filter-group">
         <div class="filter-btn active" data-category="all" data-translate="allProducts">All Products</div>
-        <!--<div class="filter-btn" data-category="extensions">Extensions</div>-->
         <div class="filter-btn" data-category="wigs" data-translate="wigs">Wigs</div>
-        <!--<div class="filter-btn" data-category="closures">Closures</div>-->
         <div class="filter-btn" data-category="accessories" data-translate="accessories">Accessories</div>
       </div>
       <div class="filter-group">
@@ -1071,55 +1408,62 @@
         </div>
         <div class="modal-image">
           <img src="" alt="Product Image" id="modalImg" />
-        </div>
-        <div class="modal-content">
-          <h2 id="modalTitle"></h2>
-          <div class="price-container">
-            <div class="price" id="modalPrice"></div>
-            <div class="old-price" id="modalOldPrice"></div>
-          </div>
-
-          <div class="modal-details">
-            <div class="detail-item">
-              <span class="detail-label" data-translate="type">Type:</span>
-              <span id="modalType"></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label" data-translate="length">Length:</span>
-              <span id="modalLength"></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label" data-translate="texture">Texture:</span>
-              <span id="modalTexture"></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label" data-translate="color">Color:</span>
-              <span id="modalColor"></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label" data-translate="quality">Quality:</span>
-              <span id="modalQuality"></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label" data-translate="stock">Stock:</span>
-              <span id="modalStock"></span>
-            </div>
-          </div>
-
-          <p id="modalDescription"></p>
-
-          <div class="modal-actions">
-            <button class="add-to-cart" id="modalAddToCart">
-              <i class="fas fa-cart-plus"></i> <span data-translate="addToCart">Ajouter au panier</span>
-            </button>
-            <button class="modal-pay-now" id="modalPayNow">
-              <i class="fas fa-bolt"></i> <span data-translate="payNow">Payer Maintenant</span>
-            </button>
-            <button class="wishlist-btn" id="modalWishlistBtn">
-              <i class="fas fa-heart"></i>
-            </button>
+          <div class="modal-image-gallery" id="modalGallery">
+            <!-- Gallery thumbnails will be added here -->
           </div>
         </div>
+<div class="modal-content">
+  <div class="modal-category-badge" id="modalCategory"></div>
+  <h2 id="modalTitle"></h2>
+  
+  <div class="modal-price-container">
+    <div class="modal-current-price" id="modalPrice"></div>
+    <div class="modal-old-price" id="modalOldPrice"></div>
+  </div>
+
+  <!-- Description Section -->
+  <div class="product-description">
+    <span class="detail-label">Description</span>
+    <span class="detail-value" id="modalDescription"></span>
+  </div>
+
+  <div class="modal-details">
+    <div class="detail-item">
+      <span class="detail-label">Longueur:</span>
+      <span class="detail-value" id="modalLength"></span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Texture:</span>
+      <span class="detail-value" id="modalTexture"></span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Couleur:</span>
+      <span class="detail-value" id="modalColor"></span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Qualité:</span>
+      <span class="detail-value" id="modalQuality"></span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Stock:</span>
+      <span class="detail-value">
+        <span class="stock-status" id="modalStockStatus"></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="modal-actions">
+    <button class="add-to-cart" id="modalAddToCart">
+      <i class="fas fa-cart-plus"></i> <span data-translate="addToCart">Ajouter au Panier</span>
+    </button>
+    <button class="modal-pay-now" id="modalPayNow">
+      <i class="fas fa-bolt"></i> <span data-translate="payNow">Acheter Maintenant</span>
+    </button>
+    <button class="wishlist-btn" id="modalWishlistBtn">
+      <i class="fas fa-heart"></i>
+    </button>
+  </div>
+</div>
       </div>
     </div>
 
@@ -1172,18 +1516,11 @@
       </div>
     </div>
 
-    <!-- ADD THIS SCRIPT TAG AT THE END -->
-    <script src="language-config.js"></script>
-</body>
-
     <script>
       // API Configuration
-      // Use this at the top of your JavaScript in each file
-const API_BASE_URL = window.location.hostname.includes('localhost') 
-    ? "http://localhost:5001/api" 
-    : "https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api";
+      const API_BASE_URL = "http://localhost:5001/api";
 
-console.log("🌐 Using API Base URL:", API_BASE_URL);
+      console.log("🌐 Using API Base URL:", API_BASE_URL);
       const ENDPOINTS = {
         PRODUCTS: `${API_BASE_URL}/products`,
         CATEGORIES: `${API_BASE_URL}/categories`,
@@ -1269,14 +1606,18 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
         const cartBubble = document.getElementById("cartBubble");
         const cartPanel = document.querySelector(".cart-panel");
         const closeCart = document.querySelector(".close-cart");
+        const headerCartBubble = document.getElementById("headerCartBubble");
 
         cartBubble.addEventListener("click", () => {
           cartPanel.classList.add("active");
         });
-
+        headerCartBubble.addEventListener("click", () => {
+          cartPanel.classList.add("active");
+        });
         closeCart.addEventListener("click", () => {
           cartPanel.classList.remove("active");
         });
+        
 
         // Load cart from backend if user is logged in
         loadCartFromBackend();
@@ -1295,6 +1636,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
             productModal.classList.remove("active");
           }
         });
+        
 
         // Filter functionality
         setupFilters();
@@ -1325,59 +1667,52 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
       }
 
       // Load products from backend
-      async function loadProducts() {
-        showLoading();
+// In shop.html - Update the loadProducts function
+async function loadProducts() {
+  showLoading();
 
-        try {
-          console.log("🔄 Loading products from:", ENDPOINTS.PRODUCTS);
+  try {
+    console.log("🔄 Loading products from:", `${API_BASE_URL}/products/public/all`);
 
-          const response = await fetch(ENDPOINTS.PRODUCTS, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+    const response = await fetch(`${API_BASE_URL}/products/public/all`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-          console.log("📡 API Response Status:", response.status);
+    console.log("📡 API Response Status:", response.status);
 
-          if (!response.ok) {
-            throw new Error(
-              `Failed to fetch products: ${response.status} ${response.statusText}`
-            );
-          }
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch products: ${response.status} ${response.statusText}`
+      );
+    }
 
-          const productsData = await response.json();
-          console.log("📦 Products Data Received:", productsData);
+    const productsData = await response.json();
+    console.log("📦 Products Data Received:", productsData);
 
-          // Handle different response formats
-          if (Array.isArray(productsData)) {
-            products = productsData;
-          } else if (
-            productsData.products &&
-            Array.isArray(productsData.products)
-          ) {
-            products = productsData.products;
-          } else if (Array.isArray(productsData.data)) {
-            products = productsData.data;
-          } else {
-            products = [];
-            console.warn("⚠️ Unexpected data format:", productsData);
-          }
+    if (productsData.success && Array.isArray(productsData.products)) {
+      products = productsData.products;
+    } else {
+      products = [];
+      console.warn("⚠️ Unexpected data format:", productsData);
+    }
 
-          console.log(`✅ Loaded ${products.length} products`);
+    console.log(`✅ Loaded ${products.length} products`);
 
-          if (products.length === 0) {
-            showEmptyState("No products available in the database");
-          } else {
-            renderProducts(products);
-          }
-        } catch (error) {
-          console.error("❌ Error loading products:", error);
-          showErrorState(error.message);
-        } finally {
-          hideLoading();
-        }
-      }
+    if (products.length === 0) {
+      showEmptyState("No products available in the database");
+    } else {
+      renderProducts(products);
+    }
+  } catch (error) {
+    console.error("❌ Error loading products:", error);
+    showErrorState(error.message);
+  } finally {
+    hideLoading();
+  }
+}
 
       // Render products to the grid
       function renderProducts(productsToRender) {
@@ -1394,7 +1729,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
         });
       }
 
-      // Create product card HTML
+      // Create product card HTML with enhanced image gallery support
       function createProductCard(product) {
         const card = document.createElement("div");
         card.className = "product-card";
@@ -1403,77 +1738,97 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
         const productId = product._id || product.id;
         const productName = product.name || "Unnamed Product";
         const productPrice = product.price || 0;
-        const productImage =
-          product.image ||
-          product.images?.[0]?.url ||
+        
+        // Enhanced multiple images handling
+        const productImages = product.images || [];
+        const mainImage = productImages.length > 0 ? 
+          productImages[0].url : 
           "images/placeholder-product.jpg";
-        const productType =
-          product.type || product.category || "Hair Extension";
+        const hoverImage = productImages.length > 1 ? 
+          productImages[1].url : 
+          mainImage;
+        
+        const productType = product.type || product.category || "Hair Extension";
         const productLength = product.length || "N/A";
         const productQuality = product.quality || "Premium";
         const productStock = product.stock || 0;
-        const productDescription = product.description || "";
 
         // Check if product is in wishlist
-        const isInWishlist = wishlist.some(
-          (item) => item.productId === productId
-        );
+        const isInWishlist = wishlist.some((item) => item.productId === productId);
 
         card.innerHTML = `
-                <div class="product-image">
-                    <img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">
-                    <div class="quality-badge">${productQuality}</div>
-                    <div class="quick-view-btn" data-product="${productId}">
-                        <i class="fas fa-eye"></i>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <h3>${productName}</h3>
-                    <div class="product-detail">${productType} • ${productLength}</div>
-                    <div class="price-container">
-                        <div class="price">€${productPrice.toFixed(2)}</div>
-                        ${
-                          product.oldPrice
-                            ? `<div class="old-price">€${product.oldPrice.toFixed(
-                                2
-                              )}</div>`
-                            : ""
-                        }
-                    </div>
-                    <div class="product-actions">
-                        <button class="add-to-cart" data-product="${productId}" ${
-          productStock === 0
-            ? 'disabled style="opacity: 0.6; cursor: not-allowed;"'
-            : ""
-        }>
-                            <i class="fas fa-cart-plus"></i> ${
-                              productStock === 0
-                                ? "Out of Stock"
-                                : "Ajouter au panier"
-                            }
-                        </button>
-                        <button class="pay-now-btn" data-product="${productId}" ${
-          productStock === 0
-            ? 'disabled style="opacity: 0.6; cursor: not-allowed;"'
-            : ""
-        }>
-                            <i class="fas fa-bolt"></i> ${
-                              productStock === 0 ? "Out of Stock" : "Payer maintenant"
-                            }
-                        </button>
-                        <button class="wishlist-btn ${
-                          isInWishlist ? "active" : ""
-                        }" data-product="${productId}">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    </div>
-                    ${
-                      productStock === 0
-                        ? '<div style="color: #ff6b6b; font-size: 12px; margin-top: 5px;">Out of Stock</div>'
-                        : ""
-                    }
-                </div>
-            `;
+          <div class="product-image">
+            <img src="${mainImage}" alt="${productName}" 
+                 data-hover-src="${hoverImage}"
+                 data-main-src="${mainImage}"
+                 onerror="this.src='images/placeholder-product.jpg'">
+            ${productImages.length > 1 ? '<div class="multi-image-badge"><i class="fas fa-images"></i> ' + productImages.length + '</div>' : ''}
+            <div class="quality-badge">${productQuality}</div>
+            ${productImages.length > 1 ? `
+              <div class="image-navigation">
+                ${productImages.map((_, index) => `
+                  <div class="nav-dot ${index === 0 ? 'active' : ''}" data-image-index="${index}"></div>
+                `).join('')}
+              </div>
+            ` : ''}
+            <div class="quick-view-btn" data-product="${productId}">
+              <i class="fas fa-eye"></i>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3>${productName}</h3>
+            <div class="product-detail">${productType} • ${productLength}</div>
+            <div class="price-container">
+              <div class="price">€${productPrice.toFixed(2)}</div>
+              ${product.oldPrice ? `<div class="old-price">€${product.oldPrice.toFixed(2)}</div>` : ""}
+            </div>
+            <div class="product-actions">
+              <button class="add-to-cart" data-product="${productId}" ${
+                productStock === 0 ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ""
+              }>
+                <i class="fas fa-cart-plus"></i> ${productStock === 0 ? "Out of Stock" : "Add to Cart"}
+              </button>
+              <button class="pay-now-btn" data-product="${productId}" ${
+                productStock === 0 ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ""
+              }>
+                <i class="fas fa-bolt"></i> ${productStock === 0 ? "Out of Stock" : "Pay Now"}
+              </button>
+              <button class="wishlist-btn ${isInWishlist ? "active" : ""}" data-product="${productId}">
+                <i class="fas fa-heart"></i>
+              </button>
+            </div>
+            ${productStock === 0 ? '<div style="color: #ff6b6b; font-size: 12px; margin-top: 5px;">Out of Stock</div>' : ""}
+          </div>
+        `;
+
+        // Add hover image effect for products with multiple images
+        const productImage = card.querySelector('.product-image img');
+        if (productImages.length > 1 && productImage.dataset.hoverSrc !== productImage.dataset.mainSrc) {
+          productImage.addEventListener('mouseenter', function() {
+            this.src = this.dataset.hoverSrc;
+          });
+          productImage.addEventListener('mouseleave', function() {
+            this.src = this.dataset.mainSrc;
+          });
+        }
+
+        // Add image navigation functionality
+        if (productImages.length > 1) {
+          const navDots = card.querySelectorAll('.nav-dot');
+          navDots.forEach(dot => {
+            dot.addEventListener('click', function() {
+              const imageIndex = parseInt(this.getAttribute('data-image-index'));
+              const imageToShow = productImages[imageIndex].url;
+              
+              // Update active dot
+              navDots.forEach(d => d.classList.remove('active'));
+              this.classList.add('active');
+              
+              // Change image
+              productImage.src = imageToShow;
+            });
+          });
+        }
 
         // Add event listeners only if product is in stock
         if (productStock > 0) {
@@ -1482,219 +1837,309 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
           const payNowBtn = card.querySelector(".pay-now-btn");
           const wishlistBtn = card.querySelector(".wishlist-btn");
 
-          quickViewBtn.addEventListener("click", () =>
-            openQuickView(productId)
-          );
+          quickViewBtn.addEventListener("click", () => openQuickView(productId));
           addToCartBtn.addEventListener("click", () => addToCart(productId));
           payNowBtn.addEventListener("click", () => payNow(productId));
-          wishlistBtn.addEventListener("click", () =>
-            toggleWishlist(productId, wishlistBtn)
-          );
+          wishlistBtn.addEventListener("click", () => toggleWishlist(productId, wishlistBtn));
         }
 
         return card;
       }
 
-      // Open quick view modal
-      function openQuickView(productId) {
-        const product = products.find(
-          (p) => p._id === productId || p.id === productId
-        );
-        if (!product) {
-          console.error("Product not found:", productId);
-          showNotification("Product not found");
-          return;
-        }
+      // Enhanced quick view modal with image gallery
+// Enhanced quick view modal with image gallery
+function openQuickView(productId) {
+  const product = products.find((p) => p._id === productId || p.id === productId);
+  if (!product) {
+    console.error("Product not found:", productId);
+    showNotification("Product not found");
+    return;
+  }
 
-        currentProductId = productId;
+  currentProductId = productId;
 
-        // Populate modal with product data
-        const productImage =
-          product.image ||
-          product.images?.[0]?.url ||
-          "images/placeholder-product.jpg";
-        const productName = product.name || "Unnamed Product";
-        const productPrice = product.price || 0;
-        const productType = product.type || product.category || "N/A";
-        const productLength = product.length || "N/A";
-        const productTexture = product.texture || "N/A";
-        const productColor = product.color || "N/A";
-        const productQuality = product.quality || "N/A";
-        const productStock = product.stock || 0;
-        const productDescription =
-          product.description || "No description available.";
+  // Handle multiple images
+  const productImages = product.images || [];
+  const mainImage = productImages.length > 0 ? 
+    productImages[0].url : 
+    "images/placeholder-product.jpg";
+  
+  const productName = product.name || "Unnamed Product";
+  const productPrice = product.price || 0;
+  const productOldPrice = product.oldPrice || null;
+  const productCategory = product.category || "N/A";
+  const productLength = product.length || "N/A";
+  const productTexture = product.texture || "N/A";
+  const productColor = product.color || "N/A";
+  const productQuality = product.quality || "N/A";
+  const productStock = product.stock || 0;
+  const productDescription = product.description || "No description available.";
 
-        // Check if product is in wishlist
-        const isInWishlist = wishlist.some(
-          (item) => item.productId === productId
-        );
+  // Check if product is in wishlist
+  const isInWishlist = wishlist.some((item) => item.productId === productId);
 
-        document.getElementById("modalImg").src = productImage;
-        document.getElementById("modalTitle").textContent = productName;
-        document.getElementById(
-          "modalPrice"
-        ).textContent = `€${productPrice.toFixed(2)}`;
-        document.getElementById("modalOldPrice").textContent = product.oldPrice
-          ? `€${product.oldPrice.toFixed(2)}`
-          : "";
-        document.getElementById("modalType").textContent = productType;
-        document.getElementById("modalLength").textContent = productLength;
-        document.getElementById("modalTexture").textContent = productTexture;
-        document.getElementById("modalColor").textContent = productColor;
-        document.getElementById("modalQuality").textContent = productQuality;
-        document.getElementById("modalStock").textContent = productStock;
-        document.getElementById("modalDescription").textContent =
-          productDescription;
+  // Update modal content - SAME FORMAT AS IMAGE
+  document.getElementById("modalImg").src = mainImage;
+  document.getElementById("modalTitle").textContent = productName;
+  document.getElementById("modalCategory").textContent = formatCategory(productCategory);
+  
+  // Price
+  document.getElementById("modalPrice").textContent = `€${productPrice.toFixed(2)}`;
+  const oldPriceElement = document.getElementById("modalOldPrice");
+  if (productOldPrice && productOldPrice > productPrice) {
+    oldPriceElement.textContent = `€${productOldPrice.toFixed(2)}`;
+    oldPriceElement.style.display = "block";
+  } else {
+    oldPriceElement.style.display = "none";
+  }
 
-        // Update add to cart button in modal
-        const modalAddToCart = document.getElementById("modalAddToCart");
-        modalAddToCart.onclick = () => addToCart(productId);
-        modalAddToCart.disabled = productStock === 0;
-        modalAddToCart.innerHTML =
-          productStock === 0
-            ? '<i class="fas fa-cart-plus"></i> Out of Stock'
-            : '<i class="fas fa-cart-plus"></i> Add to Cart';
+  // Description
+  document.getElementById("modalDescription").textContent = productDescription;
+  
+  // Details
+  document.getElementById("modalLength").textContent = productLength;
+  document.getElementById("modalTexture").textContent = productTexture;
+  document.getElementById("modalColor").textContent = productColor;
+  document.getElementById("modalQuality").textContent = productQuality;
+  
+  // Stock status
+  const stockStatusElement = document.getElementById("modalStockStatus");
+  if (productStock === 0) {
+    stockStatusElement.textContent = "Rupture de stock";
+    stockStatusElement.className = "stock-status out-of-stock";
+  } else {
+    stockStatusElement.textContent = `En stock (${productStock} disponible${productStock > 1 ? 's' : ''})`;
+    stockStatusElement.className = "stock-status in-stock";
+  }
 
-        // Update pay now button in modal
-        const modalPayNow = document.getElementById("modalPayNow");
-        modalPayNow.onclick = () => payNow(productId);
-        modalPayNow.disabled = productStock === 0;
-        modalPayNow.innerHTML =
-          productStock === 0
-            ? '<i class="fas fa-bolt"></i> Out of Stock'
-            : '<i class="fas fa-bolt"></i> Pay Now';
+  // Create image gallery if multiple images exist
+  const modalGallery = document.getElementById('modalGallery');
+  modalGallery.innerHTML = '';
 
-        // Update wishlist button in modal
-        const modalWishlistBtn = document.getElementById("modalWishlistBtn");
-        modalWishlistBtn.className = `wishlist-btn ${
-          isInWishlist ? "active" : ""
-        }`;
-        modalWishlistBtn.onclick = () =>
-          toggleWishlist(productId, modalWishlistBtn);
+  if (productImages.length > 1) {
+    modalGallery.style.display = 'block';
+    const galleryHTML = `
+      <div class="gallery-thumbnails">
+        ${productImages.map((img, index) => `
+          <div class="thumbnail ${index === 0 ? 'active' : ''}" 
+               data-image="${img.url}" 
+               onclick="changeModalImage('${img.url}', this)">
+            <img src="${img.url}" alt="Thumbnail ${index + 1}" 
+                 onerror="this.src='images/placeholder-product.jpg'">
+          </div>
+        `).join('')}
+      </div>
+    `;
+    modalGallery.innerHTML = galleryHTML;
+  } else {
+    modalGallery.style.display = 'none';
+  }
 
-        // Show modal
-        document.getElementById("productModal").classList.add("active");
+  // Update add to cart button in modal
+  const modalAddToCart = document.getElementById("modalAddToCart");
+  modalAddToCart.onclick = () => addToCart(productId);
+  modalAddToCart.disabled = productStock === 0;
+  modalAddToCart.innerHTML = productStock === 0
+    ? '<i class="fas fa-cart-plus"></i> Rupture de stock'
+    : '<i class="fas fa-cart-plus"></i> Ajouter au Panier';
+
+  // Update pay now button in modal
+  const modalPayNow = document.getElementById("modalPayNow");
+  modalPayNow.onclick = () => payNow(productId);
+  modalPayNow.disabled = productStock === 0;
+  modalPayNow.innerHTML = productStock === 0
+    ? '<i class="fas fa-bolt"></i> Rupture de stock'
+    : '<i class="fas fa-bolt"></i> Acheter Maintenant';
+
+  // Update wishlist button in modal
+  const modalWishlistBtn = document.getElementById("modalWishlistBtn");
+  modalWishlistBtn.className = `wishlist-btn ${isInWishlist ? "active" : ""}`;
+  modalWishlistBtn.onclick = () => toggleWishlist(productId, modalWishlistBtn);
+
+  // Show modal
+  document.getElementById("productModal").classList.add("active");
+}
+
+// Helper function to format category
+function formatCategory(category) {
+  const categoryMap = {
+    'brazilian': 'Brésilien',
+    'peruvian': 'Péruvien',
+    'malaysian': 'Malaisien', 
+    'vietnamese': 'Vietnamien',
+    'accessories': 'Accessoires',
+    'extensions': 'Extensions',
+    'wigs': 'Perruques',
+    'closures': 'Closures',
+    'raw-hair': 'Raw Hair'
+  };
+  return categoryMap[category] || category;
+}
+
+      // Change modal image when thumbnail is clicked
+      function changeModalImage(imageUrl, thumbnailElement) {
+        document.getElementById('modalImg').src = imageUrl;
+        
+        // Update active thumbnail
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+          thumb.classList.remove('active');
+        });
+        thumbnailElement.classList.add('active');
       }
 
       // Add product to cart
-      async function addToCart(productId) {
-        const product = products.find(
-          (p) => p._id === productId || p.id === productId
-        );
-        if (!product) {
-          showNotification("Product not found", "error");
-          return;
-        }
+// Add product to cart
+async function addToCart(productId) {
+  const product = products.find(
+    (p) => p._id === productId || p.id === productId
+  );
+  if (!product) {
+    showNotification("Product not found", "error");
+    return;
+  }
 
-        if (product.stock === 0) {
-          showNotification("This product is out of stock", "error");
-          return;
-        }
+  if (product.stock === 0) {
+    showNotification("This product is out of stock", "error");
+    return;
+  }
 
-        // Check if user is logged in
-        const token = localStorage.getItem("token");
+  // Check if user is logged in
+  const token = localStorage.getItem("token");
 
-        if (token) {
-          // User is logged in - sync with backend
-          try {
-            console.log("🛒 Adding to cart via API:", productId);
+  if (token) {
+    // User is logged in - sync with backend
+    try {
+      console.log("🛒 Adding to cart via API:", productId);
 
-            const response = await fetch(`${API_BASE_URL}/cart/add`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                productId: productId,
-                quantity: 1,
-              }),
-            });
+      const response = await fetch(`${API_BASE_URL}/cart/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId: product._id, // Use the actual MongoDB _id from product object
+          quantity: 1,
+          name: product.name,
+          price: product.price,
+          image: product.images?.[0]?.url || product.image
+        }),
+      });
 
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.error || "Failed to add to cart");
-            }
-
-            const data = await response.json();
-            console.log("✅ Cart updated:", data);
-
-            // Update local cart from backend response
-            if (data.cart && data.cart.items) {
-              cart = data.cart.items.map((item) => ({
-                id: item.productId._id || item.productId,
-                name: item.name || item.productId.name,
-                price: item.price || item.productId.price,
-                image: item.image || item.productId.images?.[0]?.url,
-                quantity: item.quantity,
-                maxStock: item.productId.stock,
-              }));
-
-              // Save to localStorage as backup
-              localStorage.setItem("olysHairCart", JSON.stringify(cart));
-            }
-
-            showNotification("Item added to cart!");
-          } catch (error) {
-            console.error("❌ Error adding to cart:", error);
-            showNotification(error.message || "Failed to add to cart", "error");
-
-            // Fallback to localStorage if API fails
-            addToLocalCart(productId, product);
-          }
-        } else {
-          // User not logged in - use localStorage only
-          console.log("⚠️ User not logged in, using localStorage only");
-          addToLocalCart(productId, product);
-          showNotification(
-            "Item added to cart! Please log in to sync across devices."
-          );
-        }
-
-        // Update UI
-        updateCartUI();
-
-        // Open cart panel
-        document.querySelector(".cart-panel").classList.add("active");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add to cart");
       }
+
+      const data = await response.json();
+      console.log("✅ Cart updated:", data);
+
+      // Update local cart from backend response
+      if (data.cart && data.cart.items) {
+        cart = data.cart.items.map((item) => ({
+          productId: item.productId._id || item.productId, // Ensure we have productId
+          name: item.name || item.productId.name,
+          price: item.price || item.productId.price,
+          image: item.image || item.productId.images?.[0]?.url,
+          quantity: item.quantity,
+          maxStock: item.productId.stock,
+        }));
+
+        // Save to localStorage as backup
+        localStorage.setItem("olysHairCart", JSON.stringify(cart));
+      }
+
+      showNotification("Item added to cart!");
+    } catch (error) {
+      console.error("❌ Error adding to cart:", error);
+      showNotification(error.message || "Failed to add to cart", "error");
+
+      // Fallback to localStorage if API fails
+      addToLocalCart(productId, product);
+    }
+  } else {
+    // User not logged in - use localStorage only
+    console.log("⚠️ User not logged in, using localStorage only");
+    addToLocalCart(productId, product);
+    showNotification(
+      "Item added to cart! Please log in to sync across devices."
+    );
+  }
+
+  // Update UI
+  updateCartUI();
+
+  // Open cart panel
+  document.querySelector(".cart-panel").classList.add("active");
+}
+
+// Helper function for localStorage cart operations
+function addToLocalCart(productId, product) {
+  const existingItem = cart.find((item) => item.productId === productId);
+
+  if (existingItem) {
+    // Check if we're exceeding available stock
+    if (existingItem.quantity >= product.stock) {
+      showNotification(
+        `Only ${product.stock} items available in stock`,
+        "error"
+      );
+      return;
+    }
+    existingItem.quantity += 1;
+  } else {
+    cart.push({
+      productId: product._id, // Use the MongoDB _id, not just productId
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0]?.url || product.image || "images/placeholder-product.jpg",
+      quantity: 1,
+      maxStock: product.stock,
+    });
+  }
+
+  // Save to localStorage
+  localStorage.setItem("olysHairCart", JSON.stringify(cart));
+}
 
       // Pay Now function for direct purchase
-      async function payNow(productId) {
-        console.log('⚡ Pay Now clicked for product:', productId);
-        
-        const product = products.find(p => (p._id === productId) || (p.id === productId));
-        if (!product) {
-            showNotification('Product not found', 'error');
-            return;
-        }
+async function payNow(productId) {
+    console.log('⚡ Pay Now clicked for product:', productId);
+    
+    const product = products.find(p => (p._id === productId) || (p.id === productId));
+    if (!product) {
+        showNotification('Product not found', 'error');
+        return;
+    }
 
-        if (product.stock === 0) {
-            showNotification('This product is out of stock', 'error');
-            return;
-        }
+    if (product.stock === 0) {
+        showNotification('This product is out of stock', 'error');
+        return;
+    }
 
-        // Create a single-item cart for direct purchase
-        const directPurchaseCart = [{
-            id: productId,
-            name: product.name,
-            price: product.price,
-            image: product.image || product.images?.[0]?.url,
-            quantity: 1,
-            maxStock: product.stock,
-            isDirectPurchase: true // Flag to identify direct purchases
-        }];
+    // Create a single-item cart for direct purchase
+    const directPurchaseCart = [{
+        id: product._id || product.id,
+        productId: product._id || product.id, // Make sure productId is included
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0]?.url || product.image || "images/placeholder-product.jpg",
+        quantity: 1,
+        maxStock: product.stock,
+        isDirectPurchase: true // Flag to identify direct purchases
+    }];
 
-        // Save to localStorage
-        localStorage.setItem('olysHairDirectPurchase', JSON.stringify(directPurchaseCart));
-        
-        // Show loading notification
-        showNotification('Redirecting to checkout...', 'success');
-        
-        // Redirect to checkout page after a brief delay
-        setTimeout(() => {
-            window.location.href = 'checkout.html?direct=true';
-        }, 1000);
-      }
+    // Save to localStorage
+    localStorage.setItem('olysHairDirectPurchase', JSON.stringify(directPurchaseCart));
+    
+    // Show loading notification
+    showNotification('Redirecting to checkout...', 'success');
+    
+    // Redirect to checkout page after a brief delay
+    setTimeout(() => {
+        window.location.href = 'checkout.html?direct=true';
+    }, 1000);
+}
 
       // Helper function for localStorage cart operations
       function addToLocalCart(productId, product) {
@@ -1715,7 +2160,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
             id: productId,
             name: product.name,
             price: product.price,
-            image: product.image || product.images?.[0]?.url,
+            image: product.images?.[0]?.url || product.image || "images/placeholder-product.jpg",
             quantity: 1,
             maxStock: product.stock,
           });
@@ -1749,7 +2194,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
             productId: productId,
             name: product.name,
             price: product.price,
-            image: product.image || product.images?.[0]?.url,
+            image: product.images?.[0]?.url || product.image || "images/placeholder-product.jpg",
             addedAt: new Date().toISOString(),
           });
           showNotification("Added to wishlist!");
@@ -1788,7 +2233,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
                 )?.price,
                 image: products.find(
                   (p) => p._id === productId || p.id === productId
-                )?.image,
+                )?.images?.[0]?.url,
               })
             : JSON.stringify({ productId });
 
@@ -1842,11 +2287,11 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
 
         if (cart.length === 0) {
           cartItems.innerHTML = `
-                    <div class="empty-state" style="padding: 20px;">
-                        <i class="fas fa-shopping-cart"></i>
-                        <p>Your cart is empty</p>
-                    </div>
-                `;
+            <div class="empty-state" style="padding: 20px;">
+              <i class="fas fa-shopping-cart"></i>
+              <p>Your cart is empty</p>
+            </div>
+          `;
           cartSubtotal.textContent = "€0.00";
           cartShipping.textContent = "€0.00";
           cartTotal.textContent = "€0.00";
@@ -1861,58 +2306,50 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
 
           const cartItem = document.createElement("div");
           cartItem.className = "cart-item";
-          cartItem.innerHTML = `
-                    <div class="cart-item-image">
-                        <img src="${
-                          item.image || "images/placeholder-product.jpg"
-                        }" alt="${
-            item.name
-          }" onerror="this.src='images/placeholder-product.jpg'">
-                    </div>
-                    <div class="cart-item-details">
-                        <h4>${item.name}</h4>
-                        <div class="cart-item-price">€${item.price.toFixed(
-                          2
-                        )}</div>
-                        <div class="cart-item-actions">
-                            <div class="quantity-control">
-                                <div class="quantity-btn minus" data-product="${
-                                  item.id
-                                }">-</div>
-                                <span>${item.quantity}</span>
-                                <div class="quantity-btn plus" data-product="${
-                                  item.id
-                                }">+</div>
-                            </div>
-                            <div class="remove-item" data-product="${item.id}">
-                                <i class="fas fa-trash"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
+cartItem.innerHTML = `
+  <div class="cart-item-image">
+    <img src="${item.image || "images/placeholder-product.jpg"}" 
+         alt="${item.name}" 
+         onerror="this.src='images/placeholder-product.jpg'">
+  </div>
+  <div class="cart-item-details">
+    <h4>${item.name}</h4>
+    <div class="cart-item-price">€${item.price.toFixed(2)}</div>
+    <div class="cart-item-actions">
+      <div class="quantity-control">
+        <div class="quantity-btn minus" data-product-id="${item.productId}">-</div>
+        <span>${item.quantity}</span>
+        <div class="quantity-btn plus" data-product-id="${item.productId}">+</div>
+      </div>
+      <div class="remove-item" data-product-id="${item.productId}">
+        <i class="fas fa-trash"></i>
+      </div>
+    </div>
+  </div>
+`;
+
 
           cartItems.appendChild(cartItem);
         });
 
         // Add event listeners to cart items
-        document.querySelectorAll(".quantity-btn.minus").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            updateCartQuantity(e.target.dataset.product, -1);
-          });
-        });
+       document.querySelectorAll(".quantity-btn.minus").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    updateCartQuantity(e.target.dataset.productId, -1);
+  });
+});
 
-        document.querySelectorAll(".quantity-btn.plus").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            updateCartQuantity(e.target.dataset.product, 1);
-          });
-        });
+document.querySelectorAll(".quantity-btn.plus").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    updateCartQuantity(e.target.dataset.productId, 1);
+  });
+});
 
-        document.querySelectorAll(".remove-item").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            removeFromCart(e.target.closest(".remove-item").dataset.product);
-          });
-        });
-
+document.querySelectorAll(".remove-item").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    removeFromCart(e.target.closest(".remove-item").dataset.productId);
+  });
+});
         // Calculate totals
         const shipping = subtotal > 0 ? 10.0 : 0; // $10 flat rate shipping
         const total = subtotal + shipping;
@@ -1920,168 +2357,189 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
         cartSubtotal.textContent = `€${subtotal.toFixed(2)}`;
         cartShipping.textContent = `€${shipping.toFixed(2)}`;
         cartTotal.textContent = `€${total.toFixed(2)}`;
-      }
+
+        // In the updateCartUI() function, update the checkout button:
+    
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    if (checkoutBtn) {
+        const isLoggedIn = localStorage.getItem("token");
+        
+        if (cart.length === 0) {
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = "Cart is Empty";
+        } else if (!isLoggedIn) {
+            checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In to Checkout';
+            checkoutBtn.style.backgroundColor = "#ff6b6b"; // Red color for sign in
+        } else {
+            checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = '<i class="fas fa-lock"></i> Proceed to Payment';
+            checkoutBtn.style.backgroundColor = ""; // Reset to default
+        }
+    }
+}
 
       // Update cart quantity (with backend sync)
-      async function updateCartQuantity(productId, change) {
-        const item = cart.find((item) => item.id === productId);
-        if (!item) return;
+// Update cart quantity (with backend sync)
+async function updateCartQuantity(productId, change) {
+  // Find item by productId (not id)
+  const item = cart.find((item) => item.productId === productId);
+  if (!item) return;
 
-        const newQuantity = item.quantity + change;
+  const newQuantity = item.quantity + change;
 
-        // Check stock limits
-        if (item.maxStock && newQuantity > item.maxStock) {
-          showNotification(
-            `Only ${item.maxStock} items available in stock`,
-            "error"
-          );
-          return;
+  // Check stock limits
+  if (item.maxStock && newQuantity > item.maxStock) {
+    showNotification(
+      `Only ${item.maxStock} items available in stock`,
+      "error"
+    );
+    return;
+  }
+
+  if (newQuantity <= 0) {
+    removeFromCart(productId);
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    // User is logged in - sync with backend
+    try {
+      console.log(
+        "📝 Updating cart quantity via API:",
+        productId,
+        newQuantity
+      );
+
+      const response = await fetch(
+        `${API_BASE_URL}/cart/update/${productId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            quantity: newQuantity,
+          }),
         }
+      );
 
-        if (newQuantity <= 0) {
-          removeFromCart(productId);
-          return;
-        }
-
-        const token = localStorage.getItem("token");
-
-        if (token) {
-          // User is logged in - sync with backend
-          try {
-            console.log(
-              "📝 Updating cart quantity via API:",
-              productId,
-              newQuantity
-            );
-
-            const response = await fetch(
-              `${API_BASE_URL}/cart/update/${productId}`,
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  quantity: newQuantity,
-                }),
-              }
-            );
-
-            if (!response.ok) {
-              throw new Error("Failed to update cart");
-            }
-
-            const data = await response.json();
-            console.log("✅ Cart quantity updated:", data);
-
-            // Update local cart
-            item.quantity = newQuantity;
-            localStorage.setItem("olysHairCart", JSON.stringify(cart));
-          } catch (error) {
-            console.error("❌ Error updating cart:", error);
-            showNotification("Failed to update cart", "error");
-            return;
-          }
-        } else {
-          // Update localStorage only
-          item.quantity = newQuantity;
-          localStorage.setItem("olysHairCart", JSON.stringify(cart));
-        }
-
-        updateCartUI();
+      if (!response.ok) {
+        throw new Error("Failed to update cart");
       }
+
+      const data = await response.json();
+      console.log("✅ Cart quantity updated:", data);
+
+      // Update local cart
+      item.quantity = newQuantity;
+      localStorage.setItem("olysHairCart", JSON.stringify(cart));
+    } catch (error) {
+      console.error("❌ Error updating cart:", error);
+      showNotification("Failed to update cart", "error");
+      return;
+    }
+  } else {
+    // Update localStorage only
+    item.quantity = newQuantity;
+    localStorage.setItem("olysHairCart", JSON.stringify(cart));
+  }
+
+  updateCartUI();
+}
 
       // Remove item from cart (with backend sync)
-      async function removeFromCart(productId) {
-        const token = localStorage.getItem("token");
+// Remove item from cart (with backend sync)
+async function removeFromCart(productId) {
+  const token = localStorage.getItem("token");
 
-        if (token) {
-          // User is logged in - sync with backend
-          try {
-            console.log("🗑️ Removing from cart via API:", productId);
+  if (token) {
+    // User is logged in - sync with backend
+    try {
+      console.log("🗑️ Removing from cart via API:", productId);
 
-            const response = await fetch(
-              `${API_BASE_URL}/cart/remove/${productId}`,
-              {
-                method: "DELETE",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-
-            if (!response.ok) {
-              throw new Error("Failed to remove from cart");
-            }
-
-            console.log("✅ Item removed from cart");
-          } catch (error) {
-            console.error("❌ Error removing from cart:", error);
-            showNotification("Failed to remove from cart", "error");
-            return;
-          }
+      const response = await fetch(
+        `${API_BASE_URL}/cart/remove/${productId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
 
-        // Update local cart
-        cart = cart.filter((item) => item.id !== productId);
-        localStorage.setItem("olysHairCart", JSON.stringify(cart));
-        updateCartUI();
-        showNotification("Item removed from cart");
+      if (!response.ok) {
+        throw new Error("Failed to remove from cart");
       }
+
+      console.log("✅ Item removed from cart");
+    } catch (error) {
+      console.error("❌ Error removing from cart:", error);
+      showNotification("Failed to remove from cart", "error");
+      return;
+    }
+  }
+
+  // Update local cart - remove by productId
+  cart = cart.filter((item) => item.productId !== productId);
+  localStorage.setItem("olysHairCart", JSON.stringify(cart));
+  updateCartUI();
+  showNotification("Item removed from cart");
+}
 
       // Load cart from backend (call this on page load)
-      async function loadCartFromBackend() {
-        const token = localStorage.getItem("token");
+// Load cart from backend (call this on page load)
+async function loadCartFromBackend() {
+  const token = localStorage.getItem("token");
 
-        if (!token) {
-          console.log("⚠️ No token found, using localStorage cart only");
-          return;
-        }
+  if (!token) {
+    console.log("⚠️ No token found, using localStorage cart only");
+    return;
+  }
 
-        try {
-          console.log("🔄 Loading cart from backend...");
+  try {
+    console.log("🔄 Loading cart from backend...");
 
-          const response = await fetch(`${API_BASE_URL}/cart`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
+    const response = await fetch(`${API_BASE_URL}/cart`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-          if (!response.ok) {
-            throw new Error("Failed to load cart from backend");
-          }
+    if (!response.ok) {
+      throw new Error("Failed to load cart from backend");
+    }
 
-          const data = await response.json();
-          console.log("✅ Cart loaded from backend:", data);
+    const data = await response.json();
+    console.log("✅ Cart loaded from backend:", data);
 
-          if (data.cart && data.cart.items) {
-            cart = data.cart.items.map((item) => ({
-              id: item.productId?._id || item.productId,
-              name: item.name || item.productId?.name || "Unknown Product",
-              price: item.price || item.productId?.price || 0,
-              image:
-                item.image ||
-                item.productId?.images?.[0]?.url ||
-                "images/placeholder-product.jpg",
-              quantity: item.quantity,
-              maxStock: item.productId?.stock || 999,
-            }));
+    if (data.cart && data.cart.items) {
+      cart = data.cart.items.map((item) => ({
+        productId: item.productId?._id || item.productId, // Ensure productId is stored
+        name: item.name || item.productId?.name || "Unknown Product",
+        price: item.price || item.productId?.price || 0,
+        image: item.image || item.productId?.images?.[0]?.url || "images/placeholder-product.jpg",
+        quantity: item.quantity,
+        maxStock: item.productId?.stock || 999,
+      }));
 
-            // Save to localStorage as backup
-            localStorage.setItem("olysHairCart", JSON.stringify(cart));
+      // Save to localStorage as backup
+      localStorage.setItem("olysHairCart", JSON.stringify(cart));
 
-            // Update UI
-            updateCartUI();
-          }
-        } catch (error) {
-          console.error("❌ Error loading cart from backend:", error);
-          console.log("⚠️ Using localStorage cart as fallback");
-        }
-      }
+      // Update UI
+      updateCartUI();
+    }
+  } catch (error) {
+    console.error("❌ Error loading cart from backend:", error);
+    console.log("⚠️ Using localStorage cart as fallback");
+  }
+}
 
       // Update order count
       async function updateOrderCount() {
@@ -2112,8 +2570,7 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
 
       // Filter products based on selected filters
       function filterProducts() {
-        const activeCategory =
-          document.querySelector(".filter-btn.active").dataset.category;
+        const activeCategory = document.querySelector(".filter-btn.active").dataset.category;
         const sortValue = document.getElementById("sortSelect").value;
         const lengthValue = document.getElementById("lengthFilter").value;
 
@@ -2203,51 +2660,45 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
       // Show empty state
       function showEmptyState(message = "No products found") {
         productsGrid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-box-open"></i>
-                    <h3>${message}</h3>
-                    <p>Check back later for new arrivals!</p>
-                    <button class="add-to-cart" onclick="loadProducts()" style="margin-top: 20px;">
-                        <i class="fas fa-redo"></i> Refresh Products
-                    </button>
-                </div>
-            `;
+          <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <h3>${message}</h3>
+            <p>Check back later for new arrivals!</p>
+            <button class="add-to-cart" onclick="loadProducts()" style="margin-top: 20px;">
+              <i class="fas fa-redo"></i> Refresh Products
+            </button>
+          </div>
+        `;
       }
 
       // Show error state
       function showErrorState(errorMessage = "") {
         productsGrid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Unable to Load Products</h3>
-                    <p>${
-                      errorMessage ||
-                      "Please try refreshing the page or check your connection."
-                    }</p>
-                    <div style="margin-top: 15px; font-size: 14px; color: #666;">
-                        <p>Make sure your backend server is running on localhost:5001</p>
-                        <p>API Endpoint: ${ENDPOINTS.PRODUCTS}</p>
-                    </div>
-                    <button class="add-to-cart" onclick="loadProducts()" style="margin-top: 20px;">
-                        <i class="fas fa-redo"></i> Try Again
-                    </button>
-                </div>
-            `;
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Unable to Load Products</h3>
+            <p>${errorMessage || "Please try refreshing the page or check your connection."}</p>
+            <div style="margin-top: 15px; font-size: 14px; color: #666;">
+              <p>Make sure your backend server is running on localhost:5001</p>
+              <p>API Endpoint: ${ENDPOINTS.PRODUCTS}</p>
+            </div>
+            <button class="add-to-cart" onclick="loadProducts()" style="margin-top: 20px;">
+              <i class="fas fa-redo"></i> Try Again
+            </button>
+          </div>
+        `;
       }
 
       // Show notification
       function showNotification(message, type = "success") {
         // Remove existing notifications
-        document
-          .querySelectorAll(".shop-notification")
-          .forEach((notification) => {
-            notification.remove();
-          });
+        document.querySelectorAll(".shop-notification").forEach((notification) => {
+          notification.remove();
+        });
 
         const notification = document.createElement("div");
         notification.className = "shop-notification";
-        notification.style.backgroundColor =
-          type === "success" ? "var(--success)" : "var(--error)";
+        notification.style.backgroundColor = type === "success" ? "var(--success)" : "var(--error)";
         notification.textContent = message;
 
         document.body.appendChild(notification);
@@ -2264,7 +2715,62 @@ console.log("🌐 Using API Base URL:", API_BASE_URL);
           }
         }, 3000);
       }
-      
+      // Validate MongoDB ObjectId
+function isValidObjectId(id) {
+  if (!id) return false;
+  // Check if it's a valid MongoDB ObjectId (24 hex characters)
+  return /^[0-9a-fA-F]{24}$/.test(id);
+}
+
+// When loading products, ensure they have valid _id
+console.log("🔄 Loading products...");
+products.forEach(product => {
+  if (!isValidObjectId(product._id)) {
+    console.warn(`⚠️ Invalid product ID: ${product._id} for product: ${product.name}`);
+  }
+});
+// Enhanced Proceed to Checkout with Authentication Check
+async function proceedToCheckout() {
+    console.log('🛒 Proceed to checkout clicked');
+    
+    if (cart.length === 0) {
+        showNotification("Your cart is empty");
+        return;
+    }
+
+    // Check if user is authenticated
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+
+    if (!token || !user) {
+        // User is not logged in - redirect to sign-in page
+        showNotification("Please sign in to complete your purchase", "error");
+        
+        // Save cart to localStorage for after login
+        localStorage.setItem("olysHairCart", JSON.stringify(cart));
+        localStorage.setItem("checkoutRedirect", "true");
+        
+        // Redirect to sign-in page after delay
+        setTimeout(() => {
+            window.location.href = "sign-in.html?redirect=checkout";
+        }, 1500);
+        return;
+    }
+
+    try {
+        console.log('✅ User authenticated, proceeding to checkout');
+        
+        // Save cart to localStorage for checkout page
+        localStorage.setItem("olysHairCart", JSON.stringify(cart));
+        
+        // Redirect to checkout page
+        window.location.href = "checkout.html";
+        
+    } catch (error) {
+        console.error('❌ Error proceeding to checkout:', error);
+        showNotification("Error processing checkout. Please try again.", "error");
+    }
+}
     </script>
   </body>
 </html>

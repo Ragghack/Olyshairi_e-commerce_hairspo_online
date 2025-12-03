@@ -8,6 +8,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 require('dotenv').config({ path: './olyshair.env' });
 
 
@@ -21,7 +22,7 @@ app.use(cors({
 'https://www.olyshair.com',
   'https://olyshair.com',
   'https://olyshairi-e-commerce-hairspo-online.vercel.app',
-  'https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com',
+  'https://olyshairi-e-commerce-hairspo-online-73dt.onrender.com',
   'http://localhost:3000',
   'http://localhost:5000',
   'http://127.0.0.1:5500'
@@ -182,7 +183,39 @@ try {
         });
     };
 }
-
+// Test email configuration endpoint
+app.get('/api/email/test-config', async (req, res) => {
+    try {
+        const transporter = createTransporter();
+        
+        // Test connection
+        await transporter.verify();
+        
+        // Send test email
+        const testEmail = await sendEmail(
+            'shop@olyshair.com',
+            'Test Email from OLYS HAIR Server',
+            '<h1>Test Successful!</h1><p>Your email configuration is working correctly.</p>'
+        );
+        
+        res.json({
+            success: true,
+            message: 'Email configuration is working',
+            testEmail: testEmail
+        });
+    } catch (error) {
+        console.error('Email config test error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Email configuration error',
+            message: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+});
+// Add this to your main server file
+const adminReportsRoutes = require('./routes/adminReports');
+app.use('/api/admin/reports', adminReportsRoutes);
 // ================================
 // 🚦 ENHANCED API ROUTES
 // ================================
@@ -819,6 +852,45 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
+// Create email transporter using your hostinger email
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: 'smtp.hostinger.com',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.EMAIL_USER || 'shop@olyshair.com',
+      pass: process.env.EMAIL_PASSWORD || 'Olysh@ir2025' // Replace with your actual password
+    },
+    tls: {
+      ciphers: 'SSLv3'
+    }
+  });
+};
+
+// Test email configuration
+const testEmailConfig = async () => {
+  try {
+    const transporter = createTransporter();
+    await transporter.verify();
+    console.log('✅ Email server is ready to take messages');
+    return true;
+  } catch (error) {
+    console.error('❌ Email configuration error:', error);
+    return false;
+  }
+};
+
+// Test on startup
+
+// ================================
+// 📧 EMAIL ROUTES
+// ================================
+
+// Send order confirmation email
+
+
+// Send booking confirmation email
 
 // ================================
 // 🚀 ENHANCED SERVER LISTENER

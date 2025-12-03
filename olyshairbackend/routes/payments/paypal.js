@@ -1,24 +1,41 @@
 const express = require('express');
+const mongoose = require('mongoose'); // Add this import
 const Order = require('../../models/Order');
 const { validatePaymentRequest } = require('../../middleware/validation');
 
 const router = express.Router();
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+router.use((req, res, next) => {
+  console.log(`💸 PayPal Route: ${req.method} ${req.path}`);
+  console.log('Headers:', {
+    authorization: req.headers.authorization ? 'Present' : 'Missing',
+    'content-type': req.headers['content-type']
+  });
+  next();
+});
+
 // PayPal Configuration
-const PAYPAL_BASE = process.env.PAYPAL_ENVIRONMENT === 'production' 
+const PAYPAL_ENV = process.env.PAYPAL_ENVIRONMENT || 'sandbox';
+const PAYPAL_BASE = PAYPAL_ENV === 'production'
   ? 'https://api-m.paypal.com' 
   : 'https://api-m.sandbox.paypal.com';
 
 console.log('🚀 PayPal Configuration:', {
   baseURL: PAYPAL_BASE,
-  environment: process.env.PAYPAL_ENVIRONMENT || 'sandbox'
+  environment: PAYPAL_ENV,
+  hasClientId: !!process.env.PAYPAL_CLIENT_ID,
+  hasClientSecret: !!process.env.PAYPAL_CLIENT_SECRET,
+  frontendUrl: process.env.FRONTEND_URL || 'Not set'
 });
 
 // Get Access Token
 async function getAccessToken() {
   try {
+    console.log('🔐 Getting PayPal access token...');
+    
     if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
+      console.error('❌ PayPal credentials missing in environment');
       throw new Error('PayPal credentials missing');
     }
 
@@ -35,10 +52,17 @@ async function getAccessToken() {
 
     const data = await response.json();
 
+    console.log('🔑 PayPal auth response:', {
+      status: response.status,
+      hasToken: !!data.access_token
+    });
+
     if (!response.ok) {
+      console.error('❌ PayPal auth failed:', data);
       throw new Error(`PayPal auth failed: ${data.error_description || data.error}`);
     }
 
+    console.log('✅ PayPal auth successful');
     return data.access_token;
   } catch (error) {
     console.error('❌ PayPal auth error:', error.message);
@@ -46,9 +70,18 @@ async function getAccessToken() {
   }
 }
 
-// ✅ FIXED: Create Order Endpoint with proper amount calculations
+// ✅ FIXED: Create Order Endpoint with proper schema compatibility
 router.post('/create-order', validatePaymentRequest, async (req, res) => {
   try {
+    console.log('📥 PayPal create-order received:', {
+      bodyKeys: Object.keys(req.body),
+      hasOrderNumber: !!req.body.orderNumber,
+      orderNumber: req.body.orderNumber,
+      hasEmail: !!req.body.email,
+      hasGuestEmail: !!req.body.guestEmail,
+      user: req.user?.id || 'no user'
+    });
+    
     const { amount, items, currency = 'EUR', shipping = 0, tax = 0, discount = 0 } = req.body;
     
     console.log('🔄 Creating PayPal order with:', { 
@@ -112,7 +145,7 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
       purchase_units: [{
         amount: {
           currency_code: currency,
-          value: paypalTotal, // Use the calculated total
+          value: paypalTotal,
           breakdown: {
             item_total: {
               currency_code: currency,
@@ -187,53 +220,117 @@ router.post('/create-order', validatePaymentRequest, async (req, res) => {
       throw new Error('No approval link in PayPal response');
     }
 
-    // Create order in database
-// ✅ Create order in database with full schema compatibility
-// ✅ FIXED: Create order in database with proper schema validation
-const order = await Order.create({
-  user: req.user?.id || null,
-  guestEmail: req.body.email,
-  orderNumber: `OL-${Date.now()}`, // ✅ ADD THIS - Required field
+    // ✅ FIXED: Create order in database with proper schema validation
+    const orderNumber = req.body.orderNumber || `OL-${Date.now()}`;
 
-  items: items.map(i => ({
-    product: i.productId, // ✅ Use productId as the ObjectId
-    name: i.name,
-    price: i.price,
-    quantity: i.quantity,
-    image: i.image,
-    sku: i.sku
-  })),
-
-  subtotal: itemTotal,
-  shippingCost: shippingAmount,
-  taxAmount: taxAmount,
-  discountAmount: discountAmount,
-  totalAmount: paypalTotal,
-
-  paymentMethod: 'paypal',
-  paymentStatus: 'pending',
-
-  status: 'pending',
-
-  paypalOrderId: data.id,
-
-  shippingAddress: req.body.shippingAddress,
-  billingAddress: req.body.billingAddress,
-
-  metadata: {
-    originalAmount: amount,
-    calculatedAmount: paypalTotal,
-    breakdown: {
-      item_total: itemTotal,
-      shipping: shippingAmount,
-      tax: taxAmount,
-      discount: discountAmount
+    // Convert frontend productId/product to proper ObjectId for schema
+// Convert frontend productId/product to proper ObjectId for schema
+const validatedItems = items.map((item, index) => {
+  // Get product ID from frontend (could be productId or product)
+  const productIdFromFrontend = item.productId || item.product;
+  
+  // Create a valid ObjectId - your schema requires this
+  let productObjectId;
+  try {
+    // Check if it's already a valid ObjectId
+    if (mongoose.Types.ObjectId.isValid(productIdFromFrontend)) {
+      productObjectId = new mongoose.Types.ObjectId(productIdFromFrontend);
+    } else {
+      // If not valid, create a new ObjectId
+      productObjectId = new mongoose.Types.ObjectId();
+      console.warn(`⚠️ Invalid product ID for item ${index}, generated placeholder: ${productObjectId}`);
     }
+  } catch (error) {
+    productObjectId = new mongoose.Types.ObjectId();
+    console.warn(`⚠️ Error creating ObjectId for item ${index}, generated: ${productObjectId}`);
   }
+
+  // Return item with proper schema fields - BOTH product AND productId
+  return {
+    product: productObjectId, // ✅ ObjectId field
+    productId: productIdFromFrontend || productObjectId.toString(), // ✅ String field (REQUIRED)
+    name: item.name || `Product ${index + 1}`,
+    price: parseFloat(item.price || 0),
+    quantity: parseInt(item.quantity || 1),
+    image: item.image || '',
+    sku: item.sku || `SKU${index + 1}`
+  };
 });
 
+    // Prepare order data matching your schema
+    const orderData = {
+      orderNumber: orderNumber,
+      user: req.user?.id || null,
+      guestEmail: req.body.email || req.body.guestEmail,
+      
+      // Items with proper schema structure
+      items: validatedItems,
 
-    console.log('✅ PayPal order created successfully:', data.id);
+      // Pricing
+      subtotal: parseFloat(itemTotal),
+      shippingCost: parseFloat(shippingAmount),
+      taxAmount: parseFloat(taxAmount),
+      discountAmount: parseFloat(discountAmount),
+      totalAmount: parseFloat(paypalTotal),
+
+      // Status
+      paymentMethod: 'paypal',
+      paymentStatus: 'pending',
+      status: 'pending',
+
+      // Payment provider info
+      paypalOrderId: data.id,
+
+      // Shipping method
+      shippingMethod: req.body.shippingMethod || 'standard'
+    };
+
+    // Add addresses if provided
+    if (req.body.shippingAddress) {
+      orderData.shippingAddress = {
+        firstName: req.body.shippingAddress.firstName || req.body.firstName || 'Customer',
+        lastName: req.body.shippingAddress.lastName || req.body.lastName || 'Guest',
+        email: req.body.shippingAddress.email || req.body.email,
+        address: req.body.shippingAddress.address || req.body.address || 'Not provided',
+        city: req.body.shippingAddress.city || req.body.city || 'Not provided',
+        state: req.body.shippingAddress.state || '',
+        zipCode: req.body.shippingAddress.zipCode || req.body.zipCode || '00000',
+        country: req.body.shippingAddress.country || req.body.country || 'Not provided',
+        phone: req.body.shippingAddress.phone || req.body.phone || '000-000-0000'
+      };
+    }
+
+    if (req.body.billingAddress) {
+      orderData.billingAddress = {
+        firstName: req.body.billingAddress.firstName || req.body.firstName || 'Customer',
+        lastName: req.body.billingAddress.lastName || req.body.lastName || 'Guest',
+        email: req.body.billingAddress.email || req.body.email,
+        address: req.body.billingAddress.address || req.body.address || 'Not provided',
+        city: req.body.billingAddress.city || req.body.city || 'Not provided',
+        state: req.body.billingAddress.state || '',
+        zipCode: req.body.billingAddress.zipCode || req.body.zipCode || '00000',
+        country: req.body.billingAddress.country || req.body.country || 'Not provided',
+        phone: req.body.billingAddress.phone || req.body.phone || '000-000-0000'
+      };
+    }
+
+    // Metadata for debugging
+    orderData.metadata = {
+      originalAmount: parseFloat(amount),
+      calculatedAmount: parseFloat(paypalTotal),
+      breakdown: {
+        item_total: parseFloat(itemTotal),
+        shipping: parseFloat(shippingAmount),
+        tax: parseFloat(taxAmount),
+        discount: parseFloat(discountAmount)
+      }
+    };
+
+    console.log('📝 Creating order in database with data:', JSON.stringify(orderData, null, 2));
+
+    // Create the order
+    const order = await Order.create(orderData);
+    console.log('✅ Order created successfully with ID:', order._id);
 
     // ✅ Return format that PayPal SDK expects
     res.json({
@@ -259,7 +356,6 @@ router.post('/create-order-simple', validatePaymentRequest, async (req, res) => 
 
     const token = await getAccessToken();
 
-    // ✅ SIMPLEST PayPal payload - no items, no breakdown
     const orderPayload = {
       intent: 'CAPTURE',
       purchase_units: [{
@@ -294,15 +390,25 @@ router.post('/create-order-simple', validatePaymentRequest, async (req, res) => 
       throw new Error(errorMsg);
     }
 
-    // Create order in database
+    // Create simple order in database
     const order = await Order.create({
       user: req.user?.id,
-      totalAmount: amount,
-      currency: currency,
-      paymentProvider: 'paypal',
+      orderNumber: `OL-SIMPLE-${Date.now()}`,
+      items: [{
+        product: new mongoose.Types.ObjectId(),
+        name: 'Simple Order',
+        price: parseFloat(amount),
+        quantity: 1
+      }],
+      subtotal: parseFloat(amount),
+      shippingCost: 0,
+      taxAmount: 0,
+      discountAmount: 0,
+      totalAmount: parseFloat(amount),
+      paymentMethod: 'paypal',
       paymentStatus: 'pending',
-      paypalOrderId: data.id,
-      status: 'created'
+      status: 'pending',
+      paypalOrderId: data.id
     });
 
     console.log('✅ Simple PayPal order created:', data.id);
@@ -345,23 +451,28 @@ router.post('/capture/:orderId', async (req, res) => {
     }
 
     // Update order in database
-    await Order.findOneAndUpdate(
+    const updatedOrder = await Order.findOneAndUpdate(
       { paypalOrderId: orderId },
       { 
         paymentStatus: 'completed',
         status: 'confirmed',
         transactionId: data.purchase_units?.[0]?.payments?.captures?.[0]?.id,
         paidAt: new Date()
-      }
+      },
+      { new: true }
     );
 
-    console.log('✅ PayPal payment captured successfully');
+    console.log('✅ PayPal payment captured successfully:', {
+      orderId: updatedOrder?._id,
+      transactionId: data.purchase_units?.[0]?.payments?.captures?.[0]?.id
+    });
 
     res.json({
       success: true,
       status: 'COMPLETED',
       transactionId: data.purchase_units?.[0]?.payments?.captures?.[0]?.id,
-      orderId: data.id
+      orderId: data.id,
+      databaseOrderId: updatedOrder?._id
     });
 
   } catch (error) {
@@ -371,6 +482,16 @@ router.post('/capture/:orderId', async (req, res) => {
       error: error.message
     });
   }
+});
+
+// Health check endpoint
+router.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'PayPal routes are working',
+    environment: PAYPAL_ENV,
+    timestamp: new Date().toISOString()
+  });
 });
 
 module.exports = router;

@@ -52,8 +52,12 @@ const productSchema = new mongoose.Schema({
     default: 0
   },
   images: [{
-    url: String,
-    altText: String
+   url: String,
+    altText: String,
+    isPrimary: {
+      type: Boolean,
+      default: false
+    }
   }],
   isActive: {
     type: Boolean,

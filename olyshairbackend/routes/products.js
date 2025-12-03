@@ -234,4 +234,151 @@ router.post('/validate/batch', async (req, res) => {
     });
   }
 });
+// Get recent products
+// Get recent products - Fix response format
+// Get recent products - Make this publicly accessible
+router.get('/recent', async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+    
+    const products = await Product.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .select('name price oldPrice images stock category type length texture color quality description');
+
+    res.json({
+      success: true,
+      products,
+      count: products.length,
+      message: 'Recent products fetched successfully'
+    });
+  } catch (error) {
+    console.error('Get recent products error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch recent products',
+      products: [] 
+    });
+  }
+});
+// In routes/products.js - Add this new route
+
+// Get all active products for public display (for homepage carousel)
+router.get('/public/all', async (req, res) => {
+  try {
+    const { category, limit = 50 } = req.query;
+    
+    const filter = { isActive: true };
+    
+    // Optional category filter
+    if (category && category !== 'all') {
+      filter.category = category;
+    }
+    
+    const products = await Product.find(filter)
+      .select('name price oldPrice images stock category type length texture color quality description sku')
+      .limit(parseInt(limit));
+
+    res.json({
+      success: true,
+      products,
+      count: products.length,
+      message: 'All products fetched successfully'
+    });
+  } catch (error) {
+    console.error('Get all products error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch products',
+      products: [] 
+    });
+  }
+});
+
+// Get products by category for public display
+router.get('/public/category/:category', async (req, res) => {
+  try {
+    const { category } = req.params;
+    const { limit = 20 } = req.query;
+    
+    const products = await Product.find({ 
+      isActive: true,
+      category: category 
+    })
+    .select('name price oldPrice images stock category type length texture color quality description')
+    .limit(parseInt(limit));
+
+    res.json({
+      success: true,
+      products,
+      count: products.length,
+      message: `Products in ${category} category fetched successfully`
+    });
+  } catch (error) {
+    console.error('Get products by category error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch products',
+      products: [] 
+    });
+  }
+});
+
+// Get popular products (based on stock or other criteria)
+router.get('/public/popular', async (req, res) => {
+  try {
+    const { limit = 12 } = req.query;
+    
+    // You can modify this query based on your popularity criteria
+    // For example: products with most stock, best sellers, etc.
+    const products = await Product.find({ 
+      isActive: true,
+      stock: { $gt: 0 } // Only products in stock
+    })
+    .sort({ stock: -1, createdAt: -1 }) // Sort by stock descending, then by recent
+    .select('name price oldPrice images stock category type length texture color quality description')
+    .limit(parseInt(limit));
+
+    res.json({
+      success: true,
+      products,
+      count: products.length,
+      message: 'Popular products fetched successfully'
+    });
+  } catch (error) {
+    console.error('Get popular products error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch popular products',
+      products: [] 
+    });
+  }
+});
+
+// Keep your existing /recent endpoint but increase the default limit
+router.get('/recent', async (req, res) => {
+  try {
+    const { limit = 20 } = req.query; // Increased from 10 to 20
+    
+    const products = await Product.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .select('name price oldPrice images stock category type length texture color quality description');
+
+    res.json({
+      success: true,
+      products,
+      count: products.length,
+      message: 'Recent products fetched successfully'
+    });
+  } catch (error) {
+    console.error('Get recent products error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch recent products',
+      products: [] 
+    });
+  }
+});
+
 module.exports = router;

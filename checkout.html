@@ -897,6 +897,28 @@
           padding: 20px 15px;
         }
       }
+      /* Add to header icons section */
+.cart-count, .order-count, .booking-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--error);
+    color: white;
+    font-size: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    display: none; /* Hidden by default */
+}
+
+.cart-bubble, .order-tracking-bubble {
+    position: relative;
+    cursor: pointer;
+}
     </style>
   </head>
   <body>
@@ -1385,8 +1407,199 @@
     <script src="https://js.stripe.com/v3/"></script>
     <!-- PayPal SDK -->
     <script src="https://www.paypal.com/sdk/js?client-id=Afdo7xRdDvUKhixkahcnYo27-SmAYrZQgvuZSPATxitvw__sm4A5ZWHtresK_n-UrywV8pCBmuqpRGqg&currency=EUR"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>-->
+ 
+<script>
 
-  <script>
+// Update the handlePaymentSuccess function in checkout.html:
+async function handlePaymentSuccess(paymentResult, formData, orderId) {
+    try {
+        // Get cart data
+        const cart = getCart();
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = getShippingCost(formData.shippingMethod);
+        const tax = subtotal * CONFIG.TAX_RATE;
+        const total = subtotal + shipping + tax;
+        
+        // Generate order number
+        const orderNumber = orderId || `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        
+        // Prepare order data for email
+        const orderData = {
+            orderNumber: orderNumber,
+            customerName: `${formData.firstName} ${formData.lastName}`,
+            customerEmail: formData.email,
+            customerPhone: formData.phone,
+            shippingAddress: `${formData.address}, ${formData.city}, ${formData.zipCode}, ${formData.country}`,
+            billingAddress: formData.sameAsShipping ? 
+                `${formData.address}, ${formData.city}, ${formData.zipCode}, ${formData.country}` :
+                `${formData.billing.address}, ${formData.billing.city}, ${formData.billing.zipCode}, ${formData.billing.country}`,
+            orderDate: new Date().toISOString(),
+            items: cart.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                total: item.price * item.quantity
+            })),
+            subtotal: subtotal,
+            shippingCost: shipping,
+            taxAmount: tax,
+            totalAmount: total,
+            paymentMethod: selectedPaymentMethod === 'credit-card' ? 'Credit Card' : 
+                         selectedPaymentMethod === 'paypal' ? 'PayPal' : selectedPaymentMethod,
+            status: 'processing',
+            transactionId: paymentResult.transactionId || paymentResult.orderID || 'N/A'
+        };
+        
+        // Save order to localStorage
+        saveOrderToLocalStorage(orderData);
+        
+        // Send confirmation emails via backend
+        const emailResponse = await fetch(`${CONFIG.API_BASE_URL}/email/order-confirmation`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}`
+            },
+            body: JSON.stringify({
+                orderData: orderData,
+                customerEmail: formData.email,
+                adminEmail: 'shop@olyshair.com'
+            })
+        });
+        
+        const emailResult = await emailResponse.json();
+        
+        if (!emailResult.success) {
+            console.warn('Email sending had issues:', emailResult);
+            // Continue with order even if email fails
+        }
+        
+        // Clear cart after successful order
+        localStorage.removeItem("olysHairCart");
+        updateCartCount();
+        
+        // Update receipt modal
+        updateReceiptModal(paymentResult, formData);
+        updateCheckoutSteps("completed");
+        
+        showNotification("✅ Order confirmed! A confirmation email has been sent.", "success");
+        
+        setTimeout(() => {
+            const receiptModal = document.getElementById("receiptModal");
+            if (receiptModal) receiptModal.classList.add("active");
+        }, 1000);
+        
+    } catch (error) {
+        console.error("Order processing error:", error);
+        // Still show success but warn about email
+        showNotification("Order processed, but email sending failed: " + error.message, "warning");
+    }
+}
+// Function to save order to localStorage
+function saveOrderToLocalStorage(orderData) {
+    try {
+        const orders = JSON.parse(localStorage.getItem('olysHairOrders')) || [];
+        
+        const orderWithMeta = {
+            ...orderData,
+            status: 'processing',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        orders.push(orderWithMeta);
+        localStorage.setItem('olysHairOrders', JSON.stringify(orders));
+        
+        // Update order count in header
+        updateOrderCount(orders.length);
+        
+        return orderData.order_number;
+    } catch (error) {
+        console.error('Error saving order to localStorage:', error);
+        throw error;
+    }
+}
+
+// Function to update order count in header
+function updateOrderCount(count) {
+    const orderCountElement = document.querySelector('.order-count');
+    if (orderCountElement) {
+        orderCountElement.textContent = count;
+        orderCountElement.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+// Function to update cart count in header
+function updateCartCount() {
+    const cartCountElement = document.querySelector('.cart-count');
+    if (cartCountElement) {
+        const cart = JSON.parse(localStorage.getItem('olysHairCart')) || [];
+        const itemCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+        cartCountElement.textContent = itemCount;
+        cartCountElement.style.display = itemCount > 0 ? 'flex' : 'none';
+    }
+}
+    function checkAuthentication() {
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+    
+    if (!token || !user) {
+        // User is not logged in
+        showNotification("Please sign in to access checkout", "error");
+        
+        // Save any cart data from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const directPurchase = urlParams.get('direct');
+        
+        if (directPurchase === 'true') {
+            localStorage.setItem("checkoutRedirect", "true");
+        }
+        
+        // Redirect to sign-in page
+        setTimeout(() => {
+            window.location.href = "sign-in.html?redirect=checkout";
+        }, 2000);
+        return false;
+    }
+    
+    // Parse user data
+    try {
+        const userData = JSON.parse(user);
+        console.log('✅ User authenticated:', userData.email);
+        return true;
+    } catch (e) {
+        console.error('Error parsing user data:', e);
+        return false;
+    }
+}
+function handleDirectPurchase() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isDirect = urlParams.get('direct') === 'true';
+    
+    if (isDirect) {
+        const directPurchase = localStorage.getItem('olysHairDirectPurchase');
+        
+        if (directPurchase) {
+            try {
+                const directCart = JSON.parse(directPurchase);
+                
+                if (Array.isArray(directCart) && directCart.length > 0) {
+                    // Use the direct purchase cart instead of regular cart
+                    localStorage.setItem('olysHairCart', JSON.stringify(directCart));
+                    
+                    // Clear the direct purchase flag after use
+                    localStorage.removeItem('olysHairDirectPurchase');
+                    
+                    console.log('✅ Direct purchase loaded:', directCart);
+                }
+            } catch (error) {
+                console.error('Error parsing direct purchase:', error);
+            }
+        }
+    }
+}
+
 // Dynamic API URL configuration
 // ==================== ENHANCED CONFIGURATION ====================
 /* checkout.js - rewritten frontend checkout logic (replace the large inline script) */
@@ -1395,7 +1608,7 @@
 const CONFIG = {
   STRIPE_PUBLISHABLE_KEY: "pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0",
   PAYPAL_CLIENT_ID: "Afdo7xRdDvUKhixkahcnYo27-SmAYrZQgvuZSPATxitvw__sm4A5ZWHtresK_n-UrywV8pCBmuqpRGqg",
-  API_BASE_URL: "https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api",
+  API_BASE_URL: "http://localhost:5001/api",
   CURRENCY: "EUR",
   TAX_RATE: 0.08
 };
@@ -1574,7 +1787,21 @@ function buildOrderPayload(formData) {
     paymentMethod: selectedPaymentMethod === 'paypal' ? 'paypal' : (selectedPaymentMethod === 'credit-card' ? 'credit_card' : selectedPaymentMethod)
   };
 }
+// Initialize counts on page load
+function initializeCounts() {
+    const cart = JSON.parse(localStorage.getItem('olysHairCart')) || [];
+    const orders = JSON.parse(localStorage.getItem('olysHairOrders')) || [];
+    const bookings = JSON.parse(localStorage.getItem('olysHairBookings')) || [];
+    
+    updateCartCount();
+    updateOrderCount(orders.length);
+    updateBookingCount(bookings.length);
+}
 
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCounts();
+    // ... other initialization code
+});
 /* ------------------------ PayPal integration (createOrder + onApprove) ------------------------ */
 function loadPayPalButton() {
   if (typeof paypal === 'undefined') {
@@ -1748,6 +1975,7 @@ async function processPayment(e) {
 
 /* ------------------------ load & UI init ------------------------ */
 async function loadOrderReview() {
+      handleDirectPurchase();
   const orderItemsContainer = document.querySelector(".order-items");
   const cart = getCart();
   if (!orderItemsContainer) return;
@@ -1926,6 +2154,9 @@ function togglePaymentForms(method) {
 
 /* ------------------------ Run initialization on DOM ready ------------------------ */
 document.addEventListener("DOMContentLoaded", async function() {
+  if (!checkAuthentication()) {
+        return; // Stop execution if not authenticated
+    }
   // minimal UI set-up (theme, billing toggle etc) - keep your existing behaviour if you want
   const sameAsShipping = document.getElementById("sameAsShipping");
   const billingAddressFields = document.getElementById("billingAddressFields");
@@ -1946,11 +2177,15 @@ document.addEventListener("DOMContentLoaded", async function() {
       cardElement.mount('#card-element');
     }
   }
+   
 
   // init paypal button if user chooses paypal or default
   // we don't auto-render here — it's called by togglePaymentForms when PayPal method chosen
   console.log('Checkout initialized');
 });
+// Function to handle direct purchase from localStorage
+
+
 </script>
   </body>
 </html>

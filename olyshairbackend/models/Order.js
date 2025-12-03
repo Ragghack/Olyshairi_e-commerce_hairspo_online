@@ -4,6 +4,10 @@ const orderItemSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
+    required: false // Change to false temporarily
+  },
+  productId: { // Add this field
+    type: String,
     required: true
   },
   name: {
@@ -151,7 +155,24 @@ const orderSchema = new mongoose.Schema({
   updatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+    deletedAt: {
+    type: Date,
+    default: null
+  },
+  deletedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  deletionReason: {
+    type: String,
+    default: null
+  },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

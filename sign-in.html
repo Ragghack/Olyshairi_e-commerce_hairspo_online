@@ -487,7 +487,7 @@
     .toggle-password {
       position: absolute;
       right: 15px;
-      top: 50%;
+      top: 73.5%;
       transform: translateY(-50%);
       cursor: pointer;
       color: var(--cream);
@@ -1149,7 +1149,7 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <!-- JavaScript -->
-  <script>
+ <script>
     // Mobile menu functionality
     document.getElementById('mobileMenuBtn').addEventListener('click', function() {
       document.getElementById('navLinks').classList.toggle('active');
@@ -1169,7 +1169,7 @@
     async function loadGoogleClientId() {
       try {
         const res = await fetch(
-          "https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api/config/google-client-id"
+          "http://localhost:5001/api/config/google-client-id"
         );
         
         if (!res.ok) {
@@ -1223,12 +1223,12 @@
       });
     }
 
-    // Enhanced Google Login handler
+    // Enhanced Google Login handler with checkout redirect
     async function handleGoogleLogin(response) {
       console.log("Google login response received");
       
       try {
-        const res = await fetch("https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api/auth/google", {
+        const res = await fetch("http://localhost:5001/api/auth/google", {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
@@ -1250,13 +1250,29 @@
           
           console.log("✅ Google login successful");
           
-          // Show welcome message
-          alert(`Welcome ${data.user?.firstName || data.user?.name || "User"}!`);
+          // Check if we need to redirect to checkout
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectToCheckout = urlParams.get('redirect') === 'checkout';
+          const checkoutRedirect = localStorage.getItem("checkoutRedirect");
           
-          // Redirect to dashboard
-          setTimeout(() => {
-            window.location.href = "shop.html";
-          }, 500);
+          if (redirectToCheckout || checkoutRedirect) {
+            // Clear the redirect flag
+            localStorage.removeItem("checkoutRedirect");
+            
+            // Show welcome message and redirect to checkout
+            alert(`Welcome back ${data.user?.firstName}! Redirecting to checkout...`);
+            
+            setTimeout(() => {
+              window.location.href = "checkout.html";
+            }, 500);
+          } else {
+            // Redirect to shop as before
+            alert(`Welcome ${data.user?.firstName || data.user?.name || "User"}!`);
+            
+            setTimeout(() => {
+              window.location.href = "shop.html";
+            }, 500);
+          }
         } else {
           console.error("Login failed:", data.error);
           alert(data.error || "Google login failed. Please try again.");
@@ -1289,7 +1305,61 @@
       setTimeout(() => {
         loadGoogleClientId();
       }, 1000);
+      
+      // Check URL parameters for redirect message
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectToCheckout = urlParams.get('redirect') === 'checkout';
+      
+      if (redirectToCheckout) {
+        showRedirectNotification();
+      }
     });
+
+    // Function to show redirect notification
+    function showRedirectNotification() {
+      const notification = document.createElement('div');
+      notification.className = 'auth-notification';
+      notification.innerHTML = `
+        <i class="fas fa-shopping-cart"></i>
+        <span>Please sign in to complete your checkout</span>
+      `;
+      
+      // Add some styles for the notification
+      notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--cream);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        animation: slideIn 0.5s ease-out;
+      `;
+      
+      // Add animation keyframes
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+          to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 5 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.5s ease-out forwards';
+        setTimeout(() => notification.remove(), 500);
+      }, 5000);
+    }
 
     // Dark/Light Mode Toggle
     const modeToggle = document.querySelector(".mode-toggle");
@@ -1397,7 +1467,7 @@
           : '<i class="fas fa-eye-slash"></i>';
     });
 
-    // Form submission - Login (Enhanced version)
+    // Form submission - Login (Enhanced version with checkout redirect)
     document
       .getElementById("signin-form")
       .addEventListener("submit", async (e) => {
@@ -1416,10 +1486,10 @@
 
         try {
           console.log(
-            "📡 Sending request to: https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api/auth/login"
+            "📡 Sending request to: http://localhost:5001/api/auth/login"
           );
 
-          const res = await fetch("https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api/auth/login", {
+          const res = await fetch("http://localhost:5001/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
@@ -1438,18 +1508,37 @@
 
           // Save JWT token
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          
           console.log(
             "✅ Login successful, token saved:",
             data.token ? "Yes" : "No"
           );
 
-          // Show success message
-          alert("Login successful! Welcome back!");
+          // Check if we need to redirect to checkout
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectToCheckout = urlParams.get('redirect') === 'checkout';
+          const checkoutRedirect = localStorage.getItem("checkoutRedirect");
+          
+          if (redirectToCheckout || checkoutRedirect) {
+            // Clear the redirect flag
+            localStorage.removeItem("checkoutRedirect");
+            
+            // Show success message and redirect to checkout
+            alert(`Welcome back ${data.user?.firstName}! Redirecting to checkout...`);
+            
+            setTimeout(() => {
+              window.location.href = "checkout.html";
+            }, 500);
+          } else {
+            // Show success message
+            alert("Login successful! Welcome back!");
 
-          // Redirect to dashboard with slight delay
-          setTimeout(() => {
-            window.location.href = "shop.html";
-          }, 100);
+            // Redirect to dashboard with slight delay
+            setTimeout(() => {
+              window.location.href = "shop.html";
+            }, 500);
+          }
         } catch (err) {
           console.error("❌ Login error:", err);
           console.error("❌ Error details:", {
@@ -1462,7 +1551,8 @@
           );
         }
       });
-    // Form submission - Registration
+      
+    // Form submission - Registration (Enhanced with checkout redirect)
     document
       .getElementById("signup-form")
       .addEventListener("submit", async (e) => {
@@ -1507,7 +1597,7 @@
         const lastName = nameParts.slice(1).join(" ");
 
         try {
-          const res = await fetch("https://olyshairi-e-commerce-hairspo-online-sqkj.onrender.com/api/auth/register", {
+          const res = await fetch("http://localhost:5001/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1528,20 +1618,40 @@
 
           // Save JWT token
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          
           console.log("✅ Registration successful, token saved");
 
-          // Show success message
-          alert("Registration successful! Welcome to OLYS HAIR!");
+          // Check if we need to redirect to checkout
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectToCheckout = urlParams.get('redirect') === 'checkout';
+          const checkoutRedirect = localStorage.getItem("checkoutRedirect");
+          
+          if (redirectToCheckout || checkoutRedirect) {
+            // Clear the redirect flag
+            localStorage.removeItem("checkoutRedirect");
+            
+            // Show success message and redirect to checkout
+            alert("Registration successful! Welcome to OLYS HAIR! Redirecting to checkout...");
+            
+            setTimeout(() => {
+              window.location.href = "checkout.html";
+            }, 500);
+          } else {
+            // Show success message
+            alert("Registration successful! Welcome to OLYS HAIR!");
 
-          // Redirect to dashboard
-          setTimeout(() => {
-            window.location.href = "shop.html";
-          }, 100);
+            // Redirect to dashboard
+            setTimeout(() => {
+              window.location.href = "shop.html";
+            }, 500);
+          }
         } catch (err) {
           console.error("Registration error:", err);
           alert("Server error during registration");
         }
       });
+      
   </script>
   <script src="language-config.js"></script>
 </body>

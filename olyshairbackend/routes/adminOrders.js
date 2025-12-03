@@ -269,6 +269,218 @@ router.get('/:id', adminAuth, async (req, res) => {
       details: error.message
     });
   }
+});// DELETE ORDER (ADMIN ONLY - SOFT DELETE)
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { hardDelete = false, reason } = req.body;
+
+    // Find the order
+    const order = await Order.findOne({ _id: id, isDeleted: false });
+    
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Check if order can be deleted (only cancelled orders)
+    if (order.status !== 'cancelled' && !hardDelete) {
+      return res.status(400).json({
+        success: false,
+        error: 'Only cancelled orders can be deleted. Use hardDelete=true to force delete.',
+        allowedStatus: 'cancelled',
+        currentStatus: order.status
+      });
+    }
+
+    if (hardDelete) {
+      // PERMANENT DELETE (USE WITH CAUTION)
+      // Only allow for test orders or very specific cases
+      if (req.user.role !== 'super-admin') {
+        return res.status(403).json({
+          success: false,
+          error: 'Only super-admins can perform hard deletes'
+        });
+      }
+      
+      await Order.findByIdAndDelete(id);
+      console.log(`🔄 Order ${id} permanently deleted by admin ${req.user.id}`);
+      
+      return res.json({
+        success: true,
+        message: 'Order permanently deleted',
+        warning: 'This action cannot be undone'
+      });
+    } else {
+      // SOFT DELETE (Recommended)
+      order.isDeleted = true;
+      order.deletedAt = new Date();
+      order.deletedBy = req.user.id;
+      order.deletionReason = reason || 'Deleted by admin';
+      
+      await order.save();
+      
+      return res.json({
+        success: true,
+        message: 'Order moved to trash (soft deleted)',
+        order: {
+          id: order._id,
+          orderNumber: order.orderNumber,
+          status: order.status,
+          deletedAt: order.deletedAt,
+          canRestore: true
+        }
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ Delete order error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to delete order',
+      details: error.message
+    });
+  }
+});
+
+// RESTORE DELETED ORDER (ADMIN)
+router.post('/:id/restore', adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findOne({ _id: id, isDeleted: true });
+    
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Deleted order not found'
+      });
+    }
+
+    order.isDeleted = false;
+    order.deletedAt = null;
+    order.deletedBy = null;
+    order.deletionReason = null;
+    
+    await order.save();
+
+    return res.json({
+      success: true,
+      message: 'Order restored successfully',
+      order: {
+        id: order._id,
+        orderNumber: order.orderNumber,
+        status: order.status
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Restore order error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to restore order',
+      details: error.message
+    });
+  }
+});
+
+// GET DELETED ORDERS (ADMIN)
+router.get('/trash', adminAuth, async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+
+    const deletedOrders = await Order.find({ isDeleted: true })
+      .sort({ deletedAt: -1 })
+      .limit(parseInt(limit))
+      .skip((parseInt(page) - 1) * parseInt(limit))
+      .populate('user', 'firstName lastName email')
+      .populate('deletedBy', 'firstName lastName')
+      .select('-__v')
+      .lean();
+
+    const total = await Order.countDocuments({ isDeleted: true });
+
+    return res.json({
+      success: true,
+      orders: deletedOrders,
+      pagination: {
+        totalPages: Math.ceil(total / parseInt(limit)),
+        currentPage: parseInt(page),
+        total,
+        hasNext: parseInt(page) < Math.ceil(total / parseInt(limit)),
+        hasPrev: parseInt(page) > 1
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Get deleted orders error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch deleted orders',
+      details: error.message
+    });
+  }
+});
+
+// BULK DELETE ORDERS (ADMIN)
+router.post('/bulk-delete', adminAuth, async (req, res) => {
+  try {
+    const { orderIds, reason } = req.body;
+
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No order IDs provided'
+      });
+    }
+
+    // Check if all orders are cancellable
+    const orders = await Order.find({
+      _id: { $in: orderIds },
+      isDeleted: false
+    });
+
+    const nonCancellable = orders.filter(order => order.status !== 'cancelled');
+    
+    if (nonCancellable.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Some orders cannot be deleted (not cancelled)',
+        nonCancellable: nonCancellable.map(o => ({
+          id: o._id,
+          orderNumber: o.orderNumber,
+          status: o.status
+        }))
+      });
+    }
+
+    // Perform soft delete
+    const result = await Order.updateMany(
+      { _id: { $in: orderIds }, isDeleted: false },
+      {
+        isDeleted: true,
+        deletedAt: new Date(),
+        deletedBy: req.user.id,
+        deletionReason: reason || 'Bulk deleted by admin'
+      }
+    );
+
+    return res.json({
+      success: true,
+      message: `${result.modifiedCount} orders moved to trash`,
+      deletedCount: result.modifiedCount
+    });
+
+  } catch (error) {
+    console.error('❌ Bulk delete orders error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to delete orders',
+      details: error.message
+    });
+  }
 });
 
 module.exports = router;
