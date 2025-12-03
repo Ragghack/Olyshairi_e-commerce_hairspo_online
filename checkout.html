@@ -1096,7 +1096,7 @@
           <div class="form-group">
             <label>
               <input type="radio" name="shipping" value="standard" checked />
-              Standard Shipping (5-7 business days) - €9.99
+              Standard Shipping (5-7 business days) - €1.00
             </label>
           </div>
 
@@ -1610,7 +1610,7 @@ const CONFIG = {
   PAYPAL_CLIENT_ID: "Afdo7xRdDvUKhixkahcnYo27-SmAYrZQgvuZSPATxitvw__sm4A5ZWHtresK_n-UrywV8pCBmuqpRGqg",
   API_BASE_URL: "https://olyshairi-e-commerce-hairspo-online-kgz2.onrender.com/api",
   CURRENCY: "EUR",
-  TAX_RATE: 0.08
+  TAX_RATE: 0.00
 };
 
 /* Globals */
@@ -2009,7 +2009,7 @@ async function loadOrderReview() {
 
 /* ------------------------ Small helpers reused from original ------------------------ */
 function getShippingCost(method) {
-  const shippingRates = { standard: 9.99, express: 19.99, overnight: 29.99 };
+  const shippingRates = { standard: 0.0, express: 19.99, overnight: 29.99 };
   return shippingRates[method] || shippingRates.standard;
 }
 
