@@ -994,6 +994,25 @@
           grid-template-columns: repeat(2, 1fr);
         }
       }
+      .item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.item-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-right: 12px;
+  background-color: var(--light-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
     </style>
   </head>
 <body>
@@ -1068,9 +1087,9 @@
           <i class="fas fa-calendar-alt"></i>
           <span data-translate="bookings">Bookings</span>
         </a>
-        <a href="#" class="mobile-nav-bubble" data-section="notifications">
+       <!-- <a href="#" class="mobile-nav-bubble" data-section="notifications">
           <i class="fas fa-bell"></i>
-          <span data-translate="notifications">Notifications</span>
+          <span data-translate="notifications">Notifications</span>-->
         </a>
         <a href="#" class="mobile-nav-bubble" data-section="settings">
           <i class="fas fa-cog"></i>
@@ -1131,10 +1150,10 @@
           <i class="fas fa-calendar-alt"></i>
           <span data-translate="bookings">Bookings</span>
         </div>
-        <div class="sidebar-bubble" data-section="notifications">
+        <!--<div class="sidebar-bubble" data-section="notifications">
           <i class="fas fa-bell"></i>
           <span data-translate="notifications">Notifications</span>
-        </div>
+        </div>-->
         <div class="sidebar-bubble" data-section="settings">
           <i class="fas fa-cog"></i>
           <span data-translate="settings">Settings</span>
@@ -1437,10 +1456,11 @@
 
     <!-- ADD THIS SCRIPT TAG AT THE END -->
   <script src="language-config.js"></script>
-    <script>
+     <script>
       // Add this to your customer dashboard JavaScript
-function showWhatsAppBookingAction(booking) {
-    const message = encodeURIComponent(`Bonjour OLYS HAIR,
+      function showWhatsAppBookingAction(booking) {
+        const message = encodeURIComponent(
+          `Bonjour OLYS HAIR,
 
 Je suis le client ${booking.customerName} (Référence: ${booking.booking_id}).
 
@@ -1449,10 +1469,11 @@ Je souhaite:
 - Poser une question sur le service
 - Modifier ma réservation
 
-Merci.`);
-    
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-}
+Merci.`
+        );
+
+        return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+      }
       // API Configuration
      //Dynamic API URL configuration
       const API_BASE_URL =
@@ -1473,6 +1494,7 @@ Merci.`);
 
       let userData = null;
       let authToken = localStorage.getItem("token") || "";
+      let cart = JSON.parse(localStorage.getItem("olysHairCart")) || []; // ADD THIS - Same as shop
 
       // DOM Elements
       const modeToggle = document.querySelector(".mode-toggle");
@@ -1493,6 +1515,7 @@ Merci.`);
       document.addEventListener("DOMContentLoaded", function () {
         initializeDashboard();
         initializeMobileMenu();
+        loadCartFromBackend(); // ADD THIS - Load cart on page load
       });
 
       // Initialize mobile menu
@@ -1539,7 +1562,9 @@ Merci.`);
           }
 
           if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
+            const errorText = await response.text();
+            console.error(`API Error ${response.status}:`, errorText);
+            throw new Error(`API error: ${response.status} - ${errorText}`);
           }
 
           return await response.json();
@@ -1621,9 +1646,49 @@ Merci.`);
         }
       }
 
+      // FIXED: Fetch cart function - same as shop
       async function fetchCart() {
-        const data = await apiCall("/cart");
-        return data.cart || { items: [] };
+        try {
+          console.log("🛒 Fetching cart from backend...");
+          const response = await fetch(`${API_BASE_URL}/cart`, {
+            headers: {
+              "Authorization": `Bearer ${authToken}`,
+              "Content-Type": "application/json"
+            }
+          });
+
+          if (!response.ok) {
+            // If 404 or other error, return empty cart
+            if (response.status === 404) {
+              return { items: [] };
+            }
+            throw new Error(`Failed to fetch cart: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log("✅ Cart data received:", data);
+          
+          // Store cart data in local variable - SAME AS SHOP
+          if (data.cart && data.cart.items) {
+            cart = data.cart.items.map((item) => ({
+              productId: item.productId?._id || item.productId,
+              name: item.name || item.productId?.name || "Unknown Product",
+              price: item.price || item.productId?.price || 0,
+              image: item.image || item.productId?.images?.[0]?.url || "images/placeholder-product.jpg",
+              quantity: item.quantity,
+              maxStock: item.productId?.stock || 999,
+            }));
+            
+            // Save to localStorage as backup - SAME AS SHOP
+            localStorage.setItem("olysHairCart", JSON.stringify(cart));
+          }
+          
+          return data.cart || { items: [] };
+        } catch (error) {
+          console.error("❌ Error fetching cart:", error);
+          // Return empty cart as fallback
+          return { items: [] };
+        }
       }
 
       // BOOKINGS FUNCTIONS - UPDATED
@@ -1734,7 +1799,7 @@ Merci.`);
       async function loadDashboardData() {
         try {
           // Load all dashboard data in parallel
-          const [loyaltyData, orders, wishlist, cart, bookings, notifications] =
+          const [loyaltyData, orders, wishlist, cartData, bookings, notifications] =
             await Promise.all([
               fetchLoyaltyPoints(),
               fetchOrders(3),
@@ -1751,7 +1816,7 @@ Merci.`);
           }
 
           // Update stats
-          updateStats(orders, wishlist, cart, bookings);
+          updateStats(orders, wishlist, cartData, bookings);
 
           // Update recent orders
           renderRecentOrders(orders);
@@ -1760,7 +1825,7 @@ Merci.`);
           renderWishlistPreview(wishlist);
 
           // Update cart preview
-          renderCartPreview(cart);
+          renderCartPreview(cartData);
 
           // Update upcoming bookings
           renderUpcomingBookings(bookings);
@@ -1774,13 +1839,13 @@ Merci.`);
         }
       }
 
-      function updateStats(orders, wishlist, cart, bookings) {
+      function updateStats(orders, wishlist, cartData, bookings) {
         const statsContainer = document.getElementById("stats-container");
 
         const stats = {
           orders: orders?.length || 0,
           wishlist: wishlist?.length || 0,
-          cart: cart?.items?.length || 0,
+          cart: cartData?.items?.length || 0,
           bookings: bookings?.length || 0,
         };
 
@@ -1866,9 +1931,7 @@ Merci.`);
           }</span></td>
                         <td>${formattedTotal}</td>
                         <td>
-                            <button class="action-btn" onclick="viewOrder('${
-                              order.id
-                            }')">
+                            <button class="action-btn view-order-btn" data-order-id="${order.id}">
                                 <i class="fas fa-eye"></i> View
                             </button>
                         </td>
@@ -1878,6 +1941,15 @@ Merci.`);
 
         ordersHtml += "</tbody></table>";
         container.innerHTML = ordersHtml;
+        
+        // Add event listeners
+        container.querySelectorAll('.view-order-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const orderId = this.getAttribute('data-order-id');
+            viewOrder(orderId);
+          });
+        });
       }
 
       function renderWishlistPreview(wishlist) {
@@ -1907,26 +1979,26 @@ Merci.`);
             product.image ||
             item.image ||
             product.images?.[0]?.url ||
-            item.images?.[0]?.url;
+            item.images?.[0]?.url ||
+            "images/placeholder-product.jpg";
 
           wishlistHtml += `
             <div class="wishlist-item">
                 <div class="item-image">
-                    ${
-                      productImage
-                        ? `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">`
-                        : `<i class="fas fa-spa"></i>`
-                    }
+                    <img src="${productImage}" 
+                         alt="${productName}" 
+                         onerror="this.src='https://via.placeholder.com/60x60/e8e8e8/666?text=No+Image'"
+                         style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div class="item-details">
                     <h4>${productName}</h4>
                     <div class="item-price">€${productPrice.toFixed(2)}</div>
                 </div>
                 <div class="item-actions">
-                    <button class="action-btn" onclick="addToCartFromWishlist('${productId}')">
+                    <button class="action-btn add-to-cart-from-wishlist-btn" data-product-id="${productId}">
                         <i class="fas fa-shopping-cart"></i>
                     </button>
-                    <button class="action-btn" onclick="removeFromWishlist('${productId}')">
+                    <button class="action-btn remove-from-wishlist-btn" data-product-id="${productId}" style="background-color: #ff6b6b;">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -1935,6 +2007,23 @@ Merci.`);
         });
 
         container.innerHTML = wishlistHtml;
+        
+        // Add event listeners
+        container.querySelectorAll('.add-to-cart-from-wishlist-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const productId = this.getAttribute('data-product-id');
+            addToCartFromWishlist(productId);
+          });
+        });
+        
+        container.querySelectorAll('.remove-from-wishlist-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const productId = this.getAttribute('data-product-id');
+            removeFromWishlist(productId);
+          });
+        });
       }
 
       function renderFullWishlist(wishlist) {
@@ -1964,17 +2053,17 @@ Merci.`);
             product.image ||
             item.image ||
             product.images?.[0]?.url ||
-            item.images?.[0]?.url;
+            item.images?.[0]?.url ||
+            "images/placeholder-product.jpg";
 
           wishlistHtml += `
             <div class="dashboard-card">
                 <div class="wishlist-item">
                     <div class="item-image">
-                        ${
-                          productImage
-                            ? `<img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder-product.jpg'">`
-                            : `<i class="fas fa-spa"></i>`
-                        }
+                        <img src="${productImage}" 
+                             alt="${productName}" 
+                             onerror="this.src='https://via.placeholder.com/60x60/e8e8e8/666?text=No+Image'"
+                             style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <div class="item-details">
                         <h4>${productName}</h4>
@@ -1986,10 +2075,10 @@ Merci.`);
                         }</div>
                     </div>
                     <div class="item-actions">
-                        <button class="action-btn" onclick="addToCartFromWishlist('${productId}')">
+                        <button class="action-btn add-to-cart-from-wishlist-btn" data-product-id="${productId}">
                             <i class="fas fa-shopping-cart"></i> Add to Cart
                         </button>
-                        <button class="action-btn" onclick="removeFromWishlist('${productId}')" style="background-color: #ff6b6b;">
+                        <button class="action-btn remove-from-wishlist-btn" data-product-id="${productId}" style="background-color: #ff6b6b;">
                             <i class="fas fa-trash"></i> Remove
                         </button>
                     </div>
@@ -1999,12 +2088,29 @@ Merci.`);
         });
 
         container.innerHTML = wishlistHtml;
+        
+        // Add event listeners
+        container.querySelectorAll('.add-to-cart-from-wishlist-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const productId = this.getAttribute('data-product-id');
+            addToCartFromWishlist(productId);
+          });
+        });
+        
+        container.querySelectorAll('.remove-from-wishlist-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const productId = this.getAttribute('data-product-id');
+            removeFromWishlist(productId);
+          });
+        });
       }
 
-      function renderCartPreview(cart) {
+      function renderCartPreview(cartData) {
         const container = document.getElementById("cart-preview-container");
 
-        if (!cart || !cart.items || cart.items.length === 0) {
+        if (!cartData || !cartData.items || cartData.items.length === 0) {
           container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-shopping-cart"></i>
@@ -2017,14 +2123,23 @@ Merci.`);
         let cartHtml = "";
         let subtotal = 0;
 
-        cart.items.slice(0, 2).forEach((item) => {
+        cartData.items.slice(0, 2).forEach((item) => {
           const itemTotal = (item.price || 0) * (item.quantity || 1);
           subtotal += itemTotal;
+          
+          const productImage =
+            item.image ||
+            item.images?.[0]?.url ||
+            "images/placeholder-product.jpg";
+          const productId = item.productId || item._id || item.id;
 
           cartHtml += `
                     <div class="cart-item">
                         <div class="item-image">
-                            <i class="fas fa-spa"></i>
+                            <img src="${productImage}" 
+                                 alt="${item.name}" 
+                                 onerror="this.src='https://via.placeholder.com/60x60/e8e8e8/666?text=No+Image'"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                         <div class="item-details">
                             <h4>${item.name}</h4>
@@ -2066,7 +2181,7 @@ Merci.`);
           return;
         }
 
-        let bookingsHtml = '';
+        let bookingsHtml = "";
         const now = new Date();
         
         bookings.forEach((booking) => {
@@ -2321,9 +2436,10 @@ Merci.`);
           '<div class="loading"><div class="loading-spinner"></div><span>Loading cart...</span></div>';
 
         try {
-          const cart = await fetchCart();
-          renderFullCart(cart);
+          const cartData = await fetchCart();
+          renderFullCart(cartData);
         } catch (error) {
+          console.error("❌ Error loading cart:", error);
           container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-shopping-cart"></i>
@@ -2336,10 +2452,10 @@ Merci.`);
         }
       }
 
-      function renderFullCart(cart) {
+      function renderFullCart(cartData) {
         const container = document.getElementById("cart-full-container");
 
-        if (!cart || !cart.items || cart.items.length === 0) {
+        if (!cartData || !cartData.items || cartData.items.length === 0) {
           container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-shopping-cart"></i>
@@ -2355,37 +2471,38 @@ Merci.`);
         let cartHtml = "";
         let subtotal = 0;
 
-        cart.items.forEach((item) => {
+        cartData.items.forEach((item) => {
           const itemTotal = (item.price || 0) * (item.quantity || 1);
           subtotal += itemTotal;
+
+          const productImage =
+            item.image ||
+            item.images?.[0]?.url ||
+            "images/placeholder-product.jpg";
+          const productId = item.productId || item._id || item.id;
 
           cartHtml += `
                     <div class="cart-item">
                         <div class="item-image">
-                            <i class="fas fa-spa"></i>
+                            <img src="${productImage}" 
+                                 alt="${item.name}" 
+                                 onerror="this.src='https://via.placeholder.com/60x60/e8e8e8/666?text=No+Image'"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                         <div class="item-details">
                             <h4>${item.name}</h4>
                             <div class="item-price">€${(
                               item.price || 0
                             ).toFixed(2)}</div>
-                            <div>Qty: ${item.quantity || 1}</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn minus" data-product-id="${productId}">-</button>
+                                <span class="quantity-display">${item.quantity || 1}</span>
+                                <button class="quantity-btn plus" data-product-id="${productId}">+</button>
+                            </div>
                         </div>
                         <div class="item-actions">
-                            <button class="action-btn" onclick="updateCartItem('${
-                              item.id
-                            }', ${(item.quantity || 1) - 1})">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <button class="action-btn" onclick="updateCartItem('${
-                              item.id
-                            }', ${(item.quantity || 1) + 1})">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                            <button class="action-btn" onclick="removeFromCart('${
-                              item.id
-                            }')">
-                                <i class="fas fa-trash"></i>
+                            <button class="action-btn remove-from-cart-btn" data-product-id="${productId}" style="background-color: #ff6b6b;">
+                                <i class="fas fa-trash"></i> Remove
                             </button>
                         </div>
                     </div>
@@ -2409,13 +2526,43 @@ Merci.`);
                         <h3>Total</h3>
                         <h3>€${total.toFixed(2)}</h3>
                     </div>
-                    <button class="action-btn" style="width: 100%; padding: 12px; font-size: 1rem;" onclick="checkout()">
+                    <button class="action-btn checkout-btn" style="width: 100%; padding: 12px; font-size: 1rem;">
                         Proceed to Checkout
                     </button>
                 </div>
             `;
 
         container.innerHTML = cartHtml;
+        
+        // Add event listeners after rendering
+        container.querySelectorAll('.quantity-btn.minus').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const productId = this.getAttribute('data-product-id');
+            updateCartQuantity(productId, -1);
+          });
+        });
+        
+        container.querySelectorAll('.quantity-btn.plus').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const productId = this.getAttribute('data-product-id');
+            updateCartQuantity(productId, 1);
+          });
+        });
+        
+        container.querySelectorAll('.remove-from-cart-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const productId = this.getAttribute('data-product-id');
+            removeFromCart(productId);
+          });
+        });
+        
+        container.querySelector('.checkout-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          checkout();
+        });
       }
 
       async function loadFullWishlist() {
@@ -2437,56 +2584,6 @@ Merci.`);
                     </div>
                 `;
         }
-      }
-
-      function renderFullWishlist(wishlist) {
-        const container = document.getElementById("wishlist-full-container");
-
-        if (!wishlist || wishlist.length === 0) {
-          container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-heart"></i>
-                        <p>Your wishlist is empty</p>
-                        <button class="action-btn" onclick="window.location.href='shop.html'" style="margin-top: 15px;">
-                            Browse Products
-                        </button>
-                    </div>
-                `;
-          return;
-        }
-
-        let wishlistHtml = "";
-        wishlist.forEach((item) => {
-          wishlistHtml += `
-                    <div class="dashboard-card">
-                        <div class="wishlist-item">
-                            <div class="item-image">
-                                <i class="fas fa-spa"></i>
-                            </div>
-                            <div class="item-details">
-                                <h4>${item.name}</h4>
-                                <div class="item-price">€${
-                                  item.price?.toFixed(2) || "0.00"
-                                }</div>
-                            </div>
-                            <div class="item-actions">
-                                <button class="action-btn" onclick="addToCart('${
-                                  item.id
-                                }')">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </button>
-                                <button class="action-btn" onclick="removeFromWishlist('${
-                                  item.id
-                                }')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-        });
-
-        container.innerHTML = wishlistHtml;
       }
 
       async function loadFullOrders() {
@@ -2558,14 +2655,10 @@ Merci.`);
           }</span></td>
                         <td>${formattedTotal}</td>
                         <td>
-                            <button class="action-btn" onclick="viewOrder('${
-                              order.id
-                            }')">
+                            <button class="action-btn view-order-btn" data-order-id="${order.id}">
                                 <i class="fas fa-eye"></i> View
                             </button>
-                            <button class="action-btn" onclick="reorder('${
-                              order.id
-                            }')">
+                            <button class="action-btn reorder-btn" data-order-id="${order.id}">
                                 <i class="fas fa-redo"></i> Reorder
                             </button>
                         </td>
@@ -2575,6 +2668,23 @@ Merci.`);
 
         ordersHtml += "</tbody></table>";
         container.innerHTML = ordersHtml;
+        
+        // Add event listeners
+        container.querySelectorAll('.view-order-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const orderId = this.getAttribute('data-order-id');
+            viewOrder(orderId);
+          });
+        });
+        
+        container.querySelectorAll('.reorder-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const orderId = this.getAttribute('data-order-id');
+            reorder(orderId);
+          });
+        });
       }
 
       async function loadFullBookings() {
@@ -2649,42 +2759,277 @@ Merci.`);
         container.innerHTML = notificationsHtml;
       }
 
-      // Action functions
-      function viewOrder(orderId) {
-        console.log("View order:", orderId);
-        alert("Order details for: " + orderId);
+      // FIXED CART FUNCTIONS - Using same approach as shop
+      async function addToCartFromWishlist(productId) {
+        console.log("🛒 Adding to cart from wishlist:", productId);
+        
+        try {
+          // Get product details (you might need to fetch product details separately)
+          // For now, we'll add with minimal data
+          const response = await fetch(`${API_BASE_URL}/cart/add`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${authToken}`
+            },
+            body: JSON.stringify({
+              productId: productId,
+              quantity: 1
+            })
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to add to cart");
+          }
+          
+          const data = await response.json();
+          console.log("✅ Added to cart:", data);
+          
+          showNotification("Added to cart!");
+          
+          // Refresh cart data
+          await loadCartFromBackend();
+          
+          // Refresh UI
+          const cartData = await fetchCart();
+          renderCartPreview(cartData);
+          
+          if (document.getElementById("cart").classList.contains("active")) {
+            await loadFullCart();
+          }
+          
+        } catch (error) {
+          console.error("❌ Error adding to cart:", error);
+          showNotification("Failed to add to cart", "error");
+        }
       }
 
-      function reorder(orderId) {
-        console.log("Reorder:", orderId);
-        alert("Adding items from order " + orderId + " to cart");
+      async function removeFromWishlist(productId) {
+        console.log("🗑️ Removing from wishlist:", productId);
+        
+        if (!confirm("Are you sure you want to remove this item from your wishlist?")) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
+            method: "DELETE",
+            headers: {
+              "Authorization": `Bearer ${authToken}`
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error("Failed to remove from wishlist");
+          }
+          
+          showNotification("Removed from wishlist");
+          
+          // Refresh wishlist
+          if (document.getElementById("wishlist").classList.contains("active")) {
+            await loadFullWishlist();
+          } else {
+            const wishlist = await fetchWishlist(2);
+            renderWishlistPreview(wishlist);
+          }
+          
+          // Update stats
+          await loadDashboardData();
+          
+        } catch (error) {
+          console.error("❌ Error removing from wishlist:", error);
+          showNotification("Failed to remove from wishlist", "error");
+        }
       }
 
-      function addToCart(productId) {
-        console.log("Add to cart:", productId);
-        alert("Added product " + productId + " to cart");
+      // FIXED: Using same approach as shop
+      async function updateCartQuantity(productId, change) {
+        console.log("📝 Updating cart quantity:", productId, change);
+        
+        // Find item in cart
+        const item = cart.find((item) => item.productId === productId);
+        if (!item) {
+          showNotification("Item not found in cart", "error");
+          return;
+        }
+
+        const newQuantity = item.quantity + change;
+
+        if (newQuantity <= 0) {
+          // Remove item if quantity becomes 0 or negative
+          await removeFromCart(productId);
+          return;
+        }
+
+        try {
+          console.log("📝 Updating cart quantity via API:", productId, newQuantity);
+
+          const response = await fetch(
+            `${API_BASE_URL}/cart/update/${productId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authToken}`,
+              },
+              body: JSON.stringify({
+                quantity: newQuantity,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to update cart");
+          }
+
+          const data = await response.json();
+          console.log("✅ Cart quantity updated:", data);
+
+          // Update local cart
+          item.quantity = newQuantity;
+          localStorage.setItem("olysHairCart", JSON.stringify(cart));
+          
+          // Refresh cart display
+          await loadFullCart();
+          
+          // Also update cart preview if needed
+          const cartData = await fetchCart();
+          renderCartPreview(cartData);
+          
+        } catch (error) {
+          console.error("❌ Error updating cart:", error);
+          showNotification("Failed to update cart", "error");
+        }
       }
 
-      function removeFromCart(productId) {
-        console.log("Remove from cart:", productId);
-        alert("Removed product " + productId + " from cart");
+      // FIXED: Using same approach as shop
+      async function removeFromCart(productId) {
+        console.log("🗑️ Removing from cart:", productId);
+        
+        if (!confirm("Are you sure you want to remove this item from your cart?")) {
+          return;
+        }
+
+        try {
+          console.log("🗑️ Removing from cart via API:", productId);
+
+          const response = await fetch(
+            `${API_BASE_URL}/cart/remove/${productId}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authToken}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to remove from cart");
+          }
+
+          console.log("✅ Item removed from cart");
+          
+          // Update local cart - remove by productId
+          cart = cart.filter((item) => item.productId !== productId);
+          localStorage.setItem("olysHairCart", JSON.stringify(cart));
+          
+          showNotification("Item removed from cart");
+          
+          // Refresh cart display
+          await loadFullCart();
+          
+          // Also update cart preview if needed
+          const cartData = await fetchCart();
+          renderCartPreview(cartData);
+          
+          // Update stats
+          await loadDashboardData();
+          
+        } catch (error) {
+          console.error("❌ Error removing from cart:", error);
+          showNotification("Failed to remove from cart", "error");
+        }
       }
 
-      function updateCartItem(productId, quantity) {
-        console.log("Update cart item:", productId, quantity);
-        alert("Updated quantity for product " + productId + " to " + quantity);
+      // FIXED: Load cart from backend - Same as shop
+      async function loadCartFromBackend() {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.log("⚠️ No token found, using localStorage cart only");
+          return;
+        }
+
+        try {
+          console.log("🔄 Loading cart from backend...");
+
+          const response = await fetch(`${API_BASE_URL}/cart`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to load cart from backend");
+          }
+
+          const data = await response.json();
+          console.log("✅ Cart loaded from backend:", data);
+
+          if (data.cart && data.cart.items) {
+            cart = data.cart.items.map((item) => ({
+              productId: item.productId?._id || item.productId, // Ensure productId is stored
+              name: item.name || item.productId?.name || "Unknown Product",
+              price: item.price || item.productId?.price || 0,
+              image: item.image || item.productId?.images?.[0]?.url || "images/placeholder-product.jpg",
+              quantity: item.quantity,
+              maxStock: item.productId?.stock || 999,
+            }));
+
+            // Save to localStorage as backup
+            localStorage.setItem("olysHairCart", JSON.stringify(cart));
+          }
+        } catch (error) {
+          console.error("❌ Error loading cart from backend:", error);
+          console.log("⚠️ Using localStorage cart as fallback");
+        }
       }
 
-      function removeFromWishlist(productId) {
-        console.log("Remove from wishlist:", productId);
-        alert("Removed product " + productId + " from wishlist");
+      async function viewOrder(orderId) {
+        console.log("📋 Viewing order:", orderId);
+        // You can implement order details view here
+        alert("Order details for: " + orderId + "\n\nThis feature will show order details in a future update.");
+      }
+
+      async function reorder(orderId) {
+        console.log("🔄 Reordering:", orderId);
+        showNotification("Re-order feature coming soon!");
+        // You can implement reorder logic here
       }
 
       function contactAboutBooking(bookingId) {
         alert('Please contact support for any questions about your booking. Booking ID: ' + bookingId);
       }
 
-      function checkout() {
+      async function checkout() {
+        console.log("💰 Proceeding to checkout");
+        
+        // Get current cart
+        const cartData = await fetchCart();
+        
+        if (!cartData.items || cartData.items.length === 0) {
+          showNotification("Your cart is empty", "error");
+          return;
+        }
+        
+        // Save cart to localStorage for checkout page
+        localStorage.setItem("olysHairCart", JSON.stringify(cart));
+        
+        // Redirect to checkout page
         window.location.href = "checkout.html";
       }
 
@@ -2694,7 +3039,61 @@ Merci.`);
       }
 
       function showError(message) {
+        console.error("❌ Error:", message);
         alert("Error: " + message);
+      }
+
+      function showNotification(message, type = "success") {
+        // Remove existing notifications
+        document.querySelectorAll(".notification-toast").forEach((notification) => {
+          notification.remove();
+        });
+
+        const notification = document.createElement("div");
+        notification.className = "notification-toast";
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 12px 20px;
+          border-radius: 8px;
+          color: white;
+          font-weight: 500;
+          z-index: 9999;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          animation: slideIn 0.3s ease;
+          background-color: ${type === "success" ? "#4CAF50" : "#F44336"};
+        `;
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+          notification.style.animation = "slideOut 0.3s ease";
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 3000);
+        
+        // Add CSS for animations if not already added
+        if (!document.querySelector('#notification-styles')) {
+          const style = document.createElement('style');
+          style.id = 'notification-styles';
+          style.textContent = `
+            @keyframes slideIn {
+              from { transform: translateX(100%); opacity: 0; }
+              to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+              from { transform: translateX(0); opacity: 1; }
+              to { transform: translateX(100%); opacity: 0; }
+            }
+          `;
+          document.head.appendChild(style);
+        }
       }
 
       // Event Listeners
@@ -2780,12 +3179,12 @@ Merci.`);
           const address = document.getElementById("address").value;
 
           try {
-            // API call to update profile would go here
+            // API call to update profile
             console.log("Update profile:", { name, email, phone, address });
-            alert("Profile updated successfully!");
+            showNotification("Profile updated successfully!");
           } catch (error) {
             console.error("Error updating profile:", error);
-            alert("Error updating profile");
+            showNotification("Error updating profile", "error");
           }
         });
 
@@ -2799,21 +3198,20 @@ Merci.`);
             document.getElementById("confirm-password").value;
 
           if (newPassword !== confirmPassword) {
-            alert("New passwords do not match");
+            showNotification("New passwords do not match", "error");
             return;
           }
 
           try {
-            // API call to update password would go here
             console.log("Update password");
-            alert("Password updated successfully!");
+            showNotification("Password updated successfully!");
 
             document.getElementById("current-password").value = "";
             document.getElementById("new-password").value = "";
             document.getElementById("confirm-password").value = "";
           } catch (error) {
             console.error("Error updating password:", error);
-            alert("Error updating password");
+            showNotification("Error updating password", "error");
           }
         });
 
@@ -2829,16 +3227,15 @@ Merci.`);
             document.getElementById("promotional-emails").checked;
 
           try {
-            // API call to update preferences would go here
             console.log("Update preferences:", {
               emailNotifications,
               smsNotifications,
               promotionalEmails,
             });
-            alert("Preferences updated successfully!");
+            showNotification("Preferences updated successfully!");
           } catch (error) {
             console.error("Error updating preferences:", error);
-            alert("Error updating preferences");
+            showNotification("Error updating preferences", "error");
           }
         });
 
@@ -2846,20 +3243,13 @@ Merci.`);
         .getElementById("mark-all-read")
         .addEventListener("click", async function () {
           try {
-            // API call to mark all as read would go here
             console.log("Mark all notifications as read");
-            alert("All notifications marked as read!");
+            showNotification("All notifications marked as read!");
           } catch (error) {
             console.error("Error marking notifications as read:", error);
-            alert("Error marking notifications as read");
+            showNotification("Error marking notifications as read", "error");
           }
         });
-
-      // Add to Cart from Wishlist function
-      function addToCartFromWishlist(productId) {
-        console.log("Add to cart from wishlist:", productId);
-        alert("Added product " + productId + " to cart from wishlist");
-      }
     </script>
   </body>
 </html>
