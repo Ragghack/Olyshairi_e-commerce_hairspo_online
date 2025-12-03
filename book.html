@@ -858,7 +858,7 @@ async function handleBookingFormSubmit(e) {
         if (!token) {
             showNotification('Veuillez vous connecter pour réserver un service', 'error');
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'sign-in.html';
             }, 2000);
             return;
         }
