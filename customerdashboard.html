@@ -1438,6 +1438,21 @@
     <!-- ADD THIS SCRIPT TAG AT THE END -->
   <script src="language-config.js"></script>
     <script>
+      // Add this to your customer dashboard JavaScript
+function showWhatsAppBookingAction(booking) {
+    const message = encodeURIComponent(`Bonjour OLYS HAIR,
+
+Je suis le client ${booking.customerName} (Référence: ${booking.booking_id}).
+
+Je souhaite:
+- Suivre l'état de ma réservation
+- Poser une question sur le service
+- Modifier ma réservation
+
+Merci.`);
+    
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+}
       // API Configuration
      //Dynamic API URL configuration
       const API_BASE_URL =
