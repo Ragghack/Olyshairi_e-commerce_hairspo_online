@@ -1023,20 +1023,31 @@ function verifyToken() {
 }
 
 // Update form submission to check token first
+// Update the form submission to check authentication first
 const bookingForm = document.getElementById('bookingForm');
 if (bookingForm) {
     bookingForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Check authentication
-        if (!verifyToken()) {
-            showNotification('Veuillez vous connecter pour réserver un service', 'error');
+        // Check if user is authenticated
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        
+        if (!token || !user) {
+            // User is not logged in
+            showNotification('Please sign in to book a service', 'error');
+            
+            // Save booking redirect flag
+            localStorage.setItem("bookingRedirect", "true");
+            
+            // Redirect to sign-in page with booking redirect parameter
             setTimeout(() => {
-                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
-            }, 1500);
+                window.location.href = "sign-in.html?redirect=booking";
+            }, 2000);
             return;
         }
         
+        // If authenticated, proceed with booking
         await handleBookingFormSubmit.call(this, e);
     });
 }

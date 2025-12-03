@@ -1149,7 +1149,7 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <!-- JavaScript -->
- <script>
+<script>
     // Mobile menu functionality
     document.getElementById('mobileMenuBtn').addEventListener('click', function() {
       document.getElementById('navLinks').classList.toggle('active');
@@ -1223,7 +1223,7 @@
       });
     }
 
-    // Enhanced Google Login handler with checkout redirect
+    // Enhanced Google Login handler with booking and checkout redirect
     async function handleGoogleLogin(response) {
       console.log("Google login response received");
       
@@ -1247,28 +1247,38 @@
           // Save JWT token
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
-          
+
           console.log("✅ Google login successful");
-          
-          // Check if we need to redirect to checkout
+
+          // Check redirect priority: booking > checkout > shop
           const urlParams = new URLSearchParams(window.location.search);
-          const redirectToCheckout = urlParams.get('redirect') === 'checkout';
-          const checkoutRedirect = localStorage.getItem("checkoutRedirect");
-          
-          if (redirectToCheckout || checkoutRedirect) {
-            // Clear the redirect flag
+          const redirectToBooking = urlParams.get('redirect') === 'booking' || localStorage.getItem("bookingRedirect");
+          const redirectToCheckout = urlParams.get('redirect') === 'checkout' || localStorage.getItem("checkoutRedirect");
+
+          if (redirectToBooking) {
+            // Clear the booking redirect flag
+            localStorage.removeItem("bookingRedirect");
+            
+            // Show welcome message and redirect to booking
+            alert(`Welcome back ${data.user?.firstName}! Redirecting to booking page...`);
+            
+            setTimeout(() => {
+              window.location.href = "book.html";
+            }, 500);
+          } else if (redirectToCheckout) {
+            // Clear the checkout redirect flag
             localStorage.removeItem("checkoutRedirect");
             
             // Show welcome message and redirect to checkout
             alert(`Welcome back ${data.user?.firstName}! Redirecting to checkout...`);
-            
+
             setTimeout(() => {
               window.location.href = "checkout.html";
             }, 500);
           } else {
             // Redirect to shop as before
             alert(`Welcome ${data.user?.firstName || data.user?.name || "User"}!`);
-            
+
             setTimeout(() => {
               window.location.href = "shop.html";
             }, 500);
@@ -1283,45 +1293,34 @@
       }
     }
 
-    // Add this diagnostic function
-    function checkGoogleAuthStatus() {
-      console.log("🔍 Google Auth Status Check:");
-      console.log("- Google library loaded:", typeof google !== 'undefined');
-      console.log("- Client ID element:", document.getElementById('g_id_onload'));
-      console.log("- Network status:", navigator.onLine ? 'Online' : 'Offline');
-      console.log("- Current domain:", window.location.hostname);
+    // Function to check for booking redirect on page load
+    function checkForBookingRedirect() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectToBooking = urlParams.get('redirect') === 'booking';
+      const redirectToCheckout = urlParams.get('redirect') === 'checkout';
       
-      // Check if we're on localhost (which might cause issues)
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.warn("⚠️ Running on localhost - Google OAuth may require proper domain configuration");
+      if (redirectToBooking) {
+        // Save booking redirect flag
+        localStorage.setItem("bookingRedirect", "true");
+        
+        // Show notification about booking
+        showRedirectNotification("Please sign in to book a wig renovation service", "calendar-check");
+      } else if (redirectToCheckout) {
+        // Save checkout redirect flag (already handled, but keeping for consistency)
+        localStorage.setItem("checkoutRedirect", "true");
+        
+        // Show notification about checkout
+        showRedirectNotification("Please sign in to complete your checkout", "shopping-cart");
       }
     }
 
-    // Call this when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      checkGoogleAuthStatus();
-      
-      // Load Google Client ID with delay to ensure library is loaded
-      setTimeout(() => {
-        loadGoogleClientId();
-      }, 1000);
-      
-      // Check URL parameters for redirect message
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectToCheckout = urlParams.get('redirect') === 'checkout';
-      
-      if (redirectToCheckout) {
-        showRedirectNotification();
-      }
-    });
-
     // Function to show redirect notification
-    function showRedirectNotification() {
+    function showRedirectNotification(message, iconType = "shopping-cart") {
       const notification = document.createElement('div');
       notification.className = 'auth-notification';
       notification.innerHTML = `
-        <i class="fas fa-shopping-cart"></i>
-        <span>Please sign in to complete your checkout</span>
+        <i class="fas fa-${iconType}"></i>
+        <span>${message}</span>
       `;
       
       // Add some styles for the notification
@@ -1342,15 +1341,22 @@
         animation: slideIn 0.5s ease-out;
       `;
       
-      // Add animation keyframes
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes slideIn {
-          from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
-          to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-      `;
-      document.head.appendChild(style);
+      // Add animation keyframes if not already added
+      if (!document.querySelector('#notification-animations')) {
+        const style = document.createElement('style');
+        style.id = 'notification-animations';
+        style.textContent = `
+          @keyframes slideIn {
+            from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+          }
+          @keyframes slideOut {
+            from { transform: translateX(-50%) translateY(0); opacity: 1; }
+            to { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
       
       document.body.appendChild(notification);
       
@@ -1360,6 +1366,31 @@
         setTimeout(() => notification.remove(), 500);
       }, 5000);
     }
+
+    // Add this diagnostic function
+    function checkGoogleAuthStatus() {
+      console.log("🔍 Google Auth Status Check:");
+      console.log("- Google library loaded:", typeof google !== 'undefined');
+      console.log("- Client ID element:", document.getElementById('g_id_onload'));
+      console.log("- Network status:", navigator.onLine ? 'Online' : 'Offline');
+      console.log("- Current domain:", window.location.hostname);
+      
+      // Check if we're on localhost (which might cause issues)
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.warn("⚠️ Running on localhost - Google OAuth may require proper domain configuration");
+      }
+    }
+
+    // Call this when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      checkGoogleAuthStatus();
+      checkForBookingRedirect();
+      
+      // Load Google Client ID with delay to ensure library is loaded
+      setTimeout(() => {
+        loadGoogleClientId();
+      }, 1000);
+    });
 
     // Dark/Light Mode Toggle
     const modeToggle = document.querySelector(".mode-toggle");
@@ -1467,7 +1498,7 @@
           : '<i class="fas fa-eye-slash"></i>';
     });
 
-    // Form submission - Login (Enhanced version with checkout redirect)
+    // Form submission - Login (Enhanced version with booking and checkout redirect)
     document
       .getElementById("signin-form")
       .addEventListener("submit", async (e) => {
@@ -1515,13 +1546,23 @@
             data.token ? "Yes" : "No"
           );
 
-          // Check if we need to redirect to checkout
+          // Check redirect priority: booking > checkout > shop
           const urlParams = new URLSearchParams(window.location.search);
-          const redirectToCheckout = urlParams.get('redirect') === 'checkout';
-          const checkoutRedirect = localStorage.getItem("checkoutRedirect");
+          const redirectToBooking = urlParams.get('redirect') === 'booking' || localStorage.getItem("bookingRedirect");
+          const redirectToCheckout = urlParams.get('redirect') === 'checkout' || localStorage.getItem("checkoutRedirect");
           
-          if (redirectToCheckout || checkoutRedirect) {
-            // Clear the redirect flag
+          if (redirectToBooking) {
+            // Clear the booking redirect flag
+            localStorage.removeItem("bookingRedirect");
+            
+            // Show success message and redirect to booking
+            alert(`Welcome back ${data.user?.firstName}! Redirecting to booking page...`);
+            
+            setTimeout(() => {
+              window.location.href = "book.html";
+            }, 500);
+          } else if (redirectToCheckout) {
+            // Clear the checkout redirect flag
             localStorage.removeItem("checkoutRedirect");
             
             // Show success message and redirect to checkout
@@ -1552,7 +1593,7 @@
         }
       });
       
-    // Form submission - Registration (Enhanced with checkout redirect)
+    // Form submission - Registration (Enhanced with booking and checkout redirect)
     document
       .getElementById("signup-form")
       .addEventListener("submit", async (e) => {
@@ -1622,13 +1663,23 @@
           
           console.log("✅ Registration successful, token saved");
 
-          // Check if we need to redirect to checkout
+          // Check redirect priority: booking > checkout > shop
           const urlParams = new URLSearchParams(window.location.search);
-          const redirectToCheckout = urlParams.get('redirect') === 'checkout';
-          const checkoutRedirect = localStorage.getItem("checkoutRedirect");
+          const redirectToBooking = urlParams.get('redirect') === 'booking' || localStorage.getItem("bookingRedirect");
+          const redirectToCheckout = urlParams.get('redirect') === 'checkout' || localStorage.getItem("checkoutRedirect");
           
-          if (redirectToCheckout || checkoutRedirect) {
-            // Clear the redirect flag
+          if (redirectToBooking) {
+            // Clear the booking redirect flag
+            localStorage.removeItem("bookingRedirect");
+            
+            // Show success message and redirect to booking
+            alert("Registration successful! Welcome to OLYS HAIR! Redirecting to booking page...");
+            
+            setTimeout(() => {
+              window.location.href = "book.html";
+            }, 500);
+          } else if (redirectToCheckout) {
+            // Clear the checkout redirect flag
             localStorage.removeItem("checkoutRedirect");
             
             // Show success message and redirect to checkout
@@ -1651,7 +1702,16 @@
           alert("Server error during registration");
         }
       });
-      
+
+    // Handle custom Google sign-up button
+    document.getElementById("custom-google-signup")?.addEventListener("click", function() {
+      // Trigger Google sign-in for registration
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.prompt();
+      } else {
+        alert("Google Sign-In is not available. Please try email registration.");
+      }
+    });
   </script>
   <script src="language-config.js"></script>
 </body>
