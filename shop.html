@@ -2381,6 +2381,7 @@ document.querySelectorAll(".remove-item").forEach((btn) => {
 
       // Update cart quantity (with backend sync)
 // Update cart quantity (with backend sync)
+// Update cart quantity (with backend sync)
 async function updateCartQuantity(productId, change) {
   // Find item by productId (not id)
   const item = cart.find((item) => item.productId === productId);
@@ -2439,11 +2440,13 @@ async function updateCartQuantity(productId, change) {
       localStorage.setItem("olysHairCart", JSON.stringify(cart));
     } catch (error) {
       console.error("❌ Error updating cart:", error);
-      showNotification("Failed to update cart", "error");
-      return;
+      // DO NOT return here! Just update locally
+      showNotification("Failed to sync with server, updating locally only", "warning");
+      item.quantity = newQuantity;
+      localStorage.setItem("olysHairCart", JSON.stringify(cart));
     }
   } else {
-    // Update localStorage only
+    // Update localStorage only for non-logged in users
     item.quantity = newQuantity;
     localStorage.setItem("olysHairCart", JSON.stringify(cart));
   }
@@ -2452,6 +2455,7 @@ async function updateCartQuantity(productId, change) {
 }
 
       // Remove item from cart (with backend sync)
+// Remove item from cart (with backend sync)
 // Remove item from cart (with backend sync)
 async function removeFromCart(productId) {
   const token = localStorage.getItem("token");
@@ -2479,12 +2483,12 @@ async function removeFromCart(productId) {
       console.log("✅ Item removed from cart");
     } catch (error) {
       console.error("❌ Error removing from cart:", error);
-      showNotification("Failed to remove from cart", "error");
-      return;
+      // DO NOT return here! Just log the error and continue with local removal
+      showNotification("Failed to sync with server, removing locally only", "warning");
     }
   }
 
-  // Update local cart - remove by productId
+  // ALWAYS update local cart - both for logged in and not logged in users
   cart = cart.filter((item) => item.productId !== productId);
   localStorage.setItem("olysHairCart", JSON.stringify(cart));
   updateCartUI();
