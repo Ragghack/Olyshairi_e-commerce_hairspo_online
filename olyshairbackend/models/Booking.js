@@ -27,9 +27,18 @@ const bookingSchema = new mongoose.Schema({
     required: true,
     min: 1
   },
-  notes: {
-    type: String
-  },
+  
+notes: String,
+  estimatedCompletion: Date,
+  actualCompletion: Date,
+  trackingNumber: String,
+  statusHistory: [{
+    status: String,
+    changedAt: { type: Date, default: Date.now },
+    notes: String,
+    changedBy: String
+  }],
+
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'],
@@ -59,6 +68,7 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     default: null
   }
+  
 }, {
   timestamps: true
 });

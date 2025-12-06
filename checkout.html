@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- 🖼️ Favicon (s'affiche dans l'onglet du navigateur) -->
+<head>
+    <!-- 🖼️ Favicon -->
     <link rel="icon" type="image/png" href="/images/Logo Version Transparente-01.png">
-    <!-- Optionnel pour les écrans d'accueil Apple/Android -->
     <link rel="apple-touch-icon" href="/images/Logo Version Transparente-01.png">
 
-    <!-- 🔍 Données Structurées Google (affiche le logo dans les résultats de recherche) -->
+    <!-- 🔍 Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -15,24 +14,22 @@
       "logo": "https://www.olyshair.com/images/Logo%20Version%20Transparente-01.png"
     }
     </script>
+    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OLYS HAIR - Secure Checkout</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    
+    <!-- Payment SDKs -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=Afdo7xRdDvUKhixkahcnYo27-SmAYrZQgvuZSPATxitvw__sm4A5ZWHtresK_n-UrywV8pCBmuqpRGqg&currency=EUR&disable-funding=card,credit"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
+      /* ==================== CSS VARIABLES & RESET ==================== */
       :root {
         --cream: #392625;
         --white: #ffffff;
@@ -45,6 +42,8 @@
         --success: #10b981;
         --warning: #f59e0b;
         --error: #ef4444;
+        --primary: #392625;
+        --primary-light: rgba(57, 38, 37, 0.1);
       }
 
       .dark-mode {
@@ -56,6 +55,14 @@
         --text-light: #1e1e1e;
         --card-bg: #181212;
         --shadow: 0 5px 15px rgba(182, 131, 131, 0.2);
+        --primary: #c8b4a8;
+        --primary-light: rgba(200, 180, 168, 0.2);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
       body {
@@ -64,19 +71,17 @@
         color: var(--text-dark);
         overflow-x: hidden;
         line-height: 1.6;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: all 0.3s ease;
+        min-height: 100vh;
       }
 
-      h1,
-      h2,
-      h3,
-      h4 {
+      h1, h2, h3, h4 {
         font-family: "Playfair Display", serif;
         font-weight: 600;
         color: var(--cream);
       }
 
-      /* Header Styles */
+      /* ==================== HEADER STYLES ==================== */
       header {
         display: flex;
         justify-content: space-between;
@@ -87,8 +92,8 @@
         width: 100%;
         top: 0;
         z-index: 1000;
-        transition: all 0.3s ease;
         box-shadow: var(--shadow);
+        transition: all 0.3s ease;
       }
 
       .logo-container {
@@ -103,30 +108,16 @@
         overflow: hidden;
       }
 
-      .logo-img-light {
+      .logo-img-light, .logo-img-dark {
         max-width: 120px;
         max-height: 50px;
-        display: block;
         margin: 0 auto;
         object-fit: contain;
       }
 
-      .logo-img-dark {
-        max-width: 120px;
-        max-height: 50px;
-        display: none;
-        margin: 0 auto;
-        object-fit: contain;
-        background: transparent;
-      }
-
-      .dark-mode .logo-img-light {
-        display: none;
-      }
-
-      .dark-mode .logo-img-dark {
-        display: block;
-      }
+      .logo-img-dark { display: none; }
+      .dark-mode .logo-img-light { display: none; }
+      .dark-mode .logo-img-dark { display: block; }
 
       .nav-links {
         display: flex;
@@ -140,9 +131,7 @@
         transition: color 0.3s ease;
       }
 
-      .nav-links a:hover {
-        color: var(--cream);
-      }
+      .nav-links a:hover { color: var(--cream); }
 
       .header-icons {
         display: flex;
@@ -154,52 +143,54 @@
         font-size: 20px;
         color: var(--cream);
         cursor: pointer;
+        position: relative;
+      }
+
+      .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--error);
+        color: white;
+        font-size: 10px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
       }
 
       /* Dark/Light Mode Toggle */
       .mode-toggle {
-        position: relative;
         width: 60px;
         height: 30px;
-        background-color: var(--light-bg);
+        background: var(--light-bg);
         border-radius: 15px;
         cursor: pointer;
         display: flex;
         align-items: center;
         padding: 0 5px;
-        transition: background-color 0.3s ease;
+        position: relative;
       }
 
       .toggle-circle {
-        position: absolute;
         width: 22px;
         height: 22px;
-        background-color: var(--cream);
+        background: var(--cream);
         border-radius: 50%;
-        transition: all 0.3s ease;
+        position: absolute;
         left: 4px;
+        transition: all 0.3s ease;
       }
 
-      .dark-mode .toggle-circle {
-        left: 34px;
-      }
+      .dark-mode .toggle-circle { left: 34px; }
+      .mode-toggle i { font-size: 14px; z-index: 2; }
+      .fa-sun { color: var(--cream); margin-right: auto; }
+      .fa-moon { color: var(--cream); margin-left: auto; }
 
-      .mode-toggle i {
-        font-size: 14px;
-        z-index: 2;
-      }
-
-      .fa-sun {
-        color: var(--cream);
-        margin-right: auto;
-      }
-
-      .fa-moon {
-        color: var(--cream);
-        margin-left: auto;
-      }
-
-      /* Checkout Container */
+      /* ==================== CHECKOUT CONTAINER ==================== */
       .checkout-container {
         max-width: 1200px;
         margin: 140px auto 40px;
@@ -209,7 +200,14 @@
         gap: 40px;
       }
 
-      /* Checkout Steps */
+      @media (max-width: 1024px) {
+        .checkout-container {
+          grid-template-columns: 1fr;
+          margin-top: 120px;
+        }
+      }
+
+      /* ==================== CHECKOUT STEPS ==================== */
       .checkout-steps {
         display: flex;
         justify-content: space-between;
@@ -224,7 +222,7 @@
         left: 0;
         right: 0;
         height: 2px;
-        background-color: var(--light-bg);
+        background: var(--light-bg);
         z-index: 1;
       }
 
@@ -240,7 +238,7 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background-color: var(--light-bg);
+        background: var(--light-bg);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -250,12 +248,12 @@
       }
 
       .step.active .step-circle {
-        background-color: var(--cream);
+        background: var(--cream);
         color: var(--white);
       }
 
       .step.completed .step-circle {
-        background-color: var(--success);
+        background: var(--success);
         color: var(--white);
       }
 
@@ -264,13 +262,14 @@
         font-weight: 500;
       }
 
-      /* Checkout Sections */
+      /* ==================== CHECKOUT SECTIONS ==================== */
       .checkout-section {
-        background-color: var(--card-bg);
+        background: var(--card-bg);
         border-radius: 10px;
         padding: 30px;
         margin-bottom: 30px;
         box-shadow: var(--shadow);
+        transition: all 0.3s ease;
       }
 
       .section-title {
@@ -279,7 +278,7 @@
         border-bottom: 1px solid var(--light-bg);
       }
 
-      /* Form Styles */
+      /* ==================== FORM STYLES ==================== */
       .form-group {
         margin-bottom: 20px;
       }
@@ -296,7 +295,7 @@
         padding: 12px 15px;
         border: 1px solid var(--light-bg);
         border-radius: 8px;
-        background-color: var(--card-bg);
+        background: var(--card-bg);
         color: var(--text-dark);
         font-family: "Montserrat", sans-serif;
         transition: border-color 0.3s;
@@ -307,13 +306,8 @@
         border-color: var(--cream);
       }
 
-      .form-control.error {
-        border-color: var(--error);
-      }
-
-      .form-control.success {
-        border-color: var(--success);
-      }
+      .form-control.error { border-color: var(--error); }
+      .form-control.success { border-color: var(--success); }
 
       .form-row {
         display: grid;
@@ -321,82 +315,134 @@
         gap: 15px;
       }
 
-      /* Payment Methods */
-      .payment-methods {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        margin-top: 20px;
+      @media (max-width: 768px) {
+        .form-row { grid-template-columns: 1fr; }
       }
 
-      .payment-method {
-        border: 1px solid var(--light-bg);
-        border-radius: 8px;
+      .field-error {
+        color: var(--error);
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+        min-height: 16px;
+      }
+
+      /* ==================== PAYMENT SELECTION ==================== */
+      .payment-instructions {
+        background: var(--primary-light);
         padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--cream);
+      }
+
+      .payment-selection {
+        margin-top: 30px;
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .payment-selection.active {
+        display: block;
+      }
+
+      .payment-options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .payment-option {
+        border: 2px solid var(--light-bg);
+        border-radius: 8px;
+        padding: 20px;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
       }
 
-      .payment-method:hover,
-      .payment-method.active {
+      .payment-option:hover {
         border-color: var(--cream);
-        background-color: var(--light-bg);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
       }
 
-      .payment-method.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
+      .payment-option.selected {
+        border-color: var(--cream);
+        background: var(--primary-light);
       }
 
-      .payment-method i {
-        font-size: 24px;
-        margin-bottom: 10px;
+      .payment-option i {
+        font-size: 32px;
         color: var(--cream);
       }
 
-      /* Stripe Card Element */
+      .payment-option small {
+        color: var(--text-dark);
+        opacity: 0.7;
+      }
+
+      /* ==================== PAYMENT PROCESSORS ==================== */
+      .payment-processor {
+        margin-top: 30px;
+        display: none;
+        animation: slideIn 0.5s ease;
+      }
+
+      .payment-processor.active {
+        display: block;
+      }
+
+      .stripe-payment-form {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid var(--light-bg);
+      }
+
       #card-element {
-        padding: 12px 15px;
+        padding: 12px;
         border: 1px solid var(--light-bg);
         border-radius: 8px;
-        background-color: var(--card-bg);
-      }
-
-      .StripeElement--focus {
-        border-color: var(--cream);
-        box-shadow: 0 0 0 1px var(--cream);
-      }
-
-      .StripeElement--invalid {
-        border-color: var(--error);
-      }
-
-      .StripeElement--complete {
-        border-color: var(--success);
+        background: var(--card-bg);
+        min-height: 50px;
       }
 
       #card-errors {
         color: var(--error);
-        margin-top: 8px;
+        margin-top: 10px;
         font-size: 14px;
+        min-height: 20px;
+      }
+
+      .processing-indicator {
+        text-align: center;
+        padding: 30px;
         display: none;
       }
 
-      /* Payment Method Specific Containers */
-      .payment-form-container {
-        margin-top: 20px;
+      .processing-indicator.active {
+        display: block;
       }
 
-      #paypal-button-container,
-      #apple-pay-button {
-        margin-top: 15px;
-        min-height: 50px;
+      .processing-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(200, 180, 168, 0.3);
+        border-top-color: var(--cream);
+        border-radius: 50%;
+        margin: 0 auto 15px;
+        animation: spin 1s linear infinite;
       }
 
-      /* Order Summary */
+      /* ==================== ORDER SUMMARY ==================== */
       .order-summary {
-        background-color: var(--card-bg);
+        background: var(--card-bg);
         border-radius: 10px;
         padding: 30px;
         box-shadow: var(--shadow);
@@ -407,6 +453,9 @@
 
       .order-items {
         margin-bottom: 20px;
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 10px;
       }
 
       .order-item {
@@ -416,12 +465,17 @@
         border-bottom: 1px solid var(--light-bg);
       }
 
+      .order-item:last-child {
+        border-bottom: none;
+      }
+
       .order-item-image {
         width: 80px;
         height: 80px;
         border-radius: 8px;
         overflow: hidden;
         margin-right: 15px;
+        flex-shrink: 0;
       }
 
       .order-item-image img {
@@ -436,6 +490,7 @@
 
       .order-item-details h4 {
         margin-bottom: 5px;
+        font-size: 16px;
       }
 
       .item-sku {
@@ -447,36 +502,46 @@
       .order-item-price {
         color: var(--cream);
         font-weight: 600;
+        margin: 5px 0;
       }
 
       .item-total {
         font-weight: 600;
+        color: var(--text-dark);
       }
 
+      /* Order Totals */
       .order-totals {
         margin-top: 20px;
         padding-top: 20px;
-        border-top: 1px solid var(--light-bg);
+        border-top: 2px solid var(--light-bg);
       }
 
       .total-row {
         display: flex;
         justify-content: space-between;
         margin-bottom: 10px;
+        font-size: 15px;
+      }
+
+      .total-row.discount {
+        color: var(--success);
+        font-weight: 600;
       }
 
       .total-final {
         font-size: 1.2rem;
         font-weight: 600;
-        margin-top: 10px;
-        padding-top: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
         border-top: 1px solid var(--light-bg);
       }
 
       /* Promo Code */
       .promo-code {
         display: flex;
-        margin-top: 20px;
+        margin: 20px 0;
+        gap: 0;
       }
 
       .promo-input {
@@ -485,38 +550,41 @@
       }
 
       .promo-btn {
-        background-color: var(--cream);
+        background: var(--cream);
         color: var(--white);
         border: none;
         border-radius: 0 8px 8px 0;
         padding: 0 20px;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background 0.3s;
+        font-weight: 500;
       }
 
       .promo-btn:hover {
-        background-color: var(--dark-gray);
+        background: var(--dark-gray);
       }
 
-      .promo-success {
-        color: var(--success);
-        font-size: 14px;
+      .promo-message {
         margin-top: 5px;
+        font-size: 14px;
+        min-height: 20px;
       }
 
-      /* Checkout Button */
+      .promo-message.success { color: var(--success); }
+      .promo-message.error { color: var(--error); }
+
+      /* ==================== BUTTONS ==================== */
       .checkout-btn {
         width: 100%;
         padding: 15px;
-        background-color: var(--cream);
+        background: var(--cream);
         color: var(--white);
         border: none;
         border-radius: 8px;
         font-size: 1.1rem;
         font-weight: 600;
         cursor: pointer;
-        transition: background-color 0.3s;
-        margin-top: 20px;
+        transition: all 0.3s;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -524,20 +592,46 @@
       }
 
       .checkout-btn:hover {
-        background-color: var(--dark-gray);
+        background: var(--dark-gray);
+        transform: translateY(-2px);
       }
 
       .checkout-btn:disabled {
-        background-color: #cccccc;
+        background: #cccccc;
         cursor: not-allowed;
+        transform: none;
       }
 
-      /* Security Badges */
+      .checkout-btn.processing {
+        background: var(--warning);
+        cursor: wait;
+      }
+
+      /* Secondary Button */
+      .btn-secondary {
+        background: var(--light-bg);
+        color: var(--text-dark);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+      }
+
+      .btn-secondary:hover {
+        background: var(--dark-gray);
+        color: var(--white);
+      }
+
+      /* ==================== SECURITY BADGES ==================== */
       .security-badges {
         display: flex;
         justify-content: center;
         gap: 20px;
         margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--light-bg);
       }
 
       .security-badge {
@@ -548,7 +642,7 @@
         gap: 5px;
       }
 
-      /* Floating Bubbles */
+      /* ==================== FLOATING BUBBLES ==================== */
       .floating-bubbles {
         position: fixed;
         right: 30px;
@@ -563,7 +657,7 @@
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background-color: var(--cream);
+        background: var(--cream);
         color: var(--white);
         display: flex;
         justify-content: center;
@@ -575,35 +669,35 @@
         position: relative;
       }
 
+      .bubble-btn:hover {
+        background: var(--dark-gray);
+        transform: scale(1.1);
+      }
+
       .bubble-btn span {
-        display: none;
         position: absolute;
         right: 70px;
         background: var(--dark-gray);
         color: var(--white);
-        padding: 5px 12px;
+        padding: 8px 12px;
         border-radius: 6px;
         font-size: 14px;
         white-space: nowrap;
-      }
-
-      .bubble-btn:hover {
-        background-color: var(--dark-gray);
-        transform: scale(1.1);
+        display: none;
       }
 
       .bubble-btn:hover span {
         display: block;
       }
 
-      /* Receipt Modal */
+      /* ==================== MODALS ==================== */
       .receipt-modal {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.7);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -611,6 +705,7 @@
         opacity: 0;
         visibility: hidden;
         transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
       }
 
       .receipt-modal.active {
@@ -619,31 +714,37 @@
       }
 
       .receipt-content {
-        background-color: var(--card-bg);
+        background: var(--card-bg);
         border-radius: 10px;
         width: 90%;
         max-width: 600px;
         max-height: 90vh;
         overflow-y: auto;
-        padding: 30px;
-        box-shadow: var(--shadow);
+        padding: 40px;
         position: relative;
+        animation: modalSlideIn 0.5s ease;
       }
 
       .receipt-close {
         position: absolute;
         top: 15px;
         right: 15px;
-        width: 30px;
-        height: 30px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        background-color: var(--cream);
+        background: var(--cream);
         color: var(--white);
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
         z-index: 10;
+        transition: all 0.3s;
+      }
+
+      .receipt-close:hover {
+        background: var(--dark-gray);
+        transform: rotate(90deg);
       }
 
       .receipt-header {
@@ -653,64 +754,91 @@
         border-bottom: 1px solid var(--light-bg);
       }
 
+      .receipt-header h2 {
+        color: var(--success);
+        margin-bottom: 10px;
+      }
+
+      .receipt-header p {
+        color: var(--text-dark);
+        margin: 5px 0;
+      }
+
       .receipt-details {
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+      }
+
+      .receipt-details h3 {
+        margin-bottom: 15px;
+        color: var(--cream);
+        font-size: 18px;
       }
 
       .receipt-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+        padding: 5px 0;
+        border-bottom: 1px dashed var(--light-bg);
+      }
+
+      .receipt-row:last-child {
+        border-bottom: none;
       }
 
       .receipt-total {
         font-size: 1.2rem;
         font-weight: 600;
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid var(--light-bg);
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px solid var(--light-bg);
       }
 
       .receipt-actions {
         display: flex;
-        gap: 10px;
+        gap: 15px;
         margin-top: 30px;
       }
 
       .receipt-btn {
         flex: 1;
-        padding: 12px;
+        padding: 12px 20px;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
         cursor: pointer;
         font-weight: 500;
-        transition: background-color 0.3s;
+        transition: all 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
       }
 
       .receipt-print {
-        background-color: var(--cream);
+        background: var(--cream);
         color: var(--white);
       }
 
       .receipt-print:hover {
-        background-color: var(--dark-gray);
+        background: var(--dark-gray);
       }
 
       .receipt-close-btn {
-        background-color: var(--light-bg);
+        background: var(--light-bg);
         color: var(--text-dark);
       }
 
       .receipt-close-btn:hover {
-        background-color: #e0e0e0;
+        background: var(--dark-gray);
+        color: var(--white);
       }
 
-      /* Notification System */
+      /* ==================== NOTIFICATION SYSTEM ==================== */
       .notification {
         position: fixed;
         top: 100px;
         right: 20px;
-        padding: 15px 20px;
+        padding: 15px 25px;
         border-radius: 8px;
         color: white;
         font-weight: 500;
@@ -718,41 +846,32 @@
         transform: translateX(120%);
         transition: transform 0.3s ease;
         max-width: 350px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+        backdrop-filter: blur(10px);
       }
 
       .notification.show {
         transform: translateX(0);
       }
 
-      .notification.success {
-        background-color: var(--success);
-      }
+      .notification.success { background: rgba(16, 185, 129, 0.9); }
+      .notification.error { background: rgba(239, 68, 68, 0.9); }
+      .notification.warning { background: rgba(245, 158, 11, 0.9); }
+      .notification.info { background: rgba(57, 38, 37, 0.9); }
 
-      .notification.error {
-        background-color: var(--error);
-      }
-
-      .notification.warning {
-        background-color: var(--warning);
-      }
-
-      .notification.info {
-        background-color: var(--cream);
-      }
-
-      /* Loading Overlay */
+      /* ==================== LOADING OVERLAY ==================== */
       .loading-overlay {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.8);
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         z-index: 1900;
@@ -767,21 +886,22 @@
       }
 
       .loading-spinner {
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         border: 5px solid rgba(255, 255, 255, 0.3);
         border-radius: 50%;
         border-top-color: var(--cream);
         animation: spin 1s ease-in-out infinite;
+        margin-bottom: 20px;
       }
 
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
+      .loading-text {
+        color: white;
+        font-size: 18px;
+        font-weight: 500;
       }
 
-      /* Enhanced Styles */
+      /* ==================== UTILITY CLASSES ==================== */
       .empty-cart-message {
         text-align: center;
         padding: 40px 20px;
@@ -794,1398 +914,1606 @@
         margin-bottom: 20px;
       }
 
-      .btn-primary {
-        background-color: var(--cream);
-        color: var(--white);
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 15px;
+      .hidden { display: none; }
+      .visible { display: block; }
+      .text-center { text-align: center; }
+      .text-success { color: var(--success); }
+      .text-error { color: var(--error); }
+
+      /* ==================== ANIMATIONS ==================== */
+      @keyframes spin {
+        to { transform: rotate(360deg); }
       }
 
-      .field-error {
-        color: var(--error);
-        font-size: 12px;
-        margin-top: 5px;
-        display: block;
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
-      .loading {
-        opacity: 0.7;
-        pointer-events: none;
-      }
-
-      .payment-status {
-        padding: 10px;
-        border-radius: 5px;
-        margin: 10px 0;
-        text-align: center;
-        font-weight: 500;
-      }
-
-      .payment-status.success {
-        background-color: rgba(16, 185, 129, 0.1);
-        color: var(--success);
-        border: 1px solid var(--success);
-      }
-
-      .payment-status.error {
-        background-color: rgba(239, 68, 68, 0.1);
-        color: var(--error);
-        border: 1px solid var(--error);
-      }
-
-      /* Responsive Design */
-      @media (max-width: 1024px) {
-        .checkout-container {
-          grid-template-columns: 1fr;
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
-
-        .order-summary {
-          position: static;
-          margin-top: 30px;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
       }
 
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-30px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* ==================== RESPONSIVE DESIGN ==================== */
       @media (max-width: 768px) {
         header {
           padding: 15px 20px;
         }
-
+        
         .checkout-container {
-          margin-top: 120px;
           padding: 0 15px;
+          margin-top: 120px;
         }
-
-        .checkout-steps {
-          flex-wrap: wrap;
-          gap: 15px;
+        
+        .checkout-section {
+          padding: 20px 15px;
         }
-
-        .step {
-          flex: 1;
-          min-width: 100px;
+        
+        .order-summary {
+          position: static;
+          margin-top: 20px;
         }
-
-        .form-row {
+        
+        .payment-options-grid {
           grid-template-columns: 1fr;
         }
-
-        .payment-methods {
-          grid-template-columns: 1fr;
+        
+        .receipt-content {
+          padding: 25px 15px;
         }
-
+        
+        .receipt-actions {
+          flex-direction: column;
+        }
+        
         .floating-bubbles {
-          bottom: 80px;
+          bottom: 20px;
+          right: 20px;
         }
-
-        .bubble-btn span {
-          right: 65px;
-          bottom: 0;
+        
+        .bubble-btn {
+          width: 50px;
+          height: 50px;
+          font-size: 18px;
         }
       }
 
       @media (max-width: 480px) {
-        .checkout-section {
-          padding: 20px 15px;
+        .header-icons {
+          gap: 15px;
         }
-
-        .order-summary {
-          padding: 20px 15px;
+        
+        .nav-links {
+          display: none;
+        }
+        
+        .checkout-steps {
+          flex-wrap: wrap;
+          gap: 15px;
+        }
+        
+        .step {
+          flex: 1;
+          min-width: 100px;
         }
       }
-      /* Add to header icons section */
-.cart-count, .order-count, .booking-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: var(--error);
-    color: white;
-    font-size: 10px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    display: none; /* Hidden by default */
-}
-
-.cart-bubble, .order-tracking-bubble {
-    position: relative;
-    cursor: pointer;
-}
     </style>
-  </head>
-  <body>
-    <!-- Header -->
+</head>
+<body>
+    <!-- ==================== HEADER ==================== -->
     <header>
-      <div class="logo-container">
-        <span>
-          <img
-            src="images/Logo Version Transparente-01.png"
-            alt="OLYS HAIR Logo"
-            class="logo-img-light"
-          />
-          <img
-            src="images/logo-bright.png"
-            alt="OLYS HAIR Logo Bright"
-            class="logo-img-dark"
-          />
-        </span>
-      </div>
-      <div class="nav-links">
-        <a href="shop.html">Shop</a>
-        <a href="contact.html">Contact</a>
-      </div>
-      <div class="header-icons">
-        <i class="fas fa-search"></i>
-        <div class="cart-bubble">
-          <i class="fas fa-shopping-bag"></i>
-          <span class="cart-count"></span>
+        <div class="logo-container">
+            <span>
+                <img src="images/Logo Version Transparente-01.png" alt="OLYS HAIR Logo" class="logo-img-light" />
+                <img src="images/logo-bright.png" alt="OLYS HAIR Logo Bright" class="logo-img-dark" />
+            </span>
         </div>
-        <i class="fas fa-user"></i>
-        <div class="mode-toggle">
-          <i class="fas fa-sun"></i>
-          <i class="fas fa-moon"></i>
-          <div class="toggle-circle"></div>
+        
+        <nav class="nav-links">
+            <a href="shop.html">Shop</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        
+        <div class="header-icons">
+            <i class="fas fa-search"></i>
+            <div class="cart-bubble">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="cart-count"></span>
+            </div>
+            <i class="fas fa-user" onclick="window.location.href='customerdashboard.html'"></i>
+            <div class="mode-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+                <div class="toggle-circle"></div>
+            </div>
         </div>
-      </div>
     </header>
 
-    <!-- Checkout Container -->
+    <!-- ==================== MAIN CHECKOUT CONTAINER ==================== -->
     <div class="checkout-container">
-      <!-- Checkout Form -->
-      <div class="checkout-form">
-        <!-- Checkout Steps -->
-        <div class="checkout-steps">
-          <div class="step active">
-            <div class="step-circle">1</div>
-            <div class="step-label">Shipping</div>
-          </div>
-          <div class="step">
-            <div class="step-circle">2</div>
-            <div class="step-label">Payment</div>
-          </div>
-          <div class="step">
-            <div class="step-circle">3</div>
-            <div class="step-label">Confirmation</div>
-          </div>
+        <!-- LEFT COLUMN: Checkout Form -->
+        <div class="checkout-form">
+            <!-- Progress Steps -->
+            <div class="checkout-steps">
+                <div class="step active">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Information</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Confirmation</div>
+                </div>
+            </div>
+
+            <!-- SHIPPING INFORMATION -->
+            <div class="checkout-section">
+                <h2 class="section-title">Shipping Information</h2>
+                
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" class="form-control" placeholder="your@email.com" required />
+                    <div class="field-error" id="email-error"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" class="form-control" placeholder="First Name" required />
+                        <div class="field-error" id="firstName-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" class="form-control" placeholder="Last Name" required />
+                        <div class="field-error" id="lastName-error"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Address *</label>
+                    <input type="text" id="address" class="form-control" placeholder="Street Address" required />
+                    <div class="field-error" id="address-error"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" class="form-control" placeholder="City" required />
+                        <div class="field-error" id="city-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="zipCode">ZIP/Postal Code *</label>
+                        <input type="text" id="zipCode" class="form-control" placeholder="ZIP Code" required />
+                        <div class="field-error" id="zipCode-error"></div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="country">Country *</label>
+                        <select id="country" class="form-control" required>
+                            <option value="">Select Country</option>
+                            <option value="us">United States</option>
+                            <option value="uk">United Kingdom</option>
+                            <option value="fr">France</option>
+                            <option value="de">Germany</option>
+                            <option value="ch">Switzerland</option>
+                        </select>
+                        <div class="field-error" id="country-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" class="form-control" placeholder="Phone Number" required />
+                        <div class="field-error" id="phone-error"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="saveAddress" />
+                        Save this address for future orders
+                    </label>
+                </div>
+            </div>
+
+            <!-- SHIPPING METHOD -->
+            <div class="checkout-section">
+                <h2 class="section-title">Shipping Method</h2>
+                
+                <div class="form-group">
+                    <label class="shipping-option">
+                        <input type="radio" name="shipping" value="standard" checked />
+                        <div>
+                            <strong>Standard Shipping</strong>
+                            <p>5-7 business days</p>
+                            <span class="shipping-price">€9.99</span>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="shipping-option">
+                        <input type="radio" name="shipping" value="express" />
+                        <div>
+                            <strong>Express Shipping</strong>
+                            <p>2-3 business days</p>
+                            <span class="shipping-price">€19.99</span>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="shipping-option">
+                        <input type="radio" name="shipping" value="overnight" />
+                        <div>
+                            <strong>Overnight Shipping</strong>
+                            <p>1 business day</p>
+                            <span class="shipping-price">€29.99</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- PAYMENT SECTION -->
+            <div class="checkout-section">
+                <h2 class="section-title">Complete Your Order</h2>
+                
+                <div class="payment-instructions">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>Secure Checkout</strong>
+                    <p>Your payment information is encrypted and secure.</p>
+                </div>
+
+                <!-- Place Order Button -->
+                <button class="checkout-btn" id="initiatePayment">
+                    <i class="fas fa-lock"></i> Review & Place Order
+                </button>
+
+                <!-- Payment Selection (Initially Hidden) -->
+                <div class="payment-selection" id="paymentSelection">
+                    <h3>Select Payment Method</h3>
+                    <p>Choose how you'd like to pay</p>
+                    
+                    <div class="payment-options-grid">
+                        <div class="payment-option" data-method="paypal">
+                            <i class="fab fa-paypal"></i>
+                            <div>PayPal</div>
+                            <small>Pay with PayPal balance or card</small>
+                        </div>
+                        
+                        <!-- Add more payment methods as needed -->
+                    </div>
+
+                    <!-- Payment Processors -->
+                    <div class="payment-processor" id="paypalProcessor">
+                        <div id="paypal-button-container"></div>
+                    </div>
+
+                    <!-- Processing Indicator -->
+                    <div class="processing-indicator" id="paymentProcessing">
+                        <div class="processing-spinner"></div>
+                        <p>Processing your payment...</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Shipping Information -->
-        <div class="checkout-section">
-          <h2 class="section-title">Shipping Information</h2>
-
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              class="form-control"
-              placeholder="your@email.com"
-              required
-            />
-            <div class="field-error" id="email-error"></div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="firstName">First Name</label>
-              <input
-                type="text"
-                id="firstName"
-                class="form-control"
-                placeholder="First Name"
-                required
-              />
-              <div class="field-error" id="firstName-error"></div>
+        <!-- RIGHT COLUMN: Order Summary -->
+        <div class="order-summary">
+            <h2 class="section-title">Order Summary</h2>
+            
+            <div class="order-items" id="orderItems">
+                <!-- Items will be populated by JavaScript -->
             </div>
-            <div class="form-group">
-              <label for="lastName">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                class="form-control"
-                placeholder="Last Name"
-                required
-              />
-              <div class="field-error" id="lastName-error"></div>
+            
+            <!-- Promo Code -->
+            <div class="promo-code">
+                <input type="text" class="form-control promo-input" id="promoCode" placeholder="Promo Code" />
+                <button class="promo-btn" id="applyPromo">Apply</button>
             </div>
-          </div>
-
-          <div class="form-group">
-            <label for="address">Address</label>
-            <input
-              type="text"
-              id="address"
-              class="form-control"
-              placeholder="Street Address"
-              required
-            />
-            <div class="field-error" id="address-error"></div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="city">City</label>
-              <input
-                type="text"
-                id="city"
-                class="form-control"
-                placeholder="City"
-                required
-              />
-              <div class="field-error" id="city-error"></div>
+            <div class="promo-message" id="promoMessage"></div>
+            
+            <!-- Order Totals -->
+            <div class="order-totals">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">€0.00</span>
+                </div>
+                <div class="total-row discount" id="discountRow" style="display: none;">
+                    <span>Discount</span>
+                    <span id="discount">-€0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Shipping</span>
+                    <span id="shipping">€0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Tax</span>
+                    <span id="tax">€0.00</span>
+                </div>
+                <div class="total-row total-final">
+                    <span>Total</span>
+                    <span id="total">€0.00</span>
+                </div>
             </div>
-            <div class="form-group">
-              <label for="zipCode">ZIP/Postal Code</label>
-              <input
-                type="text"
-                id="zipCode"
-                class="form-control"
-                placeholder="ZIP Code"
-                required
-              />
-              <div class="field-error" id="zipCode-error"></div>
+            
+            <!-- Additional Order Info -->
+            <div class="order-info">
+                <p><i class="fas fa-shipping-fast"></i> Free shipping on orders over €100</p>
+                <p><i class="fas fa-undo"></i> 30-day return policy</p>
+                <p><i class="fas fa-shield-alt"></i> Secure SSL encryption</p>
             </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="country">Country</label>
-              <select id="country" class="form-control" required>
-                <option value="">Select Country</option>
-                <option value="us">United States</option>
-                <option value="uk">United Kingdom</option>
-                <option value="fr">France</option>
-                <option value="de">Germany</option>
-                <option value="ch">Switzerland</option>
-              </select>
-              <div class="field-error" id="country-error"></div>
+            
+            <div class="security-badges">
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i> Secure Checkout
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i> SSL Encrypted
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-heart"></i> Trusted Seller
+                </div>
             </div>
-            <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input
-                type="tel"
-                id="phone"
-                class="form-control"
-                placeholder="Phone Number"
-                required
-              />
-              <div class="field-error" id="phone-error"></div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>
-              <input type="checkbox" id="saveAddress" />
-              Save this address for future orders
-            </label>
-          </div>
         </div>
-
-        <!-- Shipping Method -->
-        <div class="checkout-section">
-          <h2 class="section-title">Shipping Method</h2>
-
-          <div class="form-group">
-            <label>
-              <input type="radio" name="shipping" value="standard" checked />
-              Standard Shipping (5-7 business days) - €1.00
-            </label>
-          </div>
-
-          <div class="form-group">
-            <label>
-              <input type="radio" name="shipping" value="express" />
-              Express Shipping (2-3 business days) - €19.99
-            </label>
-          </div>
-
-          <div class="form-group">
-            <label>
-              <input type="radio" name="shipping" value="overnight" />
-              Overnight Shipping (1 business day) - €29.99
-            </label>
-          </div>
-        </div>
-
-        <!-- Payment Method -->
-        <div class="checkout-section">
-          <h2 class="section-title">Payment Method</h2>
-
-          <div class="payment-methods">
-            <div class="payment-method active" data-method="credit-card">
-              <i class="fab fa-cc-visa"></i>
-              <div>Credit Card</div>
-            </div>
-            <div class="payment-method" data-method="paypal">
-              <i class="fab fa-paypal"></i>
-              <div>PayPal</div>
-            </div>
-           <!-- <div class="payment-method" data-method="apple-pay">
-              <i class="fab fa-apple-pay"></i>
-              <div>Apple Pay</div>
-            </div>-->
-           <!-- <div class="payment-method" data-method="klarna">
-              <i class="fas fa-credit-card"></i>
-              <div>Klarna</div>
-            </div>-->
-          </div>
-
-          <!-- Credit Card Form (Stripe) -->
-          <div class="payment-form-container" id="credit-card-form">
-            <div class="form-group">
-              <label for="cardName">Name on Card</label>
-              <input
-                type="text"
-                id="cardName"
-                class="form-control"
-                placeholder="Full Name"
-                required
-              />
-              <div class="field-error" id="cardName-error"></div>
-            </div>
-
-            <div class="form-group">
-              <label for="card-element">Card Details</label>
-              <div id="card-element" class="form-control">
-                <!-- Stripe Elements will be inserted here -->
-              </div>
-              <div id="card-errors" role="alert"></div>
-            </div>
-          </div>
-
-          <!-- PayPal Button Container -->
-          <div
-            class="payment-form-container"
-            id="paypal-button-container"
-            style="display: none"
-          ></div>
-
-          <!-- Apple Pay Button Container -->
-          <div
-            class="payment-form-container"
-            id="apple-pay-button"
-            style="display: none"
-          ></div>
-
-          <!-- Klarna Payment Container -->
-          <div
-            class="payment-form-container"
-            id="klarna-payment-form"
-            style="display: none"
-          >
-            <p>You will be redirected to Klarna to complete your payment.</p>
-          </div>
-        </div>
-
-        <!-- Billing Address -->
-        <div class="checkout-section">
-          <h2 class="section-title">Billing Address</h2>
-
-          <div class="form-group">
-            <label>
-              <input type="checkbox" id="sameAsShipping" checked />
-              Same as shipping address
-            </label>
-          </div>
-
-          <div id="billingAddressFields" style="display: none">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="billingFirstName">First Name</label>
-                <input
-                  type="text"
-                  id="billingFirstName"
-                  class="form-control"
-                  placeholder="First Name"
-                />
-              </div>
-              <div class="form-group">
-                <label for="billingLastName">Last Name</label>
-                <input
-                  type="text"
-                  id="billingLastName"
-                  class="form-control"
-                  placeholder="Last Name"
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="billingAddressInput">Address</label>
-              <input
-                type="text"
-                id="billingAddressInput"
-                class="form-control"
-                placeholder="Street Address"
-              />
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="billingCity">City</label>
-                <input
-                  type="text"
-                  id="billingCity"
-                  class="form-control"
-                  placeholder="City"
-                />
-              </div>
-              <div class="form-group">
-                <label for="billingZipCode">ZIP/Postal Code</label>
-                <input
-                  type="text"
-                  id="billingZipCode"
-                  class="form-control"
-                  placeholder="ZIP Code"
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="billingCountry">Country</label>
-              <select id="billingCountry" class="form-control">
-                <option value="">Select Country</option>
-                <option value="us">United States</option>
-                <option value="uk">United Kingdom</option>
-                <option value="fr">France</option>
-                <option value="de">Germany</option>
-                <option value="ch">Switzerland</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="order-summary">
-        <h2 class="section-title">Order Summary</h2>
-
-        <div class="order-items">
-          <!-- Order items will be populated by JavaScript -->
-        </div>
-
-        <div class="promo-code">
-          <input
-            type="text"
-            class="form-control promo-input"
-            placeholder="Promo Code"
-            id="promoCode"
-          />
-          <button class="promo-btn" id="applyPromo">Apply</button>
-        </div>
-        <div id="promo-message"></div>
-
-        <div class="order-totals">
-          <div class="total-row">
-            <span>Subtotal</span>
-            <span id="subtotal">€0.00</span>
-          </div>
-          <div class="total-row">
-            <span>Shipping</span>
-            <span id="shipping">€0.00</span>
-          </div>
-          <div class="total-row">
-            <span>Tax</span>
-            <span id="tax">€0.00</span>
-          </div>
-          <div class="total-row total-final">
-            <span>Total</span>
-            <span id="total">€0.00</span>
-          </div>
-        </div>
-
-        <button class="checkout-btn" id="placeOrder">
-          <i class="fas fa-lock"></i> Place Order
-        </button>
-
-        <div class="security-badges">
-          <div class="security-badge">
-            <i class="fas fa-lock"></i> Secure Checkout
-          </div>
-          <div class="security-badge">
-            <i class="fas fa-shield-alt"></i> SSL Encrypted
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Floating Bubbles -->
+    <!-- ==================== FLOATING BUBBLES ==================== -->
     <div class="floating-bubbles">
-      <div class="bubble-btn" onclick="window.location.href='index.html'">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-      </div>
-      <div class="bubble-btn" onclick="window.location.href='shop.html'">
-        <i class="fas fa-shopping-bag"></i>
-        <span>Shop</span>
-      </div>
-      <div
-        class="bubble-btn"
-        onclick="window.location.href='customerdashboard.html'"
-      >
-        <i class="fas fa-user"></i>
-        <span>Account</span>
-      </div>
+        <div class="bubble-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="bubble-btn" onclick="window.location.href='shop.html'">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Shop</span>
+        </div>
+        <div class="bubble-btn" onclick="window.location.href='customerdashboard.html'">
+            <i class="fas fa-user"></i>
+            <span>Account</span>
+        </div>
     </div>
 
-    <!-- Receipt Modal -->
+    <!-- ==================== RECEIPT MODAL ==================== -->
     <div class="receipt-modal" id="receiptModal">
-      <div class="receipt-content">
-        <div class="receipt-close">
-          <i class="fas fa-times"></i>
+        <div class="receipt-content">
+            <div class="receipt-close" id="closeReceipt">
+                <i class="fas fa-times"></i>
+            </div>
+            
+            <div class="receipt-header">
+                <i class="fas fa-check-circle" style="font-size: 48px; color: var(--success); margin-bottom: 15px;"></i>
+                <h2>Order Confirmed!</h2>
+                <p>Thank you for your purchase</p>
+                <p id="orderNumber">Order #OL-123456</p>
+            </div>
+            
+            <div class="receipt-details">
+                <h3>Order Details</h3>
+                <div id="receipt-items"></div>
+                <div class="receipt-row">
+                    <span>Subtotal</span>
+                    <span id="receipt-subtotal">€0.00</span>
+                </div>
+                <div class="receipt-row" id="receipt-discount-row" style="display: none;">
+                    <span>Discount</span>
+                    <span id="receipt-discount">-€0.00</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Shipping</span>
+                    <span id="receipt-shipping">€0.00</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Tax</span>
+                    <span id="receipt-tax">€0.00</span>
+                </div>
+                <div class="receipt-row receipt-total">
+                    <span>Total</span>
+                    <span id="receipt-total">€0.00</span>
+                </div>
+            </div>
+            
+            <div class="receipt-details">
+                <h3>Shipping Information</h3>
+                <div id="receipt-shipping-info"></div>
+            </div>
+            
+            <div class="receipt-details">
+                <h3>Estimated Delivery</h3>
+                <p id="receipt-delivery">5-7 business days</p>
+            </div>
+            
+            <div class="receipt-actions">
+                <button class="receipt-btn receipt-print" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print Receipt
+                </button>
+                <button class="receipt-btn receipt-close-btn" id="closeReceiptBtn">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
         </div>
-
-        <div class="receipt-header">
-          <h2>Order Confirmation</h2>
-          <p>Thank you for your purchase!</p>
-          <p id="orderNumber">Order #OL-123456</p>
-        </div>
-
-        <div class="receipt-details">
-          <h3>Order Details</h3>
-          <div id="receipt-items">
-            <!-- Receipt items will be populated by JavaScript -->
-          </div>
-          <div class="receipt-row">
-            <span>Subtotal</span>
-            <span id="receipt-subtotal">€0.00</span>
-          </div>
-          <div class="receipt-row">
-            <span>Shipping</span>
-            <span id="receipt-shipping">€0.00</span>
-          </div>
-          <div class="receipt-row">
-            <span>Tax</span>
-            <span id="receipt-tax">€0.00</span>
-          </div>
-          <div class="receipt-row receipt-total">
-            <span>Total</span>
-            <span id="receipt-total">€0.00</span>
-          </div>
-        </div>
-
-        <div class="receipt-details">
-          <h3>Shipping Information</h3>
-          <div id="receipt-shipping-info">
-            <!-- Shipping info will be populated by JavaScript -->
-          </div>
-        </div>
-
-        <div class="receipt-details">
-          <h3>Estimated Delivery</h3>
-          <p id="receipt-delivery">5-7 business days</p>
-        </div>
-
-        <div class="receipt-actions">
-          <button class="receipt-btn receipt-print">
-            <i class="fas fa-print"></i> Print Receipt
-          </button>
-          <button class="receipt-btn receipt-close-btn">
-            <i class="fas fa-times"></i> Close
-          </button>
-        </div>
-      </div>
     </div>
 
-    <!-- Notification System -->
+    <!-- ==================== NOTIFICATION SYSTEM ==================== -->
     <div class="notification" id="notification"></div>
 
-    <!-- Loading Overlay -->
+    <!-- ==================== LOADING OVERLAY ==================== -->
     <div class="loading-overlay" id="loadingOverlay">
-      <div class="loading-spinner"></div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Processing...</div>
     </div>
 
-    <!-- Stripe.js -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <!-- PayPal SDK -->
-    <script src="https://www.paypal.com/sdk/js?client-id=Afdo7xRdDvUKhixkahcnYo27-SmAYrZQgvuZSPATxitvw__sm4A5ZWHtresK_n-UrywV8pCBmuqpRGqg&currency=EUR"></script>
-<!--<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>-->
- 
-<script>
-
-// Update the handlePaymentSuccess function in checkout.html:
-async function handlePaymentSuccess(paymentResult, formData, orderId) {
-    try {
-        // Get cart data
-        const cart = getCart();
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const shipping = getShippingCost(formData.shippingMethod);
-        const tax = subtotal * CONFIG.TAX_RATE;
-        const total = subtotal + shipping + tax;
-        
-        // Generate order number
-        const orderNumber = orderId || `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-        
-        // Prepare order data for email
-        const orderData = {
-            orderNumber: orderNumber,
-            customerName: `${formData.firstName} ${formData.lastName}`,
-            customerEmail: formData.email,
-            customerPhone: formData.phone,
-            shippingAddress: `${formData.address}, ${formData.city}, ${formData.zipCode}, ${formData.country}`,
-            billingAddress: formData.sameAsShipping ? 
-                `${formData.address}, ${formData.city}, ${formData.zipCode}, ${formData.country}` :
-                `${formData.billing.address}, ${formData.billing.city}, ${formData.billing.zipCode}, ${formData.billing.country}`,
-            orderDate: new Date().toISOString(),
-            items: cart.map(item => ({
-                name: item.name,
-                quantity: item.quantity,
-                price: item.price,
-                total: item.price * item.quantity
-            })),
-            subtotal: subtotal,
-            shippingCost: shipping,
-            taxAmount: tax,
-            totalAmount: total,
-            paymentMethod: selectedPaymentMethod === 'credit-card' ? 'Credit Card' : 
-                         selectedPaymentMethod === 'paypal' ? 'PayPal' : selectedPaymentMethod,
-            status: 'processing',
-            transactionId: paymentResult.transactionId || paymentResult.orderID || 'N/A'
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            STRIPE_PUBLISHABLE_KEY: "pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0",
+            PAYPAL_CLIENT_ID: "Afdo7xRdDvUKhixkahcnYo27-SmAYrZQgvuZSPATxitvw__sm4A5ZWHtresK_n-UrywV8pCBmuqpRGqg",
+            API_BASE_URL: "https://olyshairi-e-commerce-hairspo-online-kgz2.onrender.com/api",
+            CURRENCY: "EUR",
+            TAX_RATE: 0.08,
+            EMAILJS_PUBLIC_KEY: "FsuVa-YqW6teRd3ro",
+            EMAILJS_SERVICE_ID: "service_qkn3llq",
+            EMAILJS_TEMPLATE_ID: "template_9f1xedk"
         };
-        
-        // Save order to localStorage
-        saveOrderToLocalStorage(orderData);
-        
-        // Send confirmation emails via backend
-        const emailResponse = await fetch(`${CONFIG.API_BASE_URL}/email/order-confirmation`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getAuthToken()}`
-            },
-            body: JSON.stringify({
-                orderData: orderData,
-                customerEmail: formData.email,
-                adminEmail: 'shop@olyshair.com'
-            })
+
+        // ==================== GLOBAL VARIABLES ====================
+        let stripe = null;
+        let elements = null;
+        let cardElement = null;
+        let selectedPaymentMethod = null;
+        let currentOrderData = null;
+        let appliedPromoCode = null;
+        let promoDiscount = 0;
+        let orderPayload = null;
+        let paypalButtons = null;
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener("DOMContentLoaded", async function() {
+            console.log("🚀 Checkout page loaded");
+            
+            // Check authentication
+            if (!checkAuthentication()) {
+                return;
+            }
+            
+            // Initialize EmailJS
+            emailjs.init(CONFIG.EMAILJS_PUBLIC_KEY);
+            
+            // Initialize UI
+            initializeUI();
+            setupEventListeners();
+            updateCartCount();
+            
+            // Load order review
+            await loadOrderReview();
+            
+            // Initialize Stripe
+            initializeStripe();
+            
+            console.log("✅ Checkout initialization complete");
         });
-        
-        const emailResult = await emailResponse.json();
-        
-        if (!emailResult.success) {
-            console.warn('Email sending had issues:', emailResult);
-            // Continue with order even if email fails
-        }
-        
-        // Clear cart after successful order
-        localStorage.removeItem("olysHairCart");
-        updateCartCount();
-        
-        // Update receipt modal
-        updateReceiptModal(paymentResult, formData);
-        updateCheckoutSteps("completed");
-        
-        showNotification("✅ Order confirmed! A confirmation email has been sent.", "success");
-        
-        setTimeout(() => {
-            const receiptModal = document.getElementById("receiptModal");
-            if (receiptModal) receiptModal.classList.add("active");
-        }, 1000);
-        
-    } catch (error) {
-        console.error("Order processing error:", error);
-        // Still show success but warn about email
-        showNotification("Order processed, but email sending failed: " + error.message, "warning");
-    }
-}
-// Function to save order to localStorage
-function saveOrderToLocalStorage(orderData) {
-    try {
-        const orders = JSON.parse(localStorage.getItem('olysHairOrders')) || [];
-        
-        const orderWithMeta = {
-            ...orderData,
-            status: 'processing',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        
-        orders.push(orderWithMeta);
-        localStorage.setItem('olysHairOrders', JSON.stringify(orders));
-        
-        // Update order count in header
-        updateOrderCount(orders.length);
-        
-        return orderData.order_number;
-    } catch (error) {
-        console.error('Error saving order to localStorage:', error);
-        throw error;
-    }
-}
 
-// Function to update order count in header
-function updateOrderCount(count) {
-    const orderCountElement = document.querySelector('.order-count');
-    if (orderCountElement) {
-        orderCountElement.textContent = count;
-        orderCountElement.style.display = count > 0 ? 'flex' : 'none';
-    }
-}
-
-// Function to update cart count in header
-function updateCartCount() {
-    const cartCountElement = document.querySelector('.cart-count');
-    if (cartCountElement) {
-        const cart = JSON.parse(localStorage.getItem('olysHairCart')) || [];
-        const itemCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
-        cartCountElement.textContent = itemCount;
-        cartCountElement.style.display = itemCount > 0 ? 'flex' : 'none';
-    }
-}
-    function checkAuthentication() {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
-    
-    if (!token || !user) {
-        // User is not logged in
-        showNotification("Please sign in to access checkout", "error");
-        
-        // Save any cart data from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const directPurchase = urlParams.get('direct');
-        
-        if (directPurchase === 'true') {
-            localStorage.setItem("checkoutRedirect", "true");
-        }
-        
-        // Redirect to sign-in page
-        setTimeout(() => {
-            window.location.href = "sign-in.html?redirect=checkout";
-        }, 2000);
-        return false;
-    }
-    
-    // Parse user data
-    try {
-        const userData = JSON.parse(user);
-        console.log('✅ User authenticated:', userData.email);
-        return true;
-    } catch (e) {
-        console.error('Error parsing user data:', e);
-        return false;
-    }
-}
-function handleDirectPurchase() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isDirect = urlParams.get('direct') === 'true';
-    
-    if (isDirect) {
-        const directPurchase = localStorage.getItem('olysHairDirectPurchase');
-        
-        if (directPurchase) {
-            try {
-                const directCart = JSON.parse(directPurchase);
+        // ==================== AUTHENTICATION ====================
+        function checkAuthentication() {
+            const token = localStorage.getItem("token");
+            const user = localStorage.getItem("user");
+            
+            if (!token || !user) {
+                showNotification("Please sign in to access checkout", "error");
                 
-                if (Array.isArray(directCart) && directCart.length > 0) {
-                    // Use the direct purchase cart instead of regular cart
-                    localStorage.setItem('olysHairCart', JSON.stringify(directCart));
-                    
-                    // Clear the direct purchase flag after use
-                    localStorage.removeItem('olysHairDirectPurchase');
-                    
-                    console.log('✅ Direct purchase loaded:', directCart);
-                }
-            } catch (error) {
-                console.error('Error parsing direct purchase:', error);
+                // Redirect to sign-in page
+                setTimeout(() => {
+                    window.location.href = "sign-in.html?redirect=checkout";
+                }, 2000);
+                return false;
+            }
+            
+            try {
+                const userData = JSON.parse(user);
+                console.log('✅ User authenticated:', userData.email);
+                
+                // Pre-fill user data if available
+                prefillUserData(userData);
+                
+                return true;
+            } catch (e) {
+                console.error('Error parsing user data:', e);
+                return false;
             }
         }
-    }
-}
 
-// Dynamic API URL configuration
-// ==================== ENHANCED CONFIGURATION ====================
-/* checkout.js - rewritten frontend checkout logic (replace the large inline script) */
+        function prefillUserData(userData) {
+            if (userData.email) {
+                const emailField = document.getElementById("email");
+                if (emailField && !emailField.value) {
+                    emailField.value = userData.email;
+                }
+            }
+            
+            if (userData.shippingAddress) {
+                // Pre-fill shipping address if saved
+                const fields = ['firstName', 'lastName', 'address', 'city', 'zipCode', 'phone'];
+                fields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (element && userData.shippingAddress[field]) {
+                        element.value = userData.shippingAddress[field];
+                    }
+                });
+            }
+        }
 
-/* CONFIG (keep your existing values or adjust) */
-const CONFIG = {
-  STRIPE_PUBLISHABLE_KEY: "pk_test_51SAVVd3tLr6waZvCb40vB1OfO3ZOX8EU1htFN8HNdu3kURHsNoP6K5rkTx7vUMu9TNbXONzrc2bRjk3NNS5Y92NQ00uSJr71I0",
-  PAYPAL_CLIENT_ID: "Afdo7xRdDvUKhixkahcnYo27-SmAYrZQgvuZSPATxitvw__sm4A5ZWHtresK_n-UrywV8pCBmuqpRGqg",
-  API_BASE_URL: "https://olyshairi-e-commerce-hairspo-online-kgz2.onrender.com/api",
-  CURRENCY: "EUR",
-  TAX_RATE: 0.08
-};
+        // ==================== UI INITIALIZATION ====================
+        function initializeUI() {
+            // Dark/Light mode toggle
+            const modeToggle = document.querySelector('.mode-toggle');
+            if (modeToggle) {
+                modeToggle.addEventListener('click', toggleDarkMode);
+                
+                // Check for saved theme preference
+                if (localStorage.getItem('darkMode') === 'true') {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+            
+            // Billing address toggle
+            const sameAsShipping = document.getElementById("sameAsShipping");
+            const billingAddressFields = document.getElementById("billingAddressFields");
+            if (sameAsShipping && billingAddressFields) {
+                sameAsShipping.addEventListener("change", () => {
+                    billingAddressFields.style.display = sameAsShipping.checked ? "none" : "block";
+                });
+            }
+        }
 
-/* Globals */
-let stripe = null;
-let elements = null;
-let cardElement = null;
-let selectedPaymentMethod = "credit-card";
-let currentOrderData = null;
-let appliedPromoCode = null;
+        function setupEventListeners() {
+            // Place Order button
+            const initiatePaymentBtn = document.getElementById("initiatePayment");
+            if (initiatePaymentBtn) {
+                initiatePaymentBtn.addEventListener("click", handlePlaceOrderClick);
+            }
+            
+            // Payment method selection
+            document.querySelectorAll(".payment-option").forEach(option => {
+                option.addEventListener("click", function() {
+                    selectPaymentMethod(this.dataset.method);
+                });
+            });
+            
+            // Promo code
+            const applyPromoBtn = document.getElementById("applyPromo");
+            if (applyPromoBtn) {
+                applyPromoBtn.addEventListener("click", applyPromoCode);
+            }
+            
+            // Enter key for promo code
+            const promoInput = document.getElementById("promoCode");
+            if (promoInput) {
+                promoInput.addEventListener("keypress", function(e) {
+                    if (e.key === "Enter") {
+                        applyPromoCode();
+                    }
+                });
+            }
+            
+            // Shipping method change
+            document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+                radio.addEventListener("change", updateShippingCost);
+            });
+            
+            // Form validation on blur
+            const formFields = ['email', 'firstName', 'lastName', 'address', 'city', 'zipCode', 'country', 'phone'];
+            formFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener("blur", () => validateField(fieldId));
+                }
+            });
+            
+            // Modal close buttons
+            const closeReceiptBtn = document.getElementById("closeReceiptBtn");
+            if (closeReceiptBtn) {
+                closeReceiptBtn.addEventListener("click", closeReceiptModal);
+            }
+            
+            const closeReceiptIcon = document.getElementById("closeReceipt");
+            if (closeReceiptIcon) {
+                closeReceiptIcon.addEventListener("click", closeReceiptModal);
+            }
+            
+            // Click outside modal to close
+            const receiptModal = document.getElementById("receiptModal");
+            if (receiptModal) {
+                receiptModal.addEventListener("click", function(e) {
+                    if (e.target === this) {
+                        closeReceiptModal();
+                    }
+                });
+            }
+        }
 
-/* ------------------------ Utilities ------------------------ */
-function getAuthToken() {
-  return localStorage.getItem('authToken') || document.cookie.match(/authToken=([^;]+)/)?.[1] || null;
-}
+        // ==================== CART FUNCTIONS ====================
+        function getCart() {
+            const cart = localStorage.getItem("olysHairCart");
+            return cart ? JSON.parse(cart) : [];
+        }
 
-function showNotification(message, type = "info", duration = 5000) {
-  const n = document.getElementById("notification");
-  if (!n) return;
-  let icon = "info-circle";
-  if (type === "success") icon = "check-circle";
-  if (type === "error") icon = "exclamation-circle";
-  if (type === "warning") icon = "exclamation-triangle";
-  n.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
-  n.className = `notification ${type} show`;
-  setTimeout(()=> n.classList.remove("show"), duration);
-}
+        function updateCartCount() {
+            const cart = getCart();
+            const itemCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+            
+            const cartCountElement = document.querySelector('.cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = itemCount;
+                cartCountElement.style.display = itemCount > 0 ? 'flex' : 'none';
+            }
+        }
 
-function showLoading(show) {
-  const overlay = document.getElementById("loadingOverlay");
-  if (!overlay) return;
-  overlay.classList.toggle("active", !!show);
-}
+        // ==================== ORDER REVIEW ====================
+        async function loadOrderReview() {
+            const cart = getCart();
+            const orderItemsContainer = document.getElementById("orderItems");
+            
+            if (!orderItemsContainer) return;
+            
+            // Clear existing items
+            orderItemsContainer.innerHTML = '';
+            
+            if (cart.length === 0) {
+                orderItemsContainer.innerHTML = `
+                    <div class="empty-cart-message">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Your cart is empty</h3>
+                        <p>Add products to your cart to proceed with checkout</p>
+                        <button class="btn-secondary" onclick="window.location.href='shop.html'">
+                            Continue Shopping
+                        </button>
+                    </div>
+                `;
+                
+                // Disable checkout
+                const initiatePaymentBtn = document.getElementById("initiatePayment");
+                if (initiatePaymentBtn) {
+                    initiatePaymentBtn.disabled = true;
+                    initiatePaymentBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Cart is Empty';
+                }
+                
+                return;
+            }
+            
+            // Display cart items
+            let subtotal = 0;
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.innerHTML = `
+                    <div class="order-item-image">
+                        <img src="${item.image || 'images/placeholder-product.jpg'}" 
+                             alt="${item.name}" 
+                             onerror="this.src='images/placeholder-product.jpg'">
+                    </div>
+                    <div class="order-item-details">
+                        <h4>${item.name}</h4>
+                        <p class="item-sku">SKU: ${item.sku || 'N/A'}</p>
+                        <p class="order-item-price">€${item.price.toFixed(2)} × ${item.quantity}</p>
+                        <p class="item-total">Total: €${itemTotal.toFixed(2)}</p>
+                    </div>
+                `;
+                orderItemsContainer.appendChild(orderItem);
+            });
+            
+            // Calculate totals
+            const shippingMethod = document.querySelector('input[name="shipping"]:checked')?.value || "standard";
+            const shippingCost = getShippingCost(shippingMethod);
+            const tax = subtotal * CONFIG.TAX_RATE;
+            const total = subtotal + shippingCost + tax - promoDiscount;
+            
+            // Update UI
+            updateTotals(subtotal, shippingCost, tax, total);
+            
+            // Store current order data
+            currentOrderData = {
+                subtotal,
+                shipping: shippingCost,
+                tax,
+                total,
+                discount: promoDiscount,
+                items: cart
+            };
+        }
 
-function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+        function updateTotals(subtotal, shipping, tax, total) {
+            const subtotalEl = document.getElementById("subtotal");
+            const shippingEl = document.getElementById("shipping");
+            const taxEl = document.getElementById("tax");
+            const totalEl = document.getElementById("total");
+            const discountRow = document.getElementById("discountRow");
+            const discountEl = document.getElementById("discount");
+            
+            if (subtotalEl) subtotalEl.textContent = `€${subtotal.toFixed(2)}`;
+            if (shippingEl) shippingEl.textContent = `€${shipping.toFixed(2)}`;
+            if (taxEl) taxEl.textContent = `€${tax.toFixed(2)}`;
+            if (totalEl) totalEl.textContent = `€${total.toFixed(2)}`;
+            
+            // Show/hide discount row
+            if (promoDiscount > 0) {
+                discountRow.style.display = 'flex';
+                discountEl.textContent = `-€${promoDiscount.toFixed(2)}`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+        }
 
-function isValidPhone(phone) { return /^[\+]?[1-9][\d]{0,15}$/.test(phone.replace(/[\s\-\(\)]/g, "")); }
+        function updateShippingCost() {
+            if (!currentOrderData) return;
+            
+            const shippingMethod = document.querySelector('input[name="shipping"]:checked')?.value || "standard";
+            const shippingCost = getShippingCost(shippingMethod);
+            
+            currentOrderData.shipping = shippingCost;
+            currentOrderData.total = currentOrderData.subtotal + shippingCost + currentOrderData.tax - promoDiscount;
+            
+            updateTotals(
+                currentOrderData.subtotal,
+                currentOrderData.shipping,
+                currentOrderData.tax,
+                currentOrderData.total
+            );
+        }
 
-function generateOrderNumber() {
-  return 'OL-' + Date.now();
-}
+        function getShippingCost(method) {
+            const shippingRates = {
+                standard: 9.99,
+                express: 19.99,
+                overnight: 29.99
+            };
+            return shippingRates[method] || shippingRates.standard;
+        }
 
-/* ------------------------ Form helpers ------------------------ */
-function getFormData() {
-  const shippingMethod = document.querySelector('input[name="shipping"]:checked');
-  return {
-    email: document.getElementById("email")?.value?.trim() || "",
-    firstName: document.getElementById("firstName")?.value?.trim() || "",
-    lastName: document.getElementById("lastName")?.value?.trim() || "",
-    address: document.getElementById("address")?.value?.trim() || "",
-    city: document.getElementById("city")?.value?.trim() || "",
-    zipCode: document.getElementById("zipCode")?.value?.trim() || "",
-    country: document.getElementById("country")?.value?.trim() || "",
-    phone: document.getElementById("phone")?.value?.trim() || "",
-    cardName: document.getElementById("cardName")?.value?.trim() || "",
-    shippingMethod: shippingMethod ? shippingMethod.value : "standard",
-    sameAsShipping: document.getElementById("sameAsShipping")?.checked ?? true,
-    billing: {
-      firstName: document.getElementById("billingFirstName")?.value?.trim() || "",
-      lastName: document.getElementById("billingLastName")?.value?.trim() || "",
-      address: document.getElementById("billingAddressInput")?.value?.trim() || "",
-      city: document.getElementById("billingCity")?.value?.trim() || "",
-      zipCode: document.getElementById("billingZipCode")?.value?.trim() || "",
-      country: document.getElementById("billingCountry")?.value?.trim() || ""
-    }
-  };
-}
+        // ==================== FORM VALIDATION ====================
+        function validateField(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            
+            if (!field || !errorElement) return true;
+            
+            let isValid = true;
+            let errorMessage = "";
+            
+            const value = field.value.trim();
+            
+            switch(fieldId) {
+                case "email":
+                    if (!value) {
+                        isValid = false;
+                        errorMessage = "Email is required";
+                    } else if (!isValidEmail(value)) {
+                        isValid = false;
+                        errorMessage = "Please enter a valid email address";
+                    }
+                    break;
+                    
+                case "firstName":
+                case "lastName":
+                    if (!value) {
+                        isValid = false;
+                        errorMessage = "This field is required";
+                    } else if (value.length < 2) {
+                        isValid = false;
+                        errorMessage = "Must be at least 2 characters";
+                    }
+                    break;
+                    
+                case "phone":
+                    if (!value) {
+                        isValid = false;
+                        errorMessage = "Phone number is required";
+                    } else if (!isValidPhone(value)) {
+                        isValid = false;
+                        errorMessage = "Please enter a valid phone number";
+                    }
+                    break;
+                    
+                case "country":
+                    if (!value) {
+                        isValid = false;
+                        errorMessage = "Please select a country";
+                    }
+                    break;
+                    
+                default:
+                    if (!value) {
+                        isValid = false;
+                        errorMessage = "This field is required";
+                    }
+            }
+            
+            // Update UI
+            if (isValid) {
+                field.classList.remove("error");
+                field.classList.add("success");
+                errorElement.textContent = "";
+            } else {
+                field.classList.remove("success");
+                field.classList.add("error");
+                errorElement.textContent = errorMessage;
+            }
+            
+            return isValid;
+        }
 
-/* ------------------------ Cart & totals ------------------------ */
-function getCart() {
-  return JSON.parse(localStorage.getItem("olysHairCart")) || [];
-}
+        function validateCheckoutForm() {
+            const requiredFields = [
+                'email', 'firstName', 'lastName', 
+                'address', 'city', 'zipCode', 'country', 'phone'
+            ];
+            
+            let isValid = true;
+            
+            // Validate all fields
+            requiredFields.forEach(fieldId => {
+                if (!validateField(fieldId)) {
+                    isValid = false;
+                }
+            });
+            
+            // Check cart
+            const cart = getCart();
+            if (cart.length === 0) {
+                showNotification("Your cart is empty", "error");
+                isValid = false;
+            }
+            
+            return isValid;
+        }
 
-function updateTotals(subtotal, shipping, taxRate) {
-  const tax = subtotal * taxRate;
-  const total = subtotal + shipping + tax;
-  const discount = appliedPromoCode ? subtotal * 0.1 : 0;
-  const finalTotal = total - discount;
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
 
-  const elSubtotal = document.getElementById("subtotal");
-  const elShipping = document.getElementById("shipping");
-  const elTax = document.getElementById("tax");
-  const elTotal = document.getElementById("total");
+        function isValidPhone(phone) {
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+            return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ""));
+        }
 
-  if (elSubtotal) elSubtotal.textContent = `€${subtotal.toFixed(2)}`;
-  if (elShipping) elShipping.textContent = `€${shipping.toFixed(2)}`;
-  if (elTax) elTax.textContent = `€${tax.toFixed(2)}`;
-  if (elTotal) elTotal.textContent = `€${finalTotal.toFixed(2)}`;
+        // ==================== PAYMENT FLOW ====================
+        function handlePlaceOrderClick() {
+            console.log("🛒 Place Order clicked");
+            
+            // Validate form
+            if (!validateCheckoutForm()) {
+                showNotification("Please fix errors in the form", "error");
+                
+                // Scroll to first error
+                const firstError = document.querySelector(".form-control.error");
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+                
+                return;
+            }
+            
+            // Prepare order data
+            const formData = getFormData();
+            orderPayload = buildOrderPayload(formData);
+            
+            // Show payment selection
+            const paymentSelection = document.getElementById("paymentSelection");
+            if (paymentSelection) {
+                paymentSelection.classList.add("active");
+                paymentSelection.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+            
+            // Update button state
+            const initiatePaymentBtn = document.getElementById("initiatePayment");
+            if (initiatePaymentBtn) {
+                initiatePaymentBtn.disabled = true;
+                initiatePaymentBtn.innerHTML = '<i class="fas fa-check"></i> Ready for Payment';
+                initiatePaymentBtn.classList.add("processing");
+            }
+            
+            showNotification("Please select your payment method", "info");
+            updateCheckoutSteps("payment");
+        }
 
-  currentOrderData = {
-    subtotal,
-    shipping,
-    tax,
-    total: finalTotal,
-    discount,
-    items: getCart()
-  };
-}
+        function selectPaymentMethod(method) {
+            console.log(`💰 Selected payment method: ${method}`);
+            selectedPaymentMethod = method;
+            
+            // Update UI
+            document.querySelectorAll(".payment-option").forEach(opt => {
+                opt.classList.remove("selected");
+            });
+            
+            const selectedOption = document.querySelector(`.payment-option[data-method="${method}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add("selected");
+            }
+            
+            // Hide all processors
+            document.querySelectorAll(".payment-processor").forEach(proc => {
+                proc.classList.remove("active");
+            });
+            
+            // Show processing indicator
+            const processingIndicator = document.getElementById("paymentProcessing");
+            if (processingIndicator) {
+                processingIndicator.classList.add("active");
+            }
+            
+            // Handle different payment methods
+            switch(method) {
+                case 'paypal':
+                    initializePayPalPayment();
+                    break;
+                case 'credit-card':
+                    // Show credit card form
+                    document.getElementById("creditCardProcessor").classList.add("active");
+                    if (processingIndicator) processingIndicator.classList.remove("active");
+                    break;
+                default:
+                    if (processingIndicator) processingIndicator.classList.remove("active");
+                    showNotification(`${method} payment would be processed here`, "info");
+            }
+        }
 
-/* Build items array for backend - enforce productId presence */
-function buildItemsForBackend(cart) {
-  // Validate that cart items have productId
-  const missingIds = cart.filter(i => !(i.productId || i.id));
-  if (missingIds.length > 0) {
-    console.error("Cart items missing productId:", missingIds);
-    throw new Error("One or more cart items are missing product IDs.");
-  }
+        // ==================== PAYMENT METHODS ====================
+        function initializeStripe() {
+            if (CONFIG.STRIPE_PUBLISHABLE_KEY && CONFIG.STRIPE_PUBLISHABLE_KEY.includes('pk_')) {
+                stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
+                elements = stripe.elements();
+                
+                const cardElementContainer = document.getElementById('card-element');
+                if (elements && cardElementContainer) {
+                    cardElement = elements.create('card', {
+                        style: {
+                            base: {
+                                fontSize: '16px',
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-dark'),
+                                fontFamily: '"Montserrat", sans-serif',
+                                '::placeholder': {
+                                    color: '#aab7c4'
+                                }
+                            }
+                        }
+                    });
+                    
+                    cardElement.mount('#card-element');
+                    
+                    // Handle card errors
+                    cardElement.on('change', function(event) {
+                        const displayError = document.getElementById('card-errors');
+                        if (event.error) {
+                            displayError.textContent = event.error.message;
+                            displayError.style.display = 'block';
+                        } else {
+                            displayError.textContent = '';
+                            displayError.style.display = 'none';
+                        }
+                    });
+                }
+            }
+        }
 
-  return cart.map(i => ({
-    productId: i.productId || i.id, // This will be used as the 'product' ObjectId
-    name: i.name,
-    price: Number(i.price || 0),
-    quantity: Number(i.quantity || 1),
-    image: i.image || "",
-    sku: i.sku || ""
-  }));
-}
+        function initializePayPalPayment() {
+            const container = document.getElementById('paypal-button-container');
+            if (!container) return;
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Hide processing indicator
+            const processingIndicator = document.getElementById("paymentProcessing");
+            if (processingIndicator) {
+                processingIndicator.classList.remove("active");
+            }
+            
+            // Show PayPal processor
+            document.getElementById("paypalProcessor").classList.add("active");
+            
+            // Render PayPal buttons
+            if (typeof paypal !== 'undefined') {
+                paypalButtons = paypal.Buttons({
+                    style: {
+                        layout: 'vertical',
+                        color: 'gold',
+                        shape: 'rect',
+                        label: 'paypal',
+                        height: 55
+                    },
+                    
+                    createOrder: async function(data, actions) {
+                        console.log("🔄 Creating PayPal order...");
+                        
+                        try {
+                            showLoading(true, "Creating PayPal order...");
+                            
+                            // Create order on your backend
+                            const response = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/create-order`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                },
+                                body: JSON.stringify(orderPayload)
+                            });
+                            
+                            if (!response.ok) {
+                                const error = await response.json();
+                                throw new Error(error.message || 'Failed to create order');
+                            }
+                            
+                            const result = await response.json();
+                            console.log("✅ PayPal order created:", result.id);
+                            
+                            showLoading(false);
+                            return result.id;
+                            
+                        } catch (error) {
+                            console.error("❌ PayPal createOrder error:", error);
+                            showLoading(false);
+                            showNotification(error.message || "Failed to create PayPal order", "error");
+                            throw error;
+                        }
+                    },
+                    
+                    onApprove: async function(data, actions) {
+                        console.log("✅ PayPal order approved:", data.orderID);
+                        
+                        try {
+                            showLoading(true, "Processing PayPal payment...");
+                            
+                            // Capture payment on your backend
+                            const response = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/capture/${data.orderID}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                }
+                            });
+                            
+                            if (!response.ok) {
+                                const error = await response.json();
+                                throw new Error(error.message || 'Payment capture failed');
+                            }
+                            
+                            const result = await response.json();
+                            console.log("✅ PayPal payment captured:", result);
+                            
+                            // Handle successful payment
+                            await handlePaymentSuccess({
+                                transactionId: result.transactionId,
+                                method: 'paypal',
+                                amount: orderPayload.amount,
+                                orderId: data.orderID
+                            }, getFormData(), data.orderID);
+                            
+                            showLoading(false);
+                            
+                        } catch (error) {
+                            console.error("❌ PayPal onApprove error:", error);
+                            showLoading(false);
+                            showNotification(error.message || "Payment failed", "error");
+                        }
+                    },
+                    
+                    onError: function(err) {
+                        console.error("❌ PayPal SDK error:", err);
+                        showNotification("PayPal payment failed. Please try again.", "error");
+                    },
+                    
+                    onCancel: function(data) {
+                        console.log("⚠️ PayPal payment cancelled:", data);
+                        showNotification("PayPal payment was cancelled", "warning");
+                    }
+                });
+                
+                paypalButtons.render('#paypal-button-container');
+                
+            } else {
+                showNotification("PayPal SDK not loaded. Please refresh the page.", "error");
+            }
+        }
 
-/* ------------------------ Order payload builder ------------------------ */
-function buildOrderPayload(formData) {
-  const cart = getCart();
-  const itemsForBackend = buildItemsForBackend(cart);
+        // ==================== ORDER PROCESSING ====================
+        function getFormData() {
+            const shippingMethod = document.querySelector('input[name="shipping"]:checked');
+            
+            return {
+                email: document.getElementById("email").value.trim(),
+                firstName: document.getElementById("firstName").value.trim(),
+                lastName: document.getElementById("lastName").value.trim(),
+                address: document.getElementById("address").value.trim(),
+                city: document.getElementById("city").value.trim(),
+                zipCode: document.getElementById("zipCode").value.trim(),
+                country: document.getElementById("country").value.trim(),
+                phone: document.getElementById("phone").value.trim(),
+                shippingMethod: shippingMethod ? shippingMethod.value : "standard",
+                sameAsShipping: document.getElementById("sameAsShipping")?.checked ?? true
+            };
+        }
 
-  const subtotal = itemsForBackend.reduce((s, it) => s + (it.price * it.quantity), 0);
-  const shippingCost = getShippingCost(formData.shippingMethod || "standard");
-  const taxAmount = +(subtotal * CONFIG.TAX_RATE).toFixed(2);
-  const discountAmount = appliedPromoCode ? +(subtotal * 0.1).toFixed(2) : 0;
-  const total = +(subtotal + shippingCost + taxAmount - discountAmount).toFixed(2);
+        function buildOrderPayload(formData) {
+            const cart = getCart();
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shippingCost = getShippingCost(formData.shippingMethod);
+            const taxAmount = subtotal * CONFIG.TAX_RATE;
+            const total = subtotal + shippingCost + taxAmount - promoDiscount;
+            
+            const shippingAddress = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                address: formData.address,
+                city: formData.city,
+                zipCode: formData.zipCode,
+                country: formData.country,
+                phone: formData.phone
+            };
+            
+            return {
+                email: formData.email,
+                guestEmail: formData.email,
+                orderNumber: generateOrderNumber(),
+                items: cart.map(item => ({
+                    productId: item.productId || item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image: item.image || "",
+                    sku: item.sku || ""
+                })),
+                shippingAddress: shippingAddress,
+                billingAddress: formData.sameAsShipping ? shippingAddress : {
+                    firstName: document.getElementById("billingFirstName")?.value || formData.firstName,
+                    lastName: document.getElementById("billingLastName")?.value || formData.lastName,
+                    email: formData.email,
+                    address: document.getElementById("billingAddressInput")?.value || formData.address,
+                    city: document.getElementById("billingCity")?.value || formData.city,
+                    zipCode: document.getElementById("billingZipCode")?.value || formData.zipCode,
+                    country: document.getElementById("billingCountry")?.value || formData.country,
+                    phone: formData.phone
+                },
+                shipping: shippingCost,
+                tax: taxAmount,
+                discount: promoDiscount,
+                subtotal: subtotal,
+                amount: total,
+                currency: CONFIG.CURRENCY,
+                paymentMethod: selectedPaymentMethod || 'paypal'
+            };
+        }
 
-  // shippingAddress object matches your Order.addressSchema
-  const shippingAddress = {
-    firstName: formData.firstName,
-    lastName: formData.lastName,
-    email: formData.email,
-    address: formData.address,
-    city: formData.city,
-    state: "", // optional
-    zipCode: formData.zipCode,
-    country: formData.country,
-    phone: formData.phone
-  };
+        function generateOrderNumber() {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000);
+            return `OLYS-${timestamp}-${random}`;
+        }
 
-  const billingAddress = formData.sameAsShipping ? { ...shippingAddress } : {
-    firstName: formData.billing.firstName || formData.firstName,
-    lastName: formData.billing.lastName || formData.lastName,
-    email: formData.email,
-    address: formData.billing.address || formData.address,
-    city: formData.billing.city || formData.city,
-    state: "",
-    zipCode: formData.billing.zipCode || formData.zipCode,
-    country: formData.billing.country || formData.country,
-    phone: formData.phone
-  };
+        async function handlePaymentSuccess(paymentResult, formData, orderId) {
+            console.log("🎉 Payment successful:", paymentResult);
+            
+            try {
+                showLoading(true, "Completing your order...");
+                
+                // Build complete order data
+                const completeOrderData = {
+                    ...orderPayload,
+                    transactionId: paymentResult.transactionId,
+                    paymentMethod: paymentResult.method,
+                    paymentStatus: 'paid',
+                    status: 'processing',
+                    orderDate: new Date().toISOString(),
+                    estimatedDelivery: calculateDeliveryDate(formData.shippingMethod)
+                };
+                
+                // Save order to localStorage
+                saveOrderToLocalStorage(completeOrderData);
+                
+                // Send confirmation email
+                await sendOrderConfirmationEmail(completeOrderData, formData);
+                
+                // Create notification
+                await createOrderNotification(completeOrderData);
+                
+                // Clear cart
+                localStorage.removeItem("olysHairCart");
+                updateCartCount();
+                
+                // Update UI
+                updateReceiptModal(paymentResult, formData, completeOrderData);
+                updateCheckoutSteps("completed");
+                
+                showLoading(false);
+                showNotification("✅ Payment successful! Order confirmed.", "success");
+                
+                // Show receipt modal
+                setTimeout(() => {
+                    const receiptModal = document.getElementById("receiptModal");
+                    if (receiptModal) {
+                        receiptModal.classList.add("active");
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error("❌ Error in handlePaymentSuccess:", error);
+                showLoading(false);
+                showNotification("Order processed, but there was an error: " + error.message, "warning");
+            }
+        }
 
-  return {
-    email: formData.email,
-    guestEmail: formData.email,       // explicit for backend guestEmail requirement
-    orderNumber: generateOrderNumber(),
-    items: itemsForBackend.map(it => ({
-      product: it.productId,   // REQUIRED FOR MONGODB
-      name: it.name,
-      price: it.price,
-      quantity: it.quantity,
-      image: it.image,
-      sku: it.sku
-    })),
-    shippingAddress,
-    billingAddress,
-    shipping: shippingCost,
-    tax: taxAmount,
-    discount: discountAmount,
-    subtotal: subtotal,
-    amount: total,                   // total amount to charge
-    currency: CONFIG.CURRENCY,
-    paymentMethod: selectedPaymentMethod === 'paypal' ? 'paypal' : (selectedPaymentMethod === 'credit-card' ? 'credit_card' : selectedPaymentMethod)
-  };
-}
-// Initialize counts on page load
-function initializeCounts() {
-    const cart = JSON.parse(localStorage.getItem('olysHairCart')) || [];
-    const orders = JSON.parse(localStorage.getItem('olysHairOrders')) || [];
-    const bookings = JSON.parse(localStorage.getItem('olysHairBookings')) || [];
-    
-    updateCartCount();
-    updateOrderCount(orders.length);
-    updateBookingCount(bookings.length);
-}
+        // ==================== ORDER MANAGEMENT ====================
+        function saveOrderToLocalStorage(orderData) {
+            try {
+                const orders = JSON.parse(localStorage.getItem('olysHairOrders')) || [];
+                
+                const orderWithMeta = {
+                    ...orderData,
+                    id: orderData.orderNumber,
+                    status: 'processing',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    trackingNumber: '',
+                    shippingCarrier: 'Standard Shipping'
+                };
+                
+                orders.unshift(orderWithMeta);
+                
+                // Keep only last 50 orders
+                if (orders.length > 50) {
+                    orders.splice(50);
+                }
+                
+                localStorage.setItem('olysHairOrders', JSON.stringify(orders));
+                
+                // Update order count in header
+                updateOrderCount(orders.length);
+                
+                console.log('✅ Order saved to localStorage:', orderData.orderNumber);
+                
+                return orderData.orderNumber;
+            } catch (error) {
+                console.error('❌ Error saving order:', error);
+                throw error;
+            }
+        }
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeCounts();
-    // ... other initialization code
-});
-/* ------------------------ PayPal integration (createOrder + onApprove) ------------------------ */
-function loadPayPalButton() {
-  if (typeof paypal === 'undefined') {
-    console.error('PayPal SDK not loaded');
-    return;
-  }
+        function updateOrderCount(count) {
+            const orderCountElement = document.querySelector('.order-count');
+            if (orderCountElement) {
+                orderCountElement.textContent = count;
+                orderCountElement.style.display = count > 0 ? 'flex' : 'none';
+            }
+        }
 
-  const container = document.getElementById('paypal-button-container');
-  if (!container) return;
-  container.innerHTML = '';
+        async function sendOrderConfirmationEmail(orderData, formData) {
+            try {
+                const emailParams = {
+                    to_email: formData.email,
+                    to_name: `${formData.firstName} ${formData.lastName}`,
+                    order_number: orderData.orderNumber,
+                    order_date: new Date(orderData.orderDate).toLocaleDateString(),
+                    customer_name: `${formData.firstName} ${formData.lastName}`,
+                    shipping_address: `
+                        ${formData.address}
+                        ${formData.city}, ${formData.zipCode}
+                        ${formData.country}
+                    `,
+                    order_items: orderData.items.map(item => `
+                        ${item.name} - €${item.price.toFixed(2)} × ${item.quantity} = €${(item.price * item.quantity).toFixed(2)}
+                    `).join('<br>'),
+                    subtotal: `€${orderData.subtotal.toFixed(2)}`,
+                    shipping: `€${orderData.shipping.toFixed(2)}`,
+                    tax: `€${orderData.tax.toFixed(2)}`,
+                    discount: promoDiscount > 0 ? `€${promoDiscount.toFixed(2)}` : '€0.00',
+                    total: `€${orderData.amount.toFixed(2)}`,
+                    estimated_delivery: orderData.estimatedDelivery,
+                    payment_method: orderData.paymentMethod,
+                    transaction_id: orderData.transactionId
+                };
+                
+                await emailjs.send(
+                    CONFIG.EMAILJS_SERVICE_ID,
+                    CONFIG.EMAILJS_TEMPLATE_ID,
+                    emailParams
+                );
+                
+                console.log('✅ Confirmation email sent');
+            } catch (error) {
+                console.error('❌ Error sending email:', error);
+                // Don't throw error - we don't want email failure to block order
+            }
+        }
 
-  paypal.Buttons({
-    style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
+        async function createOrderNotification(orderData) {
+            try {
+                const notifications = JSON.parse(localStorage.getItem('olysHairNotifications')) || [];
+                
+                const notification = {
+                    id: `notif-${Date.now()}`,
+                    type: 'order',
+                    title: '🎉 Order Confirmed!',
+                    message: `Your order #${orderData.orderNumber} has been placed. Total: €${orderData.amount.toFixed(2)}`,
+                    data: {
+                        orderId: orderData.orderNumber,
+                        orderData: orderData
+                    },
+                    read: false,
+                    createdAt: new Date().toISOString(),
+                    priority: 'high',
+                    icon: 'fa-shopping-bag',
+                    actionUrl: `customerdashboard.html?section=orders&order=${orderData.orderNumber}`,
+                    actionText: 'View Order'
+                };
+                
+                notifications.unshift(notification);
+                localStorage.setItem('olysHairNotifications', JSON.stringify(notifications));
+                
+                console.log('📢 Order notification created');
+            } catch (error) {
+                console.error('❌ Error creating notification:', error);
+            }
+        }
 
-    createOrder: async function(data, actions) {
-      try {
-        const formData = getFormData();
-        // validate form before contacting server
-        if (!validateCheckoutForm()) throw new Error('Please complete the checkout form first.');
+        // ==================== UI UPDATES ====================
+        function updateCheckoutSteps(stage) {
+            const steps = document.querySelectorAll(".step");
+            
+            if (stage === "payment") {
+                steps[0].classList.add("completed");
+                steps[1].classList.add("active");
+            } else if (stage === "completed") {
+                steps.forEach(step => {
+                    step.classList.remove("active");
+                    step.classList.add("completed");
+                });
+            }
+        }
 
-        const orderPayload = buildOrderPayload(formData);
+        function updateReceiptModal(paymentResult, formData, orderData) {
+            // Order number
+            const orderNumberEl = document.getElementById("orderNumber");
+            if (orderNumberEl) {
+                orderNumberEl.textContent = `Order #${orderData.orderNumber}`;
+            }
+            
+            // Order items
+            const receiptItemsEl = document.getElementById("receipt-items");
+            if (receiptItemsEl) {
+                receiptItemsEl.innerHTML = '';
+                
+                orderData.items.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    const itemEl = document.createElement("div");
+                    itemEl.className = "receipt-row";
+                    itemEl.innerHTML = `
+                        <span>${item.name} × ${item.quantity}</span>
+                        <span>€${itemTotal.toFixed(2)}</span>
+                    `;
+                    receiptItemsEl.appendChild(itemEl);
+                });
+            }
+            
+            // Totals
+            const receiptSubtotalEl = document.getElementById("receipt-subtotal");
+            const receiptShippingEl = document.getElementById("receipt-shipping");
+            const receiptTaxEl = document.getElementById("receipt-tax");
+            const receiptTotalEl = document.getElementById("receipt-total");
+            const receiptDiscountRow = document.getElementById("receipt-discount-row");
+            const receiptDiscountEl = document.getElementById("receipt-discount");
+            
+            if (receiptSubtotalEl) receiptSubtotalEl.textContent = `€${orderData.subtotal.toFixed(2)}`;
+            if (receiptShippingEl) receiptShippingEl.textContent = `€${orderData.shipping.toFixed(2)}`;
+            if (receiptTaxEl) receiptTaxEl.textContent = `€${orderData.tax.toFixed(2)}`;
+            if (receiptTotalEl) receiptTotalEl.textContent = `€${orderData.amount.toFixed(2)}`;
+            
+            // Discount
+            if (promoDiscount > 0) {
+                receiptDiscountRow.style.display = 'flex';
+                receiptDiscountEl.textContent = `-€${promoDiscount.toFixed(2)}`;
+            } else {
+                receiptDiscountRow.style.display = 'none';
+            }
+            
+            // Shipping info
+            const shippingInfoEl = document.getElementById("receipt-shipping-info");
+            if (shippingInfoEl) {
+                shippingInfoEl.innerHTML = `
+                    <p><strong>${formData.firstName} ${formData.lastName}</strong></p>
+                    <p>${formData.address}</p>
+                    <p>${formData.city}, ${formData.zipCode}</p>
+                    <p>${formData.country.toUpperCase()}</p>
+                    <p>📞 ${formData.phone}</p>
+                    <p>📧 ${formData.email}</p>
+                `;
+            }
+            
+            // Delivery estimate
+            const deliveryEl = document.getElementById("receipt-delivery");
+            if (deliveryEl) {
+                deliveryEl.textContent = orderData.estimatedDelivery;
+            }
+        }
 
-        console.log('Creating PayPal order - payload:', orderPayload);
+        function closeReceiptModal() {
+            const receiptModal = document.getElementById("receiptModal");
+            if (receiptModal) {
+                receiptModal.classList.remove("active");
+            }
+            
+            // Redirect to dashboard after a delay
+            setTimeout(() => {
+                window.location.href = 'customerdashboard.html?section=orders';
+            }, 500);
+        }
 
-        const response = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/create-order`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getAuthToken()}`
-          },
-          body: JSON.stringify(orderPayload)
+        // ==================== PROMO CODE ====================
+        function applyPromoCode() {
+            const promoCode = document.getElementById("promoCode").value.trim().toUpperCase();
+            const promoMessage = document.getElementById("promoMessage");
+            
+            if (!promoCode) {
+                promoMessage.textContent = "Please enter a promo code";
+                promoMessage.className = "promo-message error";
+                return;
+            }
+            
+            // Valid promo codes
+            const validPromoCodes = {
+                "SAVE10": 0.10, // 10% discount
+                "OLYS20": 0.20, // 20% discount
+                "WELCOME15": 0.15 // 15% discount
+            };
+            
+            if (validPromoCodes[promoCode]) {
+                const discountRate = validPromoCodes[promoCode];
+                promoDiscount = currentOrderData.subtotal * discountRate;
+                appliedPromoCode = promoCode;
+                
+                // Update totals
+                currentOrderData.total = currentOrderData.subtotal + currentOrderData.shipping + currentOrderData.tax - promoDiscount;
+                updateTotals(
+                    currentOrderData.subtotal,
+                    currentOrderData.shipping,
+                    currentOrderData.tax,
+                    currentOrderData.total
+                );
+                
+                promoMessage.textContent = `Promo code applied! You saved €${promoDiscount.toFixed(2)}`;
+                promoMessage.className = "promo-message success";
+                
+                // Update order payload if it exists
+                if (orderPayload) {
+                    orderPayload.discount = promoDiscount;
+                    orderPayload.amount = currentOrderData.total;
+                }
+                
+                showNotification(`Promo code applied! Saved €${promoDiscount.toFixed(2)}`, "success");
+                
+            } else {
+                promoMessage.textContent = "Invalid promo code";
+                promoMessage.className = "promo-message error";
+                showNotification("Invalid promo code", "error");
+            }
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function showNotification(message, type = "info", duration = 5000) {
+            const notification = document.getElementById("notification");
+            if (!notification) return;
+            
+            let icon = "info-circle";
+            if (type === "success") icon = "check-circle";
+            if (type === "error") icon = "exclamation-circle";
+            if (type === "warning") icon = "exclamation-triangle";
+            
+            notification.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove("show");
+            }, duration);
+        }
+
+        function showLoading(show, message = "Processing...") {
+            const overlay = document.getElementById("loadingOverlay");
+            const loadingText = document.getElementById("loadingText");
+            
+            if (!overlay) return;
+            
+            if (loadingText) {
+                loadingText.textContent = message;
+            }
+            
+            if (show) {
+                overlay.classList.add("active");
+            } else {
+                overlay.classList.remove("active");
+            }
+        }
+
+        function calculateDeliveryDate(shippingMethod) {
+            const today = new Date();
+            let deliveryDays;
+            
+            switch(shippingMethod) {
+                case 'overnight':
+                    deliveryDays = 1;
+                    break;
+                case 'express':
+                    deliveryDays = 3;
+                    break;
+                default: // standard
+                    deliveryDays = 7;
+            }
+            
+            // Add business days (skip weekends)
+            let daysAdded = 0;
+            while (daysAdded < deliveryDays) {
+                today.setDate(today.getDate() + 1);
+                if (today.getDay() !== 0 && today.getDay() !== 6) {
+                    daysAdded++;
+                }
+            }
+            
+            return today.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            
+            // Save preference
+            const isDarkMode = document.body.classList.contains("dark-mode");
+            localStorage.setItem("darkMode", isDarkMode);
+        }
+
+        // ==================== PAGE UNLOAD PROTECTION ====================
+        window.addEventListener("beforeunload", function (e) {
+            // Check if payment is in progress
+            const isProcessing = document.getElementById("loadingOverlay")?.classList.contains("active");
+            
+            if (isProcessing) {
+                e.preventDefault();
+                e.returnValue = "You have a payment in progress. Are you sure you want to leave?";
+            }
         });
 
-        const result = await response.json();
-        if (!response.ok) {
-          console.error('Create order failed:', result);
-          throw new Error(result.error || result.message || 'Failed to create order');
-        }
-
-        console.log('PayPal create order response:', result);
-        // PayPal SDK expects the order id string
-        return result.id;
-      } catch (err) {
-        console.error('PayPal createOrder error:', err);
-        showNotification(err.message || 'Failed to create PayPal order', 'error');
-        throw err;
-      }
-    },
-
-    onApprove: async function(data, actions) {
-      try {
-        showLoading(true);
-        const resp = await fetch(`${CONFIG.API_BASE_URL}/payments/paypal/capture/${data.orderID}`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${getAuthToken()}` }
+        // ==================== ERROR HANDLING ====================
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            showNotification('An unexpected error occurred. Please refresh the page.', 'error');
         });
-        const result = await resp.json();
-        if (!resp.ok || !result.success) {
-          throw new Error(result.error || 'Payment capture failed');
-        }
 
-        console.log('PayPal capture result:', result);
-
-        // call success handler with server result and local form data
-        await handlePaymentSuccess({
-          transactionId: result.transactionId,
-          method: 'paypal',
-          amount: currentOrderData.total,
-          orderId: data.orderID
-        }, getFormData(), data.orderID);
-
-        showNotification('Payment successful!', 'success');
-        showLoading(false);
-      } catch (err) {
-        showLoading(false);
-        console.error('onApprove error:', err);
-        showNotification('Payment failed: ' + (err.message || ''), 'error');
-      }
-    },
-
-    onError: function(err) {
-      console.error('PayPal SDK error:', err);
-      showNotification('PayPal payment failed. Please try again.', 'error');
-    },
-
-    onCancel: function(data) {
-      console.log('PayPal payment cancelled by user', data);
-      showNotification('PayPal payment was cancelled', 'warning');
-    }
-
-  }).render('#paypal-button-container');
-}
-
-/* ------------------------ Stripe / Credit-card: send same payload shape ------------------------ */
-async function createServerOrderAndReturnId(orderPayload) {
-  // If you want server to always create DB order before capturing payment, call this endpoint.
-  // Here we re-use /payments/paypal/create-order for shape but you can create a dedicated endpoint for Stripe.
-  const resp = await fetch(`${CONFIG.API_BASE_URL}/orders/create-local`, { // optional dedicated endpoint
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getAuthToken()}` },
-    body: JSON.stringify(orderPayload)
-  });
-
-  if (!resp.ok) {
-    const data = await resp.json().catch(()=>({error: 'Unknown server error'}));
-    throw new Error(data.error || data.message || 'Failed to create server order');
-  }
-
-  return (await resp.json());
-}
-
-/* ------------------------ Process Payment (Place Order button) ------------------------ */
-async function processPayment(e) {
-  e?.preventDefault?.();
-  if (!validateCheckoutForm()) return;
-
-  const submit = document.getElementById('placeOrder');
-  const originalText = submit?.innerHTML || "Processing...";
-  submit.disabled = true;
-  submit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-  try {
-    const formData = getFormData();
-    const orderPayload = buildOrderPayload(formData);
-
-    // For credit card (Stripe) -> create payment intent on server with same payload
-    if (selectedPaymentMethod === 'credit-card') {
-      // send to your stripe create-payment-intent endpoint (which should accept the same order payload)
-      const resp = await fetch(`${CONFIG.API_BASE_URL}/payments/stripe/create-payment-intent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getAuthToken()}` },
-        body: JSON.stringify(orderPayload)
-      });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || 'Failed to initialize card payment');
-
-      // confirm card payment using stripe.js
-      const { clientSecret, orderId } = data;
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: formData.cardName,
-            email: formData.email,
-            phone: formData.phone,
-            address: { line1: formData.address, city: formData.city, postal_code: formData.zipCode, country: formData.country }
-          }
-        }
-      });
-      if (error) throw error;
-      // tell server to confirm payment and update order if needed
-      await handlePaymentSuccess({ transactionId: paymentIntent.id, method: 'credit-card', amount: orderPayload.amount, orderId }, formData, orderId);
-      showNotification('Payment successful!', 'success');
-    }
-
-    // For PayPal, user must click the PayPal button (we show message)
-    if (selectedPaymentMethod === 'paypal') {
-      showNotification('Complete PayPal payment using the PayPal button above', 'info', 4000);
-    }
-
-    // Other methods can be added similarly
-
-  } catch (err) {
-    console.error('processPayment error:', err);
-    showNotification(err.message || 'Payment failed', 'error');
-  } finally {
-    submit.disabled = false;
-    submit.innerHTML = originalText;
-  }
-}
-
-/* ------------------------ load & UI init ------------------------ */
-async function loadOrderReview() {
-      handleDirectPurchase();
-  const orderItemsContainer = document.querySelector(".order-items");
-  const cart = getCart();
-  if (!orderItemsContainer) return;
-
-  orderItemsContainer.innerHTML = '';
-  if (cart.length === 0) {
-    orderItemsContainer.innerHTML = `<div class="empty-cart-message"><i class="fas fa-shopping-cart"></i><p>Your cart is empty</p><button onclick="window.location.href='shop.html'">Continue Shopping</button></div>`;
-    updateTotals(0, 0, 0);
-    document.getElementById("placeOrder").disabled = true;
-    return;
-  }
-
-  let subtotal = 0;
-  // Display each cart item
-  cart.forEach(item => {
-    const itemTotal = Number(item.price || 0) * Number(item.quantity || 1);
-    subtotal += itemTotal;
-    const orderItem = document.createElement('div');
-    orderItem.className = 'order-item';
-    orderItem.innerHTML = `
-      <div class="order-item-image"><img src="${item.image || 'images/placeholder-product.jpg'}" alt="${item.name || ''}" onerror="this.src='images/placeholder-product.jpg'"></div>
-      <div class="order-item-details"><h4>${item.name || ''}</h4><p class="item-sku">SKU: ${item.sku || 'N/A'}</p><div class="order-item-price">€${Number(item.price||0).toFixed(2)} × ${item.quantity}</div><div class="item-total">Total: €${itemTotal.toFixed(2)}</div></div>
-    `;
-    orderItemsContainer.appendChild(orderItem);
-  });
-
-  const shippingCost = getShippingCost("standard");
-  updateTotals(subtotal, shippingCost, CONFIG.TAX_RATE);
-  document.getElementById("placeOrder").disabled = false;
-}
-
-/* ------------------------ Small helpers reused from original ------------------------ */
-function getShippingCost(method) {
-  const shippingRates = { standard: 9.99, express: 19.99, overnight: 29.99 };
-  return shippingRates[method] || shippingRates.standard;
-}
-
-/* ------------------------ Validation ------------------------ */
-function validateField(fieldId) {
-  const field = document.getElementById(fieldId);
-  const errorElement = document.getElementById(`${fieldId}-error`);
-  if (!field || !errorElement) return true;
-  let isValid = true, errorMessage = "";
-
-  switch(fieldId) {
-    case "email":
-      if (!field.value) { isValid = false; errorMessage = "Email is required"; }
-      else if (!isValidEmail(field.value)) { isValid = false; errorMessage = "Please enter a valid email address"; }
-      break;
-    case "firstName":
-    case "lastName":
-      if (!field.value.trim()) { isValid = false; errorMessage = "This field is required"; }
-      break;
-    case "phone":
-      if (!field.value.trim()) { isValid = false; errorMessage = "Phone number is required"; }
-      else if (!isValidPhone(field.value)) { isValid = false; errorMessage = "Please enter a valid phone number"; }
-      break;
-    default:
-      if (!field.value.trim()) { isValid = false; errorMessage = "This field is required"; }
-  }
-
-  if (isValid) { field.classList.remove("error"); errorElement.textContent = ""; }
-  else { field.classList.add("error"); errorElement.textContent = errorMessage; }
-
-  return isValid;
-}
-
-function validateCheckoutForm() {
-  const required = ["email","firstName","lastName","address","city","zipCode","country","phone"];
-  let ok = true;
-  required.forEach(f => { if(!validateField(f)) ok = false; });
-  if (!ok) { showNotification("Please fix the errors in the form before proceeding", "error"); const firstError = document.querySelector(".error"); if (firstError) firstError.scrollIntoView({ behavior: "smooth", block: "center" }); }
-  // Ensure cart items include productId
-  try {
-    buildItemsForBackend(getCart());
-  } catch (err) {
-    showNotification(err.message, "error");
-    ok = false;
-  }
-  return ok;
-}
-
-/* ------------------------ Success handler & receipt update (reuse existing) ------------------------ */
-async function handlePaymentSuccess(paymentResult, formData, orderId) {
-  try {
-    localStorage.removeItem("olysHairCart");
-    updateReceiptModal(paymentResult, formData);
-    updateCheckoutSteps("completed");
-    showNotification("Payment successful! Thank you for your order.", "success");
-    setTimeout(()=> {
-      const receiptModal = document.getElementById("receiptModal");
-      if (receiptModal) receiptModal.classList.add("active");
-    }, 1000);
-  } catch (err) {
-    console.error("handlePaymentSuccess error:", err);
-  }
-}
-
-function updateReceiptModal(paymentResult, formData) {
-  const orderNumberElement = document.getElementById("orderNumber");
-  if (orderNumberElement) orderNumberElement.textContent = `Order #${paymentResult.orderId || ''}`;
-  const receiptItems = document.getElementById("receipt-items");
-  if (receiptItems) {
-    receiptItems.innerHTML = "";
-    (currentOrderData?.items || []).forEach((item) => {
-      const itemTotal = item.price * item.quantity;
-      const itemElement = document.createElement("div");
-      itemElement.className = "receipt-row";
-      itemElement.innerHTML = `<span>${item.name} × ${item.quantity}</span><span>€${itemTotal.toFixed(2)}</span>`;
-      receiptItems.appendChild(itemElement);
-    });
-  }
-  // totals
-  const receiptSubtotal = document.getElementById("receipt-subtotal");
-  const receiptShipping = document.getElementById("receipt-shipping");
-  const receiptTax = document.getElementById("receipt-tax");
-  const receiptTotal = document.getElementById("receipt-total");
-  if (receiptSubtotal) receiptSubtotal.textContent = `€${(currentOrderData?.subtotal||0).toFixed(2)}`;
-  if (receiptShipping) receiptShipping.textContent = `€${(currentOrderData?.shipping||0).toFixed(2)}`;
-  if (receiptTax) receiptTax.textContent = `€${(currentOrderData?.tax||0).toFixed(2)}`;
-  if (receiptTotal) receiptTotal.textContent = `€${(currentOrderData?.total||0).toFixed(2)}`;
-  const shippingInfo = document.getElementById("receipt-shipping-info");
-  if (shippingInfo) {
-    shippingInfo.innerHTML = `<p>${formData.firstName} ${formData.lastName}</p><p>${formData.address}</p><p>${formData.city}, ${formData.zipCode}</p><p>${formData.country.toUpperCase()}</p><p>${formData.phone}</p>`;
-  }
-  const deliveryElement = document.getElementById("receipt-delivery");
-  if (deliveryElement) {
-    switch (formData.shippingMethod) {
-      case "express": deliveryElement.textContent = "2-3 business days"; break;
-      case "overnight": deliveryElement.textContent = "1 business day"; break;
-      default: deliveryElement.textContent = "5-7 business days";
-    }
-  }
-}
-
-/* ------------------------ Initialization & event wiring ------------------------ */
-function setupEventListeners() {
-  document.getElementById("placeOrder")?.addEventListener("click", processPayment);
-  document.getElementById("applyPromo")?.addEventListener("click", () => {
-    const promo = document.getElementById("promoCode")?.value?.trim();
-    if (promo && promo.toUpperCase() === "SAVE10") {
-      appliedPromoCode = promo;
-      updateTotals(currentOrderData.subtotal, currentOrderData.shipping, CONFIG.TAX_RATE);
-      showNotification("Promo code applied", "success");
-    } else {
-      appliedPromoCode = null;
-      showNotification("Invalid promo code", "error");
-    }
-  });
-  document.querySelectorAll('input[name="shipping"]').forEach(r => r.addEventListener("change", () => {
-    updateTotals(currentOrderData.subtotal, getShippingCost(document.querySelector('input[name="shipping"]:checked')?.value || "standard"), CONFIG.TAX_RATE);
-  }));
-  document.querySelectorAll(".payment-method").forEach(m => m.addEventListener("click", function() {
-    if (this.classList.contains("disabled")) return;
-    document.querySelectorAll(".payment-method").forEach(x => x.classList.remove("active"));
-    this.classList.add("active");
-    selectedPaymentMethod = this.dataset.method;
-    togglePaymentForms(selectedPaymentMethod);
-  }));
-}
-
-function togglePaymentForms(method) {
-  const credit = document.getElementById("credit-card-form");
-  const paypalContainer = document.getElementById("paypal-button-container");
-  const apple = document.getElementById("apple-pay-button");
-  const klarna = document.getElementById("klarna-payment-form");
-  if (credit) credit.style.display = 'none';
-  if (paypalContainer) paypalContainer.style.display = 'none';
-  if (apple) apple.style.display = 'none';
-  if (klarna) klarna.style.display = 'none';
-  if (method === 'credit-card' && credit) credit.style.display = 'block';
-  if (method === 'paypal' && paypalContainer) { paypalContainer.style.display = 'block'; loadPayPalButton(); }
-  if (method === 'apple-pay' && apple) apple.style.display = 'block';
-  if (method === 'klarna' && klarna) klarna.style.display = 'block';
-}
-
-/* ------------------------ Run initialization on DOM ready ------------------------ */
-document.addEventListener("DOMContentLoaded", async function() {
-  if (!checkAuthentication()) {
-        return; // Stop execution if not authenticated
-    }
-  // minimal UI set-up (theme, billing toggle etc) - keep your existing behaviour if you want
-  const sameAsShipping = document.getElementById("sameAsShipping");
-  const billingAddressFields = document.getElementById("billingAddressFields");
-  sameAsShipping?.addEventListener("change", () => {
-    billingAddressFields.style.display = sameAsShipping.checked ? "none" : "block";
-  });
-
-  setupEventListeners();
-  await loadOrderReview();
-
-  // init stripe if available
-  if (CONFIG.STRIPE_PUBLISHABLE_KEY && CONFIG.STRIPE_PUBLISHABLE_KEY.includes('pk_')) {
-    stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
-    elements = stripe.elements();
-    const cardElementContainer = document.getElementById('card-element');
-    if (elements && cardElementContainer) {
-      cardElement = elements.create('card', { hidePostalCode: true });
-      cardElement.mount('#card-element');
-    }
-  }
-   
-
-  // init paypal button if user chooses paypal or default
-  // we don't auto-render here — it's called by togglePaymentForms when PayPal method chosen
-  console.log('Checkout initialized');
-});
-// Function to handle direct purchase from localStorage
-
-
-</script>
-  </body>
+        // ==================== INITIALIZE ON LOAD ====================
+        console.log("📦 Checkout system initialized");
+    </script>
+</body>
 </html>

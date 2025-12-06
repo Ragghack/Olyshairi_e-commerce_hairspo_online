@@ -940,9 +940,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
     const WHATSAPP_NUMBER = "+33758725209";
-    const API_BASE_URL = window.location.hostname.includes('localhost') 
-        ? "http://localhost:5001/api" 
-        : "https://olyshairi-e-commerce-hairspo-online-kgz2.onrender.com/api";
+    const API_BASE_URL = "https://olyshairi-e-commerce-hairspo-online-kgz2.onrender.com/api";
+       // ? "http://localhost:5001/api" 
+        //: "https://olyshairi-e-commerce-hairspo-online-kgz2.onrender.com/api";
 
     console.log("🌐 Using API Base URL:", API_BASE_URL);
 
@@ -1348,7 +1348,36 @@ Merci.`);
         
         console.log('✅ Booking page initialized successfully');
     });
-
+async function createBookingNotification(bookingData) {
+    try {
+        const notifications = JSON.parse(localStorage.getItem('olysHairNotifications')) || [];
+        
+        const notification = {
+            id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            type: 'booking',
+            title: 'Booking Confirmed! 📅',
+            message: `Your wig service booking for ${bookingData.wigCount} wig(s) has been confirmed. Total: €${(parseInt(bookingData.wigCount) * 15).toFixed(2)}`,
+            data: {
+                bookingId: bookingData.booking_id,
+                bookingData: bookingData
+            },
+            read: false,
+            createdAt: new Date().toISOString(),
+            priority: 'medium',
+            icon: 'fa-calendar-check',
+            actionUrl: `customerdashboard.html?section=bookings&booking=${bookingData.booking_id}`,
+            actionText: 'View Booking'
+        };
+        
+        notifications.unshift(notification);
+        localStorage.setItem('olysHairNotifications', JSON.stringify(notifications));
+        
+        console.log('📢 Booking notification created:', notification);
+        return notification;
+    } catch (error) {
+        console.error('Error creating booking notification:', error);
+    }
+}
 </script>
     
 </body>

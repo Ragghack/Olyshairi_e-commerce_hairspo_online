@@ -647,4 +647,5 @@ router.get('/export/detailed-pdf', adminAuth, async (req, res) => {
   }
 });
 
+
 module.exports = router;

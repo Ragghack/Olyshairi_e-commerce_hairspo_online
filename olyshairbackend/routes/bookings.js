@@ -364,4 +364,85 @@ router.post('/bulk-delete', auth, async (req, res) => {
   }
 });
 
+// In bookings.js
+const notificationService = require('../services/notificationService');
+
+// In create booking endpoint
+router.post('/', auth, async (req, res) => {
+  try {
+    const { customerName, customerEmail, customerPhone, wigCount, notes } = req.body;
+
+    const booking = new Booking({
+      userId: req.user.id,
+      customerName,
+      customerEmail,
+      customerPhone,
+      wigCount: parseInt(wigCount),
+      notes,
+      status: 'pending'
+    });
+
+    await booking.save();
+
+    // Send notification and email
+    await notificationService.createNotification(req.user.id, {
+      type: 'booking',
+      title: 'Booking Request Submitted',
+      message: `Your wig service booking for ${wigCount} wig(s) has been submitted`,
+      data: { booking: booking.toObject() },
+      priority: 'high',
+      metadata: {
+        bookingId: booking._id,
+        actionUrl: `/customerdashboard.html?section=bookings&booking=${booking._id}`,
+        actionText: 'View Booking'
+      },
+      emailSubject: 'Wig Service Booking Confirmation',
+      sendEmail: true
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Booking created successfully',
+      booking
+    });
+  } catch (error) {
+    console.error('Create booking error:', error);
+    res.status(500).json({ error: 'Failed to create booking' });
+  }
+});
+
+// In update booking status endpoint
+router.put('/:id/status', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const { status, estimatedCompletion, notifyCustomer = true, statusMessage } = req.body;
+    const booking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      { status, estimatedCompletion },
+      { new: true }
+    ).populate('userId', 'firstName lastName email');
+
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+
+    // Send notification if requested
+    if (notifyCustomer !== false) {
+      await notificationService.sendBookingStatusUpdate(
+        booking,
+        status,
+        statusMessage || `Your booking status has been updated to: ${status}`
+      );
+    }
+
+    res.json({ success: true, booking });
+  } catch (error) {
+    console.error('Update booking status error:', error);
+    res.status(500).json({ error: 'Failed to update booking status' });
+  }
+});
+
 module.exports = router;

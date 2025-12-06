@@ -482,5 +482,65 @@ router.post('/bulk-delete', adminAuth, async (req, res) => {
     });
   }
 });
-
+// GET TODAY'S FILTERED SALES (PAID ORDERS ONLY)
+router.get('/sales/today-filtered', adminAuth, async (req, res) => {
+  try {
+    // Get today's date at midnight
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Get tomorrow's date at midnight
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // Filter for today's orders with completed payments
+    const result = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: today, $lt: tomorrow },
+          isDeleted: false,
+          status: { $ne: 'cancelled' }, // Exclude cancelled orders
+          $or: [
+            { paymentStatus: 'paid' },
+            { paymentStatus: 'completed' },
+            { paymentStatus: 'succeeded' }
+          ]
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$totalAmount' },
+          orderCount: { $sum: 1 },
+          averageOrderValue: { $avg: '$totalAmount' }
+        }
+      }
+    ]);
+    
+    // If no results, return zeros
+    if (result.length === 0) {
+      return res.json({
+        success: true,
+        totalSales: 0,
+        orderCount: 0,
+        averageOrderValue: 0
+      });
+    }
+    
+    return res.json({
+      success: true,
+      totalSales: result[0].totalSales || 0,
+      orderCount: result[0].orderCount || 0,
+      averageOrderValue: result[0].averageOrderValue || 0
+    });
+    
+  } catch (error) {
+    console.error('❌ Today sales filtered error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch today\'s sales',
+      details: error.message
+    });
+  }
+});
 module.exports = router;

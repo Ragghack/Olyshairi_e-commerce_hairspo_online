@@ -709,6 +709,8 @@ app.use('/api/*', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+app.use('/api/notifications', auth, loadRoute('./routes/notifications', 'Notifications'));
 // Add this to your server.js in the route section
 app.get('/api/auth/debug/verify', async (req, res) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -880,6 +882,9 @@ const testEmailConfig = async () => {
     return false;
   }
 };
+
+
+
 
 // Test on startup
 

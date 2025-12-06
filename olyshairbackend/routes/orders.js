@@ -6,6 +6,7 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 const jwt = require('../config/jwt');
+const notificationService = require('../services/notificationService');
 // ===== Debug Info on Load =====
 console.log('🔍 [OrdersRoute] Route loaded successfully');
 
@@ -510,4 +511,97 @@ router.get('/test/endpoint', auth, (req, res) => {
   });
 });
 
+// In your backend API (e.g., routes/orders.js)
+router.put('/:orderId/status', auth, async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const {
+            status,
+            statusMessage,
+            trackingNumber,
+            shippingCarrier,
+            estimatedDelivery,
+            cancellationReason,
+            refundCustomer,
+            notifyCustomer,
+            adminNotes,
+            updatedBy
+        } = req.body;
+        
+        // Find order
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+        
+        // Update order
+        order.status = status;
+        order.updatedAt = new Date();
+        
+        // Add status history
+        order.statusHistory = order.statusHistory || [];
+        order.statusHistory.push({
+            status: status,
+            changedBy: updatedBy || 'Admin',
+            changedAt: new Date(),
+            notes: adminNotes,
+            message: statusMessage
+        });
+        
+        // Update additional fields based on status
+        if (status === 'shipped') {
+            order.trackingNumber = trackingNumber;
+            order.shippingCarrier = shippingCarrier;
+            order.estimatedDelivery = estimatedDelivery;
+            order.shippingDate = new Date();
+        }
+        
+        if (status === 'cancelled') {
+            order.cancellationReason = cancellationReason;
+            order.refundIssued = refundCustomer || false;
+            order.cancelledAt = new Date();
+            order.cancelledBy = updatedBy;
+        }
+        
+        if (status === 'delivered') {
+            order.deliveryDate = new Date();
+        }
+        
+        // Save order
+        await order.save();
+        
+        // If notifyCustomer is true, send notification
+        if (notifyCustomer !== false) {
+            // Send email notification
+            await sendOrderStatusEmail(order, statusMessage);
+            
+            // You can also send SMS if implemented
+            // await sendOrderStatusSMS(order, statusMessage);
+        }
+        
+        // Emit real-time update via WebSocket (if implemented)
+        // io.to(`order-${orderId}`).emit('status-updated', { orderId, status });
+        
+        res.json({
+            success: true,
+            message: 'Order status updated successfully',
+            order: order
+        });
+        
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ error: 'Failed to update order status' });
+    }
+});
+
+// Helper function to send email
+async function sendOrderStatusEmail(order, message) {
+    // Implement email sending logic here
+    // Using Nodemailer, SendGrid, etc.
+     try {
+        await notificationService.sendOrderStatusUpdate(order, order.status, message);
+    } catch (error) {
+        console.error('Failed to send notification:', error);
+    }
+}
 module.exports = router;
