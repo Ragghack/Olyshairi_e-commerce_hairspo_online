@@ -1190,6 +1190,407 @@
     margin-top: 8px;
     opacity: 0.8;
 }
+/* WhatsApp Support Button Styles */
+.whatsapp-support-section {
+    margin: 25px 0;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    box-shadow: var(--shadow);
+}
+
+.whatsapp-support-section h3 {
+    color: white !important;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.conditions-list {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid white;
+}
+
+.condition-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.condition-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.condition-item i {
+    color: white;
+    margin-right: 10px;
+    margin-top: 3px;
+    font-size: 14px;
+}
+
+.whatsapp-action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.whatsapp-btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 15px;
+    background-color: white;
+    color: #128C7E;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.whatsapp-btn:hover {
+    background-color: #f8f8f8;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.whatsapp-btn i {
+    font-size: 18px;
+}
+
+.whatsapp-btn.primary {
+    background-color: #075E54;
+    color: white;
+}
+
+.whatsapp-btn.primary:hover {
+    background-color: #054d44;
+}
+
+/* Modal pour la validation des conditions */
+.conditions-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.conditions-modal-content {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 25px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.conditions-modal-content h3 {
+    color: var(--cream);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.condition-check {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+}
+
+.condition-check input[type="checkbox"] {
+    margin-right: 12px;
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.condition-check label {
+    flex: 1;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.condition-description {
+    font-size: 13px;
+    color: var(--text-dark);
+    opacity: 0.8;
+    margin-top: 5px;
+    padding-left: 30px;
+}
+
+.conditions-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.conditions-warning i {
+    color: #ffc107;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.conditions-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-confirm {
+    flex: 1;
+    padding: 12px;
+    background-color: #25D366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+/* WhatsApp Options Styling */
+.whatsapp-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.whatsapp-options .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.whatsapp-options .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+/* WhatsApp Bubble Styling */
+.bubble-btn.whatsapp {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    animation: pulse-whatsapp 2s infinite;
+}
+
+.bubble-btn.whatsapp:hover {
+    background: linear-gradient(135deg, #128C7E, #075E54);
+    transform: scale(1.1);
+}
+
+@keyframes pulse-whatsapp {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
+/* Conditions Modal */
+.conditions-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.conditions-modal-content {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 25px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.conditions-modal-content h3 {
+    color: var(--cream);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.condition-check {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.condition-check.checked {
+    background-color: rgba(37, 211, 102, 0.1);
+    border-left: 3px solid #25D366;
+}
+
+.condition-check input[type="checkbox"] {
+    margin-right: 12px;
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.condition-check label {
+    flex: 1;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.condition-description {
+    font-size: 13px;
+    color: var(--text-dark);
+    opacity: 0.8;
+    margin-top: 5px;
+    padding-left: 30px;
+}
+
+.conditions-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.conditions-warning i {
+    color: #ffc107;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.conditions-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-confirm {
+    flex: 1;
+    padding: 12px;
+    background-color: #25D366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+/* WhatsApp Support Section */
+.whatsapp-support-section {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 255, 245, 0.95));
+    border: 2px solid #25D366;
+}
+
+.whatsapp-option-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.whatsapp-option-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-color: #25D366;
+}
+
+.whatsapp-option-card i {
+    font-size: 24px;
+    color: #25D366;
+    width: 40px;
+    text-align: center;
+}
+
+.whatsapp-option-card h4 {
+    color: #075E54;
+    margin: 0;
+}
+
+.whatsapp-option-card p {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0 0 0;
+}
     </style>
   </head>
 <body>
@@ -1299,20 +1700,28 @@
     </div>
 
     <!-- Floating Bubbles -->
-    <div class="floating-bubbles">
-      <div class="bubble-btn" onclick="window.location.href='index.html'">
-        <i class="fas fa-home"></i>
-        <span data-translate="home">Home</span>
-      </div>
-      <div class="bubble-btn" onclick="window.location.href='shop.html'">
-        <i class="fas fa-shopping-bag"></i>
-        <span data-translate="shop">Shop</span>
-      </div>
-      <div class="bubble-btn" onclick="window.location.href='book.html'">
-        <i class="fas fa-calendar-plus"></i>
-        <span data-translate="bookService">Book Service</span>
-      </div>
-    </div>
+<div class="floating-bubbles">
+  <!-- Add this new WhatsApp bubble -->
+
+  <div class="bubble-btn" onclick="window.location.href='index.html'">
+    <i class="fas fa-home"></i>
+    <span data-translate="home">Home</span>
+  </div>
+  <div class="bubble-btn" onclick="window.location.href='shop.html'">
+    <i class="fas fa-shopping-bag"></i>
+    <span data-translate="shop">Shop</span>
+  </div>
+  <div class="bubble-btn" onclick="window.location.href='book.html'">
+    <i class="fas fa-calendar-plus"></i>
+    <span data-translate="bookService">Book Service</span>
+  </div>
+<button onclick="showWhatsAppOptions()" style="position: fixed; bottom: 100px; left: 20px; z-index: 1000; padding: 15px; background: #5f2c0f75; color: white; border: none; border-radius: 50px; font-weight: bold; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+    <svg style="width: 24px; height: 24px; margin-right: 8px;" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.76.982.998-3.675-.236-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.9 6.994c-.004 5.45-4.438 9.88-9.888 9.88m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.333.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.333 11.893-11.893 0-3.18-1.24-6.162-3.495-8.411"/>
+    </svg>
+    Sercive Client
+</button>
+</div>
 
     <!-- Dashboard Container -->
     <div class="dashboard-container">
@@ -1641,12 +2050,67 @@
         </div>
       </div>
     </div>
+    <!-- Service Client WhatsApp -->
+<!-- WhatsApp Support Section -->
+<div class="content-section" id="whatsapp-support">
+    <div class="section-header">
+        <h2 data-translate="whatsappSupport">WhatsApp Support</h2>
+    </div>
+    
+    <div class="dashboard-card whatsapp-support-section">
+        <div class="whatsapp-header" style="text-align: center; margin-bottom: 20px;">
+            <i class="fab fa-whatsapp" style="font-size: 48px; color: #25D366;"></i>
+            <h3 style="color: #25D366; margin-top: 10px;">24/7 WhatsApp Support</h3>
+        </div>
+        
+        <div class="whatsapp-options-grid" style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+            <div class="whatsapp-option-card" onclick="openWhatsApp('general')">
+                <i class="fas fa-comments"></i>
+                <div>
+                    <h4>General Questions</h4>
+                    <p>Product information, shipping, etc.</p>
+                </div>
+            </div>
+            
+            <div class="whatsapp-option-card" onclick="openWhatsApp('booking')">
+                <i class="fas fa-calendar-alt"></i>
+                <div>
+                    <h4>Bookings & Services</h4>
+                    <p>Appointments, wig services, modifications</p>
+                </div>
+            </div>
+            
+            <div class="whatsapp-option-card" onclick="showRefundConditions()">
+                <i class="fas fa-exchange-alt"></i>
+                <div>
+                    <h4>Refunds & Complaints</h4>
+                    <p>Returns, damaged products, issues</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="whatsapp-info" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+            <h4 style="color: var(--cream); margin-bottom: 10px;">Important Information:</h4>
+            <ul style="padding-left: 20px;">
+                <li>Response time: Within 2 business hours</li>
+                <li>Business hours: Mon-Fri 9AM-6PM, Sat 10AM-3PM</li>
+                <li>For refunds, please have photos ready</li>
+                <li>Keep your order number handy</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Add this anywhere in your dashboard-content for testing -->
+  
+
 
     <!-- ADD THIS SCRIPT TAG AT THE END -->
   <script src="language-config.js"></script>
      <script>
 
-
+// WhatsApp Configuration
+const WHATSAPP_NUMBER = "+33758725209"; // Replace with your actual WhatsApp number
+const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
       // Add this to your customer dashboard JavaScript
       function showWhatsAppBookingAction(booking) {
@@ -1703,6 +2167,7 @@ Merci.`
       const mobileNavClose = document.getElementById("mobileNavClose");
 
 // Initialize the dashboard
+// Initialize the dashboard
 document.addEventListener("DOMContentLoaded", function () {
     initializeDashboard();
     initializeMobileMenu();
@@ -1711,6 +2176,23 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Initialize notification badge
     updateNotificationBadge();
+    
+    // Initialize WhatsApp bubble - MAKE SURE THIS IS CALLED
+    initializeWhatsAppBubble();
+    
+    // Add these event listeners
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('conditions-modal')) {
+            closeModal();
+        }
+    });
+    
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
 });
       // Initialize counts on page load
 function initializeCounts() {
@@ -4848,7 +5330,21 @@ function addNotificationEventListeners() {
 document.addEventListener('DOMContentLoaded', function() {
     // Update notification badge
     updateNotificationBadge();
+    initializeWhatsAppBubble();
+
+      // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('conditions-modal')) {
+            closeModal();
+        }
+    });
     
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
     // Check URL for notification parameters
     const urlParams = new URLSearchParams(window.location.search);
     const notificationId = urlParams.get('notification');
@@ -4903,6 +5399,236 @@ function updateNotificationBadge() {
         }
     }
 }
-    </script>
+
+// WhatsApp Support Functions
+// WhatsApp Support Functions
+function initializeWhatsAppBubble() {
+    const whatsappBubble = document.getElementById('whatsapp-support-bubble');
+    if (whatsappBubble) {
+        whatsappBubble.classList.add('whatsapp');
+        whatsappBubble.addEventListener('click', function() {
+            // Simple test - open WhatsApp directly
+            const message = encodeURIComponent("Hello OLYS HAIR, I need customer service assistance.");
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+        });
+    }
+}
+
+function showWhatsAppOptions() {
+    const modalHTML = `
+        <div class="conditions-modal">
+            <div class="conditions-modal-content">
+                <h3><i class="fab fa-whatsapp"></i> Customer Service WhatsApp</h3>
+                <p>Selectioner le type de Service:</p>
+                
+                <div class="whatsapp-options" style="margin: 20px 0;">
+                    <button class="action-btn" onclick="openWhatsApp('general')" 
+                            style="margin-bottom: 10px; background: #25D366;">
+                        <i class="fab fa-whatsapp"></i> Ensavoir Plus
+                    </button>
+                    
+                    <button class="action-btn" onclick="openWhatsApp('booking')" 
+                            style="margin-bottom: 10px; background: #075E54;">
+                        <i class="fas fa-calendar-alt"></i> Reservation/Service et Question
+                    </button>
+                    
+                    <button class="action-btn" onclick="showRefundConditions()" 
+                            style="margin-bottom: 10px; background: #FF6B6B;">
+                        <i class="fas fa-exchange-alt"></i> réclamation/Plainte 
+                    </button>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    console.log("✅ WhatsApp options modal shown");
+}
+
+function showRefundConditions() {
+    closeModal();
+    
+    const modalHTML = `
+        <div class="conditions-modal">
+            <div class="conditions-modal-content">
+                <h3><i class="fas fa-exclamation-triangle"></i> réclamation/Condition Plainte</h3>
+                
+                <div class="conditions-warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Avant de poursuivre votre réclamation, veuillez confirmer que toutes les conditions sont remplies.:</p>
+                </div>
+                
+                <div class="condition-check">
+                    <input type="checkbox" id="condition1" class="condition-checkbox">
+                    <div>
+                        <label for="condition1">Product is in original condition</label>
+                        <div class="condition-description">
+                            Le produit n’a pas été altéré, modifié ni endommagé par le client.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="condition-check">
+                    <input type="checkbox" id="condition2" class="condition-checkbox">
+                    <div>
+                        <label for="condition2">Transaction within 7 days</label>
+                        <div class="condition-description">
+                            L’achat a été effectué au cours des 7 derniers jours.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="condition-check">
+                    <input type="checkbox" id="condition3" class="condition-checkbox">
+                    <div>
+                        <label for="condition3">Photos available</label>
+                        <div class="condition-description">
+                           Vous disposez de photos claires du problème du produit, prêtes à être partagées.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="condition-check">
+                    <input type="checkbox" id="condition4" class="condition-checkbox">
+                    <div>
+                        <label for="condition4">Original packaging</label>
+                        <div class="condition-description">
+                            Vous avez l’emballage d’origine et les accessoires.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="conditions-buttons">
+                    <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button class="btn-confirm" id="confirmConditions" disabled onclick="openWhatsApp('refund')">
+                        J’accepte et je continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add event listeners to checkboxes
+    const checkboxes = document.querySelectorAll('.condition-checkbox');
+    const confirmBtn = document.getElementById('confirmConditions');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            confirmBtn.disabled = !allChecked;
+            
+            // Update parent container style
+            const parent = checkbox.closest('.condition-check');
+            if (checkbox.checked) {
+                parent.classList.add('checked');
+            } else {
+                parent.classList.remove('checked');
+            }
+        });
+    });
+}
+
+function openWhatsApp(type) {
+    closeModal();
+    
+    const userData = JSON.parse(localStorage.getItem('user')) || {};
+    const userName = userData.firstName || 'Customer';
+    const userEmail = userData.email || '';
+    
+    let message = '';
+    
+    switch(type) {
+        case 'general':
+            message = `Bonjour, service client OLYS HAIR,
+
+Mon nom est ${userName} (Email: ${userEmail}).
+
+J’ai une demande générale :
+
+[Veuillez décrire votre question ou votre problème]
+
+Dans l’attente de votre réponse.
+
+Merci.`;
+            break;
+            
+        case 'booking':
+            message = `Hello OLYS HAIR Booking Department,
+
+Mon nom est ${userName} (Email: ${userEmail}).
+
+Concernant ma réservation/service :
+- [Veuillez décrire votre question ou problème de réservation]
+- [Référence de réservation si disponible]
+
+Dans l’attente de votre assistance.
+
+Merci.`;
+            break;
+            
+        case 'refund':
+            message = `Hello OLYS HAIR Refund Department,
+
+Mon nom est ${userName} (Email: ${userEmail}).
+
+PLAINT/DEMANDE DE REMBOURSEMENT :
+
+Description du problème :
+
+[Décrivez le problème avec votre produit]
+
+Je confirme :
+✓ Le produit est dans son état d’origine
+✓ Transaction effectuée dans les 7 jours
+✓ Photos disponibles sur demande
+✓ Emballage d’origine disponible
+
+Merci de me conseiller sur les prochaines étapes.
+
+Merci.`;
+            break;
+    }
+    
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `${WHATSAPP_BASE_URL}?text=${encodedMessage}`;
+    
+    // Open WhatsApp in new tab
+    window.open(whatsappUrl, '_blank');
+    
+    // Log the interaction
+    logWhatsAppInteraction(type);
+}
+
+function logWhatsAppInteraction(type) {
+    const interactions = JSON.parse(localStorage.getItem('whatsappInteractions')) || [];
+    
+    const interaction = {
+        id: Date.now(),
+        type: type,
+        timestamp: new Date().toISOString(),
+        user: JSON.parse(localStorage.getItem('user'))?.email || 'anonymous'
+    };
+    
+    interactions.push(interaction);
+    localStorage.setItem('whatsappInteractions', JSON.stringify(interactions));
+    
+    // Show confirmation
+    showNotification(`Opening WhatsApp for ${type} inquiry...`);
+}
+
+function closeModal() {
+    const modal = document.querySelector('.conditions-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+</script>
   </body>
 </html>

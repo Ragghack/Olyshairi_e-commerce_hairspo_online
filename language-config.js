@@ -29,6 +29,16 @@ const translations = {
         'upcomingBookings': 'Upcoming Bookings',
         'viewAll': 'View All',
         'trackOrders': 'Track Orders',
+          'customerService': 'Customer Service',
+        'whatsappSupport': 'WhatsApp Support',
+        'generalInquiry': 'General Inquiry',
+        'bookingQuestion': 'Booking/Service Question',
+        'refundComplaint': 'Refund/Complaint',
+        'acceptConditions': 'I Accept & Continue',
+        'productCondition': 'Product is in original condition',
+        'within7Days': 'Transaction within 7 days',
+        'photosAvailable': 'Photos available',
+        'originalPackaging': 'Original packaging',
         
         // Shop
 'discoverPerfectLook': 'Discover Your Perfect Look',
@@ -155,6 +165,7 @@ const translations = {
         'promotionalEmails': 'Promotional Emails',
         'savePreferences': 'Save Preferences',
         'viewCart': 'View Cart',
+        
 
         // booking page
 
@@ -480,7 +491,16 @@ const translations = {
         'orderDetails': 'Détails de la Commande',
         'estimatedDelivery': 'Livraison Estimée',
         'printReceipt': 'Imprimer le Reçu',
-        'close': 'Fermer'
+        'close': 'Fermer',
+         'whatsappSupport': 'Support WhatsApp',
+        'generalInquiry': 'Question Générale',
+        'bookingQuestion': "Réservation/Service",
+        'refundComplaint': 'Réclamation/Remboursement',
+        'acceptConditions': 'Jaccepte et continue',
+        'productCondition': "Le produit est en état d'origine",
+        'within7Days': 'Transaction dans les 7 jours',
+        'photosAvailable': 'Photos disponibles',
+        'originalPackaging': "Emballage d'origine",
     
     }
     // You can add more languages here (Spanish, German, etc.)
